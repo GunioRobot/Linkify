@@ -36,7 +36,7 @@ static bool create_process(std::string path) {
         NULL, const_cast<char*>(path.c_str()), NULL, NULL, FALSE, 0, NULL,
         NULL, &startup_info, &process_info);
     
-    return (bool) success;
+    return static_cast<bool>(success);
 }
 
 
@@ -105,7 +105,9 @@ static void run() {
 }
 
 
-int main() {
+int APIENTRY WinMain(HINSTANCE instance, HINSTANCE previous_instance,
+                     LPTSTR command_line, int command_show) {
     initialize_commands();
     run();
+	return 0;
 }

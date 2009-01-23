@@ -11,7 +11,7 @@ def Tools(env):
 
 env = Environment()
 tools = Tools(env)
-env.Program('CreateProcess', Glob('*.cpp'))
+env.Program('mailto', Glob('*.cpp'))
 
 
 if tools == 'GNU':
