@@ -109,5 +109,5 @@ int APIENTRY WinMain(HINSTANCE instance, HINSTANCE previous_instance,
                      LPTSTR command_line, int command_show) {
     initialize_commands();
     run();
-	return 0;
+    return 0;
 }

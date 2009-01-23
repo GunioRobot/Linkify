@@ -69,7 +69,7 @@ static std::string join(char** array, size_t length, char* separator = " ") {
 int APIENTRY WinMain(HINSTANCE instance, HINSTANCE previous_instance,
                      LPTSTR command_line, int command_show) {
     Thunderbird(escape(command_line));
-	return 0;
+    return 0;
 }
 #else
 int main(int argc, char** argv) {
