@@ -156,7 +156,8 @@ body {
 }
 
 .Footer .Date,
-.Footer .Generator {
+.Footer .Generator,
+.Footer .Hosting {
     font-size: smaller;
     margin: 0;
 }
