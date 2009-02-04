@@ -30,17 +30,17 @@ def draw_title(settings, slide, title, padding = 15):
 
 
 def extract_slides(slides):
-    searchTextPattern = ur'[*]([^*]+)[*]'
-    (titles, searchTerms) = ([], [])
+    search_text_pattern = r'[*]([^*]+)[*]'
+    (titles, search_terms) = ([], [])
     
     for slide in slides:
-        (searchText,) = re.findall(searchTextPattern, slide)
-        title = re.sub(searchTextPattern, ur'\1', slide)
+        (search_text,) = re.findall(search_text_pattern, slide)
+        title = re.sub(search_text_pattern, r'\1', slide)
         
         titles.append(title)
-        searchTerms.append(searchText)
+        search_terms.append(search_text)
     
-    return (titles, searchTerms)
+    return (titles, search_terms)
 
 
 def get_url(photo):
@@ -60,30 +60,30 @@ def make_slide(settings, image):
     (WIDTH, HEIGHT) = (settings['Width'], settings['Height'])
     (width, height) = image.size
     
-    newHeight = height * WIDTH // width
-    newWidth = width * HEIGHT // height
+    new_height = height * WIDTH // width
+    new_width = width * HEIGHT // height
     
-    if newHeight <= HEIGHT:
-        newWidth = WIDTH
-    elif newWidth <= WIDTH:
-        newHeight = HEIGHT
+    if new_height <= HEIGHT:
+        new_width = WIDTH
+    elif new_width <= WIDTH:
+        new_height = HEIGHT
     
-    x = (WIDTH - newWidth) // 2
-    y = (HEIGHT - newHeight) // 2
+    x = (WIDTH - new_width) // 2
+    y = (HEIGHT - new_height) // 2
     
-    slide = image.resize((newWidth, newHeight), Image.ANTIALIAS)
+    slide = image.resize((new_width, new_height), Image.ANTIALIAS)
     slide = slide.crop((0, 0, WIDTH, HEIGHT))
     slide = ImageChops.offset(slide, x, y)
     
     draw = ImageDraw.Draw(slide)
     color = settings['Text color']['Background']
     
-    if newHeight < HEIGHT:
+    if new_height < HEIGHT:
         draw.rectangle([(0, 0), (WIDTH, y)], fill = color)
-        draw.rectangle([(0, y + newHeight), (WIDTH, HEIGHT)], fill = color)
-    elif newWidth < WIDTH:
+        draw.rectangle([(0, y + new_height), (WIDTH, HEIGHT)], fill = color)
+    elif new_width < WIDTH:
         draw.rectangle([(0, 0), (x, HEIGHT)], fill = color)
-        draw.rectangle([(x + newWidth, 0), (WIDTH, HEIGHT)], fill = color)
+        draw.rectangle([(x + new_width, 0), (WIDTH, HEIGHT)], fill = color)
     
     return slide
 
@@ -92,47 +92,47 @@ def make_slides(config):
     flickr.API_KEY = config['Flickr']['API key']
     flickr.API_SECRET = config['Flickr']['API secret']
     
-    (titles, searchTerms) = extract_slides(config['Slides'])
-    (searchedText, slideNumber) = ({}, 1)
+    (titles, search_terms) = extract_slides(config['Slides'])
+    (searched_text, slide_nr) = ({}, 1)
     
-    mainTitle = config['Title']
+    main_title = config['Title']
     settings = config['Settings']
     color = settings['Text color']
     
     for name in color:
         color[name] = tuple(color[name])
     
-    if not os.path.exists(mainTitle):
-        os.mkdir(mainTitle)
+    if not os.path.exists(main_title):
+        os.mkdir(main_title)
     
-    for title, searchText in zip(titles, searchTerms):
-        print('Creating slide %i...' % slideNumber)
+    for title, search_text in zip(titles, search_terms):
+        print('Creating slide %i...' % slide_nr)
         
-        if searchText not in searchedText:
-            urls = get_urls(searchText)
+        if search_text not in searched_text:
+            urls = get_urls(search_text)
             
             if len(urls) == 0:
-                print('No images found for "%s"' % searchText)
+                print('No images found for "%s"' % search_text)
                 continue
             
-            searchedText[searchText] = urls
+            searched_text[search_text] = urls
         
-        if len(searchedText[searchText]) == 0:
-            print('No more images for "%s"' % searchText)
+        if len(searched_text[search_text]) == 0:
+            print('No more images for "%s"' % search_text)
             continue
         
-        url = searchedText[searchText].pop()
+        url = searched_text[search_text].pop()
         print('Downloading image from <%s>...' % url)
         
-        (imageFileName, headers) = urllib.urlretrieve(url)
-        simpleSlide = make_slide(settings, Image.open(imageFileName))
-        slide = draw_title(settings, simpleSlide, title)
+        (image_file_name, headers) = urllib.urlretrieve(url)
+        simple_slide = make_slide(settings, Image.open(image_file_name))
+        slide = draw_title(settings, simple_slide, title)
         
-        slideFileName = u'%s/%i.%s' % (mainTitle, slideNumber, settings['Format'])
-        slide.save(slideFileName)
-        print('Saved as "%s".\n' % slideFileName)
+        slide_file_name = u'%s/%i.%s' % (main_title, slide_nr, settings['Format'])
+        slide.save(slide_file_name)
+        print('Saved as "%s".\n' % slide_file_name)
         
-        slideNumber += 1
+        slide_nr += 1
 
 
 def main(args):
