@@ -7,29 +7,29 @@
 # - Python Imaging Library, <http://www.pythonware.com/products/pil/>
 
 
-from __future__ import division, with_statement
+from __future__ import division
 import Image, ImageChops, ImageDraw, ImageFont
 import flickr, yaml
 import os, re, sys, urllib
 
 
-def drawTitle(settings, slide, title, padding = 15):
+def draw_title(settings, slide, title, padding = 15):
     (draw, size) = (ImageDraw.Draw(slide), 40)
-    color = settings[u'Text color']
+    color = settings['Text color']
     
     while True:
-        font = ImageFont.truetype(settings[u'Font'], size)
+        font = ImageFont.truetype(settings['Font'], size)
         (width, height) = draw.textsize(title, font = font)
         
-        if abs(width - settings[u'Width']) < padding:
-            draw.text((3, 3), title, fill = color[u'Background'], font = font)
-            draw.text((0, 0), title, fill = color[u'Foreground'], font = font)
+        if abs(width - settings['Width']) < padding:
+            draw.text((3, 3), title, fill = color['Background'], font = font)
+            draw.text((0, 0), title, fill = color['Foreground'], font = font)
             return slide
         
-        size += 1 if width < settings[u'Width'] else -1
+        size += 1 if width < settings['Width'] else -1
 
 
-def extractSlides(slides):
+def extract_slides(slides):
     searchTextPattern = ur'[*]([^*]+)[*]'
     (titles, searchTerms) = ([], [])
     
@@ -43,21 +43,21 @@ def extractSlides(slides):
     return (titles, searchTerms)
 
 
-def getUrl(photo):
+def get_url(photo):
     try:
-        return photo.getURL(urlType = u'source')
+        return photo.getURL(urlType = 'source')
     except flickr.FlickrError:
-        return u'http://static.flickr.com/%s/%s_%s.jpg' \
+        return 'http://static.flickr.com/%s/%s_%s.jpg' \
             % (photo.server, photo.id, photo.secret)
 
 
-def getUrls(text, limit = 20):
-    print(u'Searching Flickr for "%s"...' % text)
-    return map(getUrl, flickr.photos_search(text = text, per_page = limit))
+def get_urls(text, limit = 20):
+    print('Searching Flickr for "%s"...' % text)
+    return map(get_url, flickr.photos_search(text = text, per_page = limit))
 
 
-def makeSlide(settings, image):
-    (WIDTH, HEIGHT) = (settings[u'Width'], settings[u'Height'])
+def make_slide(settings, image):
+    (WIDTH, HEIGHT) = (settings['Width'], settings['Height'])
     (width, height) = image.size
     
     newHeight = height * WIDTH // width
@@ -76,7 +76,7 @@ def makeSlide(settings, image):
     slide = ImageChops.offset(slide, x, y)
     
     draw = ImageDraw.Draw(slide)
-    color = settings[u'Text color'][u'Background']
+    color = settings['Text color']['Background']
     
     if newHeight < HEIGHT:
         draw.rectangle([(0, 0), (WIDTH, y)], fill = color)
@@ -88,16 +88,16 @@ def makeSlide(settings, image):
     return slide
 
 
-def makeSlides(config):
-    flickr.API_KEY = config[u'Flickr'][u'API key']
-    flickr.API_SECRET = config[u'Flickr'][u'API secret']
+def make_slides(config):
+    flickr.API_KEY = config['Flickr']['API key']
+    flickr.API_SECRET = config['Flickr']['API secret']
     
-    (titles, searchTerms) = extractSlides(config[u'Slides'])
+    (titles, searchTerms) = extract_slides(config['Slides'])
     (searchedText, slideNumber) = ({}, 1)
     
-    mainTitle = config[u'Title']
-    settings = config[u'Settings']
-    color = settings[u'Text color']
+    mainTitle = config['Title']
+    settings = config['Settings']
+    color = settings['Text color']
     
     for name in color:
         color[name] = tuple(color[name])
@@ -106,43 +106,43 @@ def makeSlides(config):
         os.mkdir(mainTitle)
     
     for title, searchText in zip(titles, searchTerms):
-        print(u'Creating slide %i...' % slideNumber)
+        print('Creating slide %i...' % slideNumber)
         
         if searchText not in searchedText:
-            urls = getUrls(searchText)
+            urls = get_urls(searchText)
             
             if len(urls) == 0:
-                print(u'No images found for "%s"' % searchText)
+                print('No images found for "%s"' % searchText)
                 continue
             
             searchedText[searchText] = urls
         
         if len(searchedText[searchText]) == 0:
-            print(u'No more images for "%s"' % searchText)
+            print('No more images for "%s"' % searchText)
             continue
         
         url = searchedText[searchText].pop()
-        print(u'Downloading image from <%s>...' % url)
+        print('Downloading image from <%s>...' % url)
         
         (imageFileName, headers) = urllib.urlretrieve(url)
-        simpleSlide = makeSlide(settings, Image.open(imageFileName))
-        slide = drawTitle(settings, simpleSlide, title)
+        simpleSlide = make_slide(settings, Image.open(imageFileName))
+        slide = draw_title(settings, simpleSlide, title)
         
-        slideFileName = u'%s/%i.%s' % (mainTitle, slideNumber, settings[u'Format'])
+        slideFileName = u'%s/%i.%s' % (mainTitle, slideNumber, settings['Format'])
         slide.save(slideFileName)
-        print(u'Saved as "%s".\n' % slideFileName)
+        print('Saved as "%s".\n' % slideFileName)
         
         slideNumber += 1
 
 
 def main(args):
     if len(args) != 2:
-        print(u'Usage: <configuration file>')
+        print('Usage: <configuration file>')
     else:
-        makeSlides(yaml.load(file(args.pop())))
+        make_slides(yaml.load(file(args.pop())))
     
     return 0
 
 
-if __name__ == u'__main__':
+if __name__ == '__main__':
     sys.exit(main(sys.argv))
