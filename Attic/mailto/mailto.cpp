@@ -4,6 +4,10 @@
  * In Opera, go to Tools > Preferences > Advanced > Programs, edit the mailto
  * protocol and use "mailto:?to=%t&subject=%s&body=%m&cc=%c" as the parameter
  * for this application.
+ *
+ * Fix these web sites:
+ * - http://kb.mozillazine.org/Command_line_arguments_(Thunderbird)
+ * - https://developer.mozilla.org/en/Command_Line_Options#Mail.2fNews
  */
 
 
