@@ -1,0 +1,17 @@
+<?XML version="1.0"?>
+<job>
+  <script language="JScript">
+  <![CDATA[
+var Shell = new ActiveXObject('WScript.Shell');
+var FileSystem = new ActiveXObject('Scripting.FileSystemObject');
+var ForReading = 1;
+
+var listFileName = FileSystem.GetBaseName(WScript.ScriptFullName) + '.txt';
+var listFile = FileSystem.OpenTextFile(listFileName, ForReading, true);
+
+while (!listFile.AtEndOfStream) {
+    Shell.Run(listFile.ReadLine());
+}
+  ]]>
+  </script>
+</job>
