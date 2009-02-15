@@ -1,12 +1,15 @@
 def Tools(env):
     tools = env['TOOLS']
     
-    if ('gcc' in tools) or ('g++' in tools) or ('mingw' in tools):
-        return 'GNU'
-    elif 'msvc' in tools:
-        return 'MSVC'
-    else:
-        return None
+    names = {
+        'GNU': ['gcc', 'g++', 'mingw'],
+        'MSVC': ['msvc'],
+    }
+    
+    for (name, aliases) in names.items():
+        for alias in aliases:
+            if alias in tools:
+                return name
 
 
 env = Environment()
