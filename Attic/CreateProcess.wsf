@@ -12,6 +12,8 @@ var listFile = FileSystem.OpenTextFile(listFileName, ForReading, true);
 while (!listFile.AtEndOfStream) {
     Shell.Run(listFile.ReadLine());
 }
+
+listFile.Close();
   ]]>
   </script>
 </job>

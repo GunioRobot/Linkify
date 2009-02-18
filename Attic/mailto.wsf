@@ -1,0 +1,72 @@
+<?XML version="1.0"?>
+<job>
+  <script language="JScript">
+  <![CDATA[
+/**
+ * Fixes the mailto protocol between Opera and Thunderbird.
+ *
+ * In Opera, go to Tools > Preferences > Advanced > Programs, edit the mailto
+ * protocol and use the following values for the associated fields:
+ * - Other application: C:\WINDOWS\System32\WScript.exe
+ * - Parameter: mailto.wsf _"%t"_ _"%c"_ _"%s"_ _"%m"_
+ *
+ * Finally, copy this script to "%HOMEDRIVE%%HOMEPATH%".
+ */
+
+var fields = [
+    {
+        name: 'to',
+        encode: encodeURIComponent
+    },
+    {
+        name: 'cc',
+        encode: encodeURIComponent
+    },
+    {
+        name: 'subject',
+        encode: encodeURIComponent
+    },
+    {
+        name: 'body',
+        encode: function(body) {
+            return encodeURIComponent(body.replace(/(^<)|(>$)/g, ''));
+        }
+    }
+];
+
+var Shell = new ActiveXObject('WScript.Shell');
+var arguments = [];
+
+for (var i = 0; i < WScript.Arguments.length; ++i) {
+    arguments.push(WScript.Arguments(i).replace(/(^.)|(.$)/g, ''));
+}
+
+if (arguments.length == fields.length) {
+    for (var i = 0; i < fields.length; ++i) {
+        arguments[i] = fields[i].name + '=' + fields[i].encode(arguments[i]);
+    }
+    
+    var mailto = 'mailto:?' + arguments.join('&');
+    Shell.Run('thunderbird "' + mailto + '"');
+}
+else {
+    var FileSystem = new ActiveXObject('Scripting.FileSystemObject');
+    var menuFileName = 'menu.ini';
+    var menuFile = FileSystem.CreateTextFile(menuFileName);
+    
+    var menuLines = [
+        '; Simple fix, as it only sends the current URL to Thunderbird.',
+        '[Document Popup Menu]',
+        'Item, MI_IDM_SEND_URL_EMAIL=Execute program, "thunderbird", "mailto:?body=%u"'
+    ];
+    
+    for (var i = 0; i < menuLines.length; ++i) {
+        menuFile.WriteLine(menuLines[i]);
+    }
+    
+    menuFile.Close();
+    WScript.Echo('Created "' + menuFileName + '".');
+}
+  ]]>
+  </script>
+</job>
