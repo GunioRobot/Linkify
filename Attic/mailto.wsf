@@ -49,7 +49,7 @@ if (arguments.length == fields.length) {
     var mailto = 'mailto:?' + arguments.join('&');
     Shell.Run('thunderbird "' + mailto + '"');
 }
-else {
+else if (arguments.length == 0) {
     var FileSystem = new ActiveXObject('Scripting.FileSystemObject');
     var menuFileName = 'menu.ini';
     var menuFile = FileSystem.CreateTextFile(menuFileName);
