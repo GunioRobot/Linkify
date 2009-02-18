@@ -38,7 +38,7 @@ var Shell = new ActiveXObject('WScript.Shell');
 var arguments = [];
 
 for (var i = 0; i < WScript.Arguments.length; ++i) {
-    arguments.push(WScript.Arguments(i).replace(/(^.)|(.$)/g, ''));
+    arguments.push(WScript.Arguments(i).replace(/(^_)|(_$)/g, ''));
 }
 
 if (arguments.length == fields.length) {
