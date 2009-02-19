@@ -1,16 +1,15 @@
 #!/usr/bin/python
 # -*- coding: utf8 -*-
 
-# Dependencies:
-# - PyYAML, <http://pyyaml.org/>
-# - flickrpy, <http://code.google.com/p/flickrpy/>
-# - Python Imaging Library, <http://www.pythonware.com/products/pil/>
 
-
+# Standard library:
 from __future__ import division
-import Image, ImageChops, ImageDraw, ImageFont
-import flickr, yaml
 import os, re, sys, urllib
+
+# External libraries:
+import Image, ImageChops, ImageDraw, ImageFont    # Python Imaging Library
+import flickr                                     # flickrpy
+import yaml                                       # PyYAML
 
 
 def draw_title(settings, slide, title, padding = 15):
@@ -128,7 +127,7 @@ def make_slides(config):
         simple_slide = make_slide(settings, Image.open(image_file_name))
         slide = draw_title(settings, simple_slide, title)
         
-        slide_file_name = u'%s/%i.%s' % (main_title, slide_nr, settings['Format'])
+        slide_file_name = '%s/%i.%s' % (main_title, slide_nr, settings['Format'])
         slide.save(slide_file_name)
         print('Saved as "%s".\n' % slide_file_name)
         
@@ -136,13 +135,14 @@ def make_slides(config):
 
 
 def main(args):
-    if len(args) != 2:
+    if len(args) != 1:
         print('Usage: <configuration file>')
     else:
-        make_slides(yaml.load(file(args.pop())))
+        make_slides(yaml.load(file(args[0])))
     
     return 0
 
 
 if __name__ == '__main__':
+    sys.argv.pop(0)
     sys.exit(main(sys.argv))
