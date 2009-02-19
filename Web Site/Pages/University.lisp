@@ -97,15 +97,26 @@
                             (Course :name "PPIV - Portfólio Pessoal IV"
                                     :path "ano4/sem2/PPIV.7z")))
 
+(defparameter *y5-t1* (list (Course :name "CCom - Complementos de Compiladores"
+                                    :path "ano5/sem1/CCom.7z")
+                            (Course :name "LN - Língua Natural"
+                                    :path "ano5/sem1/LN.7z")
+                            (Course :name "PLP - Pragmática das Linguagens de Programação"
+                                    :path "ano5/sem1/PLP.7z")))
+
+(defparameter *y5-t2* (list))
+
 
 (defparameter *years* (list (Year :span "2004-2005" :terms (list *y1-t1* *y1-t2*))
                             (Year :span "2005-2006" :terms (list *y2-t1* *y2-t2*))
                             (Year :span "2006-2007" :terms (list *y3-t1* *y3-t2*))
-                            (Year :span "2007-2008" :terms (list *y4-t1* *y4-t2*))))
+                            (Year :span "2007-2008" :terms (list *y4-t1* *y4-t2*))
+                            (Year :span "2008-2009" :terms (list *y5-t1* *y5-t2*))))
 
 
 (XML
-  (:p "Here's the archive (in Portuguese) of all the courses I had so far:")
+  (:p "Here you can find the archive (in Portuguese) of all the courses I had so far.")
+  (:p "When downloading a file, if it appears to stop for no reason just resume it or use a download manager.")
   
   (dolist (year *years*)
     (XML

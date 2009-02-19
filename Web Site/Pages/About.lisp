@@ -1,9 +1,8 @@
 (XML
   (:h3 "About Me")
   
-  (:p "My name is Márcio Faustino and I'm currently living in Lisbon, Portugal."
-      (:br)
-      "You can reach me at " (:a (@ (:class "Email"))) ".")
+  (:p "My name is Márcio Faustino and I'm currently living in Lisbon, Portugal.")
+  (:p "You can reach me at " (:a (@ (:class "Email")) "…") ".")
   (:p (:img (@ (:src "Images/Photo.jpg")
                (:alt "Márcio Faustino"))))
   

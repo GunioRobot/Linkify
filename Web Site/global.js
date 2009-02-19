@@ -1,25 +1,25 @@
 if (window.addEventListener) {
-    window.addEventListener('load', setUp, false);
+    window.addEventListener('load', initialize, false);
 }
 else if (document.addEventListener) {
-    document.addEventListener('load', setUp, false);
+    document.addEventListener('load', initialize, false);
 }
 else if (window.attachEvent) {
-    window.attachEvent('onload', setUp);
+    window.attachEvent('onload', initialize);
 }
 else {
-    window.onload = setUp;
+    window.onload = initialize;
 }
 
 
 function getEmail() {
-    return 'm.' + (function(x) { return 'fau' + x + 'ino'; })('st')
-        + '@' + 'liamg'.split('').reverse().join('') + '.'
-        + String.fromCharCode(109, 111, 99).split('').reverse().join('');
+    return eval("'m.' + (function(x) { return 'fau' + x + 'ino'; })('st')"
+        + "+ '@' + 'liamg'.split('').reverse().join('') + '.'"
+        + "+ String.fromCharCode(109, 111, 99).split('').reverse().join('');");
 }
 
 
-function setUp() {
+function initialize() {
     var anchors = document.getElementsByTagName('a');
     
     for (var i = 0; i < anchors.length; ++i) {
@@ -28,7 +28,7 @@ function setUp() {
         if (anchor.className && anchor.className.match(/Email/)) {
             anchor.href = 'mailto:' + getEmail();
             
-            if (anchor.innerHTML == '') {
+            if ((anchor.innerHTML == '') || (anchor.innerHTML == '…')) {
                 anchor.innerHTML = getEmail();
             }
         }
