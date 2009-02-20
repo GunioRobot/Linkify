@@ -6,6 +6,6 @@
   :scripts '("global.js")
   :style "screen"
   :title "Márcio Faustino"
-  :footer '(("Date" . "Last updated: 2009-02-19")
+  :footer '(("Date" . "Last updated: 2009-02-20")
             ("Hosting" . "Hosting by 000webhost.com")
             ("Generator" . "Powered by Lisp")))

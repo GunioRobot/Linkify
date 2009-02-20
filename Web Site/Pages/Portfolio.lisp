@@ -9,20 +9,20 @@
   (:h3 "Main Projects")
   
   (:dl
-    (:dt "Alive Mail")
-    (:dd (:a (@ (:href "http://alive-mail.sourceforge.net/")) "System")
-         " for e-mail triage based on contextual social information.")
-    
     (:dt "C Library")
     (:dd (:a (@ (:href "http://c-library.sourceforge.net/")) "Software library")
-         " to ease development in the C programming language. "
-         "I'm also using it to "
-         (:a (@ (:href "Images/Bochs.png"))
-             "learn more")
-         " about µ-Kernels.")
+         " to ease development in the C programming language.")
+    
+    (:dt "Eon")
+    (:dd "Mini «"
+         (:a (@ (:href "http://eon.origo.ethz.ch/")) "kernel")
+         "» to "
+         (:a (@ (:href "Images/Bochs.png")) "learn more")
+         " about the design and implementation of Operating Systems.")
     
     (:dt "LRDBi")
-    (:dd "Web based interface, using "
+    (:dd (:a (@ (:href "http://lrdbi.origo.ethz.ch/")) "Web based interface")
+         ", using "
          (:a (@ (:href "http://code.google.com/webtoolkit/")) "GWT")
          ", to a language resources database for "
          (:a (@ (:href "https://www.l2f.inesc-id.pt/")) "L²F INESC-ID")
