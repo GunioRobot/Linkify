@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>Opera buttons</title>
+    <meta name="Author" content="Márcio Moniz Bandim Faustino"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css" media="screen">
+body {
+    font-size: smaller;
+    font-family: "Arial", sans-serif;
+}
+
+ul {
+    list-style-type: none;
+    padding-left: 1.5em;
+}
+
+ul > li + li {
+    margin-top: 1.25em;
+}
+
+ul > li > a {
+    color: inherit;
+    background-color: ThreeDFace;
+    
+    text-decoration: none;
+    padding: 0.3em 0.5em 0.3em 0.5em;
+    
+    border-width: 1px;
+    border-style: solid;
+    
+    border-top-color: ThreeDLightShadow;
+    border-left-color: ThreeDLightShadow;
+    border-bottom-color: ThreeDShadow;
+    border-right-color: ThreeDShadow;
+}
+
+ul > li > a:hover {
+    color: ActiveCaption;
+    background-image: -o-skin("Hotlist Skin");
+}
+
+ul > li > a:before {
+    position: relative;
+    margin-right: 8px;
+    top: 2px;
+}
+
+ul > li > a.BypassLogin:before {
+    content: -o-skin("Mail Redirected");
+}
+
+ul > li > a.Go:before {
+    content: -o-skin("Group");
+}
+
+ul > li > a.Up:before {
+    content: -o-skin("Parent Folder");
+}
+    </style>
+  </head>
+  
+  <body>
+    <p>Drag a button onto a toolbar to install it:</p>
+    
+    <ul>
+      <li><a class="Go" href="opera:/button/Go,,,,Group">Go</a></li>
+      <li><a class="BypassLogin" href="opera:/button/Go%20to%20page,%22javascript:void(window.open('http://bugmenot.com/view/'%2BencodeURI(location),'BugMeNot',''))%22,1,%22Bypass%20login%22,Mail Redirected">Bypass login</a></li>
+      <li><a class="Up" href="opera:/button/Go to parent directory,,,,Parent folder">Go to parent directory</a></li>
+    </ul>
+  </body>
+</html>
