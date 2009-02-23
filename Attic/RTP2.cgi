@@ -113,9 +113,8 @@ sub main {
         close $self or die $!;
     }
     else {
-        my ($extension) = ($0 =~ m/([.][^.]+)$/);
-        my $cache_file = fileparse($0, $extension).'.rss';
-        my $guide = load_guide($cache_file);
+        my ($name) = fileparse($0, '.cgi');
+        my $guide = load_guide("$name.rss");
         
         generate_rss($guide);
         save_guide($guide);
