@@ -38,18 +38,18 @@ ul > li > a {
     border-right-color: ThreeDShadow;
 }
 
-ul > li > a:hover {
-    color: ActiveCaption;
-}
-
 ul > li > a:before {
     position: relative;
     margin-right: 8px;
-    top: 2px;
+    top: 3px;
 }
 
 ul > li > a.BypassLogin:before {
     content: -o-skin("Mail Redirected");
+}
+
+ul > li > a.ClosePage:before {
+    content: -o-skin("Pagebar Close Button Skin");
 }
 
 ul > li > a.Go:before {
@@ -67,8 +67,9 @@ ul > li > a.Up:before {
     
     <ul>
       <li><a class="Go" href="opera:/button/Go,,,,Group">Go</a></li>
-      <li><a class="BypassLogin" href="opera:/button/Go%20to%20page,%22javascript:void(window.open('http://bugmenot.com/view/'%2BencodeURI(location),'BugMeNot',''))%22,1,%22Bypass%20login%22,Mail Redirected">Bypass login</a></li>
+      <li><a class="BypassLogin" href="opera:/button/Go to page,%22javascript:void(window.open('http://bugmenot.com/view/' + encodeURI(location)))%22,,Bypass login,Mail Redirected">Bypass login</a></li>
       <li><a class="Up" href="opera:/button/Go to parent directory,,,,Parent folder">Go to parent directory</a></li>
+      <li><a class="ClosePage" href="opera:/button/Close page,,,,Pagebar Close Button Skin">Close page</a></li>
     </ul>
   </body>
 </html>
