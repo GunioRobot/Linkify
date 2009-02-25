@@ -41,32 +41,17 @@ for (var i = 0; i < WScript.Arguments.length; ++i) {
     arguments.push(WScript.Arguments(i).replace(/(^_)|(_$)/g, ''));
 }
 
-if (arguments.length == fields.length) {
-    for (var i = 0; i < fields.length; ++i) {
-        arguments[i] = fields[i].name + '=' + fields[i].encode(arguments[i]);
-    }
-    
-    var mailto = 'mailto:?' + arguments.join('&');
-    Shell.Run('thunderbird "' + mailto + '"');
+if (arguments.length != fields.length) {
+    WScript.Echo('Error: Wrong number of arguments.');
+    WScript.Quit();
 }
-else if (arguments.length == 0) {
-    var FileSystem = new ActiveXObject('Scripting.FileSystemObject');
-    var menuFileName = 'menu.ini';
-    var menuFile = FileSystem.CreateTextFile(menuFileName);
-    
-    var menuLines = [
-        '; Simple fix, as it only sends the current URL to Thunderbird.',
-        '[Document Popup Menu]',
-        'Item, MI_IDM_SEND_URL_EMAIL=Execute program, "thunderbird", "mailto:?body=%u"'
-    ];
-    
-    for (var i = 0; i < menuLines.length; ++i) {
-        menuFile.WriteLine(menuLines[i]);
-    }
-    
-    menuFile.Close();
-    WScript.Echo('Created "' + menuFileName + '".');
+
+for (var i = 0; i < fields.length; ++i) {
+    arguments[i] = fields[i].name + '=' + fields[i].encode(arguments[i]);
 }
+
+var mailto = 'mailto:?' + arguments.join('&');
+Shell.Run('thunderbird "' + mailto + '"');
   ]]>
   </script>
 </job>
