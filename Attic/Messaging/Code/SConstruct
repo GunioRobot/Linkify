@@ -1,0 +1,8 @@
+import os
+
+
+env = Environment(
+    CCFLAGS = ['/EHsc'],
+    CPPPATH = [os.path.join(os.environ['NPAPI_SDK'], 'include')])
+
+env.SharedLibrary('npMessaging', Glob('*.cpp'))
