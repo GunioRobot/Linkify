@@ -8,5 +8,4 @@ env = Environment(
     CPPPATH = [os.path.join(os.environ['NPAPI_SDK'], 'include')],
     WINDOWS_INSERT_DEF = True)
 
-env.RES(name + '.rc')
-env.SharedLibrary(name, Glob('*.cpp'))
+env.SharedLibrary(name, Glob('*.cpp') + env.RES(name + '.rc'))
