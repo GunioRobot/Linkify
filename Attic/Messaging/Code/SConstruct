@@ -21,7 +21,6 @@ libpurple_include_paths = environ['LIBPURPLE_INCLUDE_PATHS'].split(pathsep)
 env = Environment(
     CPPPATH = [np_api_sdk] + libpurple_include_paths,
     #LIBS = ['purple'],
-    WINDOWS_INSERT_DEF = True,
 )
 
 tools = Tools(env)

@@ -10,6 +10,7 @@ function initialize() {
     _plugin = document.getElementById('Server');
     
     if (!('version' in _plugin)) {
+        alert('Plug-in error!');
         return;
     }
 }
