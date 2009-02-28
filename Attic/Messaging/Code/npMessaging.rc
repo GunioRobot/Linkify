@@ -1,70 +1,29 @@
-#ifdef APSTUDIO_INVOKED
-#   ifndef APSTUDIO_READONLY_SYMBOLS
-#       define _APS_NEXT_RESOURCE_VALUE 101
-#       define _APS_NEXT_COMMAND_VALUE 40001
-#       define _APS_NEXT_CONTROL_VALUE 1000
-#       define _APS_NEXT_SYMED_VALUE 101
-#   endif
-#endif
+#include <WinVer.h>
+#include "npMessaging.h"
 
-
-#define APSTUDIO_READONLY_SYMBOLS
-#include "winresrc.h"
-#undef APSTUDIO_READONLY_SYMBOLS
-
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#   ifdef _WIN32
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#       pragma code_page(1252)
-#   endif
 
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION 0, 1, 0, 0
-PRODUCTVERSION 0, 1, 0, 0
-FILEFLAGSMASK 0x3fL
-#   ifdef _DEBUG
-FILEFLAGS 0x1L
-#   else
-FILEFLAGS 0x0L
-#   endif
-FILEOS 0x40004L
-FILETYPE 0x2L
-FILESUBTYPE 0x0L
-BEGIN
+  FILEVERSION NPMESSAGING_MAJOR_VERSION, NPMESSAGING_MINOR_VERSION, NPMESSAGING_MICRO_VERSION, 0
+  PRODUCTVERSION NPMESSAGING_MAJOR_VERSION, NPMESSAGING_MINOR_VERSION, NPMESSAGING_MICRO_VERSION, 0
+  FILEFLAGSMASK 0
+  FILEFLAGS 0
+  FILEOS VOS__WINDOWS32
+  FILETYPE VFT_DLL
+  FILESUBTYPE VFT2_UNKNOWN
+  BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "040904e4"
-        BEGIN
-            VALUE "FileDescription", "Instant messaging plug-in for Opera."
-            VALUE "FileVersion", "0, 1, 0, 0"
-            VALUE "LegalCopyright", "Márcio Faustino"
-            VALUE "MIMEType", "application/x-im"
-            VALUE "ProductName", "Messaging"
-        END
+      BLOCK "040904E4"
+      BEGIN
+        VALUE "FileDescription", "Instant messaging plug-in for Opera."
+        VALUE "FileVersion", "0, 1, 0, 0"
+        VALUE "LegalCopyright", "Márcio Faustino"
+        VALUE "MIMEType", "application/x-im"
+        VALUE "ProductName", "Messaging"
+      END
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x409, 1252
+      VALUE "Translation", 0x409, 1252
     END
-END
-
-#   ifdef APSTUDIO_INVOKED
-1 TEXTINCLUDE
-BEGIN
-    "resource.h\0"
-END
-
-2 TEXTINCLUDE
-BEGIN
-    "#include ""winresrc.h""\r\n"
-    "\0"
-END
-
-3 TEXTINCLUDE
-BEGIN
-    "\r\n"
-    "\0"
-END
-#   endif
-#endif
+  END
