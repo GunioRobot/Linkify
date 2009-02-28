@@ -1,13 +1,14 @@
-#include <fstream>
+//#include <fstream>
 #include <npapi.h>
 #include <npupp.h>
 #include <npruntime.h>
 #include <string>
+#include "npMessaging.h"
 
 
 static NPObject* _pluginObj = NULL;
 static NPNetscapeFuncs* _browser = NULL;
-//static std::ofstream _log("npIM.log");
+//static std::ofstream _log("npMessaging.log");
 
 
 static bool hasMethod(NPObject* obj, NPIdentifier name) {
@@ -33,7 +34,7 @@ static bool invoke(NPObject* obj, NPIdentifier name, const NPVariant* argv, uint
         return invokeDefault(obj, argv, argc, result);
     }
     else {
-        _browser->setexception(obj, "exception during invocation");
+        _browser->setexception(obj, "Exception during invocation.");
         return false;
     }
 }
@@ -65,9 +66,9 @@ static bool removeProperty(NPObject* obj, NPIdentifier name) {
 
 static NPClass _pluginClass = {
     NP_CLASS_STRUCT_VERSION,
-    NULL, // Allocate.
-    NULL, // Deallocate.
-    NULL, // Invalidate.
+    NULL,
+    NULL,
+    NULL,
     hasMethod,
     invoke,
     invokeDefault,
@@ -101,10 +102,10 @@ static NPError getValue(NPP instance, NPPVariable what, void* value) {
     
     switch (what) {
     case NPPVpluginNameString:
-        *(char**) value = "IM";
+        *(char**) value = PLUGIN_NAME;
         break;
     case NPPVpluginDescriptionString:
-        *(char**) value = "Instant messenger plug-in";
+        *(char**) value = PLUGIN_DESCRIPTION;
         break;
     case NPPVpluginScriptableNPObject:
         if (_pluginObj == NULL) {
@@ -136,8 +137,7 @@ static NPError setWindow(NPP instance, NPWindow* window) {
 }
 
 
-extern "C"
-NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* plugin) {
+extern "C" NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* plugin) {
     //_log << "NP_GetEntryPoints" << std::endl;
     
     plugin->version = (NP_VERSION_MAJOR << 8) | NP_VERSION_MINOR;
@@ -151,8 +151,7 @@ NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* plugin) {
 }
 
 
-extern "C"
-NPError OSCALL NP_Initialize(NPNetscapeFuncs* browser) {
+extern "C" NPError OSCALL NP_Initialize(NPNetscapeFuncs* browser) {
     //_log << "NP_Initialize" << std::endl;
 
     if (browser == NULL) {
@@ -167,16 +166,14 @@ NPError OSCALL NP_Initialize(NPNetscapeFuncs* browser) {
 }
 
 
-extern "C"
-NPError OSCALL NP_Shutdown() {
+extern "C" NPError OSCALL NP_Shutdown() {
     //_log << "NP_Shutdown" << std::endl;
     _browser = NULL;
     return NPERR_NO_ERROR;
 }
 
 
-extern "C"
-char* NP_GetMIMEDescription() {
+extern "C" char* NP_GetMIMEDescription() {
     //_log << "NP_GetMIMEDescription" << std::endl;
-    return "application/x-im::";
+    return PLUGIN_MIME_TYPE "::";
 }

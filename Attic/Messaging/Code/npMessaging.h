@@ -2,23 +2,25 @@
 #define __NPMESSAGING__
 
 
-/** Major version number (year). */
-#define MESSAGING_MAJOR_VERSION 2009
+#define PLUGIN_NAME "Messaging"
 
-/** Minor version number (month). */
-#define MESSAGING_MINOR_VERSION 02
+#define PLUGIN_DESCRIPTION "Instant messaging plug-in for Opera."
 
-/** Micro version number (day). */
-#define MESSAGING_MICRO_VERSION 28
+#define PLUGIN_MIME_TYPE "application/x-im"
 
-/** Full version string. */
-#define MESSAGING_VERSION \
-    MESSAGING_VERSION_IMPLEMENTATION(MESSAGING_MAJOR_VERSION, MESSAGING_MINOR_VERSION, MESSAGING_MICRO_VERSION)
+#define PLUGIN_MAJOR_VERSION 2009
 
-#define MESSAGING_VERSION_IMPLEMENTATION(major, minor, micro) \
-    MESSAGING_VERSION_TO_STRING(major) "-" MESSAGING_VERSION_TO_STRING(minor) "-" MESSAGING_VERSION_TO_STRING(micro)
+#define PLUGIN_MINOR_VERSION 02
 
-#define MESSAGING_VERSION_TO_STRING(version) #version
+#define PLUGIN_MICRO_VERSION 28
+
+#define PLUGIN_VERSION \
+    PLUGIN_VERSION_IMPLEMENTATION(PLUGIN_MAJOR_VERSION, PLUGIN_MINOR_VERSION, PLUGIN_MICRO_VERSION)
+
+#define PLUGIN_VERSION_IMPLEMENTATION(major, minor, micro) \
+    PLUGIN_VERSION_TO_STRING(major) "-" PLUGIN_VERSION_TO_STRING(minor) "-" PLUGIN_VERSION_TO_STRING(micro)
+
+#define PLUGIN_VERSION_TO_STRING(version) #version
 
 
 #endif
