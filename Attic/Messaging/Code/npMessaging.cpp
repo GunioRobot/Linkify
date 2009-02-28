@@ -2,6 +2,7 @@
 #include <npapi.h>
 #include <npupp.h>
 #include <npruntime.h>
+#include <purple.h>
 #include <string>
 #include "npMessaging.h"
 

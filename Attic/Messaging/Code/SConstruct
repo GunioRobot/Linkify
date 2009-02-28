@@ -1,4 +1,4 @@
-import os
+from os import environ, path, pathsep
 
 
 def Tools(env):
@@ -15,7 +15,10 @@ def Tools(env):
                 return name
 
 
-env = Environment(CPPPATH = [os.path.join(os.environ['NP_API_SDK'], 'include')])
+np_api_sdk = path.join(environ['NP_API_SDK'], 'include')
+libpurple_include_paths = environ['LIBPURPLE_INCLUDE_PATHS'].split(pathsep)
+
+env = Environment(CPPPATH = [np_api_sdk] + libpurple_include_paths)
 tools = Tools(env)
 name = 'npMessaging'
 files = Glob('*.cpp')
