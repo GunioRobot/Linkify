@@ -1,11 +1,29 @@
 import os
 
 
+def Tools(env):
+    tools = env['TOOLS']
+    
+    names = {
+        'GNU': ['gcc', 'g++', 'mingw'],
+        'MSVC': ['msvc'],
+    }
+    
+    for (name, aliases) in names.items():
+        for alias in aliases:
+            if alias in tools:
+                return name
+
+
+env = Environment(CPPPATH = [os.path.join(os.environ['NPAPI_SDK'], 'include')])
+tools = Tools(env)
 name = 'npMessaging'
+files = Glob('*.cpp')
 
-env = Environment(
-    CCFLAGS = ['/EHsc'],
-    CPPPATH = [os.path.join(os.environ['NPAPI_SDK'], 'include')],
-    WINDOWS_INSERT_DEF = True)
+if tools == 'GNU':
+    env.Append(CCFLAGS = ['-ansi', '-pedantic', '-Wall'])
+elif tools == 'MSVC':
+    files += env.RES(name + '.rc')
+    env.Append(CCFLAGS = ['/EHsc'])
 
-env.SharedLibrary(name, Glob('*.cpp') + env.RES(name + '.rc'))
+env.SharedLibrary(name, files)
