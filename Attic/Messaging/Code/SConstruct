@@ -30,10 +30,8 @@ np_api_sdk = path.join(environ['NP_API_SDK'], 'include')
 libpurple_include_paths = environ['LIBPURPLE_INCLUDE_PATHS'].split(pathsep)
 
 env = Environment(
-    CPPDEFINES = ['WIN32', '_DEBUG', '_WINDOWS', 'XP_WIN32', 'MOZILLA_STRICT_API', 'XPCOM_GLUE', 'XP_WIN', '_X86_', 'NPMESSAGING_EXPORTS', '_CRT_SECURE_NO_WARNINGS', '_CRT_SECURE_NO_DEPRECATE', '_WINDLL', '_UNICODE', 'UNICODE'],
     CPPPATH = [np_api_sdk] + libpurple_include_paths,
     #LIBS = ['purple'],
-    WINDOWS_INSERT_DEF = True,
 )
 
 tools = Tools(env)
@@ -44,7 +42,8 @@ if tools == 'GNU':
     env.Append(CCFLAGS = ['-ansi', '-pedantic', '-Wall'])
 elif tools == 'MSVC':
     files += env.RES(name + '.rc')
-    env.Append(CCFLAGS = ['/EHsc', '/MD'])
+    env['WINDOWS_INSERT_DEF'] = True
+    env.Append(CCFLAGS = ['/EHsc', '/MD'], CPPDEFINES = ['_WINDOWS', '_X86_'])
 
 lib = env.SharedLibrary(name, files)[0]
 
