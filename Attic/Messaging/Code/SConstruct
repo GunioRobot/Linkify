@@ -1,6 +1,17 @@
 from os import environ, path, pathsep
 
 
+def EmbedManifest(env, target):
+    (EXE_TYPE, DLL_TYPE) = (1, 2)
+    
+    type = str(DLL_TYPE if str(target).endswith('.dll') else EXE_TYPE)
+    manifest = '-manifest ${TARGET}.manifest'
+    output = '-outputresource:$TARGET;' + type
+    
+    env.AddPostAction(target, 'mt -nologo %s %s' % (manifest, output))
+    env.Clean(target, '%s.manifest' % target)
+
+
 def Tools(env):
     tools = env['TOOLS']
     
@@ -33,15 +44,9 @@ if tools == 'GNU':
     env.Append(CCFLAGS = ['-ansi', '-pedantic', '-Wall'])
 elif tools == 'MSVC':
     files += env.RES(name + '.rc')
-    env.Append(CCFLAGS = ['/EHsc', '/MDd', '/Gd'])
+    env.Append(CCFLAGS = ['/EHsc', '/MD'])
 
 lib = env.SharedLibrary(name, files)[0]
 
 if tools == 'MSVC':
-    (EXE_TYPE, DLL_TYPE) = (1, 2)
-    manifest = '-manifest ${TARGET}.manifest'
-    output = '-outputresource:$TARGET;' + str(DLL_TYPE)
-    
-    # Embed the manifest.
-    env.AddPostAction(lib, 'mt -nologo %s %s' % (manifest, output))
-    env.Clean(lib, '%s.manifest' % lib)
+    EmbedManifest(env, lib)
