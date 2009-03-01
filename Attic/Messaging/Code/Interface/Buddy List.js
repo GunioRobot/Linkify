@@ -16,5 +16,5 @@ function initialize() {
 }
 
 
-// Don't use the DOMContentLoaded event, or the plug-in won't be detected.
+// Don't use the DOMContentLoaded event, otherwise the plug-in won't be detected.
 window.addEventListener('load', initialize, false);
