@@ -1,18 +1,18 @@
-#ifndef __NPMESSAGING__
-#define __NPMESSAGING__
+#ifndef __NPEXAMPLE__
+#define __NPEXAMPLE__
 
 
-#define PLUGIN_NAME "Messaging"
+#define PLUGIN_NAME "Example"
 
-#define PLUGIN_DESCRIPTION "Instant messaging plug-in for Opera."
+#define PLUGIN_DESCRIPTION "Sample NP API plug-in."
 
-#define PLUGIN_MIME_TYPE "application/x-im"
+#define PLUGIN_MIME_TYPE "application/x-example"
 
 #define PLUGIN_MAJOR_VERSION 2009
 
-#define PLUGIN_MINOR_VERSION 02
+#define PLUGIN_MINOR_VERSION 03
 
-#define PLUGIN_MICRO_VERSION 28
+#define PLUGIN_MICRO_VERSION 01
 
 #define PLUGIN_VERSION \
     PLUGIN_VERSION_IMPLEMENTATION(PLUGIN_MAJOR_VERSION, PLUGIN_MINOR_VERSION, PLUGIN_MICRO_VERSION)

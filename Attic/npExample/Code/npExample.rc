@@ -1,5 +1,5 @@
 #include <WinVer.h>
-#include "npMessaging.h"
+#include "npExample.h"
 
 
 VS_VERSION_INFO VERSIONINFO
@@ -17,7 +17,7 @@ VS_VERSION_INFO VERSIONINFO
       BEGIN
         VALUE "FileDescription", PLUGIN_DESCRIPTION
         VALUE "FileVersion", PLUGIN_VERSION
-        VALUE "LegalCopyright", "Márcio Faustino, 2008-2009"
+        VALUE "LegalCopyright", "Márcio Faustino"
         VALUE "MIMEType", PLUGIN_MIME_TYPE
         VALUE "ProductName", PLUGIN_NAME
         VALUE "ProductVersion", PLUGIN_VERSION

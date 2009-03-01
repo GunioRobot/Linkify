@@ -1,10 +1,9 @@
-#include <cstring>
 #include <npapi.h>
 #include <npupp.h>
 #include <npruntime.h>
 #include <string>
 #include <xpcom-config.h>
-#include "npMessaging.h"
+#include "npExample.h"
 
 
 static NPObject* _pluginObj = NULL;
@@ -17,14 +16,7 @@ static bool hasMethod(NPObject* obj, NPIdentifier name) {
 
 
 static bool invokeDefault(NPObject* obj, const NPVariant* argv, uint32_t argc, NPVariant* result) {
-    /*const char* message = "Hello world!";
-    char* messageCopy = (char*) NPN_MemAlloc(sizeof(char) * (strlen(message) + 1));
-    
-    strcpy(messageCopy, message);
-    STRINGZ_TO_NPVARIANT(messageCopy, *result);*/
-    
-    INT32_TO_NPVARIANT(123, *result);
-    
+    INT32_TO_NPVARIANT(12345, *result);
     return true;
 }
 
@@ -106,9 +98,6 @@ static NPError getValue(NPP instance, NPPVariable what, void* value) {
         }
         _browser->retainobject(_pluginObj);
         *(NPObject**) value = _pluginObj;
-        break;
-    case NPPVpluginNeedsXEmbed:
-        *(PRBool*) value = PR_FALSE;
         break;
     default:
         return NPERR_GENERIC_ERROR;

@@ -4,9 +4,9 @@ from os import environ, path
 def EmbedManifest(env, target):
     (EXE_TYPE, DLL_TYPE) = (1, 2)
     
-    type = str(DLL_TYPE if str(target).endswith('.dll') else EXE_TYPE)
+    type = EXE_TYPE if str(target).endswith('.exe') else DLL_TYPE
     manifest = '-manifest ${TARGET}.manifest'
-    output = '-outputresource:$TARGET;' + type
+    output = '-outputresource:$TARGET;' + str(type)
     
     env.AddPostAction(target, 'mt -nologo %s %s' % (manifest, output))
     env.Clean(target, '%s.manifest' % target)
@@ -36,7 +36,7 @@ env = Environment(
 )
 
 tools = Tools(env)
-name = 'npMessaging'
+name = 'npExample'
 files = Glob('*.cpp')
 
 if tools == 'MSVC':
