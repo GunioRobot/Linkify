@@ -25,8 +25,12 @@ VS_VERSION_INFO VERSIONINFO
     END
     BLOCK "VarFileInfo"
     BEGIN
-      // #include <WinNT.h>
-      // MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US)
+      // First value:
+      //   MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US)
+      //
+      // Second value:
+      //   WinLatin1 character encoding (code page number)
+      //
       VALUE "Translation", 0x409, 1252
     END
   END
