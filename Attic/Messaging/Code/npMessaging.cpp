@@ -151,7 +151,7 @@ NPError OSCALL NP_Initialize(
     if (browser == NULL) {
         return NPERR_INVALID_FUNCTABLE_ERROR;
     }
-    if (((browser->version >> 8) & 0xFF) > NP_VERSION_MAJOR) {
+    if ((browser->version >> 8) > NP_VERSION_MAJOR) {
         return NPERR_INCOMPATIBLE_VERSION_ERROR;
     }
     
