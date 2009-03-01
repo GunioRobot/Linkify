@@ -33,7 +33,7 @@ if tools == 'GNU':
     env.Append(CCFLAGS = ['-ansi', '-pedantic', '-Wall'])
 elif tools == 'MSVC':
     files += env.RES(name + '.rc')
-    env.Append(CCFLAGS = ['/Gm', '/EHsc', '/MDd', '/W3', '/Zi', '/Gd'])
+    env.Append(CCFLAGS = ['/EHsc', '/MDd', '/Gd'])
 
 lib = env.SharedLibrary(name, files)[0]
 

@@ -1,7 +1,5 @@
-LIBRARY   npMessaging.dll
-
 EXPORTS
-	NP_GetEntryPoints     @1
-	NP_Initialize         @2
-	NP_Shutdown           @3
-	NP_GetMIMEDescription @4
+  NP_GetEntryPoints
+  NP_Initialize
+  NP_Shutdown
+  NP_GetMIMEDescription
