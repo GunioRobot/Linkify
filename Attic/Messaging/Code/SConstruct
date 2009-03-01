@@ -43,7 +43,7 @@ if tools == 'MSVC':
     files += env.RES(name + '.rc')
     env['WINDOWS_INSERT_DEF'] = True
     env.Append(CCFLAGS = ['/EHsc', '/MD'])
-    env.Append(CPPDEFINES = ['_WINDOWS', '_X86_', 'WIN32', 'XP_WIN'])
+    env.Append(CPPDEFINES = ['_WIN32', '_WINDOWS', '_X86_', 'XP_WIN'])
 
 lib = env.SharedLibrary(name, files)[0]
 
