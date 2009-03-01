@@ -130,6 +130,10 @@ static NPError setWindow(NPP instance, NPWindow* window) {
 
 extern "C"
 NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* plugin) {
+    if (plugin == NULL) {
+        return NPERR_INVALID_FUNCTABLE_ERROR;
+    }
+    
     plugin->version = (NP_VERSION_MAJOR << 8) | NP_VERSION_MINOR;
     plugin->newp = create;
     plugin->destroy = destroy;
