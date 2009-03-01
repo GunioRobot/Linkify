@@ -1,4 +1,4 @@
-from os import environ, path, pathsep
+from os import environ, path
 
 
 def EmbedManifest(env, target):
@@ -26,24 +26,24 @@ def Tools(env):
                 return name
 
 
-np_api_sdk = path.join(environ['NP_API_SDK'], 'include')
-libpurple_include_paths = environ['LIBPURPLE_INCLUDE_PATHS'].split(pathsep)
+np_api_sdk = environ['NP_API_SDK']
 
 env = Environment(
-    CPPPATH = [np_api_sdk] + libpurple_include_paths,
-    #LIBS = ['purple'],
+    CPPDEFINES = ['MOZILLA_STRICT_API', 'XPCOM_GLUE'],
+    CPPPATH = [path.join(np_api_sdk, 'include')],
+    LIBPATH = [path.join(np_api_sdk, 'lib')],
+    LIBS = ['xpcomglue'],
 )
 
 tools = Tools(env)
 name = 'npMessaging'
 files = Glob('*.cpp')
 
-if tools == 'GNU':
-    env.Append(CCFLAGS = ['-ansi', '-pedantic', '-Wall'])
-elif tools == 'MSVC':
+if tools == 'MSVC':
     files += env.RES(name + '.rc')
     env['WINDOWS_INSERT_DEF'] = True
-    env.Append(CCFLAGS = ['/EHsc', '/MD'], CPPDEFINES = ['_WINDOWS', '_X86_'])
+    env.Append(CCFLAGS = ['/EHsc', '/MD'])
+    env.Append(CPPDEFINES = ['_WINDOWS', '_X86_', 'WIN32', 'XP_WIN', 'XP_WIN32'])
 
 lib = env.SharedLibrary(name, files)[0]
 

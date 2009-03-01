@@ -1,34 +1,33 @@
-//#include <fstream>
+#include <cstring>
 #include <npapi.h>
 #include <npupp.h>
 #include <npruntime.h>
-//#include <purple.h>
 #include <string>
+#include <xpcom-config.h>
 #include "npMessaging.h"
 
 
 static NPObject* _pluginObj = NULL;
 static NPNetscapeFuncs* _browser = NULL;
-//static std::ofstream _log("npMessaging.log");
 
 
 static bool hasMethod(NPObject* obj, NPIdentifier name) {
-    //_log << "hasMethod" << std::endl;
     return true;
 }
 
 
 static bool invokeDefault(NPObject* obj, const NPVariant* argv, uint32_t argc, NPVariant* result) {
-    //_log << "invokeDefault" << std::endl;
-
-    result->type = NPVariantType_Int32;
-    result->value.intValue = 1024;
+    const char* message = "Hello world!";
+    char* messageCopy = (char*) NPN_MemAlloc(sizeof(char) * (strlen(message) + 1));
+    
+    strcpy(messageCopy, message);
+    STRINGZ_TO_NPVARIANT(messageCopy, *result);
+    
     return true;
 }
 
 
 static bool invoke(NPObject* obj, NPIdentifier name, const NPVariant* argv, uint32_t argc, NPVariant* result) {
-    //_log << "invoke" << std::endl;
     std::string cname = _browser->utf8fromidentifier(name);
     
     if (cname == "foo") {
@@ -42,25 +41,21 @@ static bool invoke(NPObject* obj, NPIdentifier name, const NPVariant* argv, uint
 
 
 static bool hasProperty(NPObject* obj, NPIdentifier name) {
-    //_log << "hasProperty" << std::endl;
     return false;
 }
 
 
 static bool getProperty(NPObject* obj, NPIdentifier name, NPVariant* result) {
-    //_log << "getProperty" << std::endl;
     return false;
 }
 
 
 static bool setProperty(NPObject* obj, NPIdentifier name, const NPVariant* value) {
-    //_log << "setProperty" << std::endl;
     return false;
 }
 
 
 static bool removeProperty(NPObject* obj, NPIdentifier name) {
-    //_log << "removeProperty" << std::endl;
     return false;
 }
 
@@ -81,14 +76,11 @@ static NPClass _pluginClass = {
 
 
 static NPError create(NPMIMEType type, NPP instance, uint16 mode, int16 argc, char* argn[], char* argv[], NPSavedData* data) {
-    //_log << "create" << std::endl;
     return NPERR_NO_ERROR;
 }
 
 
 static NPError destroy(NPP instance, NPSavedData** data) {
-    //_log << "destroy" << std::endl;
-    
     if (_pluginObj != NULL) {
         _browser->releaseobject(_pluginObj);
         _pluginObj = NULL;
@@ -99,8 +91,6 @@ static NPError destroy(NPP instance, NPSavedData** data) {
 
 
 static NPError getValue(NPP instance, NPPVariable what, void* value) {
-    //_log << "getValue" << std::endl;
-    
     switch (what) {
     case NPPVpluginNameString:
         *(char**) value = PLUGIN_NAME;
@@ -127,20 +117,16 @@ static NPError getValue(NPP instance, NPPVariable what, void* value) {
 
 
 static NPError handleEvent(NPP instance, void* event) {
-    //_log << "handleEvent" << std::endl;
     return NPERR_NO_ERROR;
 }
 
 
 static NPError setWindow(NPP instance, NPWindow* window) {
-    //_log << "setWindow" << std::endl;
     return NPERR_NO_ERROR;
 }
 
 
 extern "C" NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* plugin) {
-    //_log << "NP_GetEntryPoints" << std::endl;
-    
     plugin->version = (NP_VERSION_MAJOR << 8) | NP_VERSION_MINOR;
     plugin->newp = create;
     plugin->destroy = destroy;
@@ -153,8 +139,6 @@ extern "C" NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* plugin) {
 
 
 extern "C" NPError OSCALL NP_Initialize(NPNetscapeFuncs* browser) {
-    //_log << "NP_Initialize" << std::endl;
-
     if (browser == NULL) {
         return NPERR_INVALID_FUNCTABLE_ERROR;
     }
@@ -168,13 +152,11 @@ extern "C" NPError OSCALL NP_Initialize(NPNetscapeFuncs* browser) {
 
 
 extern "C" NPError OSCALL NP_Shutdown() {
-    //_log << "NP_Shutdown" << std::endl;
     _browser = NULL;
     return NPERR_NO_ERROR;
 }
 
 
 extern "C" char* NP_GetMIMEDescription() {
-    //_log << "NP_GetMIMEDescription" << std::endl;
     return PLUGIN_MIME_TYPE "::";
 }
