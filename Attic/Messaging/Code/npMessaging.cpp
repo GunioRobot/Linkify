@@ -17,11 +17,13 @@ static bool hasMethod(NPObject* obj, NPIdentifier name) {
 
 
 static bool invokeDefault(NPObject* obj, const NPVariant* argv, uint32_t argc, NPVariant* result) {
-    const char* message = "Hello world!";
+    /*const char* message = "Hello world!";
     char* messageCopy = (char*) NPN_MemAlloc(sizeof(char) * (strlen(message) + 1));
     
     strcpy(messageCopy, message);
-    STRINGZ_TO_NPVARIANT(messageCopy, *result);
+    STRINGZ_TO_NPVARIANT(messageCopy, *result);*/
+    
+    INT32_TO_NPVARIANT(123, *result);
     
     return true;
 }
@@ -30,7 +32,7 @@ static bool invokeDefault(NPObject* obj, const NPVariant* argv, uint32_t argc, N
 static bool invoke(NPObject* obj, NPIdentifier name, const NPVariant* argv, uint32_t argc, NPVariant* result) {
     std::string cname = _browser->utf8fromidentifier(name);
     
-    if (cname == "foo") {
+    if (cname == "test") {
         return invokeDefault(obj, argv, argc, result);
     }
     else {
@@ -126,7 +128,8 @@ static NPError setWindow(NPP instance, NPWindow* window) {
 }
 
 
-extern "C" NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* plugin) {
+extern "C"
+NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* plugin) {
     plugin->version = (NP_VERSION_MAJOR << 8) | NP_VERSION_MINOR;
     plugin->newp = create;
     plugin->destroy = destroy;
@@ -138,7 +141,13 @@ extern "C" NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* plugin) {
 }
 
 
-extern "C" NPError OSCALL NP_Initialize(NPNetscapeFuncs* browser) {
+extern "C"
+NPError OSCALL NP_Initialize(
+    NPNetscapeFuncs* browser
+#ifndef _WINDOWS
+    , NPPluginFuncs* plugin
+#endif
+) {
     if (browser == NULL) {
         return NPERR_INVALID_FUNCTABLE_ERROR;
     }
@@ -147,16 +156,29 @@ extern "C" NPError OSCALL NP_Initialize(NPNetscapeFuncs* browser) {
     }
     
     _browser = browser;
+    
+#ifndef _WINDOWS
+    NP_GetEntryPoints(plugin);
+#endif
+    
     return NPERR_NO_ERROR;
 }
 
 
-extern "C" NPError OSCALL NP_Shutdown() {
+extern "C"
+NPError OSCALL NP_Shutdown() {
     _browser = NULL;
     return NPERR_NO_ERROR;
 }
 
 
-extern "C" char* NP_GetMIMEDescription() {
+extern "C"
+char* NP_GetMIMEDescription() {
     return PLUGIN_MIME_TYPE "::";
+}
+
+
+extern "C"
+NPError OSCALL NP_GetValue(void* instance, NPPVariable what, void* value) {
+    return getValue((NPP) instance, what, value);
 }
