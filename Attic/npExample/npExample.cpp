@@ -135,8 +135,7 @@ NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* plugin) {
 
 
 extern "C"
-NPError OSCALL NP_Initialize(
-    NPNetscapeFuncs* browser
+NPError OSCALL NP_Initialize(NPNetscapeFuncs* browser
 #ifndef _WINDOWS
     , NPPluginFuncs* plugin
 #endif
