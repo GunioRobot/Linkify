@@ -1,12 +1,12 @@
-from os import environ, path
+import os
 
 
 def EmbedManifest(env, target):
     (EXE_TYPE, DLL_TYPE) = (1, 2)
     
-    type = EXE_TYPE if str(target).endswith('.exe') else DLL_TYPE
+    file_type = EXE_TYPE if str(target).endswith('.exe') else DLL_TYPE
     manifest = '-manifest ${TARGET}.manifest'
-    output = '-outputresource:$TARGET;' + str(type)
+    output = '-outputresource:$TARGET;' + str(file_type)
     
     env.AddPostAction(target, 'mt -nologo %s %s' % (manifest, output))
     env.Clean(target, '%s.manifest' % target)
@@ -26,24 +26,21 @@ def Tools(env):
                 return name
 
 
-np_api_sdk = environ['NP_API_SDK']
-
 env = Environment(
-    CPPDEFINES = ['MOZILLA_STRICT_API', 'XPCOM_GLUE'],
-    CPPPATH = [path.join(np_api_sdk, 'include')],
-    LIBPATH = [path.join(np_api_sdk, 'lib')],
-    LIBS = ['xpcomglue'],
+    CPPDEFINES = ['MOZILLA_STRICT_API'],
+    CPPPATH = os.environ['NP_API_SDK_INCLUDE_PATH'].split(os.pathsep),
 )
 
 tools = Tools(env)
 name = 'npExample'
 files = Glob('*.cpp')
 
-if tools == 'MSVC':
+if tools == 'GNU':
+    env.Append(CCFLAGS = ['-ansi', '-Wall'])
+elif tools == 'MSVC':
     files += env.RES(name + '.rc')
     env['WINDOWS_INSERT_DEF'] = True
-    env.Append(CCFLAGS = ['/EHsc', '/MD'])
-    env.Append(CPPDEFINES = ['_WIN32', '_WINDOWS', '_X86_', 'XP_WIN'])
+    env.Append(CPPDEFINES = ['_WINDOWS', '_X86_'], CCFLAGS = ['/EHsc', '/MD'])
 
 lib = env.SharedLibrary(name, files)[0]
 

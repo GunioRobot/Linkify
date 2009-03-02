@@ -15,13 +15,17 @@ static bool hasMethod(NPObject* obj, NPIdentifier name) {
 }
 
 
-static bool invokeDefault(NPObject* obj, const NPVariant* argv, uint32_t argc, NPVariant* result) {
+static bool invokeDefault(NPObject* obj, const NPVariant* argv, uint32_t argc,
+                          NPVariant* result)
+{
     INT32_TO_NPVARIANT(12345, *result);
     return true;
 }
 
 
-static bool invoke(NPObject* obj, NPIdentifier name, const NPVariant* argv, uint32_t argc, NPVariant* result) {
+static bool invoke(NPObject* obj, NPIdentifier name, const NPVariant* argv,
+                   uint32_t argc, NPVariant* result)
+{
     std::string cname = _browser->utf8fromidentifier(name);
     
     if (cname == "test") {
@@ -44,7 +48,9 @@ static bool getProperty(NPObject* obj, NPIdentifier name, NPVariant* result) {
 }
 
 
-static bool setProperty(NPObject* obj, NPIdentifier name, const NPVariant* value) {
+static bool setProperty(NPObject* obj, NPIdentifier name,
+                        const NPVariant* value)
+{
     return false;
 }
 
@@ -69,7 +75,9 @@ static NPClass _pluginClass = {
 };
 
 
-static NPError create(NPMIMEType type, NPP instance, uint16 mode, int16 argc, char* argn[], char* argv[], NPSavedData* data) {
+static NPError create(NPMIMEType type, NPP instance, uint16 mode, int16 argc,
+                      char* argn[], char* argv[], NPSavedData* data)
+{
     return NPERR_NO_ERROR;
 }
 
@@ -85,19 +93,23 @@ static NPError destroy(NPP instance, NPSavedData** data) {
 
 
 static NPError getValue(NPP instance, NPPVariable what, void* value) {
+    if (value == NULL) {
+        return NPERR_INVALID_PARAM;
+    }
+    
     switch (what) {
     case NPPVpluginNameString:
-        *(char**) value = PLUGIN_NAME;
+        *reinterpret_cast<const char**>(value) = PLUGIN_NAME;
         break;
     case NPPVpluginDescriptionString:
-        *(char**) value = PLUGIN_DESCRIPTION;
+        *reinterpret_cast<const char**>(value) = PLUGIN_DESCRIPTION;
         break;
     case NPPVpluginScriptableNPObject:
         if (_pluginObj == NULL) {
             _pluginObj = _browser->createobject(instance, &_pluginClass);
         }
         _browser->retainobject(_pluginObj);
-        *(NPObject**) value = _pluginObj;
+        *reinterpret_cast<NPObject**>(value) = _pluginObj;
         break;
     default:
         return NPERR_GENERIC_ERROR;
@@ -166,11 +178,11 @@ NPError OSCALL NP_Shutdown() {
 
 extern "C"
 char* NP_GetMIMEDescription() {
-    return PLUGIN_MIME_TYPE "::";
+    return const_cast<char*>(PLUGIN_MIME_TYPE "::");
 }
 
 
 extern "C"
 NPError OSCALL NP_GetValue(void* instance, NPPVariable what, void* value) {
-    return getValue((NPP) instance, what, value);
+    return getValue(reinterpret_cast<NPP>(instance), what, value);
 }
