@@ -1,0 +1,13 @@
+import os, sys
+
+
+java_path = os.path.join(os.environ['JAVA_HOME'], 'bin')
+javac = '"%s"' % os.path.join(java_path, 'javac')
+jar = '"%s"' % os.path.join(java_path, 'jar')
+
+name = os.path.basename(os.path.abspath(''))
+env = Environment(JAR = jar, JAVAC = javac)
+(binaries, code) = ('Binaries', 'Code')
+
+env.Java(binaries, code)
+env.Jar('%s.jar' % name, binaries)
