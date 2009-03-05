@@ -23,12 +23,11 @@ import com.comoj.marcio.joi.value.java.lang.ObjectValue;
  * Java object inspector.
  */
 public class Inspector {
-    private static final Map<Class<?>, Class<?>> _WRAPPER_TYPES;
+    private static final Map<Class<?>, Class<?>> _WRAPPER_TYPES =
+        new HashMap<Class<?>, Class<?>>();
     
     
     static {
-        _WRAPPER_TYPES = new HashMap<Class<?>, Class<?>>();
-        
         _WRAPPER_TYPES.put(boolean.class, Boolean.class);
         _WRAPPER_TYPES.put(byte.class, Byte.class);
         _WRAPPER_TYPES.put(char.class, Character.class);
