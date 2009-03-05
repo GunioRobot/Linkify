@@ -1,0 +1,21 @@
+<project name="Java Object Inspector" basedir="." default="build">
+  <property name="binaries_dir" location="Binaries"/>
+  <property name="code_dir" location="Code"/>
+  <property name="jar_file_name" value="${ant.project.name}.jar"/>
+  
+  <path id="classpath">
+    <pathelement path="${binaries_dir}"/>
+  </path>
+  
+  <target name="clean">
+    <delete dir="${binaries_dir}"/>
+    <delete file="${jar_file_name}"/>
+  </target>
+  
+  <target name="build">
+    <tstamp/>
+    <mkdir dir="${binaries_dir}"/>
+    <javac srcdir="${code_dir}" destdir="${binaries_dir}" deprecation="on"/>
+    <jar destfile="${jar_file_name}" basedir="${binaries_dir}"/>
+  </target>
+</project>
