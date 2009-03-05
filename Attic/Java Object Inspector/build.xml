@@ -12,6 +12,14 @@
     <delete file="${jar_file_name}"/>
   </target>
   
+  <target name="count-lines">
+    <resourcecount>
+      <tokens>
+        <fileset dir="${code_dir}"/>
+      </tokens>
+    </resourcecount>
+  </target>
+  
   <target name="build">
     <tstamp/>
     <mkdir dir="${binaries_dir}"/>

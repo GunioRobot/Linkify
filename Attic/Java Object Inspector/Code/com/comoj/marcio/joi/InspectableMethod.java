@@ -14,7 +14,8 @@ public class InspectableMethod extends InspectableFunction {
     
 
     public String describe() {
-        return String.format("%s : %s", super.describe(),
+        return String.format("%s : %s",
+            super.describe(),
             Inspector.getClassNameOf(getValue().getReturnType()));
     }
     
