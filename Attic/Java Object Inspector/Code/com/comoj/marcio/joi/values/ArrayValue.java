@@ -1,4 +1,4 @@
-package com.comoj.marcio.joi.value;
+package com.comoj.marcio.joi.values;
 
 
 import java.lang.reflect.Array;
@@ -14,8 +14,8 @@ import com.comoj.marcio.joi.Inspector;
 import com.comoj.marcio.joi.exceptions.InvalidSyntaxException;
 import com.comoj.marcio.joi.exceptions.NullInspectionException;
 import com.comoj.marcio.joi.exceptions.UnsupportedTypeException;
-import com.comoj.marcio.joi.value.java.lang.ObjectValue;
-import com.comoj.marcio.joi.value.java.lang.StringValue;
+import com.comoj.marcio.joi.values.java.lang.ObjectValue;
+import com.comoj.marcio.joi.values.java.lang.StringValue;
 
 
 /**

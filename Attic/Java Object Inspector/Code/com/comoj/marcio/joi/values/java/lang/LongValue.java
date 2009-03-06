@@ -1,25 +1,25 @@
-package com.comoj.marcio.joi.value.java.lang;
+package com.comoj.marcio.joi.values.java.lang;
 
 
 import com.comoj.marcio.joi.exceptions.UnsupportedTypeException;
 
 
 /**
- * A float that can be inspected.
+ * A long that can be inspected.
  */
-public class FloatValue extends NumberValue {
-    public FloatValue(Float f) {
-        super(f);
+public class LongValue extends NumberValue {
+    public LongValue(Long l) {
+        super(l);
     }
     
 
-    public Float getValue() {
-        return (Float) super.getValue();
+    public Long getValue() {
+        return (Long) super.getValue();
     }
     
 
     public void setValue(Object newValue) {
-        if ((newValue == null) || (newValue instanceof Float)) {
+        if ((newValue == null) || (newValue instanceof Long)) {
             super.setValue(newValue);
         }
         else {
@@ -30,7 +30,7 @@ public class FloatValue extends NumberValue {
 
     public void setValueFromInput(String input) {
         try {
-            setValue(Float.parseFloat(input));
+            setValue(Long.parseLong(input));
         }
         catch (NumberFormatException exception) {
             super.setValueFromInput(input);

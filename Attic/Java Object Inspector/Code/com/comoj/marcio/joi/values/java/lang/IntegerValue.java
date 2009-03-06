@@ -1,25 +1,25 @@
-package com.comoj.marcio.joi.value.java.lang;
+package com.comoj.marcio.joi.values.java.lang;
 
 
 import com.comoj.marcio.joi.exceptions.UnsupportedTypeException;
 
 
 /**
- * A byte that can be inspected.
+ * An integer that can be inspected.
  */
-public class ByteValue extends NumberValue {
-    public ByteValue(Byte b) {
-        super(b);
+public class IntegerValue extends NumberValue {
+    public IntegerValue(Integer i) {
+        super(i);
     }
     
 
-    public Byte getValue() {
-        return (Byte) super.getValue();
+    public Integer getValue() {
+        return (Integer) super.getValue();
     }
     
 
     public void setValue(Object newValue) {
-        if ((newValue == null) || (newValue instanceof Byte)) {
+        if ((newValue == null) || (newValue instanceof Integer)) {
             super.setValue(newValue);
         }
         else {
@@ -30,7 +30,7 @@ public class ByteValue extends NumberValue {
 
     public void setValueFromInput(String input) {
         try {
-            setValue(Byte.parseByte(input));
+            setValue(Integer.parseInt(input));
         }
         catch (NumberFormatException exception) {
             super.setValueFromInput(input);

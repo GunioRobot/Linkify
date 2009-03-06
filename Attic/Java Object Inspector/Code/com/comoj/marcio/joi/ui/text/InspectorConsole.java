@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.comoj.marcio.joi.Inspectable;
-import com.comoj.marcio.joi.value.java.lang.ObjectValue;
+import com.comoj.marcio.joi.values.java.lang.ObjectValue;
 
 
 /**

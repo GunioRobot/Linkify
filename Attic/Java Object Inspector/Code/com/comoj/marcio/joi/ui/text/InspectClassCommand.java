@@ -2,7 +2,7 @@ package com.comoj.marcio.joi.ui.text;
 
 
 import com.comoj.marcio.joi.exceptions.WrongNumberOfArgumentsException;
-import com.comoj.marcio.joi.value.java.lang.ClassValue;
+import com.comoj.marcio.joi.values.java.lang.ClassValue;
 
 
 /**

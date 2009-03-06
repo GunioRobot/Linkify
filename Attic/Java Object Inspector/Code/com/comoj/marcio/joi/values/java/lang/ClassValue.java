@@ -1,4 +1,4 @@
-package com.comoj.marcio.joi.value.java.lang;
+package com.comoj.marcio.joi.values.java.lang;
 
 
 import java.lang.reflect.Modifier;

@@ -15,8 +15,8 @@ import java.util.Set;
 
 import com.comoj.marcio.joi.exceptions.PrimitiveInspectionException;
 import com.comoj.marcio.joi.ui.text.InspectorConsole;
-import com.comoj.marcio.joi.value.ArrayValue;
-import com.comoj.marcio.joi.value.java.lang.ObjectValue;
+import com.comoj.marcio.joi.values.ArrayValue;
+import com.comoj.marcio.joi.values.java.lang.ObjectValue;
 
 
 /**

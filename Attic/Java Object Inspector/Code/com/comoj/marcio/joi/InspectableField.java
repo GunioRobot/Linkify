@@ -10,7 +10,7 @@ import com.comoj.marcio.joi.exceptions.InstanceFieldException;
 import com.comoj.marcio.joi.exceptions.NullInspectionException;
 import com.comoj.marcio.joi.exceptions.NullValueException;
 import com.comoj.marcio.joi.exceptions.PrimitiveInspectionException;
-import com.comoj.marcio.joi.value.java.lang.ObjectValue;
+import com.comoj.marcio.joi.values.java.lang.ObjectValue;
 
 
 /**

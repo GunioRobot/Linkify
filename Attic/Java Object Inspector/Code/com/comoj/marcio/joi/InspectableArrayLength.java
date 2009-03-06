@@ -4,7 +4,7 @@ package com.comoj.marcio.joi;
 import java.util.List;
 
 import com.comoj.marcio.joi.exceptions.PrimitiveInspectionException;
-import com.comoj.marcio.joi.value.ArrayValue;
+import com.comoj.marcio.joi.values.ArrayValue;
 
 
 /**

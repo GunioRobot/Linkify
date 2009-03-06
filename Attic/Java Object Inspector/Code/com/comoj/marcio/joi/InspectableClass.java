@@ -3,7 +3,7 @@ package com.comoj.marcio.joi;
 
 import java.util.List;
 
-import com.comoj.marcio.joi.value.java.lang.ClassValue;
+import com.comoj.marcio.joi.values.java.lang.ClassValue;
 
 
 /**
