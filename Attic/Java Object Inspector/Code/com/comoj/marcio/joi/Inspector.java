@@ -26,7 +26,7 @@ public class Inspector {
     private static final Map<Class<?>, Class<?>> _WRAPPER_TYPES =
         new HashMap<Class<?>, Class<?>>();
     
-    
+
     static {
         _WRAPPER_TYPES.put(boolean.class, Boolean.class);
         _WRAPPER_TYPES.put(byte.class, Byte.class);
@@ -60,17 +60,16 @@ public class Inspector {
         
         try {
             Class<?> inspectable = Class.forName(className);
-            Class<?>[] params = new Class<?>[] {clazz};
-            Constructor<?> ctor = inspectable.getConstructor(params);
-            Object instance = ctor.newInstance(new Object[] {value});
+            Class<?>[] parameters = new Class<?>[] {clazz};
+            Constructor<?> constructor = inspectable.getConstructor(parameters);
             
-            return (ObjectValue) instance;
+            return (ObjectValue) constructor.newInstance(new Object[] {value});
         }
         catch (ClassNotFoundException exception) {
-            // TODO: Should we recurse here to find a suitable super class?
+            // Do nothing.
         }
         catch (NoSuchMethodException exception) {
-            // Do nothing.
+            // Ditto.
         }
         catch (InstantiationException exception) {
             // Ditto.
