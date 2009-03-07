@@ -8,6 +8,9 @@ from types import *
 import multidispatch as _PyMultimethods
 
 
+BaseStringType = basestring
+
+
 def Method(*signature):
     """
     Decorates a function as a multi-method, to support multiple dispatch.
@@ -26,16 +29,15 @@ def identity(value):
     return value
 
 
+@Method(BaseStringType)
 @Method(DictionaryType)
 @Method(ListType)
-@Method(StringType)
-@Method(UnicodeType)
 @Method(TupleType)
 def is_empty(container):
     """
     Checks if a container is empty.
     
-    @type container: DictionaryType, ListType, StringType, UnicodeType, TupleType
+    @type container: BaseStringType, DictionaryType, ListType, TupleType
     @param container: container for which to check if it contains no elements
     @rtype: BooleanType
     @return: True if the container has no elements or False otherwise
@@ -44,17 +46,16 @@ def is_empty(container):
     return len(container) == 0
 
 
-@Method(ListType, StringType)
-@Method(ListType, UnicodeType)
+@Method(ListType, BaseStringType)
 def join(sequence, separator = ''):
     """
     Concatenates a sequence.
     
     @type sequence: ListType
     @param sequence: sequence with the values to concatenate
-    @type separator: StringType, UnicodeType
+    @type separator: BaseStringType
     @param separator: string to use as the separator
-    @rtype: StringType
+    @rtype: BaseStringType
     @return: string formed by joining all sequence elements
     """
     
@@ -80,19 +81,16 @@ def flatten(sequence):
         return [sequence[0]] + flatten(sequence[1:])
 
 
-@Method(StringType, StringType)
-@Method(StringType, UnicodeType)
-@Method(UnicodeType, StringType)
-@Method(UnicodeType, UnicodeType)
+@Method(BaseStringType, BaseStringType)
 def split(string, separator = ''):
     """
     Splits a string into tokens.
     
     A token is a non-empty string not occurring in the separator.
     
-    @type string: StringType, UnicodeType
+    @type string: BaseStringType
     @param string: string to split
-    @type separator: StringType, UnicodeType
+    @type separator: BaseStringType
     @param separator: string to use as the separator
     @rtype: ListType
     @return: list of all tokens
