@@ -14,8 +14,5 @@
          " to ease development in the C programming language.")
     
     (:dt "Eon")
-    (:dd "Mini «"
-         (:a (@ (:href "http://eon.origo.ethz.ch/")) "kernel")
-         "» to "
-         (:a (@ (:href "Images/Bochs.png")) "learn more")
-         " about the design and implementation of Operating Systems.")))
+    (:dd (:a (@ (:href "http://eon.origo.ethz.ch/")) "Kernel")
+         " experiment to learn more about the design and implementation of Operating Systems.")))
