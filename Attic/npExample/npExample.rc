@@ -29,7 +29,7 @@ VS_VERSION_INFO VERSIONINFO
       //   MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US)
       //
       // Second value:
-      //   WinLatin1 character encoding (code page number)
+      //   Code page number of the WinLatin1 character encoding.
       //
       VALUE "Translation", 0x409, 1252
     END
