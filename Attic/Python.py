@@ -3,6 +3,7 @@
 
 # Standard library:
 from types import *
+import re
 
 # External libraries:
 import multidispatch as _PyMultimethods
@@ -19,6 +20,25 @@ def Method(*signature):
     """
     
     return _PyMultimethods.multimethod(*signature)
+
+
+@Method(ListType)
+def flatten(sequence):
+    """
+    Removes all nested sequences.
+    
+    @type sequence: ListType
+    @param sequence: sequence for which to remove sub-sequences
+    @rtype: ListType
+    @return: one-dimensional version of the given sequence
+    """
+    
+    if is_empty(sequence):
+        return []
+    elif isinstance(sequence[0], ListType):
+        return flatten(sequence[0]) + flatten(sequence[1:])
+    else:
+        return [sequence[0]] + flatten(sequence[1:])
 
 
 def identity(value):
@@ -62,23 +82,38 @@ def join(sequence, separator = ''):
     return separator.join(map(StringType, sequence))
 
 
-@Method(ListType)
-def flatten(sequence):
+@Method(BaseStringType, BaseStringType)
+def matches(regex, string):
     """
-    Removes all nested sequences.
+    Checks if a string matches a regular expression.
     
-    @type sequence: ListType
-    @param sequence: sequence for which to remove sub-sequences
-    @rtype: ListType
-    @return: one-dimensional version of the given sequence
+    @type regex: BaseStringType
+    @param regex: regular expression to use
+    @type string: BaseStringType
+    @param string: string to match against
+    @rtype: BooleanType
+    @return: True if the string matched successfully or False otherwise
     """
     
-    if is_empty(sequence):
-        return []
-    elif isinstance(sequence[0], ListType):
-        return flatten(sequence[0]) + flatten(sequence[1:])
-    else:
-        return [sequence[0]] + flatten(sequence[1:])
+    return re.search(re.compile(regex), string) is not None
+
+
+@Method(BaseStringType, BaseStringType, BaseStringType)
+def replace(regex, replacement, string):
+    """
+    Replaces all occurrences of a regular expression with a string.
+    
+    @type regex: BaseStringType
+    @param regex: regular expression to use
+    @type replacement: BaseStringType
+    @param replacement: string to use as the replacement
+    @type string: BaseStringType
+    @param string: string in which to replace occurrences
+    @rtype: BaseStringType
+    @return: new string with all occurrences replaced
+    """
+    
+    return re.sub(re.compile(regex), replacement, string)
 
 
 @Method(BaseStringType, BaseStringType)
