@@ -14,12 +14,6 @@ AbstractMethod = abc.abstractmethod
 
 Boolean = types.BooleanType
 CharSequence = basestring
-
-try:
-    Complex = types.ComplexType
-except NameError:
-    pass
-
 Float = types.FloatType
 Function = types.FunctionType
 Integer = types.IntType
@@ -31,6 +25,11 @@ Set = set
 String = types.StringType
 Tuple = types.TupleType
 Type = types.TypeType
+
+try:
+    Complex = types.ComplexType
+except NameError:
+    pass
 
 try:
     UnicodeString = types.UnicodeType
@@ -143,21 +142,19 @@ def replace(regex, replacement, string):
 
 
 @Method(CharSequence, CharSequence)
-def split(string, separator = ''):
+def split(regex, string):
     """
-    Splits a string into tokens.
+    Splits a string by the occurrences of a regular expression.
     
-    A token is a non-empty string not occurring in the separator.
-    
+    @type regex: CharSequence
+    @param regex: regular expression to use as the separator
     @type string: CharSequence
     @param string: string to split
-    @type separator: CharSequence
-    @param separator: string to use as the separator
     @rtype: List
-    @return: list of all tokens
+    @return: list of all sub strings that didn't match the regular expression
     """
     
-    if is_empty(separator):
+    if is_empty(regex):
         return map(identity, string)
     else:
-        return string.split(separator)
+        return re.split(re.compile(regex), string)
