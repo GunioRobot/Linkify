@@ -2,14 +2,40 @@
 
 
 # Standard library:
-from types import *
-import re
+import abc, re, types
 
 # External libraries:
-import multidispatch as _PyMultimethods
+import multidispatch as PyMultimethods
 
 
-BaseStringType = basestring
+AbstractMetaClass = abc.ABCMeta
+AbstractMethod = abc.abstractmethod
+
+
+Boolean = types.BooleanType
+CharSequence = basestring
+
+try:
+    Complex = types.ComplexType
+except NameError:
+    pass
+
+Float = types.FloatType
+Function = types.FunctionType
+Integer = types.IntType
+List = types.ListType
+Long = types.LongType
+Map = types.DictionaryType
+Object = types.ObjectType
+Set = set
+String = types.StringType
+Tuple = types.TupleType
+Type = types.TypeType
+
+try:
+    UnicodeString = types.UnicodeType
+except NameError:
+    pass
 
 
 def Method(*signature):
@@ -19,23 +45,23 @@ def Method(*signature):
     @param signature: function parameter types
     """
     
-    return _PyMultimethods.multimethod(*signature)
+    return PyMultimethods.multimethod(*signature)
 
 
-@Method(ListType)
+@Method(List)
 def flatten(sequence):
     """
     Removes all nested sequences.
     
-    @type sequence: ListType
+    @type sequence: List
     @param sequence: sequence for which to remove sub-sequences
-    @rtype: ListType
+    @rtype: List
     @return: one-dimensional version of the given sequence
     """
     
     if is_empty(sequence):
         return []
-    elif isinstance(sequence[0], ListType):
+    elif isinstance(sequence[0], List):
         return flatten(sequence[0]) + flatten(sequence[1:])
     else:
         return [sequence[0]] + flatten(sequence[1:])
@@ -49,85 +75,85 @@ def identity(value):
     return value
 
 
-@Method(BaseStringType)
-@Method(DictionaryType)
-@Method(ListType)
-@Method(TupleType)
+@Method(CharSequence)
+@Method(List)
+@Method(Map)
+@Method(Tuple)
 def is_empty(container):
     """
     Checks if a container is empty.
     
-    @type container: BaseStringType, DictionaryType, ListType, TupleType
+    @type container: CharSequence, List, Map, Tuple
     @param container: container for which to check if it contains no elements
-    @rtype: BooleanType
+    @rtype: Boolean
     @return: True if the container has no elements or False otherwise
     """
     
     return len(container) == 0
 
 
-@Method(ListType, BaseStringType)
+@Method(List, CharSequence)
 def join(sequence, separator = ''):
     """
     Concatenates a sequence.
     
-    @type sequence: ListType
+    @type sequence: List
     @param sequence: sequence with the values to concatenate
-    @type separator: BaseStringType
+    @type separator: CharSequence
     @param separator: string to use as the separator
-    @rtype: BaseStringType
+    @rtype: CharSequence
     @return: string formed by joining all sequence elements
     """
     
-    return separator.join(map(StringType, sequence))
+    return separator.join(map(String, sequence))
 
 
-@Method(BaseStringType, BaseStringType)
+@Method(CharSequence, CharSequence)
 def matches(regex, string):
     """
     Checks if a string matches a regular expression.
     
-    @type regex: BaseStringType
+    @type regex: CharSequence
     @param regex: regular expression to use
-    @type string: BaseStringType
+    @type string: CharSequence
     @param string: string to match against
-    @rtype: BooleanType
+    @rtype: Boolean
     @return: True if the string matched successfully or False otherwise
     """
     
     return re.search(re.compile(regex), string) is not None
 
 
-@Method(BaseStringType, BaseStringType, BaseStringType)
+@Method(CharSequence, CharSequence, CharSequence)
 def replace(regex, replacement, string):
     """
     Replaces all occurrences of a regular expression with a string.
     
-    @type regex: BaseStringType
+    @type regex: CharSequence
     @param regex: regular expression to use
-    @type replacement: BaseStringType
+    @type replacement: CharSequence
     @param replacement: string to use as the replacement
-    @type string: BaseStringType
+    @type string: CharSequence
     @param string: string in which to replace occurrences
-    @rtype: BaseStringType
+    @rtype: CharSequence
     @return: new string with all occurrences replaced
     """
     
     return re.sub(re.compile(regex), replacement, string)
 
 
-@Method(BaseStringType, BaseStringType)
+@Method(CharSequence, CharSequence)
 def split(string, separator = ''):
     """
     Splits a string into tokens.
     
     A token is a non-empty string not occurring in the separator.
     
-    @type string: BaseStringType
+    @type string: CharSequence
     @param string: string to split
-    @type separator: BaseStringType
+    @type separator: CharSequence
     @param separator: string to use as the separator
-    @rtype: ListType
+    @rtype: List
     @return: list of all tokens
     """
     
