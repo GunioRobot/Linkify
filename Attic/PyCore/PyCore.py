@@ -5,12 +5,13 @@
 import abc, re, types
 
 # External libraries:
-import multidispatch as PyMultimethods
+import multidispatch    # PyMultimethods.
 
+
+Method = multidispatch.multimethod
 
 AbstractMetaClass = abc.ABCMeta
 AbstractMethod = abc.abstractmethod
-
 
 Boolean = types.BooleanType
 CharSequence = basestring
@@ -35,16 +36,6 @@ try:
     UnicodeString = types.UnicodeType
 except NameError:
     pass
-
-
-def Method(*signature):
-    """
-    Decorates a function as a multi-method, to support multiple dispatch.
-    
-    @param signature: function parameter types
-    """
-    
-    return PyMultimethods.multimethod(*signature)
 
 
 @Method(List)
