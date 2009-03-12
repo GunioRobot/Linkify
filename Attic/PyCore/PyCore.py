@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+# To do:
+# - Enumerations: <http://code.activestate.com/recipes/413486/>
+# - Binary operators (e.g. instanceof): <http://code.activestate.com/recipes/384122/>
+# - Named tuples: <http://code.activestate.com/recipes/500261/>
+
 
 # Standard library:
 import abc, re, types
