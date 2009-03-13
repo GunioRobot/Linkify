@@ -11,20 +11,17 @@ NaN = float('NaN')
 Infinity = float('inf')
 
 Boolean = types.BooleanType
+CharSequence = basestring
 Float = types.FloatType
 Function = types.FunctionType
 Integer = types.IntType
 List = types.ListType
 Map = types.DictionaryType
 Object = types.ObjectType
-Set = type(set())
+Set = set
+String = types.StringType
 Tuple = types.TupleType
 Type = types.TypeType
-
-try:
-    String = types.UnicodeType
-except NameError:
-    String = types.StringType
 
 
 class Path:
@@ -34,10 +31,10 @@ class Path:
         Flexible recursive version of the standard
         U{glob<http://docs.python.org/library/glob.html#glob.glob>} function.
         
-        @type filter: Function, String
+        @type filter: Function, CharSequence
         @param filter: a function that checks whether a path should be included
                or a string describing the Unix-style glob pattern
-        @type root: String
+        @type root: CharSequence
         @param root: directory in which to start searching
         @type levels: Integer
         @param levels: maximum number of nested directories to search
@@ -47,7 +44,7 @@ class Path:
         
         names = []
         
-        if isinstance(filter, String):
+        if isinstance(filter, CharSequence):
             pattern = filter
             filter = lambda name: fnmatch.fnmatch(name, pattern)
         
@@ -69,9 +66,9 @@ class Regex:
         """
         Checks if a string matches a regular expression.
         
-        @type regex: String
+        @type regex: CharSequence
         @param regex: regular expression to use
-        @type string: String
+        @type string: CharSequence
         @param string: string to match against
         @rtype: Boolean
         @return: True if the string matched successfully or False otherwise
@@ -85,13 +82,13 @@ class Regex:
         """
         Replaces all occurrences of a regular expression with a string.
         
-        @type regex: String
+        @type regex: CharSequence
         @param regex: regular expression to use
-        @type replacement: String
+        @type replacement: CharSequence
         @param replacement: string to use as the replacement
-        @type string: String
+        @type string: CharSequence
         @param string: string in which to replace occurrences
-        @rtype: String
+        @rtype: CharSequence
         @return: new string with all occurrences replaced
         """
         
@@ -103,9 +100,9 @@ class Regex:
         """
         Splits a string by the occurrences of a regular expression.
         
-        @type regex: String
+        @type regex: CharSequence
         @param regex: regular expression to use as the separator
-        @type string: String
+        @type string: CharSequence
         @param string: string to split
         @rtype: List
         @return: list of all sub strings that didn't match the regular expression
@@ -147,9 +144,9 @@ class Sequence:
         
         @type sequence: List, Set, Tuple
         @param sequence: sequence with the values to concatenate
-        @type separator: String
+        @type separator: CharSequence
         @param separator: string to use as the separator
-        @rtype: String
+        @rtype: CharSequence
         @return: string formed by joining all sequence elements
         """
         
