@@ -25,7 +25,7 @@ Type = types.TypeType
 
 
 class Path:
-    HOME_PATH = os.path.expanduser('~')
+    HOME = os.path.expanduser('~')
     
     
     @staticmethod
