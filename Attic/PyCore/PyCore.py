@@ -2,21 +2,26 @@
 
 # To do:
 # - Enumerations: <http://code.activestate.com/recipes/413486/>
-# - Binary operators (e.g. instanceof): <http://code.activestate.com/recipes/384122/>
 # - Named tuples: <http://code.activestate.com/recipes/500261/>
+# - Make Infinity and NaN sub classes of Number.
+# - Make Method a sub class of Function. 
 
 
 # Standard library:
-import abc, re, types
+import abc, fnmatch, numbers, os, re, types
 
 # External libraries:
 import multidispatch    # PyMultimethods.
 
 
-Method = multidispatch.multimethod
+method = multidispatch.multimethod
+Method = multidispatch.MultiMethod
 
-AbstractMetaClass = abc.ABCMeta
-AbstractMethod = abc.abstractmethod
+abstract = abc.abstractmethod
+AbstractType = abc.ABCMeta
+
+NaN = float('NaN')
+Infinity = float('inf')
 
 Boolean = types.BooleanType
 CharSequence = basestring
@@ -26,6 +31,7 @@ Integer = types.IntType
 List = types.ListType
 Long = types.LongType
 Map = types.DictionaryType
+Number = numbers.Number
 Object = types.ObjectType
 Set = set
 String = types.StringType
@@ -43,7 +49,7 @@ except NameError:
     pass
 
 
-@Method(List)
+@method(List)
 def flatten(sequence):
     """
     Removes all nested sequences.
@@ -62,6 +68,42 @@ def flatten(sequence):
         return [sequence[0]] + flatten(sequence[1:])
 
 
+@method(Function)
+@method(Method)
+@method(Function, CharSequence)
+@method(Method, CharSequence)
+@method(Function, CharSequence, Float)
+@method(Function, CharSequence, Integer)
+@method(Method, CharSequence, Float)
+@method(Method, CharSequence, Integer)
+def glob(include, root = '.', levels = Infinity):
+    """
+    """
+    
+    names = []
+    
+    if levels > 0:
+        for name in os.listdir(root):
+            path = os.path.join(root, name)
+            
+            if os.path.isdir(path):
+                names.extend(glob(include, path, levels - 1))
+            if include(path):
+                names.append(path)
+    
+    return names
+
+
+@method(CharSequence)
+@method(CharSequence, CharSequence, Float)
+@method(CharSequence, CharSequence, Integer)
+def glob(pattern, root = '.', levels = Infinity):
+    """
+    """
+    
+    return glob(lambda name: fnmatch.fnmatch(name, pattern), root, levels)
+
+
 def identity(value):
     """
     Returns its sole argument.
@@ -70,10 +112,10 @@ def identity(value):
     return value
 
 
-@Method(CharSequence)
-@Method(List)
-@Method(Map)
-@Method(Tuple)
+@method(CharSequence)
+@method(List)
+@method(Map)
+@method(Tuple)
 def is_empty(container):
     """
     Checks if a container is empty.
@@ -87,7 +129,8 @@ def is_empty(container):
     return len(container) == 0
 
 
-@Method(List, CharSequence)
+@method(List)
+@method(List, CharSequence)
 def join(sequence, separator = ''):
     """
     Concatenates a sequence.
@@ -103,7 +146,7 @@ def join(sequence, separator = ''):
     return separator.join(map(String, sequence))
 
 
-@Method(CharSequence, CharSequence)
+@method(CharSequence, CharSequence)
 def matches(regex, string):
     """
     Checks if a string matches a regular expression.
@@ -119,7 +162,7 @@ def matches(regex, string):
     return re.search(re.compile(regex), string) is not None
 
 
-@Method(CharSequence, CharSequence, CharSequence)
+@method(CharSequence, CharSequence, CharSequence)
 def replace(regex, replacement, string):
     """
     Replaces all occurrences of a regular expression with a string.
@@ -137,7 +180,7 @@ def replace(regex, replacement, string):
     return re.sub(re.compile(regex), replacement, string)
 
 
-@Method(CharSequence, CharSequence)
+@method(CharSequence, CharSequence)
 def split(regex, string):
     """
     Splits a string by the occurrences of a regular expression.
