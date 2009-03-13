@@ -25,6 +25,9 @@ Type = types.TypeType
 
 
 class Path:
+    HOME_PATH = os.path.expanduser('~')
+    
+    
     @staticmethod
     def glob(filter, root = os.path.curdir, levels = Infinity):
         """
