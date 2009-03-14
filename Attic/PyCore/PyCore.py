@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-import abc, fnmatch, os, re, types
+import abc, fnmatch, os, types, zipfile
 
 
 abstract = abc.abstractmethod
@@ -26,6 +26,12 @@ Type = types.TypeType
 
 class Path:
     HOME = os.path.expanduser('~')
+    
+    
+    @staticmethod
+    def create(path):
+        if not os.path.exists(path):
+            os.makedirs(path)
     
     
     @staticmethod
@@ -61,60 +67,6 @@ class Path:
                     names.append(path)
         
         return names
-
-
-class Regex:
-    @staticmethod
-    def matches(regex, string):
-        """
-        Checks if a string matches a regular expression.
-        
-        @type regex: CharSequence
-        @param regex: regular expression to use
-        @type string: CharSequence
-        @param string: string to match against
-        @rtype: Boolean
-        @return: True if the string matched successfully or False otherwise
-        """
-        
-        return re.search(re.compile(regex), string) is not None
-    
-    
-    @staticmethod
-    def replace(regex, replacement, string):
-        """
-        Replaces all occurrences of a regular expression with a string.
-        
-        @type regex: CharSequence
-        @param regex: regular expression to use
-        @type replacement: CharSequence
-        @param replacement: string to use as the replacement
-        @type string: CharSequence
-        @param string: string in which to replace occurrences
-        @rtype: CharSequence
-        @return: new string with all occurrences replaced
-        """
-        
-        return re.sub(re.compile(regex), replacement, string)
-    
-    
-    @staticmethod
-    def split(regex, string):
-        """
-        Splits a string by the occurrences of a regular expression.
-        
-        @type regex: CharSequence
-        @param regex: regular expression to use as the separator
-        @type string: CharSequence
-        @param string: string to split
-        @rtype: List
-        @return: list of all sub strings that didn't match the regular expression
-        """
-        
-        if regex == '':
-            return map(lambda x: x, string)
-        else:
-            return re.split(re.compile(regex), string)
 
 
 class Sequence:
@@ -154,3 +106,27 @@ class Sequence:
         """
         
         return separator.join(map(String, sequence))
+
+
+class Zip:
+    @staticmethod
+    def extract_all(file, path = os.path.curdir, members = None, password = None):
+        zip = file
+        
+        if isinstance(file, CharSequence):
+            zip = zipfile.ZipFile(file, 'r')
+        
+        if members is None:
+            members = zip.namelist()
+        
+        # Place directories first to create them before extracting files.
+        members.sort()
+        
+        for name in members:
+            if name.endswith('/'):
+                Path.create(os.path.join(path, name))
+            else:
+                zip.extract(name, path, password)
+        
+        if isinstance(file, CharSequence):
+            zip.close()
