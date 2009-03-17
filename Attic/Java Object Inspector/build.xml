@@ -1,29 +1,29 @@
 <project name="Java Object Inspector" basedir="." default="build">
-  <property name="binaries_dir" location="Binaries"/>
-  <property name="code_dir" location="Code"/>
-  <property name="jar_file_name" value="${ant.project.name}.jar"/>
+  <property name="binaries.path" location="Binaries"/>
+  <property name="code.path" location="Code"/>
+  <property name="jar.file" value="${ant.project.name}.jar"/>
   
   <path id="classpath">
-    <pathelement path="${binaries_dir}"/>
+    <pathelement path="${binaries.path}"/>
   </path>
   
+  <target name="build">
+    <tstamp/>
+    <mkdir dir="${binaries.path}"/>
+    <javac srcdir="${code.path}" destdir="${binaries.path}" deprecation="on"/>
+    <jar destfile="${jar.file}" basedir="${binaries.path}"/>
+  </target>
+  
   <target name="clean">
-    <delete dir="${binaries_dir}"/>
-    <delete file="${jar_file_name}"/>
+    <delete dir="${binaries.path}"/>
+    <delete file="${jar.file}"/>
   </target>
   
   <target name="count-lines">
     <resourcecount>
       <tokens>
-        <fileset dir="${code_dir}"/>
+        <fileset dir="${code.path}"/>
       </tokens>
     </resourcecount>
-  </target>
-  
-  <target name="build">
-    <tstamp/>
-    <mkdir dir="${binaries_dir}"/>
-    <javac srcdir="${code_dir}" destdir="${binaries_dir}" deprecation="on"/>
-    <jar destfile="${jar_file_name}" basedir="${binaries_dir}"/>
   </target>
 </project>
