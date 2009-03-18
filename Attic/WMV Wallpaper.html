@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>WMV Wallpaper</title>
+    <meta name="Author" content="Márcio Moniz Bandim Faustino"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css">
+body {
+    margin: 0;
+}
+    </style>
+    <script type="text/javascript">
+window.onload = function() {
+    Player.height = window.screen.height;
+    Player.width = window.screen.width;
+};
+    </script>
+  </head>
+  <body>
+    <object id="Player" type="video/x-ms-wmv" height="0" width="0">
+      <param name="enableContextMenu" value="false"/>
+      <param name="loop" value="true"/>
+      <param name="showControls" value="false"/>
+      <param name="src" value="C:\Wallpaper.wmv"/>
+    </object>
+  </body>
+</html>
