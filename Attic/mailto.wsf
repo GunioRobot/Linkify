@@ -11,6 +11,10 @@
  * - Parameter: mailto.wsf _"%t"_ _"%c"_ _"%s"_ _"%m"_
  *
  * Finally, copy this script to "%HOMEDRIVE%%HOMEPATH%".
+ *
+ * Alternatively, use this in your "menu.ini":
+ * [Document Popup Menu]
+ * Item, MI_IDM_SEND_URL_EMAIL = Execute program, "thunderbird", "mailto:?body=%u"
  */
 
 var fields = [

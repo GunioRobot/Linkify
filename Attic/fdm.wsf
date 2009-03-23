@@ -1,0 +1,25 @@
+<?XML version="1.0"?>
+<job>
+  <script language="JScript">
+  <![CDATA[
+/**
+ * Automatic silent download using FDM.
+ *
+ * Copy this script to the program folder and use this in your "menu.ini":
+ * [Link Popup Menu]
+ * Item, "Download with FDM" = Execute program, "C:\Program Files\Free Download Manager\fdm.wsf", "%l",, "Save"
+ */
+
+if (WScript.Arguments.length != 1) {
+    WScript.Echo('Error: Wrong number of arguments.');
+    WScript.Quit();
+}
+
+var Shell = new ActiveXObject('WScript.Shell');
+var FileSystem = new ActiveXObject('Scripting.FileSystemObject');
+
+Shell.CurrentDirectory = FileSystem.GetParentFolderName(WScript.ScriptFullName);
+Shell.Run('fdm -fs "' + WScript.Arguments(0) + '"');
+  ]]>
+  </script>
+</job>
