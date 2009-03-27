@@ -32,7 +32,10 @@ sub clean_up {
     # Remove old items.
     shift @{$rss->{items}} while @{$rss->{items}} > 7;
     
-    $rss->save($channel->{rdf});
+    # Don't use the provided "save" method to preserve the UTF-8 encoding.
+    open my $rdf, '>:utf8', $channel->{rdf};
+    print $rdf $rss->as_string;
+    close $rdf;
 }
 
 
