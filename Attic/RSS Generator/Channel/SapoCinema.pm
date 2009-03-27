@@ -40,7 +40,7 @@ sub _parse_guide {
         push @guide, {
             date => join('-', reverse split m/-/, $date),
             title => $title,
-            link => $link,
+            link => "http://cultura.sapo.pt$link",
         }
     }
     
