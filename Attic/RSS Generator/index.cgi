@@ -63,18 +63,15 @@ sub generate_channel {
 
 
 sub load_channel {
-    my ($name) = @ARG;
+    my $name = fileparse(shift @ARG, '.pm');
     my $package = 'Channel';
     my $module = catfile($package, "$name.pm");
     
     if ($name eq '*') {
         return map {load_channel($ARG)} sort glob catfile($package, '*.pm');
     }
-    elsif ($name =~ m/\.pm$/) {
-        $module = $name;
-        $name = fileparse($name, '.pm');
-    }
     
+    die "Unknown channel: $name\n" unless -r $module && -T $module;
     require $module;
     
     my $description = eval "\$${package}::${name}::description";
