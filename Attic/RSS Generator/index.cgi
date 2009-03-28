@@ -74,19 +74,14 @@ sub load_channel {
     die "Unknown channel: $name\n" unless -r $module && -T $module;
     require $module;
     
-    my $description = eval "\$${package}::${name}::description";
-    my $generate = eval "\\&${package}::${name}::generate";
-    my $link = eval "\$${package}::${name}::link";
-    my $title = eval "\$${package}::${name}::title";
-    
     return {
-        description => $description,
-        generate => $generate,
-        link => $link,
+        description => eval "\$${package}::${name}::description",
+        generate => eval "\\&${package}::${name}::generate",
+        link => eval "\$${package}::${name}::link",
         module => $module,
         name => $name,
         rdf => catfile($package, "$name.rdf"),
-        title => $title,
+        title => eval "\$${package}::${name}::title",
     };
 }
 

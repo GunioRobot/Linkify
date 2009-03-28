@@ -11,13 +11,7 @@ use LWP;
 
 our $description = 'Daily TV guide for the RTP2 Portuguese channel.';
 our $link = 'http://www.rtp.pt/tv/rtp2/includes/guia.php';
-our $title = 'RTP2 TV Guide';
-
-
-sub _date {
-    my ($seconds, $minutes, $hours, $day, $month, $year) = gmtime;
-    return sprintf '%d-%02d-%02d', ($year + 1900), ($month + 1), $day;
-}
+our $title = 'RTP2 Guia TV';
 
 
 sub _download_guide {
@@ -37,9 +31,8 @@ sub _download_guide {
 
 sub _link {
     my ($date) = @ARG;
-    $date = join '-', reverse split m/-/, $date;
     
-    # Old: http://rtp2.rtp.pt/epg_output.php?dia=$date
+    $date = join '-', reverse split m/-/, $date;
     return "http://www.rtp.pt/tv/rtp2/includes/epg_output.php?dia=$date";
 }
 
@@ -72,6 +65,12 @@ sub _to_html {
 }
 
 
+sub _today {
+    my ($seconds, $minutes, $hours, $day, $month, $year) = gmtime;
+    return sprintf '%d-%02d-%02d', ($year + 1900), ($month + 1), $day;
+}
+
+
 sub _uncapitalize {
     my ($text) = @ARG;
     
@@ -82,7 +81,7 @@ sub _uncapitalize {
 
 sub generate {
     my ($rss) = @ARG;
-    my $today = _date();
+    my $today = _today();
     my @guide = _parse_guide(_download_guide($today));
     
     $rss->add_item(
