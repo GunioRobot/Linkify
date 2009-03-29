@@ -1,7 +1,5 @@
 <project name="Java Object Inspector" basedir="." default="build">
-  <property name="binaries.path" location="Binaries"/>
-  <property name="code.path" location="Code"/>
-  <property name="jar.file" value="${ant.project.name}.jar"/>
+  <property file="build.properties"/>
   
   <path id="classpath">
     <pathelement path="${binaries.path}"/>
