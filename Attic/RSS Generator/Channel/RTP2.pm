@@ -48,8 +48,8 @@ sub _parse_guide {
     while (@titles > 0) {
         push @guide, {
             hour => shift @hours,
-            title => _uncapitalize(shift @titles),
             link => shift @links,
+            title => _uncapitalize(shift @titles),
         }
     }
     

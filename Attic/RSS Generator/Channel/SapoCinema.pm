@@ -4,6 +4,7 @@ use strict;
 use utf8;
 use warnings;
 
+use Encode;
 use English;
 use LWP;
 
@@ -23,7 +24,7 @@ sub _download_guide {
     $response->content_type eq 'text/html'
       or die 'Invalid content type: '.$response->content_type."\n";
     
-    return $response->content;
+    return Encode::decode 'UTF-8', $response->content;
 }
 
 
@@ -32,15 +33,15 @@ sub _parse_guide {
     my @guide;
     
     my ($debuts) = ($content =~ m/<!-- ESTREIAS -->(.+)<!-- \/ESTREIAS -->/s);
-    my @info = ($debuts =~ m#([^"]+)">([^>]+)\s+</a><br\s*/>\s*([^<]+)\s+#gs);
+    my @info = ($debuts =~ m`([^"]+)">([^>]+)\s+</a><br\s*/>\s*([^<]+)\s+`gs);
     
     while (@info > 0) {
         my ($link, $title, $date) = (shift @info, shift @info, shift @info);
         
         push @guide, {
             date => join('-', reverse split m/-/, $date),
-            title => $title,
             link => "http://cultura.sapo.pt$link",
+            title => $title,
         }
     }
     
