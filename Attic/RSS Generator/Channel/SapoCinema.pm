@@ -30,18 +30,37 @@ sub _download_guide {
 
 sub _parse_guide {
     my ($content) = @ARG;
-    my @guide;
     
+    my @guide;
     my ($debuts) = ($content =~ m/<!-- ESTREIAS -->(.+)<!-- \/ESTREIAS -->/s);
-    my @info = ($debuts =~ m`([^"]+)">([^>]+)\s+</a><br\s*/>\s*([^<]+)\s+`gs);
+    
+    my @info = ($debuts =~ m`
+        >\s+
+        ([^>]+)    # Genre.
+        \s+<h1><[^<]+>
+        ([^>]+)    # Portuguese title.
+        </a></h1><a\s*href="
+        ([^"]+)    # Link.
+        ">
+        ([^>]+)    # Title.
+        \s+</a><br\s*/>\s*
+        ([^<]+)    # Date.
+        \s+`gsx
+    );
     
     while (@info > 0) {
-        my ($link, $title, $date) = (shift @info, shift @info, shift @info);
+        my $genre = shift @info;
+        my $title_pt = shift @info;
+        my $link = shift @info;
+        my $title = shift @info;
+        my $date = shift @info;
         
         push @guide, {
             date => join('-', reverse split m/-/, $date),
+            genre => $genre,
             link => "http://cultura.sapo.pt$link",
             title => $title,
+            title_pt => $title_pt,
         }
     }
     
@@ -51,9 +70,9 @@ sub _parse_guide {
 
 sub _to_html {
     my ($program) = @ARG;
-    my ($link, $title) = @$program{qw(link title)};
+    my ($link, $title, $pt, $genre) = @$program{qw(link title title_pt genre)};
     
-    return "<a href=\"$link\">$title</a><br/>";
+    return "<p><b><a href=\"$link\">$title</a></b><br/>\"$pt\", <i>$genre</i></p>";
 }
 
 
