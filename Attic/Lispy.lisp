@@ -106,6 +106,7 @@
   (zerop (length str)))
 
 
+; Does the same as the deprecated function "remove-if-not".
 (defmethod filter ((include? function) (values list))
   (if (empty? values)
       ()
