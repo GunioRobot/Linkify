@@ -1,0 +1,18 @@
+import os
+
+
+def CompileIDL(file):
+    env = Environment()
+    
+    for path in env['ENV']['INCLUDE'].split(os.pathsep):
+        source_file = os.path.join(path, file)
+        
+        if os.path.exists(source_file):
+            Command(file, source_file, Copy('$TARGET', '$SOURCE'))
+            TypeLibrary(file)
+            break
+
+
+CompileIDL('mimeole.idl')
+CompileIDL('msoeapi.idl')
+SharedLibrary(source = Glob('*.cpp'), CCFLAGS = ['/EHsc'], LIBS = ['Ole32'])
