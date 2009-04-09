@@ -2,12 +2,11 @@
 
 use strict;
 use utf8;
-use warnings;
 
 use CGI ':standard';
-use English;
 use File::Basename;
 use File::Spec::Functions;
+use Pearl;
 use XML::RSS;
 
 
@@ -87,7 +86,6 @@ sub load_channel {
 
 
 sub main {
-    binmode STDOUT, ':utf8';
     my $name = url_param('channel');
     
     if (defined $name) {
