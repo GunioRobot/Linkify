@@ -4,7 +4,6 @@ use strict;
 use utf8;
 use warnings;
 
-use Encode;
 use English;
 use LWP;
 
@@ -25,7 +24,7 @@ sub _download_guide {
     $response->content_type eq 'text/html'
       or die 'Invalid content type: '.$response->content_type."\n";
     
-    return Encode::decode 'ISO-8859-1', $response->content;
+    return $response->decoded_content;
 }
 
 
