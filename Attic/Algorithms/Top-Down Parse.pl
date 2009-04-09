@@ -2,9 +2,22 @@
 
 use strict;
 use utf8;
+
 use Pearl;
 use Class::Struct;
 
+
+sub is_terminal {
+    my ($symbol) = @ARG;
+    return $symbol ne uc $symbol;
+}
+
+sub state_of {
+    my ($state) = @ARG;
+    my ($symbols, $position) = ($state->syms, $state->pos + 1);
+    
+    return "((@$symbols) $position)";
+}
 
 print 'Input: ';
 chomp(my $input = <STDIN>);
@@ -107,17 +120,3 @@ for (my $i = 1; (@{$current->syms} > 0) || ($current->pos != @words); ++$i) {
 }
 
 print "\nFinal: ", state_of($current), "\n";
-
-
-sub is_terminal {
-    my ($symbol) = @ARG;
-    return $symbol ne uc $symbol;
-}
-
-
-sub state_of {
-    my ($state) = @ARG;
-    my ($symbols, $position) = ($state->syms, $state->pos + 1);
-    
-    return "((@$symbols) $position)";
-}
