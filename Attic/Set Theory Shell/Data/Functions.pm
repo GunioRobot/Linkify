@@ -3,6 +3,7 @@ package Data::Functions;
 use base 'Exporter';
 use strict;
 use utf8;
+
 use Pearl;
 
 
@@ -196,7 +197,7 @@ sub equal {
 
 sub functions {
     @ARG == 1 or die "Expecting no arguments.\n";
-    say "Available functions:\n", join "\n", sort keys %FUNCTIONS;
+    print "Available functions:\n", join "\n", sort keys %FUNCTIONS;
     return Data::Identifier->new('DONE');
 }
 
@@ -445,7 +446,7 @@ sub vars {
     my ($vars) = @ARG;
     
     @ARG == 1 or die "Expecting no arguments.\n";
-    say 'Defined names:';
+    print "Defined names:\n";
     
     foreach my $var (sort keys %$vars) {
         next unless defined $vars->{$var};
@@ -453,7 +454,7 @@ sub vars {
         my $value = $vars->{$var}->to_string;
         my $trimmed = substr $value, 0, 50;
         
-        say "$var = ", ($value eq $trimmed ? $value : "$trimmed...");
+        print "$var = ", ($value eq $trimmed ? $value : "$trimmed..."), "\n";
     }
     
     return Data::Identifier->new('DONE');

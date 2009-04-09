@@ -2,6 +2,7 @@
 
 use strict;
 use utf8;
+
 use Data::Functions;
 use Data::Identifier;
 use Data::List;
@@ -105,24 +106,14 @@ sub interpreter {
             my $value = eval { evaluate(\%variables, @$command) };
             $variables{'$'} = $value;
             
-            say $EVAL_ERROR and next if $EVAL_ERROR;
-            say $value->to_string();
+            print "$EVAL_ERROR\n" and next if $EVAL_ERROR;
+            print $value->to_string(), "\n";
         }
     }
 }
 
 
 sub main {
-    my $on_exit = sub {};
-    
-    if ($OSNAME eq 'MSWin32') {
-        my ($previous_code_page) = (`chcp` =~ m/(\d+)$/);
-        system 'chcp 1252 > nul';
-        $on_exit = sub { system "chcp $previous_code_page > nul" };
-    }
-    
-    $SIG{INT} = sub { $on_exit->(); exit };
     interpreter();
-    $on_exit->();
     return 0;
 }

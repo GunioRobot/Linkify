@@ -2,6 +2,7 @@ package Data::Value;
 
 use strict;
 use utf8;
+
 use Carp;
 use Digest::MD5 'md5_hex';
 use Pearl;
