@@ -2,10 +2,9 @@ package Channel::RTP2;
 
 use strict;
 use utf8;
-use warnings;
 
-use English;
 use LWP;
+use Pearl;
 
 
 our $description = 'Daily TV guide for the RTP2 Portuguese channel.';

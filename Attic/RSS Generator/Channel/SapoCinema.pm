@@ -2,10 +2,9 @@ package Channel::SapoCinema;
 
 use strict;
 use utf8;
-use warnings;
 
-use English;
 use LWP;
+use Pearl;
 
 
 our $description = 'Weekly movie guide from the Sapo Cultura web site.';
