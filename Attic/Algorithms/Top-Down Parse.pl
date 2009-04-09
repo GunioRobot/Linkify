@@ -2,7 +2,7 @@
 
 use strict;
 use utf8;
-use warnings;
+use Pearl;
 use Class::Struct;
 
 
@@ -24,8 +24,8 @@ READ_RULES: {
         push @targets, $target unless exists $grammar{$target};
         push @{$grammar{$target}}, \@symbols;
         
-        @unknown_targets = grep {!$grammar{$_}} @unknown_targets;
-        push @unknown_targets, grep {!is_terminal($_) && !$grammar{$_}} @symbols;
+        @unknown_targets = grep {!$grammar{$ARG}} @unknown_targets;
+        push @unknown_targets, grep {!is_terminal($ARG) && !$grammar{$ARG}} @symbols;
         redo READ_RULES;
     }
     elsif (@unknown_targets > 0) {
@@ -52,7 +52,7 @@ struct State => {
 };
 
 my $current = State->new();
-my $use_dfs = 1;
+my $use_dfs = $true;
 my @alternatives;
 
 $current->syms([$targets[0]]);
@@ -63,14 +63,14 @@ for (my $i = 1; (@{$current->syms} > 0) || ($current->pos != @words); ++$i) {
     my $position = $current->pos;
     
     print "\n# Current ($i): ", state_of($current), "\n";
-    print '# Alternatives: (', join(' ', map {state_of($_)} @alternatives), ")\n";
+    print '# Alternatives: (', join(' ', map {state_of($ARG)} @alternatives), ")\n";
     
     my $target = shift @$symbols;
     
     if (defined($target)) {
         if (is_terminal($target)) {
             my $word = $words[$position];
-            my @categories = grep {$_ eq $target} @{$lexicon{$word}};
+            my @categories = grep {$ARG eq $target} @{$lexicon{$word}};
             
             if ((@categories == 1) && ($categories[0] eq $target)) {
                 $current->pos($position + 1);
@@ -110,13 +110,13 @@ print "\nFinal: ", state_of($current), "\n";
 
 
 sub is_terminal {
-    my ($symbol) = @_;
+    my ($symbol) = @ARG;
     return $symbol ne uc $symbol;
 }
 
 
 sub state_of {
-    my ($state) = @_;
+    my ($state) = @ARG;
     my ($symbols, $position) = ($state->syms, $state->pos + 1);
     
     return "((@$symbols) $position)";

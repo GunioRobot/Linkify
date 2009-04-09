@@ -22,6 +22,16 @@ use English '-no_match_vars';
 use IO::Handle;
 
 
+BEGIN {
+    # Detect the redirection problem.
+    if ($OSNAME eq 'MSWin32') {
+        my $io = IO::Handle->new_from_fd(fileno(STDIN), 'r');
+        $io or die "Run this script again using the Perl interpreter directly.\n";
+        $io->close;
+    }
+}
+
+
 our @EXPORT = qw(*STDNULL $false $true lazy);
 our $VERSION = v2008.10.09;
 
