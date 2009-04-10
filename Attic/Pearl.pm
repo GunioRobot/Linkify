@@ -19,6 +19,7 @@ use warnings;
 
 use Carp;
 use English '-no_match_vars';
+use File::Spec;
 use IO::Handle;
 
 
@@ -84,7 +85,7 @@ Standard null stream.
 
 =back
 =cut
-open STDNULL, '+<', $OSNAME eq 'MSWin32' ? 'nul' : '/dev/null';
+open STDNULL, '+<', File::Spec->devnull();
 
 =head1 CONSTANTS
 
