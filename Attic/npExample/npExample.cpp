@@ -146,8 +146,7 @@ NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* plugin) {
 }
 
 
-extern "C"
-NPError OSCALL NP_Initialize(NPNetscapeFuncs* browser
+extern "C" NPError OSCALL NP_Initialize(NPNetscapeFuncs* browser
 #ifndef _WINDOWS
     , NPPluginFuncs* plugin
 #endif
@@ -169,20 +168,17 @@ NPError OSCALL NP_Initialize(NPNetscapeFuncs* browser
 }
 
 
-extern "C"
-NPError OSCALL NP_Shutdown() {
+extern "C" NPError OSCALL NP_Shutdown() {
     _browser = NULL;
     return NPERR_NO_ERROR;
 }
 
 
-extern "C"
-char* NP_GetMIMEDescription() {
+extern "C" char* NP_GetMIMEDescription() {
     return const_cast<char*>(PLUGIN_MIME_TYPE "::");
 }
 
 
-extern "C"
-NPError OSCALL NP_GetValue(void* instance, NPPVariable what, void* value) {
+extern "C" NPError OSCALL NP_GetValue(void* instance, NPPVariable what, void* value) {
     return getValue(reinterpret_cast<NPP>(instance), what, value);
 }
