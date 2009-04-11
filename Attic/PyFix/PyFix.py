@@ -90,8 +90,11 @@ def _make_path(path):
     @param path: path to create
     """
     
-    if not os.path.exists(path):
+    try:
         os.makedirs(path)
+    except OSError:
+        if not os.path.exists(path):
+            raise
 
 
 def _remove_path(path):
