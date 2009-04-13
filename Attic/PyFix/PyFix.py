@@ -1,11 +1,43 @@
 # -*- coding: utf-8 -*-
 
 
-import fnmatch, functools, glob, math, os, shutil, types
+import ConfigParser, fnmatch, functools, glob, math, os, shutil, types
 
 
 _NaN = float('NaN')
 _Infinity = float('inf')
+
+
+class _Check_Bad_Percent (object):
+    class Result (object):
+        def __init__(self, index):
+            self.__index = index
+        
+        
+        def start(self, *args, **kargs):
+            return self.__index
+    
+    
+    def __init__(self, interpolate_var):
+        self.__interpolate_var = interpolate_var
+    
+    
+    def search(self, value, *args, **kargs):
+        index = self.__interpolate_var.sub('', value).find('%')
+        return False if index < 0 else _Check_Bad_Percent.Result(index)
+
+
+class _Remove_Double_Percents (object):
+    def __init__(self, interpolate_var):
+        self.__interpolate_var = interpolate_var
+    
+    
+    def match(self, *args, **kargs):
+        return self.__interpolate_var.match(*args, **kargs)
+    
+    
+    def sub(self, replacement, value, *args, **kargs):
+        return value.replace('%%', '')
 
 
 def _flatten(sequence):
@@ -91,6 +123,20 @@ def _remove_path(path):
     except OSError:
         shutil.rmtree(path)
 
+
+ConfigParser.RawConfigParser.optionxform = str
+ConfigParser.ConfigParser.optionxform = str
+ConfigParser.SafeConfigParser.optionxform = str
+
+try:
+    for value in ['%%', '%%(var)s']:
+        ConfigParser.SafeConfigParser().set('DEFAULT', 'option', value)
+except ValueError:
+    SafeParser = ConfigParser.SafeConfigParser
+    _interpvar = SafeParser._interpvar_re
+    
+    SafeParser._badpercent_re = _Check_Bad_Percent(_interpvar)
+    SafeParser._interpvar_re = _Remove_Double_Percents(_interpvar)
 
 functools.flatten = _flatten
 glob.rglob = _glob
