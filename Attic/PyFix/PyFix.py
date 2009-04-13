@@ -1,30 +1,11 @@
 # -*- coding: utf-8 -*-
 
 
-import fnmatch, functools, glob, math, os, shutil, types, zipfile
+import fnmatch, functools, glob, math, os, shutil, types
 
 
 _NaN = float('NaN')
 _Infinity = float('inf')
-
-
-class _ZipFile (zipfile.ZipFile, object):
-    def __init__(self, *args, **kargs):
-        super(_ZipFile, self).__init__(*args, **kargs)
-    
-    
-    def extractall(self, path = os.path.curdir, members = None, password = None):
-        if members is None:
-            members = self.namelist()
-        
-        # Place directories first to create them before extracting any file.
-        members.sort()
-        
-        for name in members:
-            if name.endswith('/'):
-                _make_path(os.path.join(path, name))
-            else:
-                self.extract(name, path, password)
 
 
 def _flatten(sequence):
@@ -123,5 +104,3 @@ os.path.remove = _remove_path
 
 types.BaseStringType = basestring
 types.SetType = set
-
-zipfile.ZipFile = _ZipFile
