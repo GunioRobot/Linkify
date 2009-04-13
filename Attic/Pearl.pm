@@ -33,7 +33,7 @@ BEGIN {
 }
 
 
-our @EXPORT = qw(*STDNULL $false $true lazy);
+our @EXPORT = qw(*STDNULL $false $true async);
 our $VERSION = v2008.10.09;
 
 
@@ -49,7 +49,7 @@ sub import {
 
 =over 4
 
-=item lazy { ... };
+=item async { ... };
 
 Executes code asynchronously, that is, in a separate thread of execution (if
 possible). The resulting value is a reference to a scalar, which points to the
@@ -62,14 +62,14 @@ Example:
       return getlogin;
   }
 
-  my $result = lazy { greet() };
+  my $result = async { greet() };
 
   print "$result --> $$result\n";
   print "Goodbye!\n";
 
 =back
 =cut
-sub lazy(&) {
+sub async(&) {
     tie my $result, 'Pearl::Lazy::Scalar', @ARG;
     return \$result;
 }
