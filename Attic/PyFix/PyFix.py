@@ -8,7 +8,7 @@ _NaN = float('NaN')
 _Infinity = float('inf')
 
 
-class _Check_Bad_Percent (object):
+class _CheckBadPercent (object):
     class Result (object):
         def __init__(self, index):
             self.__index = index
@@ -24,10 +24,10 @@ class _Check_Bad_Percent (object):
     
     def search(self, value, *args, **kargs):
         index = self.__interpolate_var.sub('', value).find('%')
-        return False if index < 0 else _Check_Bad_Percent.Result(index)
+        return False if index < 0 else _CheckBadPercent.Result(index)
 
 
-class _Remove_Double_Percents (object):
+class _RemoveDoublePercents (object):
     def __init__(self, interpolate_var):
         self.__interpolate_var = interpolate_var
     
@@ -135,8 +135,8 @@ except ValueError:
     SafeParser = ConfigParser.SafeConfigParser
     _interpvar = SafeParser._interpvar_re
     
-    SafeParser._badpercent_re = _Check_Bad_Percent(_interpvar)
-    SafeParser._interpvar_re = _Remove_Double_Percents(_interpvar)
+    SafeParser._badpercent_re = _CheckBadPercent(_interpvar)
+    SafeParser._interpvar_re = _RemoveDoublePercents(_interpvar)
 
 functools.flatten = _flatten
 glob.rglob = _glob
