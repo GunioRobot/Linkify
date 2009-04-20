@@ -13,7 +13,7 @@ package Pearl;
 
 use base 'Exporter';
 use strict;
-use threads;
+use threads ();
 use utf8;
 use warnings;
 
