@@ -12,6 +12,7 @@ use utf8;
 use warnings;
 
 use Archive::Extract;
+use Crypt::SSLeay;
 use English;
 use File::Basename;
 use File::Path;
