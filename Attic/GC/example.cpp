@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
-#include "Reference.h"
+#include "GC.h"
 
-using Reference::ref;
+using GC::ref;
 
 
 class Animal {

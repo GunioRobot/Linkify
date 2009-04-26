@@ -1,5 +1,5 @@
-#ifndef __REFERENCE__
-#define __REFERENCE__
+#ifndef __GC__
+#define __GC__
 
 
 /**
@@ -14,7 +14,7 @@
 #include <typeinfo>
 
 
-namespace Reference {
+namespace GC {
     class DuplicateReferenceError : public std::exception {
     public:
         virtual const char* what() const throw() {
@@ -31,7 +31,7 @@ namespace Reference {
     };
     
     
-    class _ref {
+    class Counter {
     protected:
         template<typename T>
         static void decrement(T* object) {
@@ -53,7 +53,7 @@ namespace Reference {
     
     
     template<typename T>
-    class ref : protected _ref {
+    class ref : protected Counter {
     public:
         ref() : _object(NULL), _type(&typeid(NULL)) {
         }
