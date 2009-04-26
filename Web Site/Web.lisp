@@ -33,13 +33,6 @@
           arguments))
 
 
-(defmacro configure (&body arguments)
-  `(progn
-     (defparameter *web-site* (Web-Site ,@arguments))
-     (apply #'create *web-site* (parse-arguments ext:*ARGS*))
-     (makunbound '*web-site*)))
-
-
 (defmethod create ((site Web-Site) &key compiling? select)
   (let* ((pages (mapcar (bind #'Web-Page :title) (menu-of site)))
          (current-page (first pages)))
@@ -154,4 +147,8 @@
                                       (:alt text)))))))))))))
 
 
-(load "Configuration.lisp")
+(defun Settings (&rest options)
+  (apply #'create (apply #'Web-Site options) (parse-arguments ext:*ARGS*)))
+
+
+(load "Web.cfg")
