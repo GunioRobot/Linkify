@@ -148,7 +148,9 @@
 
 
 (defun Settings (&rest options)
-  (apply #'create (apply #'Web-Site options) (parse-arguments ext:*ARGS*)))
+  (defparameter *web-site* (apply #'Web-Site options))
+  (apply #'create *web-site* (parse-arguments ext:*ARGS*))
+  (makunbound '*web-site*))
 
 
 (load "Web.cfg")
