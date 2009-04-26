@@ -69,7 +69,7 @@
                  (second slot)
                  nil)))
     
-    `(progn
+    `(prog1
        (defclass ,name ,parents
          ,(mapcar #'create-slot slots))
        
@@ -85,9 +85,7 @@
          (and ,@(mapcar (lambda (slot)
                           `(equal? (,(slot-accessor slot) x)
                                    (,(slot-accessor slot) y)))
-                        slots)))
-       
-       (find-class ',name))))
+                        slots))))))
 
 
 (defmethod equal? (x y)
