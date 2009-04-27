@@ -1,23 +1,20 @@
 package com.comoj.marcio.joi.values.java.lang;
 
 
-import java.util.Collections;
 import java.util.List;
 
 import com.comoj.marcio.joi.Inspectable;
-import com.comoj.marcio.joi.Inspector;
 import com.comoj.marcio.joi.Writeable;
 import com.comoj.marcio.joi.exceptions.InvalidSyntaxException;
 import com.comoj.marcio.joi.exceptions.NullInspectionException;
-import com.comoj.marcio.joi.exceptions.PrimitiveInspectionException;
 
 
 /**
- * A generic value (Object) that can be inspected.
+ * A generic value that can be inspected.
  */
 public class ObjectValue implements Inspectable, Writeable {
     private Object _object;
-    private List<Inspectable> _cachedValues = null;
+    private ClassValue _classValue;
     
 
     public ObjectValue(Object object) {
@@ -49,28 +46,17 @@ public class ObjectValue implements Inspectable, Writeable {
     
 
     public List<Inspectable> inspect() {
-        Object object = getValue();
-        
-        if (object == null) {
+        if (getValue() == null) {
             throw new NullInspectionException();
         }
         
-        Class<?> clazz = object.getClass();
-        
-        if (clazz.isPrimitive()) {
-            throw new PrimitiveInspectionException();
-        }
-        
-        if (_cachedValues == null) {
-            _cachedValues = Inspector.inspect(clazz, object);
-        }
-        
-        return Collections.unmodifiableList(_cachedValues);
+        return _classValue.inspect();
     }
     
 
     public void setValue(Object newValue) {
         _object = newValue;
+        _classValue = new ClassValue(newValue.getClass(), newValue);
     }
     
 

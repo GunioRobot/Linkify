@@ -3,6 +3,8 @@ package com.comoj.marcio.joi;
 
 import java.lang.reflect.Method;
 
+import com.comoj.marcio.joi.values.java.lang.ClassValue;
+
 
 /**
  * A method that can be inspected.
@@ -16,7 +18,7 @@ public class InspectableMethod extends InspectableFunction {
     public String describe() {
         return String.format("%s : %s",
             super.describe(),
-            Inspector.getClassNameOf(getValue().getReturnType()));
+            ClassValue.getClassNameOf(getValue().getReturnType()));
     }
     
 

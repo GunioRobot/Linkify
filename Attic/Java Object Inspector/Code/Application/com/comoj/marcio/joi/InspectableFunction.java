@@ -29,7 +29,7 @@ public abstract class InspectableFunction implements Inspectable {
             StringBuffer buffer = new StringBuffer();
             
             for (Class<?> clazz : getParameterTypes()) {
-                buffer.append(Inspector.getClassNameOf(clazz) + ", ");
+                buffer.append(ClassValue.getClassNameOf(clazz) + ", ");
             }
             
             buffer.setLength(buffer.length() - 2);

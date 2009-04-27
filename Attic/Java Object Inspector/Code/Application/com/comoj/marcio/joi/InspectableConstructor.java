@@ -3,6 +3,8 @@ package com.comoj.marcio.joi;
 
 import java.lang.reflect.Constructor;
 
+import com.comoj.marcio.joi.values.java.lang.ClassValue;
+
 
 /**
  * A constructor that can be inspected.
@@ -14,7 +16,7 @@ public class InspectableConstructor extends InspectableFunction {
     
 
     public String getFunctionName() {
-        return Inspector.getClassNameOf(getValue().getDeclaringClass());
+        return ClassValue.getClassNameOf(getValue().getDeclaringClass());
     }
     
 

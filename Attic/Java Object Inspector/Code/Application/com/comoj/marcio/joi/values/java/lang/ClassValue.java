@@ -1,16 +1,26 @@
 package com.comoj.marcio.joi.values.java.lang;
 
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.comoj.marcio.joi.Inspectable;
-import com.comoj.marcio.joi.Inspector;
+import com.comoj.marcio.joi.InspectableAnnotation;
+import com.comoj.marcio.joi.InspectableClass;
+import com.comoj.marcio.joi.InspectableConstructor;
+import com.comoj.marcio.joi.InspectableFactory;
+import com.comoj.marcio.joi.InspectableField;
+import com.comoj.marcio.joi.InspectableMethod;
 import com.comoj.marcio.joi.exceptions.NullInspectionException;
 import com.comoj.marcio.joi.exceptions.PrimitiveInspectionException;
 import com.comoj.marcio.joi.exceptions.UnsupportedTypeException;
@@ -26,8 +36,32 @@ public class ClassValue extends ObjectValue {
     static {
         _PRIMITIVE_TYPES_NAMES = new HashMap<String, Class<?>>();
         
-        for (Class<?> type : Inspector.getPrimitiveTypes()) {
+        for (Class<?> type : InspectableFactory.getPrimitiveTypes()) {
             _PRIMITIVE_TYPES_NAMES.put(type.getSimpleName(), type);
+        }
+    }
+
+
+    /**
+     * Gets the class name of a class.
+     * 
+     * @param clazz class for which to get the class name
+     * @return the class name of the given class
+     * @throws NullPointerException if the given class is null
+     */
+    public static String getClassNameOf(Class<?> clazz) {
+        if (clazz == null) {
+            throw new NullPointerException("null is not a class.");
+        }
+        
+        if (clazz.getSimpleName().length() > 0) {
+            return clazz.getSimpleName();
+        }
+        else if (clazz.getCanonicalName() != null) {
+            return clazz.getCanonicalName();
+        }
+        else {
+            return clazz.getName();
         }
     }
     
@@ -82,7 +116,7 @@ public class ClassValue extends ObjectValue {
      * @return the class name
      */
     public String getClassName() {
-        return Inspector.getClassNameOf(getValue());
+        return ClassValue.getClassNameOf(getValue());
     }
     
 
@@ -119,13 +153,11 @@ public class ClassValue extends ObjectValue {
         if (clazz == null) {
             throw new NullInspectionException();
         }
-        
         if (clazz.isPrimitive()) {
             throw new PrimitiveInspectionException();
         }
-        
         if (_cachedValues == null) {
-            _cachedValues = Inspector.inspect(clazz, getInstance());
+            _cachedValues = inspectDeclarations();
         }
         
         return Collections.unmodifiableList(_cachedValues);
@@ -177,5 +209,46 @@ public class ClassValue extends ObjectValue {
         }
         
         setValue(clazz);
+    }
+    
+    
+    /**
+     * Inspects all class declarations.
+     * 
+     * @return a list with class declarations that can be inspected
+     */
+    private List<Inspectable> inspectDeclarations() {
+        List<Inspectable> values = new LinkedList<Inspectable>();
+        Class<?> clazz = getValue();
+        
+        for (; clazz != null; clazz = clazz.getSuperclass()) {
+            for (Annotation a : clazz.getDeclaredAnnotations()) {
+                if (!a.annotationType().isSynthetic()) {
+                    values.add(new InspectableAnnotation(a));
+                }
+            }
+            for (Class<?> c : clazz.getDeclaredClasses()) {
+                if (!c.isSynthetic()) {
+                    values.add(new InspectableClass(c));
+                }
+            }
+            for (Constructor<?> c : clazz.getDeclaredConstructors()) {
+                if (!c.isSynthetic()) {
+                    values.add(new InspectableConstructor(c));
+                }
+            }
+            for (Field f : clazz.getDeclaredFields()) {
+                if (!f.isSynthetic()) {
+                    values.add(new InspectableField(f, getInstance()));
+                }
+            }
+            for (Method m : clazz.getDeclaredMethods()) {
+                if (!m.isSynthetic()) {
+                    values.add(new InspectableMethod(m));
+                }
+            }
+        }
+        
+        return values;
     }
 }

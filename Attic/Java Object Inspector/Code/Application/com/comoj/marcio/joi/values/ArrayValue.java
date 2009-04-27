@@ -10,10 +10,10 @@ import java.util.List;
 import com.comoj.marcio.joi.Inspectable;
 import com.comoj.marcio.joi.InspectableArrayLength;
 import com.comoj.marcio.joi.InspectableArrayPosition;
-import com.comoj.marcio.joi.Inspector;
 import com.comoj.marcio.joi.exceptions.InvalidSyntaxException;
 import com.comoj.marcio.joi.exceptions.NullInspectionException;
 import com.comoj.marcio.joi.exceptions.UnsupportedTypeException;
+import com.comoj.marcio.joi.values.java.lang.ClassValue;
 import com.comoj.marcio.joi.values.java.lang.ObjectValue;
 import com.comoj.marcio.joi.values.java.lang.StringValue;
 
@@ -96,7 +96,7 @@ public class ArrayValue extends ObjectValue {
             
             values.add(new InspectableArrayLength(this));
             values.addAll(inspectPositions());
-            values.addAll(Inspector.inspect(array.getClass(), array));
+            values.addAll(new ClassValue(array.getClass(), array).inspect());
             
             _cachedValues = values;
         }

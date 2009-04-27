@@ -8,6 +8,7 @@ import com.comoj.marcio.joi.exceptions.NullInspectionException;
 import com.comoj.marcio.joi.exceptions.NullValueException;
 import com.comoj.marcio.joi.exceptions.PrimitiveInspectionException;
 import com.comoj.marcio.joi.values.ArrayValue;
+import com.comoj.marcio.joi.values.java.lang.ClassValue;
 import com.comoj.marcio.joi.values.java.lang.ObjectValue;
 
 
@@ -25,13 +26,13 @@ public class InspectableArrayPosition implements Inspectable, Writeable {
         _position = position;
         
         Class<?> clazz = _arrayValue.getComponentType();
-        _inspectableValue = Inspector.createInspectable(clazz, null);
+        _inspectableValue = InspectableFactory.createInspectable(clazz, null);
     }
     
 
     public String describe() {
         return String.format("public %s %d = %s",
-            Inspector.getClassNameOf(_arrayValue.getComponentType()),
+            ClassValue.getClassNameOf(_arrayValue.getComponentType()),
             _position, getValueToOutput());
     }
     

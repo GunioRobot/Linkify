@@ -10,6 +10,7 @@ import com.comoj.marcio.joi.exceptions.InstanceFieldException;
 import com.comoj.marcio.joi.exceptions.NullInspectionException;
 import com.comoj.marcio.joi.exceptions.NullValueException;
 import com.comoj.marcio.joi.exceptions.PrimitiveInspectionException;
+import com.comoj.marcio.joi.values.java.lang.ClassValue;
 import com.comoj.marcio.joi.values.java.lang.ObjectValue;
 
 
@@ -33,7 +34,8 @@ public class InspectableField implements Inspectable, Writeable {
         _owner = owner;
         
         _field.setAccessible(true);
-        _inspectableValue = Inspector.createInspectable(field.getType(), null);
+        _inspectableValue = InspectableFactory.createInspectable(
+            field.getType(), null);
     }
     
 
@@ -54,7 +56,7 @@ public class InspectableField implements Inspectable, Writeable {
         String description = String.format("%s%s%s %s",
             modifiers,
             (modifiers.length() > 0 ? " " : ""),
-            Inspector.getClassNameOf(getField().getType()),
+            ClassValue.getClassNameOf(getField().getType()),
             getField().getName());
         
         return description + (value == null ? "" : " = " + value);
