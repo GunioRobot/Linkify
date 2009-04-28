@@ -62,13 +62,13 @@ namespace GC {
         }
         
         
-        Reference(const Reference<T>& ref): _obj(ref._obj), _type(ref._type) {
+        Reference(const Reference<T>& r): _obj(r._obj), _type(r._type) {
             increment(_obj);
         }
         
         
         template<typename U>
-        Reference(const Reference<U>& ref): _obj(ref._obj), _type(ref._type) {
+        Reference(const Reference<U>& r): _obj(r._obj), _type(r._type) {
             increment(_obj);
         }
         
