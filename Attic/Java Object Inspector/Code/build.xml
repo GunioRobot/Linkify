@@ -5,19 +5,19 @@
     <pathelement path="${binaries.path}"/>
   </path>
   
-  <target name="build">
+  <target name="build" description="Compiles the project and packages it.">
     <tstamp/>
     <mkdir dir="${binaries.path}"/>
     <javac srcdir="${code.path}" destdir="${binaries.path}" deprecation="on"/>
     <jar destfile="${jar.file}" basedir="${binaries.path}"/>
   </target>
   
-  <target name="clean">
+  <target name="clean" description="Removes build generated files.">
     <delete dir="${binaries.path}"/>
     <delete file="${jar.file}"/>
   </target>
   
-  <target name="count-lines">
+  <target name="count-lines" description="Counts how many lines of code exist.">
     <resourcecount>
       <tokens>
         <fileset dir="${code.path}"/>
@@ -25,7 +25,7 @@
     </resourcecount>
   </target>
   
-  <target name="eclipse">
+  <target name="eclipse" description="Creates Eclipse configuration files.">
     <copy file=".classpath.template" tofile=".classpath" overwrite="true">
       <filterchain>
         <replacetokens>
