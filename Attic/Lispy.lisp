@@ -137,6 +137,12 @@
                         values))))
 
 
+(defmethod leap-year? ((year number))
+  (or (zerop (rem year 400))
+      (and (zerop (rem year 4))
+           (not (zerop (rem year 100))))))
+
+
 (define-symbol-macro macro-environment
   (get-current-macro-environment))
 
@@ -151,6 +157,11 @@
             value
             (setf (gethash arguments cache)
                   (apply fn arguments)))))))
+
+
+(defmethod next-tab-column ((column number) &key (step 8))
+  (- (+ column step)
+     (rem column step)))
 
 
 (defmethod range ((count integer) &key (start 0) (step 1))
