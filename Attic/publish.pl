@@ -21,7 +21,7 @@ use LWP;
 use XML::DOM;
 
 
-eval { exit main(@ARGV) };
+eval {exit main(@ARGV)};
 print "Error: $EVAL_ERROR\n";
 exit 1;
 

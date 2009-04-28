@@ -10,7 +10,7 @@ use Pearl;
 use XML::RSS;
 
 
-eval { exit main(@ARGV) };
+eval {exit main(@ARGV)};
 print "Content-type: text/plain; charset=UTF-8\n\n";
 print "Error: $EVAL_ERROR\n";
 exit 1;

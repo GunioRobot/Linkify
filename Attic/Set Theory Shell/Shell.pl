@@ -10,7 +10,7 @@ use Data::Set;
 use Pearl;
 
 
-eval { exit main(@ARGV) };
+eval {exit main(@ARGV)};
 die $EVAL_ERROR;
 
 
@@ -45,7 +45,7 @@ sub evaluate {
         defined $function or die "Undefined function: '$name'.\n";
         
         my $arguments = evaluate($vars, @tokens);
-        my $result = eval { $function->($vars, $arguments->elements()) };
+        my $result = eval {$function->($vars, $arguments->elements())};
         
         die "Function '$name': $EVAL_ERROR" if $EVAL_ERROR;
         return $result;
@@ -70,7 +70,7 @@ sub evaluate {
             TOKEN: {
                 die $EVAL_ERROR if @tokens == 0;
                 push @removed_tokens, shift @tokens;
-                eval { $collection->add(evaluate($vars, @removed_tokens)) };
+                eval {$collection->add(evaluate($vars, @removed_tokens))};
                 redo TOKEN if $EVAL_ERROR;
             }
         }
@@ -103,7 +103,7 @@ sub interpreter {
         
         foreach my $command (@commands) {
             next unless defined $command;
-            my $value = eval { evaluate(\%variables, @$command) };
+            my $value = eval {evaluate(\%variables, @$command)};
             $variables{'$'} = $value;
             
             print "$EVAL_ERROR\n" and next if $EVAL_ERROR;
