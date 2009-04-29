@@ -1,15 +1,15 @@
 (XML
-  (:h3 "About Me")
+  (:p "Want to know more about me?")
   
-  (:p "My name is Márcio Faustino and I'm currently living in Lisboa, Portugal.")
-  (:p "You can reach me at " (:a (@ (:class "Email")) "…") ".")
+  (:p (:a (@ (:class "Email"))
+          "Send me")
+      " an e-mail, "
+      (:a (@ (:href "http://www.google.com/search?q=M%C3%A1rcio+Faustino"))
+          "search me")
+      " on Google, or view "
+      (:a (@ (:href "http://www.linkedin.com/in/marciof"))
+          "my LinkedIn profile")
+      ".")
+  
   (:p (:img (@ (:src "Images/Photo.jpg")
-               (:alt "Márcio Faustino"))))
-  
-  (:h3 "Resumé")
-  
-  (:p "My resumé is available on request. "
-      "Since it contains personal information, it isn't publicly available.")
-  (:p (:a (@ (:href "http://www.linkedin.com/in/marciof"))
-          (:img (@ (:src "Images/LinkedIn.png")
-                   (:alt "View Márcio Faustino's profile on LinkedIn"))))))
+               (:alt "Márcio Faustino")))))

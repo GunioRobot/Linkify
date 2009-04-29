@@ -1,18 +1,26 @@
 (XML
-  (:p (:a (@ (:href "http://subversion.assembla.com/svn/marciof"))
-          "My public SVN repository")
-      " contains this web site's source code and other minor programming projects. It also has a "
+  (:p "Check out "
+      (:a (@ (:href "http://subversion.assembla.com/svn/marciof"))
+          "my public SVN repository")
+      " which also has a "
       (:a (@ (:href "http://code.assembla.com/marciof/subversion/nodes"))
           "web interface")
       " available.")
   
-  (:h3 "Main Projects")
+  (:p "It contains this Web site's code and other minor past projects such as:")
+  
+  (:ul
+    (:li "Simple Garbage Collector for C++.")
+    (:li "Dynamic inspector of Java objects.")
+    (:li "Generator of RSS feeds, also available "
+         (:a (@ (:href "http://web.ist.utl.pt/~marcio.faustino/rss/")) "online")
+         "."))
+  
+  (:h3 "Projects")
   
   (:dl
-    (:dt "C Library")
-    (:dd (:a (@ (:href "http://c-library.sourceforge.net/")) "Software library")
-         " to ease development in the C programming language.")
+    (:dt (:a (@ (:href "http://c-library.sourceforge.net/")) "C Library"))
+    (:dd "Software library to ease development in the C programming language.")
     
-    (:dt "Eon")
-    (:dd (:a (@ (:href "http://eon.origo.ethz.ch/")) "Kernel")
-         " experiment to learn more about the design and implementation of Operating Systems.")))
+    (:dt (:a (@ (:href "http://eon.origo.ethz.ch/")) "Eon"))
+    (:dd "Kernel experiment to learn more about the design and implementation of Operating Systems.")))

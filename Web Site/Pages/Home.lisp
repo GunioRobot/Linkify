@@ -1,1 +1,1 @@
-(XML (:p "Hi, welcome to my home page!"))
+(XML (:p "Hi, welcome to my personal Web site!"))
