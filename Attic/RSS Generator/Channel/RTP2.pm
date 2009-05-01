@@ -12,7 +12,7 @@ our $link = 'http://www.rtp.pt/tv/rtp2/includes/guia.php';
 our $title = 'RTP2 Guia TV';
 
 
-sub _download_guide {
+sub _download {
     my ($date) = @ARG;
     my $browser = new LWP::UserAgent;
     my $response = $browser->get(_link($date), 'User-Agent' => 'Mozilla');
@@ -35,7 +35,7 @@ sub _link {
 }
 
 
-sub _parse_guide {
+sub _parse {
     my ($content) = @ARG;
     my @guide;
     
@@ -80,7 +80,7 @@ sub _uncapitalize {
 sub generate {
     my ($rss) = @ARG;
     my $today = _today();
-    my @guide = _parse_guide(_download_guide($today));
+    my @guide = _parse(_download($today));
     
     $rss->add_item(
         title => 'Daily Guide',

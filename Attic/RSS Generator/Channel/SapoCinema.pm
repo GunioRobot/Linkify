@@ -12,7 +12,7 @@ our $link = 'http://cultura.sapo.pt/cinema.aspx';
 our $title = 'Sapo Cultura Cinema';
 
 
-sub _download_guide {
+sub _download {
     my $browser = new LWP::UserAgent;
     my $response = $browser->get($link, 'User-Agent' => 'Mozilla');
     
@@ -26,7 +26,7 @@ sub _download_guide {
 }
 
 
-sub _parse_guide {
+sub _parse {
     my ($content) = @ARG;
     
     my @guide;
@@ -76,7 +76,7 @@ sub _to_html {
 
 sub generate {
     my ($rss) = @ARG;
-    my @guide = _parse_guide(_download_guide());
+    my @guide = _parse(_download());
     
     $rss->add_item(
         title => 'Weekly Guide',
