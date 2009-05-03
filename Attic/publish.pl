@@ -7,17 +7,15 @@
 
 
 use strict;
-use threads;
 use utf8;
-use warnings;
 
 use Archive::Extract;
 use Crypt::SSLeay;
-use English;
 use File::Basename;
 use File::Path;
 use File::Spec::Functions;
 use LWP;
+use Pearl;
 use XML::DOM;
 
 
@@ -198,8 +196,7 @@ sub publish_v5 {
         $data{$ARG} = $data{$ARG}->($cache) for sort keys %data;
     }
     else {
-        $data{$ARG} = threads->create($data{$ARG}, $cache) for sort keys %data;
-        $data{$ARG} = $data{$ARG}->join() for sort keys %data;
+        $data{$ARG} = async(\&{$data{$ARG}}, $cache) for sort keys %data;
     }
     
     defined $data{$ARG} or die "Download failed" for sort keys %data;
