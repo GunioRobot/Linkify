@@ -34,7 +34,7 @@ BEGIN {
 
 
 our @EXPORT = qw(*STDNULL $false $true async);
-our $VERSION = v2009.04.25;
+our $VERSION = v2009.05.03;
 
 
 sub import {
@@ -49,7 +49,7 @@ sub import {
 
 =over 4
 
-=item async { ... };
+=item async {...};
 
 Executes code asynchronously, that is, in a separate thread of execution (if
 possible). The resulting value is a reference to a scalar, which points to the
@@ -62,7 +62,7 @@ Example:
       return getlogin;
   }
 
-  my $result = async { greet() };
+  my $result = async {greet()};
 
   print "$result --> $$result\n";
   print "Goodbye!\n";
