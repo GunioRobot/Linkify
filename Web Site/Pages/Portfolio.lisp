@@ -13,7 +13,7 @@
     (:li "Simple Garbage Collector for C++.")
     (:li "Dynamic inspector of Java objects.")
     (:li "Generator of RSS feeds, also available "
-         (:a (@ (:href "http://web.ist.utl.pt/~marcio.faustino/rss/")) "online")
+         (:a (@ (:href "http://web.ist.utl.pt/marcio.faustino/rss/")) "online")
          "."))
   
   (:h3 "Projects")
