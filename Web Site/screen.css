@@ -158,6 +158,10 @@ body {
     list-style-type: square;
 }
 
+.Document .Strikeout {
+    text-decoration: line-through;
+}
+
 .Footer {
     margin-top: 2em;
     margin-bottom: 2.5em;

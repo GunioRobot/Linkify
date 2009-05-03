@@ -115,8 +115,13 @@
 
 
 (XML
-  (:p "Here you can find the archive (in Portuguese) of all the courses I had so far.")
-  (:p "When downloading a file, if it appears to stop for no reason just resume it or use a download manager.")
+  (:p (@ (:class "Strikeout"))
+      "Here you can find the archive (in Portuguese) of all the courses I had so far.")
+  (:p (@ (:class "Strikeout"))
+      "When downloading a file, if it appears to stop for no reason just resume it or use a download manager.")
+  
+  (:p "(Temporarily unavailable.)")
+  (setf *years* '())
   
   (dolist (year *years*)
     (XML
