@@ -69,7 +69,7 @@ Example:
 
 =back
 =cut
-sub async(&) {
+sub async(&@) {
     tie my $result, 'Pearl::Lazy::Scalar', @ARG;
     return \$result;
 }
@@ -181,8 +181,8 @@ sub TIESCALAR {
     my ($package) = caller;
     croak 'Internal package' unless $package eq 'Pearl';
     
-    my ($class, $function) = @ARG;
-    my $self = {thread => threads->create($function)};
+    my ($class, $function, @arguments) = @ARG;
+    my $self = {thread => threads->create($function, @arguments)};
     return bless $self, $class;
 }
 
