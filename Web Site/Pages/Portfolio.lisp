@@ -7,12 +7,21 @@
           "web interface")
       " available.")
   
-  (:p "It contains this Web site's code and other minor past projects such as:")
+  (:p "It contains this Web site's code and other minor projects, such as:")
   
   (:ul
-    (:li "Simple Garbage Collector for C++.")
-    (:li "Dynamic inspector of Java objects.")
-    (:li "Generator of RSS feeds, also available "
+    (:li "Simple "
+         (:a (@ (:href "http://code.assembla.com/marciof/subversion/nodes/Attic/Garbage Collector"))
+             "Garbage Collector")
+         " for C++.")
+    (:li "Dynamic "
+         (:a (@ (:href "http://code.assembla.com/marciof/subversion/nodes/Attic/Java Object Inspector"))
+             "object inspector")
+         " for Java.")
+    (:li "RSS "
+         (:a (@ (:href "http://code.assembla.com/marciof/subversion/nodes/Attic/RSS Generator"))
+             "feed generator")
+         ", also available "
          (:a (@ (:href "http://web.ist.utl.pt/marcio.faustino/rss/")) "online")
          "."))
   
