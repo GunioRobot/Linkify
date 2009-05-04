@@ -115,13 +115,12 @@ class Dropbox (object):
         
         detail = win32pdh.PERF_DETAIL_WIZARD
         (items, objs) = win32pdh.EnumObjectItems(None, None, 'Process', detail)
-        name = self.__class__.__name__
         
-        if name not in objs:
+        if self.name not in objs:
             raise Exception('Not running.')
         
         query = win32pdh.OpenQuery()
-        path_elements = (None, 'Process', name, None, 0, 'ID Process')
+        path_elements = (None, 'Process', self.name, None, 0, 'ID Process')
         path = win32pdh.MakeCounterPath(path_elements)
         counter = win32pdh.AddCounter(query, path)
         Long = win32pdh.PDH_FMT_LONG
