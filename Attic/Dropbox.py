@@ -213,7 +213,7 @@ if __name__ == '__main__':
     try:
         command = getattr(dropbox, args[0])
     except AttributeError:
-        sys.exit('Error: Invalid command.')
+        sys.exit('Error: Invalid command or property.')
     
     if callable(command):
         command()
