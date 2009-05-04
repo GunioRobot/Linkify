@@ -26,7 +26,7 @@ class Dropbox (object):
         """
         Contents of the database.
         
-        @author: Steve H., U{http://wiki.getdropbox.com/DropboxAddons/PythonScriptToDisplayConfig}
+        @author: U{Steve H.<http://wiki.getdropbox.com/DropboxAddons/PythonScriptToDisplayConfig>}
         """
         
         database = sqlite3.connect(self.database_path)
@@ -139,7 +139,7 @@ class Dropbox (object):
         """
         Application status code.
         
-        @author: Steve H., U{http://wiki.getdropbox.com/DropboxAddons/PythonScriptToGetFileOrFolderStatusInWindows}
+        @author: U{Steve H.<http://wiki.getdropbox.com/DropboxAddons/PythonScriptToGetFileOrFolderStatusInWindows>}
         """
         
         process_id = win32api.GetCurrentProcessId()
