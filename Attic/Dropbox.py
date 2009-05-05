@@ -22,24 +22,19 @@ class Dropbox (object):
     
     
     @property
-    def database(self):
+    def config_table(self):
         """
-        Contents of the database.
+        Configuration database table.
         
         @author: U{Steve H.<http://wiki.getdropbox.com/DropboxAddons/PythonScriptToDisplayConfig>}
         """
         
-        database = sqlite3.connect(self.database_path)
-        cursor = database.cursor()
-        
-        cursor.execute('select key, value from config order by key')
         configuration = {}
         
-        for (key, value) in cursor:
+        for (index, key, value) in self.read_database_table('config'):
             if value is not None:
                 configuration[key] = pickle.loads(base64.b64decode(value))
         
-        database.close()
         return configuration
     
     
@@ -62,6 +57,22 @@ class Dropbox (object):
                 return path
         
         raise Exception('Database not found.')
+    
+    
+    @property
+    def database_tables(self):
+        """
+        List of database tables.
+        """
+        
+        database = sqlite3.connect(self.database_path)
+        cursor = database.cursor()
+        cursor.execute('select name from sqlite_master where type = "table"')
+        
+        tables = [name for (name,) in cursor]
+        database.close()
+        
+        return tables
     
     
     @property
@@ -102,7 +113,7 @@ class Dropbox (object):
         Path to the root of the directory to be synchronized.
         """
         
-        return self.database[self.name.lower() + '_path']
+        return self.config_table[self.name.lower() + '_path']
     
     
     @property
@@ -169,6 +180,26 @@ class Dropbox (object):
         }
         
         return status_codes[int(response[4:-1])]
+    
+    
+    def read_database_table(self, name):
+        """
+        Reads a table from the database.
+        
+        @type name: basestring
+        @param name: name of the table to iterate
+        @rtype: tuple
+        @return: yields each table row
+        """
+        
+        database = sqlite3.connect(self.database_path)
+        cursor = database.cursor()
+        cursor.execute('select * from ' + name)
+        
+        for row in cursor:
+            yield row
+        
+        database.close()
     
     
     def start(self):
