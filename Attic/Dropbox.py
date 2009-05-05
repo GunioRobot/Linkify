@@ -10,7 +10,7 @@ import base64, os, pickle, pprint, sqlite3, struct, subprocess, sys, time, \
 import pywintypes, win32api, win32con, win32gui, win32pdh, win32pipe, win32ts
 
 
-__version__ = '2009-05-04'
+__version__ = '2009-05-05'
 
 
 class Dropbox (object):
@@ -152,10 +152,14 @@ class Dropbox (object):
         try:
             response = win32pipe.CallNamedPipe(pipe_name, request, 16382, 1000)
         except pywintypes.error as error:
-            if error[0] == 2:
-                return self.STATUS_NOT_RUNNING
-            else:
+            if error[0] != 2:
                 raise
+            
+            try:
+                self.process_id
+                return self.STATUS_NOT_CONNECTED
+            except:
+                return self.STATUS_NOT_RUNNING
         
         status_codes = {
             0: self.STATUS_NOT_MONITORING,
