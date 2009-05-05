@@ -152,16 +152,20 @@ class Dropbox (object):
         @author: U{Steve H.<http://wiki.getdropbox.com/DropboxAddons/PythonScriptToGetFileOrFolderStatusInWindows>}
         """
         
-        process_id = win32api.GetCurrentProcessId()
+        proc_id = win32api.GetCurrentProcessId()
         thread_id = win32api.GetCurrentThreadId()
-        session_id = win32ts.ProcessIdToSessionId(process_id)
+        session_id = win32ts.ProcessIdToSessionId(proc_id)
+        
+        req_type = 1
+        req_data = struct.pack('LLLL', 0x3048302, proc_id, thread_id, req_type)
         
         pipe_name = r'\\.\PIPE\%sPipe_%d' % (self.name, session_id)
-        data = struct.pack('LLLL', 0x3048302, process_id, thread_id, 1)
-        request = (data + self.path.encode('utf-16') + (chr(0) * 540))[0:540]
+        request = (req_data + self.path.encode('utf-16') + (chr(0) * 540))[0:540]
+        buffer_size = 16382
         
         try:
-            response = win32pipe.CallNamedPipe(pipe_name, request, 16382, 1000)
+            response = win32pipe.CallNamedPipe(pipe_name, request, buffer_size,
+                win32pipe.NMPWAIT_USE_DEFAULT_WAIT)
         except pywintypes.error as error:
             if error[0] != 2:
                 raise
