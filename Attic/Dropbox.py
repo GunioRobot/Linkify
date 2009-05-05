@@ -14,11 +14,11 @@ __version__ = '2009-05-05'
 
 
 class Dropbox (object):
-    STATUS_NOT_RUNNING = 'Not running.'
-    STATUS_NOT_MONITORING = 'Not monitoring.'
     STATUS_IDLE = 'Idle.'
-    STATUS_SYNCHRONIZING = 'Synchronizing...'
     STATUS_NOT_CONNECTED = 'Not connected.'
+    STATUS_NOT_MONITORING = 'Not monitoring.'
+    STATUS_NOT_RUNNING = 'Not running.'
+    STATUS_SYNCHRONIZING = 'Synchronizing...'
     
     
     @property
