@@ -23,7 +23,10 @@
              "feed generator")
          ", also available "
          (:a (@ (:href "http://web.ist.utl.pt/marcio.faustino/rss/")) "online")
-         "."))
+         ".")
+    (:li (:a (@ (:href "http://code.assembla.com/marciof/subversion/nodes/Attic/publish.pl"))
+             "Wrapper script")
+         " to simplify the publishing process of DocBook to HTML."))
   
   (:h3 "Projects")
   
