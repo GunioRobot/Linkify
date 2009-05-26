@@ -33,8 +33,8 @@ BEGIN {
 }
 
 
-our @EXPORT = qw(*STDNULL $false $true async);
-our $VERSION = v2009.05.03;
+our @EXPORT = qw(*STDNULL $false $true async instantiate);
+our $VERSION = v2009.05.26;
 
 
 sub import {
@@ -67,11 +67,25 @@ Example:
   print "$result --> $$result\n";
   print "Goodbye!\n";
 
-=back
 =cut
 sub async(&@) {
     tie my $result, 'Pearl::Lazy::Scalar', @ARG;
     return \$result;
+}
+
+
+=item instantiate(CLASS);
+
+Creates an instance of a class using an empty hash.
+
+=back
+=cut
+sub instantiate {
+    my ($invocant) = @ARG;
+    my $class = ref($invocant) || $invocant;
+    my $self = {};
+    
+    return bless $self, $class;
 }
 
 
