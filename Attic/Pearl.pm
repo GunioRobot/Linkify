@@ -1,12 +1,12 @@
 =head1 DESCRIPTION
 
-Automatically imports the English module and defines some defaults.
+Automatically imports commonly used modules (C<English>) and turns on essential
+pragmas (C<strict>, C<utf8>, C<warnings>). It also sets some defaults and
+exports useful definitions.
 
 =head1 SYNOPSIS
 
-  use strict;
-  use utf8;
-  use Pearl;
+use Pearl;
 
 =cut
 package Pearl;
@@ -27,19 +27,23 @@ BEGIN {
     # Detect the redirection problem.
     if ($OSNAME eq 'MSWin32') {
         my $io = IO::Handle->new_from_fd(fileno(STDIN), 'r');
-        $io or die "Run this script again using the interpreter directly.\n";
+        $io or die "Run this script again using the interpreter explicitly.\n";
         $io->close;
     }
 }
 
 
 our @EXPORT = qw(*STDNULL $false $true async instantiate);
-our $VERSION = v2009.05.26;
+our $VERSION = v2009.05.28;
 
 
 sub import {
+    strict->import;
+    utf8->import;
+    warnings->import;
+    
     English->export_to_level(1);
-    Pearl->export_to_level(1);
+    __PACKAGE__->export_to_level(1);
     
     return 1;
 }
@@ -69,7 +73,7 @@ Example:
 
 =cut
 sub async(&@) {
-    tie my $result, 'Pearl::Lazy::Scalar', @ARG;
+    tie my $result, __PACKAGE__.'::Lazy::Scalar', @ARG;
     return \$result;
 }
 
@@ -109,7 +113,7 @@ open STDNULL, '+<', File::Spec->devnull();
 
 Contains boolean, number and string values for falsehood.
 =cut
-tie our $false, 'Pearl::Constant::Scalar',
+tie our $false, __PACKAGE__.'::Constant::Scalar',
     Pearl::Overloaded::Scalar->new(0, 0, 'false');
 
 =item $true
@@ -118,7 +122,7 @@ Contains boolean, number and string values for truth.
 
 =back
 =cut
-tie our $true, 'Pearl::Constant::Scalar',
+tie our $true, __PACKAGE__.'::Constant::Scalar',
     Pearl::Overloaded::Scalar->new(1, 1, 'true');
 
 
@@ -149,7 +153,7 @@ sub FETCH {
 
 sub TIESCALAR {
     my ($package) = caller;
-    croak 'Internal package' unless $package eq 'Pearl';
+    croak 'Internal package' unless $package eq Pearl::;
     
     my ($class, $self) = @ARG;
     return bless \$self, $class;
@@ -193,7 +197,7 @@ sub STORE {
 
 sub TIESCALAR {
     my ($package) = caller;
-    croak 'Internal package' unless $package eq 'Pearl';
+    croak 'Internal package' unless $package eq Pearl::;
     
     my ($class, $function, @arguments) = @ARG;
     my $self = {thread => threads->create($function, @arguments)};
@@ -218,7 +222,7 @@ use overload 'bool' => \&to_boolean, '0+' => \&to_number, '""' => \&to_string;
 
 sub new {
     my ($package) = caller;
-    croak 'Internal package' unless $package eq 'Pearl';
+    croak 'Internal package' unless $package eq Pearl::;
     
     my ($class, $boolean, $number, $string) = @ARG;
     my $self = {
