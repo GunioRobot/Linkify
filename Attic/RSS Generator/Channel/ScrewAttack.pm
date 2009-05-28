@@ -1,8 +1,5 @@
 package Channel::ScrewAttack;
 
-use strict;
-use utf8;
-
 use LWP;
 use Pearl;
 

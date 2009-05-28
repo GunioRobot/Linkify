@@ -6,9 +6,6 @@
 # - xmlto: <http://cyberelk.net/tim/software/xmlto/>
 
 
-use strict;
-use utf8;
-
 use Archive::Extract;
 use Crypt::SSLeay;
 use File::Basename;

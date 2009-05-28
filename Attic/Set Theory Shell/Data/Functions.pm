@@ -1,15 +1,10 @@
 package Data::Functions;
 
 use base 'Exporter';
-use strict;
-use utf8;
-
 use Pearl;
 
 
 our @EXPORT = qw(%FUNCTIONS);
-our $VERSION = 0.1;
-
 
 our %FUNCTIONS = (
     '&card' => \&card,

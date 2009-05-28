@@ -1,8 +1,5 @@
 package Channel::SapoCinema;
 
-use strict;
-use utf8;
-
 use LWP;
 use Pearl;
 

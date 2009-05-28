@@ -1,8 +1,5 @@
 #!/usr/bin/perl
 
-use strict;
-use utf8;
-
 use Data::Functions;
 use Data::Identifier;
 use Data::List;

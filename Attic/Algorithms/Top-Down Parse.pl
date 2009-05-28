@@ -1,8 +1,5 @@
 #!/usr/bin/perl
 
-use strict;
-use utf8;
-
 use Pearl;
 use Class::Struct;
 

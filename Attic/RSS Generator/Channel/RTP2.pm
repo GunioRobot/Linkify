@@ -1,8 +1,5 @@
 package Channel::RTP2;
 
-use strict;
-use utf8;
-
 use LWP;
 use Pearl;
 

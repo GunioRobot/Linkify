@@ -1,8 +1,5 @@
 #!/usr/bin/perl
 
-use strict;
-use utf8;
-
 use CGI ':standard';
 use File::Basename;
 use File::Spec::Functions;
@@ -10,10 +7,21 @@ use Pearl;
 use XML::RSS;
 
 
-eval {exit main(@ARGV)};
-print "Content-type: text/plain; charset=UTF-8\n\n";
-print "Error: $EVAL_ERROR\n";
-exit 1;
+eval {
+    my $name = url_param('channel');
+    
+    if (defined $name) {
+        generate_channel(load_channel($name));
+    }
+    else {
+        print_channels(load_channel('*'));
+    }
+};
+
+if ($EVAL_ERROR) {
+    print "Content-type: text/plain; charset=UTF-8\n\n";
+    print "Error: $EVAL_ERROR\n";
+}
 
 
 sub clean_up {
@@ -82,20 +90,6 @@ sub load_channel {
         rdf => catfile($package, "$name.rdf"),
         title => eval "\$${package}::${name}::title",
     };
-}
-
-
-sub main {
-    my $name = url_param('channel');
-    
-    if (defined $name) {
-        generate_channel(load_channel($name));
-    }
-    else {
-        print_channels(load_channel('*'));
-    }
-    
-    return 0;
 }
 
 

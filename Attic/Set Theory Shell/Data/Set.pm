@@ -1,9 +1,6 @@
 package Data::Set;
 
 use base 'Data::Collection';
-use strict;
-use utf8;
-
 use Pearl;
 
 
