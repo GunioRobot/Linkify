@@ -192,7 +192,7 @@ sub equal {
 
 sub functions {
     @ARG == 1 or die "Expecting no arguments.\n";
-    print "Available functions:\n", join "\n", sort keys %FUNCTIONS;
+    print "Available functions:\n", join("\n", sort keys %FUNCTIONS), "\n";
     return Data::Identifier->new('DONE');
 }
 

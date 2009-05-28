@@ -85,11 +85,11 @@ Creates an instance of a class using an empty hash.
 =back
 =cut
 sub instantiate {
-    my ($invocant) = @ARG;
+    my ($invocant, %attributes) = @ARG;
     my $class = ref($invocant) || $invocant;
-    my $self = {};
+    my %self = %attributes;
     
-    return bless $self, $class;
+    return bless \%self, $class;
 }
 
 

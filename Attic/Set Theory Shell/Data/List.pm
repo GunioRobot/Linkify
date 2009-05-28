@@ -5,11 +5,8 @@ use Pearl;
 
 
 sub new {
-    my ($invocant) = @ARG;
-    my $class = ref($invocant) || $invocant;
-    my $self = {elements => []};
-    
-    return bless $self, $class;
+    my ($class) = @ARG;
+    return instantiate($class, elements => []);
 }
 
 
