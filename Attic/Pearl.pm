@@ -78,9 +78,16 @@ sub async(&@) {
 }
 
 
-=item instantiate(CLASS);
+=item instantiate(CLASS, ATTRIBUTES);
 
-Creates an instance of a class using an empty hash.
+Creates an instance of a class, using the given hash for the initial attributes.
+
+Example:
+
+  sub new {
+      my ($class, $name, $age) = @ARG;
+      return instantiate($class, name => $name, age => $age);
+  }
 
 =back
 =cut
