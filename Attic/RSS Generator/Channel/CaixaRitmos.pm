@@ -58,7 +58,9 @@ sub _parse {
         }
     }
     
-    return sort {$a->{date} cmp $b->{date} || $a->{part} cmp $b->{part}} @episodes;
+    return sort {
+        $a->{date} cmp $b->{date} || $a->{part} cmp $b->{part}
+    } @episodes;
 }
 
 
