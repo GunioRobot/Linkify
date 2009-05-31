@@ -110,20 +110,17 @@
         
         (:body
           (:div (@ (:class "Header"))
-                (:h1 (@ (:class "Title"))
-                     (? title-of site)))
+                (:h1 (? title-of site)))
           
           (:div (@ (:class "Menu"))
-                (:ul (@ (:class "Menu-List"))
-                     (dolist (page pages)
+                (:ul (dolist (page pages)
                        
-                       (let* ((selected (if (equal? page current-page) " Selected" ""))
-                              (classes (concatenate 'string "Menu-List-Item" selected))
+                       (let* ((selected (if (equal? page current-page) "Selected" ""))
                               (link (if compiling?
                                         (compiled-file-of page)
                                         (concatenate 'string "?page=" (id-of page)))))
                          
-                         (XML (:li (@ (:class classes))
+                         (XML (:li (@ (:class selected))
                                    (:a (@ (:href link))
                                        (? title-of page))))))))
           
