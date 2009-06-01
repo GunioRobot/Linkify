@@ -33,8 +33,8 @@ BEGIN {
 }
 
 
-our @EXPORT = qw(*STDNULL $false $true async instantiate);
-our $VERSION = v2009.05.28;
+our @EXPORT = qw(*STDNULL $false $true async instantiate uncapitalize);
+our $VERSION = v2009.06.01;
 
 
 sub import {
@@ -89,13 +89,30 @@ Example:
       return instantiate($class, name => $name, age => $age);
   }
 
-=back
 =cut
-sub instantiate {
+sub instantiate($;%) {
     my ($invocant, %self) = @ARG;
     my $class = ref($invocant) || $invocant;
     
     return bless \%self, $class;
+}
+
+
+=item uncapitalize(STRING);
+
+Removes capitalization of words.
+
+Example:
+
+  print uncapitalize("HELLO WORLD!"), "\n";
+
+=back
+=cut
+sub uncapitalize($) {
+    my ($text) = @ARG;
+    
+    $text =~ s/(\p{IsWord}+)/length($1) == 1 ? lc($1) : ucfirst(lc($1))/ge;
+    return ucfirst $text;
 }
 
 
