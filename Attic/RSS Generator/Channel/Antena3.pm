@@ -48,7 +48,7 @@ sub _parse {
         `gsx
     );
     
-    my $program = _uncapitalize($content =~ m/"nomeprograma">([^<]+?)\s*</);
+    my $program = uncapitalize($content =~ m/"nomeprograma">([^<]+?)\s*</);
     my @episodes;
     
     while (@info > 0) {
@@ -99,14 +99,6 @@ sub _to_html {
   <b>Tamanho:</b> $episode->{size} MiB
 </p>
 HTML
-}
-
-
-sub _uncapitalize {
-    my ($text) = @ARG;
-    
-    $text =~ s/(\p{IsWord}+)/length($1) == 1 ? lc($1) : ucfirst(lc($1))/ge;
-    return ucfirst $text;
 }
 
 

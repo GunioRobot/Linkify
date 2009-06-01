@@ -44,7 +44,7 @@ sub _parse {
         push @guide, {
             hour => shift @hours,
             link => shift @links,
-            title => _uncapitalize(shift @titles),
+            title => uncapitalize(shift @titles),
         }
     }
     
@@ -63,14 +63,6 @@ sub _to_html {
 sub _today {
     my ($seconds, $minutes, $hours, $day, $month, $year) = gmtime;
     return sprintf '%d-%02d-%02d', ($year + 1900), ($month + 1), $day;
-}
-
-
-sub _uncapitalize {
-    my ($text) = @ARG;
-    
-    $text =~ s/(\p{IsWord}+)/length($1) == 1 ? lc($1) : ucfirst(lc($1))/ge;
-    return ucfirst $text;
 }
 
 
