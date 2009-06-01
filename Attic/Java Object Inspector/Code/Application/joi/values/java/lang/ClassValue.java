@@ -15,16 +15,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import joi.Inspectable;
-import joi.InspectableAnnotation;
-import joi.InspectableClass;
-import joi.InspectableConstructor;
-import joi.InspectableFactory;
-import joi.InspectableField;
-import joi.InspectableMethod;
 import joi.exceptions.NullInspectionException;
 import joi.exceptions.PrimitiveInspectionException;
 import joi.exceptions.UnsupportedTypeException;
-
+import joi.inspectables.InspectableAnnotation;
+import joi.inspectables.InspectableClass;
+import joi.inspectables.InspectableConstructor;
+import joi.inspectables.InspectableField;
+import joi.inspectables.InspectableMethod;
 
 
 /**
@@ -37,11 +35,11 @@ public class ClassValue extends ObjectValue {
     static {
         _PRIMITIVE_TYPES_NAMES = new HashMap<String, Class<?>>();
         
-        for (Class<?> type : InspectableFactory.getPrimitiveTypes()) {
+        for (Class<?> type : getPrimitiveTypes()) {
             _PRIMITIVE_TYPES_NAMES.put(type.getSimpleName(), type);
         }
     }
-
+    
 
     /**
      * Gets the class name of a class.

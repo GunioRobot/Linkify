@@ -11,7 +11,6 @@ import joi.Inspectable;
 import joi.values.java.lang.ObjectValue;
 
 
-
 /**
  * Java object inspector console.
  */

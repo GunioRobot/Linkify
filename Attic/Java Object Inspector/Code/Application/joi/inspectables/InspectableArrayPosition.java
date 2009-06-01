@@ -1,9 +1,11 @@
-package joi;
+package joi.inspectables;
 
 
 import java.lang.reflect.Array;
 import java.util.List;
 
+import joi.Inspectable;
+import joi.Writeable;
 import joi.exceptions.NullInspectionException;
 import joi.exceptions.NullValueException;
 import joi.exceptions.PrimitiveInspectionException;
@@ -12,22 +14,21 @@ import joi.values.java.lang.ClassValue;
 import joi.values.java.lang.ObjectValue;
 
 
-
 /**
  * An array position that can be inspected.
  */
 public class InspectableArrayPosition implements Inspectable, Writeable {
     private ArrayValue _arrayValue;
     private int _position;
-    private ObjectValue _inspectableValue = null;
+    private ObjectValue _inspectableValue;
     
 
     public InspectableArrayPosition(ArrayValue arrayValue, int position) {
         _arrayValue = arrayValue;
         _position = position;
         
-        Class<?> clazz = _arrayValue.getComponentType();
-        _inspectableValue = InspectableFactory.createInspectable(clazz, null);
+        Class<?> componentClass = _arrayValue.getComponentType();
+        _inspectableValue = ObjectValue.detectFromClass(componentClass);
     }
     
 

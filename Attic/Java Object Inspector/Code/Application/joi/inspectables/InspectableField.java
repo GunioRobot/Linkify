@@ -1,10 +1,12 @@
-package joi;
+package joi.inspectables;
 
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
+import joi.Inspectable;
+import joi.Writeable;
 import joi.exceptions.InspectionDeniedException;
 import joi.exceptions.InstanceFieldException;
 import joi.exceptions.NullInspectionException;
@@ -14,14 +16,13 @@ import joi.values.java.lang.ClassValue;
 import joi.values.java.lang.ObjectValue;
 
 
-
 /**
  * A field that can be inspected.
  */
 public class InspectableField implements Inspectable, Writeable {
     private Field _field;
     private Object _owner;
-    private ObjectValue _inspectableValue = null;
+    private ObjectValue _inspectableValue;
     
 
     /**
@@ -35,8 +36,7 @@ public class InspectableField implements Inspectable, Writeable {
         _owner = owner;
         
         _field.setAccessible(true);
-        _inspectableValue = InspectableFactory.createInspectable(
-            field.getType(), null);
+        _inspectableValue = ObjectValue.detectFromClass(field.getType());
     }
     
 

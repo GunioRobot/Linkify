@@ -8,15 +8,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import joi.Inspectable;
-import joi.InspectableArrayLength;
-import joi.InspectableArrayPosition;
 import joi.exceptions.InvalidSyntaxException;
 import joi.exceptions.NullInspectionException;
 import joi.exceptions.UnsupportedTypeException;
+import joi.inspectables.InspectableArrayLength;
+import joi.inspectables.InspectableArrayPosition;
 import joi.values.java.lang.ClassValue;
 import joi.values.java.lang.ObjectValue;
 import joi.values.java.lang.StringValue;
-
 
 
 /**

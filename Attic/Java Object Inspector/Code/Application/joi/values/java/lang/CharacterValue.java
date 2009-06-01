@@ -10,7 +10,6 @@ import joi.exceptions.InvalidSyntaxException;
 import joi.exceptions.UnsupportedTypeException;
 
 
-
 /**
  * A character that can be inspected.
  */

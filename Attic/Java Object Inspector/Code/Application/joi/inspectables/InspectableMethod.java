@@ -1,10 +1,9 @@
-package joi;
+package joi.inspectables;
 
 
 import java.lang.reflect.Method;
 
 import joi.values.java.lang.ClassValue;
-
 
 
 /**

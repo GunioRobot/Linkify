@@ -8,7 +8,6 @@ import joi.exceptions.InvalidSyntaxException;
 import joi.exceptions.UnsupportedTypeException;
 
 
-
 /**
  * A string that can be inspected.
  */

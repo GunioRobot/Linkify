@@ -1,11 +1,11 @@
-package joi;
+package joi.inspectables;
 
 
 import java.util.List;
 
+import joi.Inspectable;
 import joi.exceptions.PrimitiveInspectionException;
 import joi.values.ArrayValue;
-
 
 
 /**

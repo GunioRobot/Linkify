@@ -1,4 +1,4 @@
-package joi;
+package joi.inspectables;
 
 
 import java.lang.annotation.Annotation;

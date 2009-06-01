@@ -5,7 +5,6 @@ import static java.lang.System.err;
 import joi.exceptions.WrongNumberOfArgumentsException;
 
 
-
 /**
  * Lists all registered commands in a console.
  */

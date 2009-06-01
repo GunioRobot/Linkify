@@ -9,7 +9,6 @@ import joi.exceptions.InvalidIndexException;
 import joi.exceptions.WrongNumberOfArgumentsException;
 
 
-
 /**
  * Modifies an object's field value.
  */

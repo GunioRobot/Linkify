@@ -1,10 +1,10 @@
-package joi;
+package joi.inspectables;
 
 
 import java.util.List;
 
+import joi.Inspectable;
 import joi.values.java.lang.ClassValue;
-
 
 
 /**
