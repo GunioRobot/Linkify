@@ -10,7 +10,7 @@ body {
     
     cursor: default;
     
-    background-image: url("Images/Background.png");
+    background-image: url("Images/Blue/Background.png");
     background-repeat: repeat-x;
 }
 
@@ -162,11 +162,9 @@ body {
 .Footer {
     margin-top: 2em;
     margin-bottom: 2.5em;
+    font-size: smaller;
 }
 
-.Footer .Date,
-.Footer .Generator,
-.Footer .Hosting {
-    font-size: smaller;
+.Footer p {
     margin: 0;
 }

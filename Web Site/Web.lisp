@@ -76,10 +76,13 @@
              (XML (:meta (@ (:name "Author")
                             (:content (? author-of site))))))
            
-           (:link (@ (:rel "StyleSheet")
-                     (:type "text/css")
-                     (:media (? style-of site))
-                     (:href (? concatenate 'string (style-of site) ".css"))))
+           (when (style-of site)
+             (let ((file (cdr (assoc 'file (style-of site))))
+                   (media (cdr (assoc 'media (style-of site)))))
+               (XML (:link (@ (:rel "StyleSheet")
+                              (:type "text/css")
+                              (:media media)
+                              (:href file))))))
            
            (when (rss-of site)
              (let ((title (car (rss-of site)))
@@ -127,8 +130,9 @@
           (:div (@ (:class "Document"))
                 (load (file-of current-page)))
           
-          (:div (@ (:class "Footer"))
-                
+          (when (footer-of site)
+            (XML
+              (:div (@ (:class "Footer"))
                 (dolist (line (footer-of site))
                   (XML (:p (@ (:class (? car line)))
                            (? cdr line))))
@@ -141,7 +145,7 @@
                     (XML (:a (@ (:class "Logo")
                                 (:href link))
                              (:img (@ (:src image)
-                                      (:alt text)))))))))))))
+                                      (:alt text)))))))))))))))
 
 
 (defun Settings (&rest options)
