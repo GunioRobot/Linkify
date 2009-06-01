@@ -37,7 +37,7 @@ sub clean_up {
     $rss->{items} = [sort {$a->{dc}->{date} cmp $b->{dc}->{date}} values %items];
     
     # Remove old items.
-    shift @{$rss->{items}} while @{$rss->{items}} > 7;
+    shift @{$rss->{items}} while @{$rss->{items}} > 15;
     
     # Don't use the provided "save" method to preserve the UTF-8 encoding.
     open my $rdf, '>:utf8', $channel->{rdf};
