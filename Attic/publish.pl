@@ -189,7 +189,7 @@ sub publish_v5 {
         xsl => \&get_xsl,
     );
     
-    if ($OSNAME eq 'MSWin32') {
+    if (eval {require Win32}) {
         $data{$ARG} = $data{$ARG}->($cache) for sort keys %data;
     }
     else {
