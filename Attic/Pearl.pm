@@ -18,6 +18,7 @@ use utf8;
 use warnings;
 
 use Carp;
+use Cwd;
 use English '-no_match_vars';
 use File::Spec;
 use IO::Handle;
@@ -33,7 +34,7 @@ BEGIN {
 }
 
 
-our @EXPORT = qw(*STDNULL $false $true async instantiate uncapitalize);
+our @EXPORT = qw(*STDNULL $false $true async instantiate ls uncapitalize);
 our $VERSION = v2009.06.01;
 
 
@@ -54,6 +55,8 @@ sub import {
 =over 4
 
 =item async {...};
+
+=item async(FUNCTION, ARGUMENTS);
 
 Executes code asynchronously, that is, in a separate thread of execution (if
 possible). The resulting value is a reference to a scalar, which points to the
@@ -78,6 +81,8 @@ sub async(&@) {
 }
 
 
+=item instantiate(CLASS);
+
 =item instantiate(CLASS, ATTRIBUTES);
 
 Creates an instance of a class, using the given hash for the initial attributes.
@@ -95,6 +100,30 @@ sub instantiate($;%) {
     my $class = ref($invocant) || $invocant;
     
     return bless \%self, $class;
+}
+
+
+=item ls();
+
+=item ls(DIRECTORY);
+
+Lists all entries in the given directory, or current working directory if not
+specified.
+
+Example:
+
+  ls("Documents/");
+
+=cut
+sub ls(;$) {
+    my ($path) = @ARG;
+    $path = getcwd() unless defined $path;
+    
+    opendir my ($directory), $path or die $ERRNO;
+    my @files = File::Spec->no_upwards(readdir $directory);
+    closedir $directory;
+    
+    return ((@files == 1) && !wantarray) ? pop @files : @files;
 }
 
 

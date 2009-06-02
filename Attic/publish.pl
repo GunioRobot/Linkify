@@ -132,17 +132,6 @@ sub get_xsl {
 }
 
 
-sub ls {
-    my ($path) = @ARG;
-    
-    opendir my ($directory), $path;
-    my @files = grep {$ARG ne curdir and $ARG ne updir} readdir $directory;
-    closedir $directory;
-    
-    return ((@files == 1) && !wantarray) ? pop @files : @files;
-}
-
-
 sub main {
     if (@ARG != 1) {
         print "Compiles documents in DocBook format to HTML.\n";
