@@ -193,6 +193,9 @@ $WARNING = $true;
 
 package Pearl::Constant::Scalar;
 
+use strict;
+use warnings;
+
 use Carp;
 use English '-no_match_vars';
 
@@ -221,6 +224,9 @@ sub TIESCALAR {
 
 
 package Pearl::Lazy::Scalar;
+
+use strict;
+use warnings;
 
 use Carp;
 use English '-no_match_vars';
@@ -266,6 +272,9 @@ sub UNTIE {
 
 
 package Pearl::Overloaded::Scalar;
+
+use strict;
+use warnings;
 
 use Carp;
 use English '-no_match_vars';
