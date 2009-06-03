@@ -35,7 +35,7 @@ BEGIN {
 
 
 our @EXPORT = qw(*STDNULL $false $true async instantiate ls uncapitalize);
-our $VERSION = v2009.06.01;
+our $VERSION = v2009.06.03;
 
 
 sub import {
@@ -179,7 +179,7 @@ tie our $true, __PACKAGE__.'::Constant::Scalar',
 
 
 binmode STDERR, ':utf8';
-binmode STDOUT, ':utf8';
+binmode STDOUT;
 
 autoflush STDERR;
 autoflush STDOUT;
