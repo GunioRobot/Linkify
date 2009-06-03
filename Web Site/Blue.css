@@ -47,7 +47,7 @@ body {
     padding: 0 1em 0 1em;
 }
 
-.Menu ul li[class~=Selected] a,
+.Menu ul li[class~=Selected] a[href],
 .Menu ul li a[href]:hover {
     border-color: #89B2FF;
     background-color: #89B2FF;
