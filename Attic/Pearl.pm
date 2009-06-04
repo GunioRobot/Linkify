@@ -33,18 +33,13 @@ BEGIN {
     }
 }
 
-
-our @EXPORT = qw(*STDNULL $false $true async exit instantiate ls uncapitalize);
-our $VERSION = v2009.06.04;
-
-
-if ($OSNAME eq 'MSWin32') {
-    # Prevent the wrong warning of exiting with active threads.
-    sub exit(;$) {
-        no warnings 'threads';
-        CORE::exit(@ARG);
-    }
+END {
+    $ARG->join() foreach threads->list();
 }
+
+
+our @EXPORT = qw(*STDNULL $false $true async instantiate ls uncapitalize);
+our $VERSION = v2009.06.04;
 
 
 sub import {
@@ -239,12 +234,6 @@ use warnings;
 
 use Carp;
 use English '-no_match_vars';
-
-
-sub DESTROY {
-    my ($self) = @ARG;
-    $self->{thread}->join() if $self->{thread}->is_running();
-}
 
 
 sub FETCH {
