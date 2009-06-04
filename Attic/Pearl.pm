@@ -70,7 +70,7 @@ Example:
 
   sub greet {
       print "Hello world!\n";
-      return getlogin;
+      return 'Bye!';
   }
 
   my $result = async {greet()};
