@@ -178,18 +178,11 @@ sub publish_v5 {
         xsl => \&get_xsl,
     );
     
-    if (eval {require Win32}) {
-        $data{$ARG} = $data{$ARG}->($cache) for sort keys %data;
-    }
-    else {
-        $data{$ARG} = async(\&{$data{$ARG}}, $cache) for sort keys %data;
-    }
-    
-    defined $data{$ARG} or die "Download failed" for sort keys %data;
+    $data{$ARG} = async(\&{$data{$ARG}}, $cache) for sort keys %data;
     
     my ($msvs, $rng, $saxon, $xsl) = @data{qw(msvs rng saxon xsl)};
-    my $validate = ['java', '-jar', $msvs, "file://localhost/$rng", $file];
-    my $compile = ['java', '-jar', $saxon, "-s:$file", "-xsl:$xsl", "-o:$out"];
+    my $validate = ['java', '-jar', $$msvs, "file://localhost/$$rng", $file];
+    my $compile = ['java', '-jar', $$saxon, "-s:$file", "-xsl:$$xsl", "-o:$out"];
     
     return ($validate, $compile);
 }
