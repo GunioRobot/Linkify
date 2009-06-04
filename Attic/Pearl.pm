@@ -25,8 +25,8 @@ use IO::Handle;
 
 
 BEGIN {
-    # Detect the redirection problem.
     if ($OSNAME eq 'MSWin32') {
+        # Detect the redirection problem.
         my $io = IO::Handle->new_from_fd(fileno(STDIN), 'r');
         $io or die "Run this script again using the interpreter explicitly.\n";
         $io->close;
@@ -34,8 +34,17 @@ BEGIN {
 }
 
 
-our @EXPORT = qw(*STDNULL $false $true async instantiate ls uncapitalize);
-our $VERSION = v2009.06.03;
+our @EXPORT = qw(*STDNULL $false $true async exit instantiate ls uncapitalize);
+our $VERSION = v2009.06.04;
+
+
+if ($OSNAME eq 'MSWin32') {
+    # Prevent the wrong warning of exiting with active threads.
+    sub exit(;$) {
+        no warnings 'threads';
+        CORE::exit(@ARG);
+    }
+}
 
 
 sub import {
@@ -188,7 +197,7 @@ $LIST_SEPARATOR = ', ';
 $WARNING = $true;
 
 
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 
 package Pearl::Constant::Scalar;
@@ -220,7 +229,7 @@ sub TIESCALAR {
 };
 
 
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 
 package Pearl::Lazy::Scalar;
@@ -234,7 +243,7 @@ use English '-no_match_vars';
 
 sub DESTROY {
     my ($self) = @ARG;
-    $self->{thread}->join() unless exists $self->{result};
+    $self->{thread}->join() if $self->{thread}->is_running();
 }
 
 
@@ -259,6 +268,8 @@ sub TIESCALAR {
     
     my ($class, $function, @arguments) = @ARG;
     my $self = {thread => threads->create($function, @arguments)};
+    
+    croak 'Failed to create thread' unless defined $self->{thread};
     return bless $self, $class;
 }
 
@@ -268,7 +279,7 @@ sub UNTIE {
 }
 
 
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 
 package Pearl::Overloaded::Scalar;
@@ -314,7 +325,7 @@ sub to_string {
 }
 
 
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 
-1
+1;
