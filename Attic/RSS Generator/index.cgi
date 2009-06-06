@@ -48,7 +48,7 @@ sub clean_up {
 
 sub generate_channel {
     my ($channel) = @ARG;
-    my $rss = new XML::RSS;
+    my $rss = XML::RSS->new();
     
     if (-e $channel->{rdf}) {
         $rss->parsefile($channel->{rdf});

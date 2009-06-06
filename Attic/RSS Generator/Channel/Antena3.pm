@@ -21,10 +21,10 @@ sub _download {
     my $response = $browser->get($link, 'User-Agent' => 'Mozilla');
     
     $response->is_success
-      or die 'Download failed: '.$response->status_line."\n";
+        or die 'Download failed: '.$response->status_line."\n";
     
     $response->content_type eq 'text/html'
-      or die 'Invalid content type: '.$response->content_type."\n";
+        or die 'Invalid content type: '.$response->content_type."\n";
     
     return $response->decoded_content;
 }

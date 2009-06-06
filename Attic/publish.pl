@@ -23,7 +23,7 @@ exit 1;
 
 sub download {
     my ($link, $output) = @ARG;
-    my $browser = new LWP::UserAgent;
+    my $browser = LWP::UserAgent->new();
     my %options = ('User-Agent' => 'Mozilla');
     
     if (defined $output) {
@@ -53,7 +53,7 @@ sub get_msvs {
         mkpath($cache);
         
         my $path = download($url, catfile($cache, $file));
-        my $archive = new Archive::Extract(archive => $path);
+        my $archive = Archive::Extract->new(archive => $path);
         
         $archive->extract(to => $cache) or die $archive->error;
         unlink $path;
@@ -95,7 +95,7 @@ sub get_saxon {
         mkpath($cache);
         
         my $path = download("$url?download", catfile($cache, $file));
-        my $archive = new Archive::Extract(archive => $path);
+        my $archive = Archive::Extract->new(archive => $path);
         
         $archive->extract(to => $cache) or die $archive->error;
         unlink $path;
@@ -121,7 +121,7 @@ sub get_xsl {
         mkpath($cache);
         
         my $path = download($url, catfile($cache, $file));
-        my $archive = new Archive::Extract(archive => $path);
+        my $archive = Archive::Extract->new(archive => $path);
         
         $archive->extract(to => $cache) or die $archive->error;
         unlink $path;
@@ -140,7 +140,7 @@ sub main {
     }
     
     my ($file) = @ARG;
-    my $document = new XML::DOM::Parser->parsefile($file);
+    my $document = XML::DOM::Parser->new()->parsefile($file);
     my $version = $document->getDocumentElement()->getAttribute('version');
     my $publish = ($version =~ m/^5/) ? \&publish_v5 : \&publish;
     
