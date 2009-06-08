@@ -8,6 +8,7 @@ use XML::RSS;
 
 
 eval {
+    binmode STDOUT, ':utf8';
     my $name = url_param('channel');
     
     if (defined $name) {
