@@ -39,7 +39,7 @@ END {
 
 
 our @EXPORT = qw(*STDNULL $false $true async instantiate ls uncapitalize);
-our $VERSION = v2009.06.04;
+our $VERSION = v2009.06.08;
 
 
 sub import {
@@ -99,7 +99,7 @@ Example:
   }
 
 =cut
-sub instantiate($;%) {
+sub instantiate {
     my ($invocant, %self) = @ARG;
     my $class = ref($invocant) || $invocant;
     
@@ -119,7 +119,7 @@ Example:
   ls("Documents/");
 
 =cut
-sub ls(;$) {
+sub ls {
     my ($path) = @ARG;
     $path = getcwd() unless defined $path;
     
@@ -141,7 +141,7 @@ Example:
 
 =back
 =cut
-sub uncapitalize($) {
+sub uncapitalize {
     my ($text) = @ARG;
     
     $text =~ s/(\p{IsWord}+)/length($1) == 1 ? lc($1) : ucfirst(lc($1))/ge;
