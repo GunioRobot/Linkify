@@ -10,9 +10,9 @@ our $link = 'http://ww1.rtp.pt/multimedia/index.php?rcanal=3';
 our $title = 'Antena 3 Podcasts';
 
 my @links = (
-    "http://ww1.rtp.pt/multimedia/programa.php?prog=1683&from_iframe=",
-    "http://ww1.rtp.pt/multimedia/programa.php?prog=1078&from_iframe=",
-    "http://ww1.rtp.pt/multimedia/programa.php?prog=1680&from_iframe=",
+    'http://ww1.rtp.pt/multimedia/programa.php?prog=1683&from_iframe=',
+    'http://ww1.rtp.pt/multimedia/programa.php?prog=1078&from_iframe=',
+    'http://ww1.rtp.pt/multimedia/programa.php?prog=1680&from_iframe=',
 );
 
 sub _download {
