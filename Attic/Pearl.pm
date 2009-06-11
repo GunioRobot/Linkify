@@ -27,9 +27,9 @@ use IO::Handle;
 BEGIN {
     if ($OSNAME eq 'MSWin32') {
         # Detect the redirection problem.
-        my $io = IO::Handle->new_from_fd(fileno(STDIN), 'r');
-        $io or die "Run this script again using the interpreter explicitly.\n";
-        $io->close;
+        my $in = IO::Handle->new_from_fd(fileno(STDIN), 'r');
+        $in or die "Run this script again using the interpreter explicitly.\n";
+        $in->close();
     }
 }
 
@@ -43,9 +43,9 @@ our $VERSION = v2009.06.08;
 
 
 sub import {
-    strict->import;
-    utf8->import;
-    warnings->import;
+    strict->import();
+    utf8->import();
+    warnings->import();
     
     English->export_to_level(1);
     __PACKAGE__->export_to_level(1);
@@ -116,7 +116,7 @@ specified.
 
 Example:
 
-  ls("Documents/");
+  ls("Documents");
 
 =cut
 sub ls {
@@ -212,7 +212,7 @@ sub FETCH {
 
 sub TIESCALAR {
     my ($package) = caller;
-    croak 'Internal package' unless $package eq Pearl::;
+    croak('Internal package') unless $package eq Pearl::;
     
     my ($class, $self) = @ARG;
     return bless \$self, $class;
@@ -220,7 +220,7 @@ sub TIESCALAR {
 
 
 *STORE = *UNTIE = sub {
-    croak 'Constant values are read-only';
+    croak('Constant values are read-only');
 };
 
 
@@ -253,18 +253,18 @@ sub STORE {
 
 sub TIESCALAR {
     my ($package) = caller;
-    croak 'Internal package' unless $package eq Pearl::;
+    croak('Internal package') unless $package eq Pearl::;
     
     my ($class, $function, @arguments) = @ARG;
     my $self = {thread => threads->create($function, @arguments)};
     
-    croak 'Failed to create thread' unless defined $self->{thread};
+    croak('Failed to create thread') unless defined $self->{thread};
     return bless $self, $class;
 }
 
 
 sub UNTIE {
-    croak 'Lazy scalars must remain tied';
+    croak('Lazy scalars must remain tied');
 }
 
 
@@ -283,7 +283,7 @@ use overload 'bool' => \&to_boolean, '0+' => \&to_number, '""' => \&to_string;
 
 sub new {
     my ($package) = caller;
-    croak 'Internal package' unless $package eq Pearl::;
+    croak('Internal package') unless $package eq Pearl::;
     
     my ($class, $boolean, $number, $string) = @ARG;
     my $self = {
