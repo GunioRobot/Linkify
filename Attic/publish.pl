@@ -178,11 +178,11 @@ sub publish_v5 {
         xsl => \&get_xsl,
     );
     
-    $data{$ARG} = async(\&{$data{$ARG}}, $cache) for sort keys %data;
+    $data{$ARG} = $data{$ARG}->($cache) for sort keys %data;
     
     my ($msvs, $rng, $saxon, $xsl) = @data{qw(msvs rng saxon xsl)};
-    my $validate = ['java', '-jar', $$msvs, "file://localhost/$$rng", $file];
-    my $compile = ['java', '-jar', $$saxon, "-s:$file", "-xsl:$$xsl", "-o:$out"];
+    my $validate = ['java', '-jar', $msvs, "file://localhost/$rng", $file];
+    my $compile = ['java', '-jar', $saxon, "-s:$file", "-xsl:$xsl", "-o:$out"];
     
     return ($validate, $compile);
 }
