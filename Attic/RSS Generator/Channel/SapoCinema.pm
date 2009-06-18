@@ -4,14 +4,34 @@ use LWP;
 use Pearl;
 
 
-our $description = 'Weekly movie guide from the Sapo Cultura web site.';
-our $link = 'http://cultura.sapo.pt/cinema.aspx';
-our $title = 'Sapo Cultura Cinema';
+sub details {
+    return (
+        description => 'Weekly movie guide from the Sapo Cultura web site.',
+        url => 'http://cultura.sapo.pt/cinema.aspx',
+        title => 'Sapo Cultura Cinema',
+    );
+}
+
+
+sub generate {
+    my ($rss) = @ARG;
+    my @guide = _parse(_download());
+    
+    $rss->add_item(
+        title => 'Weekly Guide',
+        link => {details()}->{url},
+        description => join('', map {_to_html($ARG)} @guide),
+        dc => {
+            date => $guide[0]{date},
+            identifier => $guide[0]{date},
+        },
+    );
+}
 
 
 sub _download {
     my $browser = new LWP::UserAgent;
-    my $response = $browser->get($link, 'User-Agent' => 'Mozilla');
+    my $response = $browser->get({details()}->{url}, 'User-Agent' => 'Mozilla');
     
     $response->is_success
         or die 'Download failed: '.$response->status_line."\n";
@@ -35,7 +55,7 @@ sub _parse {
         \s+<h1><[^<]+>
         ([^>]+)    # Portuguese title.
         </a></h1><a\s*href="
-        ([^"]+)    # Link.
+        ([^"]+)    # URL.
         ">
         ([^>]+)    # Title.
         \s+</a><br\s*/>\s*
@@ -46,14 +66,14 @@ sub _parse {
     while (@info > 0) {
         my $genre = shift @info;
         my $title_pt = shift @info;
-        my $link = shift @info;
+        my $url = shift @info;
         my $title = shift @info;
         my $date = shift @info;
         
         push @guide, {
             date => join('-', reverse split m/-/, $date),
             genre => $genre,
-            link => "http://cultura.sapo.pt$link",
+            url => "http://cultura.sapo.pt$url",
             title => $title,
             title_pt => $title_pt,
         }
@@ -65,23 +85,10 @@ sub _parse {
 
 sub _to_html {
     my ($program) = @ARG;
-    my ($link, $title, $pt, $genre) = @$program{qw(link title title_pt genre)};
+    my ($url, $title, $pt, $genre) = @$program{qw(url title title_pt genre)};
     
-    return "<p><b><a href=\"$link\">$title</a></b><br/>\"$pt\", <i>$genre</i></p>";
+    return qq{<p><b><a href="$url">$title</a></b><br/>"$pt", <i>$genre</i></p>};
 }
 
 
-sub generate {
-    my ($rss) = @ARG;
-    my @guide = _parse(_download());
-    
-    $rss->add_item(
-        title => 'Weekly Guide',
-        link => $link,
-        description => join('', map {_to_html($ARG)} @guide),
-        dc => {
-            date => $guide[0]{date},
-            identifier => $guide[0]{date},
-        },
-    );
-}
+1;

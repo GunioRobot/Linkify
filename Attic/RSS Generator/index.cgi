@@ -42,7 +42,7 @@ sub clean_up {
     
     # Don't use the provided "save" method to preserve the UTF-8 encoding.
     open my $rdf, '>:utf8', $channel->{rdf};
-    print $rdf $rss->as_string;
+    print $rdf $rss->as_string();
     close $rdf;
 }
 
@@ -57,7 +57,7 @@ sub generate_channel {
     else {
         $rss->channel(
             title => $channel->{title},
-            link => $channel->{link},
+            link => $channel->{url},
             description => $channel->{description},
         );
     }
@@ -66,30 +66,36 @@ sub generate_channel {
     clean_up($channel, $rss);
     
     print "Content-type: text/xml; charset=UTF-8\n\n";
-    print $rss->as_string;
+    print $rss->as_string();
 }
 
 
 sub load_channel {
     my $name = fileparse(shift @ARG, '.pm');
     my $package = 'Channel';
-    my $module = catfile($package, "$name.pm");
     
     if ($name eq '*') {
         return map {load_channel($ARG)} sort glob catfile($package, '*.pm');
     }
     
-    die "Unknown channel: $name\n" unless -r $module && -T $module;
-    require $module;
+    my $module_path = catfile($package, "$name.pm");
+    die "Unknown channel: $name\n" unless -r $module_path && -T $module_path;
+    require $module_path;
+    
+    my $namespace = \%::;
+    my $channels = $namespace->{$package.'::'};
+    my $channel = $channels->{$name.'::'};
+    
+    my %details = &{$channel->{details}}();
+    my $generate = \&{$channel->{generate}};
     
     return {
-        description => eval "\$${package}::${name}::description",
-        generate => eval "\\&${package}::${name}::generate",
-        link => eval "\$${package}::${name}::link",
-        module => $module,
+        description => $details{description},
+        generate => $generate,
+        url => $details{url},
         name => $name,
         rdf => catfile($package, "$name.rdf"),
-        title => eval "\$${package}::${name}::title",
+        title => $details{title},
     };
 }
 

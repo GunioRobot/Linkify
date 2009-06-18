@@ -5,28 +5,59 @@ use LWP;
 use Pearl;
 
 
-our $description = 'Weekly podcasts from the Antena 3 Portuguese radio station.';
-our $link = 'http://ww1.rtp.pt/multimedia/index.php?rcanal=3';
-our $title = 'Antena 3 Podcasts';
-
-my @links = (
-    'http://ww1.rtp.pt/multimedia/programa.php?prog=1683&from_iframe=',
-    'http://ww1.rtp.pt/multimedia/programa.php?prog=1078&from_iframe=',
-    'http://ww1.rtp.pt/multimedia/programa.php?prog=1680&from_iframe=',
+my @urls = qw(
+    http://ww1.rtp.pt/multimedia/programa.php?prog=1683&from_iframe=
+    http://ww1.rtp.pt/multimedia/programa.php?prog=1078&from_iframe=
+    http://ww1.rtp.pt/multimedia/programa.php?prog=1680&from_iframe=
 );
 
+
+sub details {
+    return (
+        description => 'Weekly podcasts from the Antena 3 Portuguese radio station.',
+        url => 'http://ww1.rtp.pt/multimedia/index.php?rcanal=3',
+        title => 'Antena 3 Podcasts',
+    );
+}
+
+
+sub generate {
+    my ($rss) = @ARG;
+    
+    foreach my $url (@urls) {
+        foreach my $episode (_parse(_download($url))) {
+            $rss->add_item(
+                title => $episode->{title},
+                link => $episode->{url},
+                description => _to_html($episode),
+                dc => {
+                    date => $episode->{date},
+                    identifier => $episode->{identifier},
+                },
+            );
+        }
+    }
+}
+
+
+sub _by_date_id {
+    return $a->{date} cmp $b->{date}
+        || $a->{identifier} cmp $b->{identifier};
+}
+
+
 sub _download {
-    my ($link) = @ARG;
-    my $browser = new LWP::UserAgent;
-    my $response = $browser->get($link, 'User-Agent' => 'Mozilla');
+    my ($url) = @ARG;
+    my $browser = LWP::UserAgent->new();
+    my $response = $browser->get($url, 'User-Agent' => 'Mozilla');
     
-    $response->is_success
-        or die 'Download failed: '.$response->status_line."\n";
+    $response->is_success()
+        or die 'Download failed: '.$response->status_line()."\n";
     
-    $response->content_type eq 'text/html'
-        or die 'Invalid content type: '.$response->content_type."\n";
+    $response->content_type() eq 'text/html'
+        or die 'Invalid content type: '.$response->content_type()."\n";
     
-    return $response->decoded_content;
+    return $response->decoded_content();
 }
 
 
@@ -44,7 +75,7 @@ sub _parse {
         .+?
         (\d+\.\d+)             # Size in MiB.
         \s+Mb.+?"
-        (mms://[^"]+)          # Link.
+        (mms://[^"]+)          # URL.
         `gsx
     );
     
@@ -56,7 +87,7 @@ sub _parse {
         my $date = shift @info;
         my $length = shift @info;
         my $size = shift @info;
-        my $link = shift @info;
+        my $url = shift @info;
         
         my $title = $program;
         my @identifier = ($program, $date);
@@ -77,21 +108,18 @@ sub _parse {
             date => $date,
             identifier => md5_hex(join '#', @identifier),
             length => $length,
-            link => $link,
+            url => $url,
             size => $size,
             title => $title,
         }
     }
     
-    return sort {
-        $a->{date} cmp $b->{date} || $a->{identifier} cmp $b->{identifier}
-    } @episodes;
+    return sort _by_date_id @episodes;
 }
 
 
 sub _to_html {
     my ($episode) = @ARG;
-    
     return <<"HTML";
 <p>
   <b>Duração:</b> $episode->{length}
@@ -102,20 +130,4 @@ HTML
 }
 
 
-sub generate {
-    my ($rss) = @ARG;
-    
-    foreach my $link (@links) {
-        foreach my $episode (_parse(_download($link))) {
-            $rss->add_item(
-                title => $episode->{title},
-                link => $episode->{link},
-                description => _to_html($episode),
-                dc => {
-                    date => $episode->{date},
-                    identifier => $episode->{identifier},
-                },
-            );
-        }
-    }
-}
+1;
