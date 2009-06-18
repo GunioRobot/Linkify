@@ -11,15 +11,14 @@ use Pearl;
 =cut
 package Pearl;
 
-use base 'Exporter';
+use base qw(Exporter);
 use strict;
-use threads ();
+use threads qw();
 use utf8;
 use warnings;
 
-use Carp;
-use Cwd;
-use English '-no_match_vars';
+use Cwd qw(getcwd);
+use English qw(-no_match_vars);
 use File::Spec;
 use IO::Handle;
 
@@ -39,7 +38,7 @@ END {
 
 
 our @EXPORT = qw(*STDNULL $false $true async instantiate ls uncapitalize);
-our $VERSION = v2009.06.08;
+our $VERSION = v2009.06.18;
 
 
 sub import {
