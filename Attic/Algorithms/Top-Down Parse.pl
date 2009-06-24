@@ -4,6 +4,11 @@ use Pearl;
 use Class::Struct;
 
 
+struct State => {
+    syms => '@',
+    pos => '$',
+};
+
 sub is_terminal {
     my ($symbol) = @ARG;
     return $symbol ne uc $symbol;
@@ -55,11 +60,6 @@ foreach my $word (@words) {
     print "  \"$word\": ";
     $lexicon{$word} = [<STDIN> =~ m/(\w+)/g];
 }
-
-struct State => {
-    syms => '@',
-    pos => '$',
-};
 
 my $current = State->new();
 my $use_dfs = $true;

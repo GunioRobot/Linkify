@@ -6,17 +6,17 @@ use Pearl;
 
 
 sub add {
-    croak;
+    croak();
 }
 
 
 sub elements {
-    croak;
+    croak();
 }
 
 
 sub has {
-    croak;
+    croak();
 }
 
 

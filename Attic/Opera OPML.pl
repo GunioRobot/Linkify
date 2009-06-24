@@ -15,7 +15,7 @@ open my $index, '<', catfile(shift @ARGV, 'index.ini') or die $ERRNO;
 my @sections = split "\n\n", join '', <$index>;
 close $index;
 
-my $opml = new XML::OPML::SimpleGen(version => '1.0');
+my $opml = XML::OPML::SimpleGen->new(version => '1.0');
 $opml->head(title => 'Opera feed list');
 
 foreach my $section (grep m/^Type=5$/m, @sections) {

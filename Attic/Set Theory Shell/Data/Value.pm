@@ -18,7 +18,7 @@ sub to_hash {
 
 
 sub to_string {
-    croak;
+    croak();
 }
 
 
