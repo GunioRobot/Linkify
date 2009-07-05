@@ -1,4 +1,5 @@
 Officially supported browsers:
+- Chrome 2.0 (Windows XP)
 - Firefox 1.5.0.12 (Windows XP)
 - Firefox 2.0.0.20 (Windows XP)
 - Firefox 3.5 (Windows XP)
@@ -10,4 +11,4 @@ Officially supported browsers:
 - Opera 8.54 (Windows XP)
 - Opera 9.64 (Windows XP)
 
-Untested: Chrome, Konqueror, Netscape +7, Safari.
+Untested: Konqueror, Netscape +7, Safari.
