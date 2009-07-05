@@ -10,5 +10,7 @@ Officially supported browsers:
 - Opera 7.54u2 (Windows XP)
 - Opera 8.54 (Windows XP)
 - Opera 9.64 (Windows XP)
+- Safari 3.2.2 (Windows XP)
+- Safari 4.0 (Windows XP)
 
-Untested: Konqueror, Netscape +7, Safari.
+Untested: Konqueror, Netscape +7.
