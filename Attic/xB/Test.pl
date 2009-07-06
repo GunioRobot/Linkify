@@ -1,8 +1,9 @@
 #!/usr/bin/perl
 
 use File::Basename qw(basename);
-use File::Spec::Functions qw(splitpath);
+use File::Spec::Functions qw(catfile splitpath);
 use File::stat;
+use FindBin;
 use HTTP::Daemon;
 use HTTP::Response;
 use HTTP::Status qw(HTTP_NOT_FOUND RC_FORBIDDEN RC_OK);
@@ -64,7 +65,7 @@ continue {
 
 close $server if defined $server;
 printf "[%s] Off-line.\n", now();
-exec $PROGRAM_NAME unless defined $mtime;
+exec catfile($FindBin::Bin, basename($PROGRAM_NAME)), @ARGV unless $mtime;
 
 
 sub modules {
