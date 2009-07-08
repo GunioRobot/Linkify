@@ -277,14 +277,20 @@ use warnings;
 
 use Carp;
 use English '-no_match_vars';
-use overload 'bool' => \&to_boolean, '0+' => \&to_number, '""' => \&to_string;
+
+use overload
+    'fallback' => 1,
+    'bool' => \&to_boolean,
+    '0+' => \&to_number,
+    '""' => \&to_string;
 
 
 sub new {
+    my ($class, $boolean, $number, $string) = @ARG;
     my ($package) = caller;
+    
     croak('Internal package') unless $package eq Pearl::;
     
-    my ($class, $boolean, $number, $string) = @ARG;
     my $self = {
         boolean => $boolean,
         number => $number,
