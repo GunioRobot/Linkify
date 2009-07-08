@@ -10,16 +10,21 @@ use HTTP::Status qw(HTTP_NOT_FOUND RC_FORBIDDEN RC_OK);
 use Pearl;
 
 
-my $server = HTTP::Daemon->new(LocalPort => 80, Timeout => 1) or die "Busy.\n";
-my $client;
-
 my $mtime = stat($PROGRAM_NAME)->mtime();
 my $running = $true;
 
+my ($server, $client);
+my @port = (80, 8008, 8080, 8090);
+
+while (@port > 0) {
+    $server = HTTP::Daemon->new(LocalPort => shift @port, Timeout => 1) or next;
+}
+
+defined $server or die "Busy.\n";
+printf "[%s] On-line: %s\n", now(), $server->url();
+
 my $module_suffix = '.js';
 my $test_suffix = '.test'.$module_suffix;
-
-printf "[%s] On-line: %s\n", now(), $server->url();
 
 $SIG{INT} = sub {
     printf "[%s] Stopping...\n", now();
