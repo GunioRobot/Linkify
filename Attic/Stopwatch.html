@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>Stopwatch</title>
+    <meta name="Author" content="Márcio Moniz Bandim Faustino"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" type="image/x-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAMESURBVDjLXZNrSFNxGMYPgQQRfYv6EgR9kCgKohtFgRAVQUHQh24GQReqhViWlVYbZJlZmZmombfVpJXTdHa3reM8uszmWpqnmQuX5drmLsdjenR7ev9DR3Xgd3h43+d5/pw/HA4AN9zITSPUhJ14R0xn87+h2ZzJvZVInJpzAQOXQOQMt+/5rvhMCLXv9Vjrt1rSXitmwj+Jua1+Ox+2HfGNdGf6yW8l5sUKPNVcRsiaPDA22Ahv6/7Ae/0aKdviQ0G7B/c6f8Zg+gbfh079Mjno0MhS58lflOsgEjh3BXc+bM/0DzbvDwj314znt/bjof0HdPw3FBq6kP+oCxVNfdDZvqPsrQmf6zdFRtyPJgbrFoqUTeS+FnPrekpmiC2lS+QcUx+qrf0wmFzodYfgC0nwhoYh9oegfdmLsmYXHj7JhV23erS7ZNYHyibGLiLtXsO19BoHSiwu6Ok09gwFg/gy8BO/STOkKFBk7EWh2YkLeh5Hy4Ws2B2w157iDvOpxw4UPRPRTSfL41FIsow7ZeXwUFF4dBQ1L96A/xLEFf1HMC/LxAt25PH+VN0HXH1gh2dEwdBoBGO0OKvW4L7hCdIvavBSsMIRVHCi0ArmZZl4wbYrz/yHSq1Ql9vQLylUEoE7GMal3OuxMG/7CO848N6n4HheK5iXZeIFmy88Nu+8aYJG24G3ziB+0Ee7wwqemlvQ5w9hcAJwyUDtpwBOFLeBeVkmXpB0qlK9RV2HlLsCsvUivHRhQwoQjhCkA1TgJX1OK0JVzIN5WSZesPZ44XKia+P5BqSS4aq+BzZXABLdhyQrsJPOqv4MVcEbMA/zsky8gLHyYO7hI9laecOZWuzLfYXU2zzSblmQerMZqjwTknOeY9dlIw5kVcrMG/8XpoQgCEkOhwNNJn5i7bFSrFDpsCrFEIPpLacr0WxpibYIQpS86/8pMBqNswnJ6XSivqHBv3R3pmbxzgwz4Z+EaTXtwqIogrzjxIJ4QVVV1UyihxgjFv3/K09Bu/lEkBgg5rLZH+fT5dvfn7iFAAAAAElFTkSuQmCC"/>
+    
+    <style type="text/css" media="screen">
+#TimeFrame {
+    padding-right: 6px;
+}
+
+#Time {
+    display: block;
+    margin-bottom: 0.25em;
+    
+    border: 2px inset #56766D;
+    background-color: #73A093;
+    
+    width: 100%;
+    text-align: center;
+    
+    font-family: monospace;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+#Reset,
+#Pause {
+    display: block;
+    width: 100%;
+    
+    font-weight: bold;
+    font-size: larger;
+    letter-spacing: 0.1em;
+}
+
+input + input {
+    margin-top: 0.4em;
+}
+    </style>
+    
+    <script type="text/javascript">
+document.addEventListener('load', function() {
+    var timeInput = document.getElementById('Time');
+    var pauseButton = document.getElementById('Pause');
+    var resetButton = document.getElementById('Reset');
+    var resetValue = timeInput.value;
+    var startMessage = pauseButton.value;
+    var stopMessage = 'Stop';
+    var title = document.title;
+    
+    function loadState() {
+        var cookies = document.cookie.split(/\s*;\s*/);
+        var state = {};
+        
+        for (var cookie; cookie = cookies.shift();) {
+            var nameValue = cookie.split('=');
+            state[nameValue[0]] = nameValue[1];
+        }
+        
+        return state;
+    }
+    
+    function saveState() {
+        var validity = new Date();
+        validity.setFullYear(validity.getFullYear() + 1);
+        
+        document.cookie = 'now=' + (new Date().getTime())
+            + ';expires=' + validity.toUTCString();
+        
+        document.cookie = 'pause=' + pauseButton.value
+            + ';expires=' + validity.toUTCString();
+        
+        document.cookie = 'time=' + timeInput.value
+            + ';expires=' + validity.toUTCString();
+    }
+    
+    function setTime(time) {
+        timeInput.value = time;
+        document.title = title + ' (' + time + ')';
+        saveState();
+    }
+    
+    function tick() {
+        var time = timeInput.value.split(/:/);
+        var hours = parseInt(time[0]);
+        var minutes = parseInt(time[1]);
+        var seconds = parseInt(time[2]);
+        
+        ++seconds;
+        
+        if (seconds >= 60) {
+            seconds = 0;
+            ++minutes;
+            
+            if (minutes >= 60) {
+                minutes = 0;
+                ++hours;
+                
+                if (hours >= 100) {
+                    hours = 0;
+                }
+            }
+        }
+        
+        if (seconds < 10) {
+            seconds = '0' + seconds;
+        }
+        if (minutes < 10) {
+            minutes = '0' + minutes;
+        }
+        if (hours < 10) {
+            hours = '0' + hours;
+        }
+        
+        setTime(hours + ':' + minutes + ':' + seconds);
+    }
+    
+    var tickInterval;
+    
+    pauseButton.addEventListener('click', function(event) {
+        if (pauseButton.value == startMessage) {
+            tickInterval = setInterval(tick, 1000);
+            pauseButton.value = stopMessage;
+        }
+        else {
+            clearInterval(tickInterval);
+            pauseButton.value = startMessage;
+        }
+        
+        saveState();
+    }, false);
+    
+    resetButton.addEventListener('click', function(event) {
+        setTime(resetValue);
+    }, false);
+    
+    var state = loadState();
+    
+    if ((state.now == null) || (state.pause == null) || (state.time == null)) {
+        saveState();
+        state = loadState();
+    }
+    
+    setTime(state.time);
+    
+    if (state.pause == stopMessage) {
+        var lastTimeSeconds = Math.round(parseInt(state.now) / 1000);
+        var nowSeconds = Math.round(new Date().getTime() / 1000);
+        var delaySeconds = Math.max(nowSeconds - lastTimeSeconds, 0);
+        
+        while (delaySeconds-- > 0) {
+            tick();
+        }
+        
+        pauseButton.click();
+    }
+}, false);
+    </script>
+  </head>
+  
+  <body>
+    <form action="get">
+      <div id="TimeFrame">
+        <input id="Time" readonly="readonly" type="text" value="00:00:00"/>
+      </div>
+      
+      <div>
+        <input id="Pause" type="button" value="Start"/>
+        <input id="Reset" type="button" value="Reset"/>
+      </div>
+    </form>
+  </body>
+</html>
