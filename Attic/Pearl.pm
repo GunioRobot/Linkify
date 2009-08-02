@@ -2,14 +2,14 @@ package Pearl;
 
 use base qw(Exporter);
 use strict;
-use threads qw();
+use threads ();
 use utf8;
 use warnings;
 
-use Cwd qw(getcwd);
+use Cwd ();
 use English qw(-no_match_vars);
-use File::Spec;
-use IO::Handle;
+use File::Spec ();
+use IO::Handle ();
 
 
 BEGIN {
@@ -26,8 +26,14 @@ END {
 }
 
 
-our @EXPORT = qw(*STDNULL $false $true async instantiate ls uncapitalize);
+our @EXPORT = qw(*STDNULL $false $true abstract async instantiate ls uncapitalize);
 our $VERSION = v2009.06.18;
+
+
+sub abstract {
+    my (undef, $filename, $line, $subroutine) = caller(1);
+    die "Abstract subroutine &$subroutine called at $filename line $line.\n";
+}
 
 
 sub async(&@) {
@@ -58,7 +64,7 @@ sub instantiate {
 
 sub ls {
     my ($path) = @ARG;
-    $path = getcwd() unless defined $path;
+    $path = Cwd::getcwd() unless defined $path;
     
     opendir my ($directory), $path or die $ERRNO;
     my @files = File::Spec->no_upwards(readdir $directory);
@@ -102,7 +108,7 @@ package Pearl::Scalar::Constant;
 use strict;
 use warnings;
 
-use Carp qw(croak);
+use Carp ();
 use English qw(-no_match_vars);
 
 
@@ -114,7 +120,7 @@ sub FETCH {
 
 sub TIESCALAR {
     my ($package) = caller;
-    croak('Internal package') unless $package eq Pearl::;
+    Carp::croak('Internal package') unless $package eq Pearl::;
     
     my ($class, $self) = @ARG;
     return bless \$self, $class;
@@ -122,7 +128,7 @@ sub TIESCALAR {
 
 
 *STORE = *UNTIE = sub {
-    croak('Constant values are read-only');
+    Carp::croak('Constant values are read-only');
 };
 
 
@@ -134,7 +140,7 @@ package Pearl::Scalar::Lazy;
 use strict;
 use warnings;
 
-use Carp qw(croak);
+use Carp ();
 use English qw(-no_match_vars);
 
 
@@ -157,19 +163,19 @@ sub TIESCALAR {
     my ($class, $function, @arguments) = @ARG;
     my ($package) = caller;
     
-    croak('Internal package') unless $package eq Pearl::;
+    Carp::croak('Internal package') unless $package eq Pearl::;
     
     my %self = (
         thread => threads->create($function, @arguments),
     );
     
-    croak('Failed to create thread') unless defined $self{thread};
+    Carp::croak('Failed to create thread') unless defined $self{thread};
     return bless \%self, $class;
 }
 
 
 sub UNTIE {
-    croak('Lazy scalars must remain tied');
+    Carp::croak('Lazy scalars must remain tied');
 }
 
 
@@ -187,7 +193,7 @@ use overload
     '0+' => \&to_number,
     '""' => \&to_string;
 
-use Carp qw(croak);
+use Carp ();
 use English qw(-no_match_vars);
 
 
@@ -195,7 +201,7 @@ sub new {
     my ($class, $boolean, $number, $string) = @ARG;
     my ($package) = caller;
     
-    croak('Internal package') unless $package eq Pearl::;
+    Carp::croak('Internal package') unless $package eq Pearl::;
     
     my %self = (
         boolean => $boolean,
@@ -260,6 +266,14 @@ Contains constant boolean, number and string values for truth.
 =back
 
 =head1 FUNCTIONS
+
+=head2 C<abstract()>
+
+Indicates that a method is abstract and should be implemented.
+
+    sub equals {
+        abstract();
+    }
 
 =head2 C<async {...} @arguments>
 

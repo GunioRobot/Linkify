@@ -1,7 +1,9 @@
 package Data::Value;
 
-use Carp;
-use Digest::MD5 'md5_hex';
+# External modules:
+use Digest::MD5 ();
+
+# Internal modules:
 use Pearl;
 
 
@@ -13,13 +15,13 @@ sub equals {
 
 sub to_hash {
     my ($self) = @ARG;
-    return md5_hex($self->to_string());
+    return Digest::MD5::md5_hex($self->to_string());
 }
 
 
 sub to_string {
-    croak();
+    abstract();
 }
 
 
-1
+1;

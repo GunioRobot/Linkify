@@ -1,6 +1,8 @@
 package Data::Identifier;
 
-use base 'Data::Value';
+use base qw(Data::Value);
+
+# Internal modules:
 use Pearl;
 
 
@@ -16,4 +18,4 @@ sub to_string {
 }
 
 
-1
+1;

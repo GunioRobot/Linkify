@@ -1,8 +1,11 @@
 #!/usr/bin/perl
 
-use File::Spec::Functions;
+# External modules:
+use File::Spec ();
+use XML::OPML::SimpleGen ();
+
+# Internal modules:
 use Pearl;
-use XML::OPML::SimpleGen;
 
 
 if (@ARGV != 1) {
@@ -11,7 +14,9 @@ if (@ARGV != 1) {
     exit 1;
 }
 
-open my $index, '<', catfile(shift @ARGV, 'index.ini') or die $ERRNO;
+my $file = File::Spec->catfile(shift @ARGV, 'index.ini');
+open my $index, '<', $file or die $ERRNO;
+
 my @sections = split "\n\n", join '', <$index>;
 close $index;
 
@@ -30,4 +35,4 @@ foreach my $section (grep m/^Type=5$/m, @sections) {
     );
 }
 
-print $opml->as_string;
+print $opml->as_string();

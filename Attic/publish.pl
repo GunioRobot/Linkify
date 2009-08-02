@@ -1,19 +1,20 @@
 #!/usr/bin/perl
 
-# Dependencies (external programs):
+# External programs:
 # - Java: <http://java.sun.com/javase/downloads/>
 # - xmllint: <http://xmlsoft.org/xmldtd.html#validate1>
 # - xmlto: <http://cyberelk.net/tim/software/xmlto/>
 
+# External modules:
+use Archive::Extract ();
+use Crypt::SSLeay ();
+use File::Path ();
+use File::Spec ();
+use LWP ();
+use XML::DOM ();
 
-use Archive::Extract;
-use Crypt::SSLeay;
-use File::Basename;
-use File::Path;
-use File::Spec::Functions;
-use LWP;
+# Internal modules:
 use Pearl;
-use XML::DOM;
 
 
 eval {exit main(@ARGV)};
@@ -31,15 +32,15 @@ sub download {
     }
     
     my $response = $browser->get($link, %options);
-    die $response->status_line unless $response->is_success;
+    die $response->status_line() unless $response->is_success();
     
-    return defined $output ? $output : $response->decoded_content;
+    return defined $output ? $output : $response->decoded_content();
 }
 
 
 sub get_msvs {
     my ($cache_root) = @ARG;
-    my $cache = catdir($cache_root, 'MSVS');
+    my $cache = File::Spec->catdir($cache_root, 'MSVS');
     
     unless (-e $cache) {
         print "Downloading Multi-Schema Validator Schematron add-on...\n";
@@ -48,66 +49,67 @@ sub get_msvs {
         my $list = "$base_url/servlets/ProjectDocumentList?folderID=101";
         my ($leaf_url) = (download($list) =~ m/"([^"]+relames[^"]+\.zip)"/);
         my $url = $base_url.$leaf_url;
-        my $file = fileparse($url);
+        my $file = File::Basename::fileparse($url);
         
-        mkpath($cache);
+        File::Path::mkpath($cache);
         
-        my $path = download($url, catfile($cache, $file));
+        my $path = download($url, File::Spec->catfile($cache, $file));
         my $archive = Archive::Extract->new(archive => $path);
         
-        $archive->extract(to => $cache) or die $archive->error;
+        $archive->extract(to => $cache) or die $archive->error();
         unlink $path;
     }
     
-    return catfile(catdir($cache, ls($cache)), 'relames.jar');
+    my $root = File::Spec->catdir($cache, ls($cache));
+    return File::Spec->catfile($root, 'relames.jar');
 }
 
 
 sub get_rng {
     my ($cache_root) = @ARG;
-    my $cache = catdir($cache_root, 'RNG');
+    my $cache = File::Spec->catdir($cache_root, 'RNG');
     
     unless (-e $cache) {
         print "Downloading DocBook RELAX NG schema...\n";
         
         my $url = 'http://www.docbook.org/xml/5.0/rng/docbook.rng';
-        my $file = fileparse($url);
+        my $file = File::Basename::fileparse($url);
         
-        mkpath($cache);
-        download($url, catfile($cache, $file));
+        File::Path::mkpath($cache);
+        download($url, File::Spec->catfile($cache, $file));
     }
     
-    return catfile($cache, ls($cache));
+    return File::Spec->catfile($cache, ls($cache));
 }
 
 
 sub get_saxon {
     my ($cache_root) = @ARG;
-    my $cache = catdir($cache_root, 'Saxon');
+    my $cache = File::Spec->catdir($cache_root, 'Saxon');
     
     unless (-e $cache) {
         print "Downloading Saxon XSLT processor...\n";
         
         my $list = 'http://saxon.sourceforge.net/';
         my ($url) = (download($list) =~ m/"([^"]+saxonb[^"]+j\.zip)"/);
-        my $file = fileparse($url);
+        my $file = File::Basename::fileparse($url);
         
-        mkpath($cache);
+        File::Path::mkpath($cache);
         
-        my $path = download("$url?download", catfile($cache, $file));
+        my $path = download("$url?download", File::Spec->catfile($cache, $file));
         my $archive = Archive::Extract->new(archive => $path);
         
-        $archive->extract(to => $cache) or die $archive->error;
+        $archive->extract(to => $cache) or die $archive->error();
         unlink $path;
     }
     
-    return catfile($cache, 'saxon9.jar');
+    return File::Spec->catfile($cache, 'saxon9.jar');
 }
 
 
 sub get_xsl {
     my ($cache_root) = @ARG;
-    my $cache = catdir($cache_root, 'XSL');
+    my $cache = File::Spec->catdir($cache_root, 'XSL');
     
     unless (-e $cache) {
         print "Downloading DocBook XSL-NS style sheets...\n";
@@ -118,17 +120,19 @@ sub get_xsl {
         my $file = "docbook-xsl-ns-$version.tar.bz2";
         my $url = "http://prdownloads.sourceforge.net/docbook/$file?download";
         
-        mkpath($cache);
+        File::Path::mkpath($cache);
         
-        my $path = download($url, catfile($cache, $file));
+        my $path = download($url, File::Spec->catfile($cache, $file));
         my $archive = Archive::Extract->new(archive => $path);
         
-        $archive->extract(to => $cache) or die $archive->error;
+        $archive->extract(to => $cache) or die $archive->error();
         unlink $path;
     }
     
-    my $root = catdir($cache, ls($cache));
-    return catfile(catdir($root, 'xhtml'), 'docbook.xsl');
+    my $root = File::Spec->catdir($cache, ls($cache));
+    my $xhtml = File::Spec->catdir($root, 'xhtml');
+    
+    return File::Spec->catfile($xhtml, 'docbook.xsl');
 }
 
 
@@ -194,8 +198,8 @@ sub publish {
 
 sub publish_v5 {
     my ($file) = @ARG;
-    my $cache = catdir($ENV{USERPROFILE} || $ENV{HOME}, '.DocBook~');
-    my $out = catfile(dirname($file), basename($file, '.xml').'.html');
+    my $cache = File::Spec->catdir($ENV{USERPROFILE} || $ENV{HOME}, '.DocBook~');
+    my $out = $file;
     
     my %data = (
         msvs => \&get_msvs,
@@ -205,6 +209,7 @@ sub publish_v5 {
     );
     
     $data{$ARG} = $data{$ARG}->($cache) for sort keys %data;
+    $out =~ s/\.xml$/.html/;
     
     my ($msvs, $rng, $saxon, $xsl) = @data{qw(msvs rng saxon xsl)};
     my $validate = ['java', '-jar', $msvs, "file://localhost/$rng", $file];

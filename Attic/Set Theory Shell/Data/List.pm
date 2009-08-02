@@ -1,6 +1,8 @@
 package Data::List;
 
-use base 'Data::Collection';
+use base qw(Data::Collection);
+
+# Internal modules:
 use Pearl;
 
 
@@ -46,4 +48,4 @@ sub to_string {
 }
 
 
-1
+1;

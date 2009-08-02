@@ -1,23 +1,24 @@
 package Data::Collection;
 
-use base 'Data::Value';
-use Carp;
+use base qw(Data::Value);
+
+# Internal modules:
 use Pearl;
 
 
 sub add {
-    croak();
+    abstract();
 }
 
 
 sub elements {
-    croak();
+    abstract();
 }
 
 
 sub has {
-    croak();
+    abstract();
 }
 
 
-1
+1;

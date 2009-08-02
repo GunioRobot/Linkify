@@ -1,6 +1,8 @@
 package Data::Functions;
 
-use base 'Exporter';
+use base qw(Exporter);
+
+# Internal modules:
 use Pearl;
 
 
@@ -456,4 +458,4 @@ sub vars {
 }
 
 
-1
+1;

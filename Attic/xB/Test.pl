@@ -1,12 +1,16 @@
 #!/usr/bin/perl
 
-use File::Basename qw(basename);
-use File::Spec::Functions qw(catfile splitpath);
+# External modules:
+use File::Basename ();
+use File::Slurp ();
+use File::Spec ();
 use File::stat;
-use FindBin;
-use HTTP::Daemon;
-use HTTP::Response;
-use HTTP::Status qw(HTTP_NOT_FOUND RC_FORBIDDEN RC_OK);
+use FindBin ();
+use HTTP::Daemon ();
+use HTTP::Response ();
+use HTTP::Status ();
+
+# Internal modules:
 use Pearl;
 
 
@@ -37,12 +41,12 @@ while ($running) {
     while (my $request = $client->get_request()) {
         printf "[%s] Request: %s\n", now(), $request->uri();
         
-        if ($request->method() ne 'GET') {
-            $client->send_error(RC_FORBIDDEN);
+        unless ($request->method() eq 'GET') {
+            $client->send_error(HTTP::Status::HTTP_FORBIDDEN);
             next;
         }
         
-        my ($volume, $directory, $file) = splitpath($request->uri());
+        my ($volume, $directory, $file) = File::Spec->splitpath($request->uri());
         
         if (($volume eq '') && ($directory eq '/')) {
             if ($file eq '') {
@@ -50,12 +54,12 @@ while ($running) {
                 next;
             }
             elsif (($file =~ m/\Q$module_suffix\E$/) && stat($file)) {
-                $client->send_response(script($file));
+                $client->send_response(module($file));
                 next;
             }
         }
         
-        $client->send_error(HTTP_NOT_FOUND);
+        $client->send_error(HTTP::Status::HTTP_NOT_FOUND);
     }
 }
 continue {
@@ -70,7 +74,22 @@ continue {
 
 close $server if defined $server;
 printf "[%s] Off-line.\n", now();
-exec catfile($FindBin::Bin, basename($PROGRAM_NAME)), @ARGV unless $mtime;
+
+my $script = File::Basename::basename($PROGRAM_NAME);
+exec File::Spec->catfile($FindBin::Bin, $script), @ARGV unless $mtime;
+
+
+sub module {
+    my ($path) = @ARG;
+    my $response = HTTP::Response->new(HTTP::Status::HTTP_OK);
+    my $contents = File::Slurp::read_file($path,
+        binmode => ':raw', scalar_ref => $true);
+    
+    $response->header('Content-Type' => 'text/javascript; charset=UTF-16BE');
+    $response->content_ref($contents);
+    
+    return $response;
+}
 
 
 sub modules {
@@ -81,7 +100,7 @@ sub modules {
         my @requires = join('', <$file>) =~ m/\@requires\s+([^\s]+)/g;
         close $file;
         
-        my $name = basename($path, $test_suffix, $module_suffix);
+        my $name = File::Basename::basename($path, $test_suffix, $module_suffix);
         push @{$depends{$name}}, @requires;
     }
     
@@ -115,22 +134,8 @@ sub now {
 }
 
 
-sub script {
-    my ($path) = @ARG;
-    my $response = HTTP::Response->new(RC_OK);
-    
-    open my $file, '<:raw', $path;
-    my $contents = join '', <$file>;
-    close $file;
-    
-    $response->header('Content-Type' => 'text/javascript; charset=UTF-16BE');
-    $response->content_ref(\$contents);
-    return $response;
-}
-
-
 sub test {
-    my $response = HTTP::Response->new(RC_OK);
+    my $response = HTTP::Response->new(HTTP::Status::HTTP_OK);
     
     $response->header('Content-Type' => 'text/html; charset=UTF-8');
     $response->add_content_utf8(<<'HTML');
@@ -204,7 +209,7 @@ HTML
 HTML
     }
     
-    $response->add_content_utf8(<<"HTML");
+    $response->add_content_utf8(<<'HTML');
   </body>
 </html>
 HTML

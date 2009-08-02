@@ -1,7 +1,10 @@
 #!/usr/bin/perl
 
-use Pearl;
+# External modules:
 use Class::Struct;
+
+# Internal modules:
+use Pearl;
 
 
 struct State => {
