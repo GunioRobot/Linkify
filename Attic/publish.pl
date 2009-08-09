@@ -91,19 +91,19 @@ sub get_saxon {
         print "Downloading Saxon XSLT processor...\n";
         
         my $list = 'http://saxon.sourceforge.net/';
-        my ($url) = (download($list) =~ m/"([^"]+saxonb[^"]+j\.zip)"/);
-        my $file = File::Basename::fileparse($url);
+        my ($file) = (download($list) =~ m/(saxonhe[^j]+j\.zip)/);
+        my $url = "http://prdownloads.sourceforge.net/saxon/$file?download";
         
         File::Path::mkpath($cache);
         
-        my $path = download("$url?download", File::Spec->catfile($cache, $file));
+        my $path = download($url, File::Spec->catfile($cache, $file));
         my $archive = Archive::Extract->new(archive => $path);
         
         $archive->extract(to => $cache) or die $archive->error();
         unlink $path;
     }
     
-    return File::Spec->catfile($cache, 'saxon9.jar');
+    return File::Spec->catfile($cache, 'saxon9he.jar');
 }
 
 
