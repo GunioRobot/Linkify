@@ -17,6 +17,16 @@ def BuildTool(env):
                 return (name, alias)
 
 
+def CompileIDL(env, file):
+    for path in env['ENV']['INCLUDE'].split(os.pathsep):
+        source_file = os.path.join(path, file)
+        
+        if os.path.exists(source_file):
+            env.Command(file, source_file, Copy('$TARGET', '$SOURCE'))
+            env.TypeLibrary(file)
+            break
+
+
 def EmbedManifest(env, target):
     (EXE_TYPE, DLL_TYPE) = (1, 2)
     
@@ -60,6 +70,7 @@ def FindSConscript(name = 'SConscript'):
 
 
 SConsEnvironment.BuildTool = BuildTool
+SConsEnvironment.CompileIDL = CompileIDL
 SConsEnvironment.EmbedManifest = EmbedManifest
 SConsEnvironment.Files = Files
 
