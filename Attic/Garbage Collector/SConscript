@@ -1,0 +1,9 @@
+env = Environment()
+builder = env.BuildTool()[0]
+
+env.Program('example', Glob('*.cpp'))
+
+if builder == 'GNU':
+    env.Append(CCFLAGS = ['-ansi', '-pedantic', '-Wall'])
+elif builder == 'MSVC':
+    env.Append(CCFLAGS = ['/EHsc'])
