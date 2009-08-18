@@ -1,4 +1,30 @@
-import os
+import os, sys
+from SCons.Script.SConscript import SConsEnvironment
+
+
+def BuildTool(env):
+    tools = env['TOOLS']
+    
+    # The order of each alias is important.
+    aliases = {
+        'GNU': ['mingw', 'g++', 'gcc'],
+        'MSVC': ['msvc'],
+    }
+    
+    for (name, aliases) in aliases.items():
+        for alias in aliases:
+            if alias in tools:
+                return (name, alias)
+
+
+def CompileIDL(env, file):
+    for path in env['ENV']['INCLUDE'].split(os.pathsep):
+        source_file = os.path.join(path, file)
+        
+        if os.path.exists(source_file):
+            env.Command(file, source_file, Copy('$TARGET', '$SOURCE'))
+            env.TypeLibrary(file)
+            break
 
 
 def EmbedManifest(env, target):
@@ -12,37 +38,49 @@ def EmbedManifest(env, target):
     env.Clean(target, '%s.manifest' % target)
 
 
-def Tools(env):
-    tools = env['TOOLS']
+def Files(env, pattern, root = os.curdir, recursive = False, variant = None):
+    files = env.Glob(os.path.join(root, pattern), strings = True)
     
-    names = {
-        'GNU': ['gcc', 'g++', 'mingw'],
-        'MSVC': ['msvc'],
-    }
+    if variant is not None:
+        files = [os.path.join(variant, f) for f in files]
     
-    for (name, aliases) in names.items():
-        for alias in aliases:
-            if alias in tools:
-                return name
+    if recursive:
+        for name in os.listdir(root):
+            path = os.path.join(root, name)
+            
+            if os.path.isdir(path):
+                files.extend(Files(env, pattern, path, recursive, variant))
+    
+    return files
 
 
-env = Environment(
-    CPPDEFINES = ['MOZILLA_STRICT_API'],
-    CPPPATH = os.environ['NP_API_SDK_INCLUDE_PATH'].split(os.pathsep),
-)
+def FindSConscript(name = 'SConscript'):
+    if os.path.exists(name):
+        return name
+    
+    paths = os.listdir(os.curdir)
+    paths.sort()
+    
+    for path in paths:
+        if os.path.isdir(path):
+            file = os.path.join(path, name)
+            
+            if os.path.exists(file):
+                return file
 
-tools = Tools(env)
-name = 'npExample'
-files = Glob('*.cpp')
 
-if tools == 'GNU':
-    env.Append(CCFLAGS = ['-ansi', '-Wall'])
-elif tools == 'MSVC':
-    files += env.RES(name + '.rc')
-    env['WINDOWS_INSERT_DEF'] = True
-    env.Append(CPPDEFINES = ['_WINDOWS', '_X86_'], CCFLAGS = ['/EHsc', '/MD'])
+SConsEnvironment.BuildTool = BuildTool
+SConsEnvironment.CompileIDL = CompileIDL
+SConsEnvironment.EmbedManifest = EmbedManifest
+SConsEnvironment.Files = Files
 
-lib = env.SharedLibrary(name, files)[0]
+script = FindSConscript()
 
-if tools == 'MSVC':
-    EmbedManifest(env, lib)
+if script is None:
+    sys.exit('No main file found: ' + script)
+else:
+    print 'Auto-detected main file: ' + script
+    SConscript(script)
+
+if GetOption('clean'):
+    Execute(Delete('.sconsign.dblite'))
