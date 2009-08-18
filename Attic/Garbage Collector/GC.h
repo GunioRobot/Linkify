@@ -7,7 +7,7 @@
  * @brief Garbage Collector
  * @see http://www.boost.org/doc/libs/release/libs/smart_ptr/shared_ptr.htm
  *
- * Simple Garbage Collector based on reference counting.
+ * Simple garbage collector implemented with reference counting.
  */
 
 
