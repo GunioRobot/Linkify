@@ -1,0 +1,5 @@
+env = Environment()
+
+env.CompileIDL('mimeole.idl')
+env.CompileIDL('msoeapi.idl')
+env.SharedLibrary(source = Glob('*.cpp'), CCFLAGS = ['/EHsc'], LIBS = ['Ole32'])
