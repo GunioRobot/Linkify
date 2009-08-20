@@ -38,18 +38,21 @@ def EmbedManifest(env, target):
     env.Clean(target, '%s.manifest' % target)
 
 
-def Files(env, pattern, root = os.curdir, recursive = False, variant = None):
+def Files(env, pattern, root = os.curdir, recurse = False, variant = None):
     files = env.Glob(os.path.join(root, pattern), strings = True)
     
     if variant is not None:
         files = [os.path.join(variant, f) for f in files]
     
-    if recursive:
+    if recurse:
+        if not callable(recurse):
+            recurse = lambda path: True
+        
         for name in os.listdir(root):
-            path = os.path.join(root, name)
+            path = os.path.normpath(os.path.join(root, name))
             
-            if os.path.isdir(path):
-                files.extend(Files(env, pattern, path, recursive, variant))
+            if os.path.isdir(path) and recurse(path):
+                files.extend(Files(env, pattern, path, recurse, variant))
     
     return files
 
