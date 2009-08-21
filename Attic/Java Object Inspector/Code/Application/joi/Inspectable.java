@@ -15,11 +15,11 @@ public interface Inspectable extends Readable {
      */
     public String describe();
     
-
+    
     /**
      * Inspects this value.
      * 
-     * @return a read-only list of values that can be further inspected
+     * @return a read-only list of values contained in this value
      */
     public List<Inspectable> inspect();
 }

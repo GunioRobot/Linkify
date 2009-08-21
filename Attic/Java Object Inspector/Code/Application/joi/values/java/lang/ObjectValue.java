@@ -105,7 +105,7 @@ public class ObjectValue implements Inspectable, Writeable {
     
     
     private Object _object;
-    private ClassValue _classValue;
+    private ClassValue _classValue = null;
     
 
     public ObjectValue(Object object) {
@@ -141,13 +141,19 @@ public class ObjectValue implements Inspectable, Writeable {
             throw new NullInspectionException();
         }
         
+        if (_classValue == null) {
+            _classValue = new ClassValue(getValue().getClass(), getValue());
+        }
+        
         return _classValue.inspect();
     }
     
 
     public void setValue(Object newValue) {
         _object = newValue;
-        _classValue = new ClassValue(newValue.getClass(), newValue);
+        
+        // Invalidate the cached value class.
+        _classValue = null;
     }
     
 

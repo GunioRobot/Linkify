@@ -11,14 +11,9 @@ public class Inspector {
     /**
      * Inspects an object.
      * 
-     * @param object object to be inspected
-     * @throws NullPointerException if the object is null
+     * @param object object to inspect
      */
     public void inspect(Object object) {
-        if (object == null) {
-            throw new NullPointerException("Can't inspect null.");
-        }
-        
         new InspectorConsole().start(object);
     }
 }

@@ -2,21 +2,21 @@ package joi;
 
 
 /**
- * Something that holds a value that can be read.
+ * Something that contains a value that can be read.
  */
 public interface Readable {
     /**
-     * Gets the value.
+     * Gets the contained value.
      * 
-     * @return the underlying value
+     * @return the contained value
      */
     public Object getValue();
     
-
+    
     /**
-     * Gets the value in a format suitable to output.
+     * Gets the contained value in a format suitable for output.
      * 
-     * @return the output value
+     * @return the contained value for output
      */
     public String getValueToOutput();
 }
