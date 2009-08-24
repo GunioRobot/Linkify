@@ -39,7 +39,11 @@ def EmbedManifest(env, target):
 
 
 def Files(env, pattern, root = os.curdir, recurse = False, variant = None):
-    files = env.Glob(os.path.join(root, pattern), strings = True)
+    patterns = pattern if isinstance(pattern, list) else [pattern]
+    files = []
+    
+    for pattern in patterns:
+        files.extend(env.Glob(os.path.join(root, pattern), strings = True))
     
     if variant is not None:
         files = [os.path.join(variant, f) for f in files]
