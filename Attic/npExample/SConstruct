@@ -1,4 +1,4 @@
-import os, sys
+import os, re, sys
 from SCons.Script.SConscript import SConsEnvironment
 
 
@@ -25,6 +25,30 @@ def CompileIDL(env, file):
             env.Command(file, source_file, Copy('$TARGET', '$SOURCE'))
             env.TypeLibrary(file)
             break
+
+
+def DisplayToDoItems(target = None, source = None, env = None):
+    for node in source:
+        code = open(node.path).read()
+        
+        # Remove leading characters from single line comments.
+        code = re.sub(r'(?m)^.*(?=//)', '', code)
+        
+        # Convert single line comments to block comments.
+        code = re.sub(r'(?s)// TODO: ([^\n]+)((?:\n// (?!TODO)[^\n]+)*)',
+            r'/* TODO: \1\2 */',
+            code)
+        
+        items = []
+        
+        for item in re.findall(r'(?s)/[*] TODO: (.+?)\s*[*]/', code):
+            # Collapse into a single line.
+            items.append(re.sub(r'(?s)\n(//)?\s+', ' ', item))
+        
+        if len(items) > 0:
+            print 'In "%s":' % node
+            for item in items:
+                print '-', item
 
 
 def EmbedManifest(env, target):
@@ -56,7 +80,7 @@ def Files(env, pattern, root = os.curdir, recurse = False, variant = None):
             path = os.path.normpath(os.path.join(root, name))
             
             if os.path.isdir(path) and recurse(path):
-                files.extend(Files(env, pattern, path, recurse, variant))
+                files.extend(Files(env, patterns, path, recurse, variant))
     
     return files
 
@@ -76,10 +100,19 @@ def FindSConscript(name = 'SConscript'):
                 return file
 
 
+def ListToDoItems(env, target, source):
+    output = 'Searching To Do items...'
+    to_do = env.Alias(target, source, env.Action(DisplayToDoItems, output))
+    
+    env.AlwaysBuild(to_do)
+    return to_do
+
+
 SConsEnvironment.BuildTool = BuildTool
 SConsEnvironment.CompileIDL = CompileIDL
 SConsEnvironment.EmbedManifest = EmbedManifest
 SConsEnvironment.Files = Files
+SConsEnvironment.ListToDoItems = ListToDoItems
 
 script = FindSConscript()
 
