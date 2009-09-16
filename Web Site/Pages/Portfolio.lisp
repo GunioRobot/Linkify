@@ -31,8 +31,8 @@
   (:h3 "Projects")
   
   (:dl
-    (:dt (:a (@ (:href "http://c-library.sourceforge.net/")) "C Library"))
-    (:dd "Software library to ease development in the C programming language.")
-    
     (:dt (:a (@ (:href "http://eon.origo.ethz.ch/")) "Eon"))
-    (:dd "Kernel experiment to learn more about the design and implementation of Operating Systems.")))
+    (:dd "Kernel experiment to learn more about the design and implementation of Operating Systems.")
+    
+    (:dt (:a (@ (:href "http://janus.sourceforge.net/")) "Janus"))
+    (:dd "Software library to ease development in the C programming language.")))
