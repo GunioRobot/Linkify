@@ -10,7 +10,7 @@ import base64, os, pickle, pprint, sqlite3, struct, subprocess, sys, time, \
 import pywintypes, win32api, win32con, win32gui, win32pdh, win32pipe, win32ts
 
 
-__version__ = '2009-05-05'
+__version__ = '2009-09-28'
 
 
 class Dropbox (object):
@@ -83,19 +83,27 @@ class Dropbox (object):
         @raise Exception: if not found
         """
         
-        branch = 'SOFTWARE\\Evenflow Software\\' + self.name
-        root_key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, branch)
-        i = 0
+        possible_locations = [
+            (_winreg.HKEY_CURRENT_USER, 'Software\\' + self.name),
+            (_winreg.HKEY_LOCAL_MACHINE, 'SOFTWARE\\Evenflow Software\\'
+                + self.name),
+        ]
         
-        try:
-            while True:
-                (key, value, type) = _winreg.EnumValue(root_key, i)
-                i += 1
+        for location in possible_locations:
+            try:
+                root_key = _winreg.OpenKey(*location)
+                i = 0
                 
-                if key == 'InstallPath':
-                    return value
-        except WindowsError:
-            raise Exception('Installation not found.')
+                while True:
+                    (key, value, type) = _winreg.EnumValue(root_key, i)
+                    i += 1
+                    
+                    if key == 'InstallPath':
+                        return value
+            except WindowsError:
+                continue
+        
+        raise Exception('Installation not found.')
     
     
     @property
