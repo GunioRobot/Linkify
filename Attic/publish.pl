@@ -10,7 +10,7 @@ use Archive::Extract ();
 use Crypt::SSLeay ();
 use File::Path ();
 use File::Spec ();
-use LWP ();
+use LWP::UserAgent ();
 use XML::DOM ();
 
 # Internal modules:
