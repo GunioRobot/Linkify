@@ -132,18 +132,10 @@ class Dropbox (object):
         @raise Exception: if not running
         """
         
-        retries = 3
+        detail = win32pdh.PERF_DETAIL_WIZARD
+        (items, objs) = win32pdh.EnumObjectItems(None, None, 'Process', detail)
         
-        while retries > 0:
-            (items, objs) = win32pdh.EnumObjectItems(
-                None, None, 'Process', win32pdh.PERF_DETAIL_WIZARD)
-            
-            if self.name in objs:
-                break
-            
-            time.sleep(0.5)
-            retries -= 1
-        else:
+        if self.name not in objs:
             raise Exception('Not running.')
         
         query = win32pdh.OpenQuery()
