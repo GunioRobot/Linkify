@@ -11,20 +11,20 @@
   
   (:ul
     (:li "Simple "
-         (:a (@ (:href "http://code.assembla.com/marciof/subversion/nodes/Attic/Garbage Collector"))
+         (:a (@ (:href "http://code.assembla.com/marciof/subversion/nodes/Development/Garbage Collector"))
              "Garbage Collector")
          " for C++.")
     (:li "Dynamic "
-         (:a (@ (:href "http://code.assembla.com/marciof/subversion/nodes/Attic/Java Object Inspector"))
+         (:a (@ (:href "http://code.assembla.com/marciof/subversion/nodes/Development/Java Object Inspector"))
              "object inspector")
          " for Java.")
     (:li "RSS "
-         (:a (@ (:href "http://code.assembla.com/marciof/subversion/nodes/Attic/RSS Generator"))
+         (:a (@ (:href "http://code.assembla.com/marciof/subversion/nodes/Development/RSS Generator"))
              "feed generator")
          ", also available "
          (:a (@ (:href "http://web.ist.utl.pt/marcio.faustino/rss/")) "online")
          ".")
-    (:li (:a (@ (:href "http://code.assembla.com/marciof/subversion/nodes/Attic/publish.pl"))
+    (:li (:a (@ (:href "http://code.assembla.com/marciof/subversion/nodes/Development/publish.pl"))
              "Wrapper script")
          " to simplify the publishing process of DocBook to HTML."))
   
