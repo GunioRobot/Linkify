@@ -14,6 +14,12 @@
 #include "msoeapi.h"
 
 
+#ifdef _MSC_VER
+    /* Supress "strcpy" deprecation warning. */
+    #pragma warning (disable: 4996)
+#endif
+
+
 #define PUBLIC EXTERN_C __declspec(dllexport)
 
 
