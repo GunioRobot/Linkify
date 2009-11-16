@@ -8,8 +8,8 @@ import os, re, sys, urllib
 
 # External libraries:
 import Image, ImageChops, ImageDraw, ImageFont    # Python Imaging Library
-import flickr                                     # flickrpy
-import yaml                                       # PyYAML
+import flickr as flickrpy
+import yaml as PyYAML
 
 
 def draw_title(settings, slide, title, padding = 15):
@@ -45,14 +45,14 @@ def extract_slides(slides):
 def get_url(photo):
     try:
         return photo.getURL(urlType = 'source')
-    except flickr.FlickrError:
+    except flickrpy.FlickrError:
         return 'http://static.flickr.com/%s/%s_%s.jpg' \
             % (photo.server, photo.id, photo.secret)
 
 
 def get_urls(text, limit = 20):
     print('Searching Flickr for "%s"...' % text)
-    return map(get_url, flickr.photos_search(text = text, per_page = limit))
+    return map(get_url, flickrpy.photos_search(text = text, per_page = limit))
 
 
 def make_slide(settings, image):
@@ -88,8 +88,8 @@ def make_slide(settings, image):
 
 
 def make_slides(config):
-    flickr.API_KEY = config['Flickr']['API key']
-    flickr.API_SECRET = config['Flickr']['API secret']
+    flickrpy.API_KEY = config['Flickr']['API key']
+    flickrpy.API_SECRET = config['Flickr']['API secret']
     
     (titles, search_terms) = extract_slides(config['Slides'])
     (searched_text, slide_nr) = ({}, 1)
@@ -138,7 +138,7 @@ def main(args):
     if len(args) != 1:
         print('Usage: <configuration file>')
     else:
-        make_slides(yaml.load(file(args[0])))
+        make_slides(PyYAML.load(file(args[0])))
     
     return 0
 
