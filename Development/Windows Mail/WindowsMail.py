@@ -6,9 +6,9 @@
 import ctypes, email
 
 
-class WindowsMail (object):
+class Database (object):
     """
-    Windows Mail (formerly Outlook Express) interface.
+    Windows Mail database interface.
     """
     
     
@@ -134,5 +134,5 @@ class WindowsMail (object):
 if __name__ == '__main__':
     print 'Messages:'
     
-    for message, path in WindowsMail().get_messages():
+    for message, path in Database().get_messages():
         print '- %Xh in %s' % (hash(message), path)
