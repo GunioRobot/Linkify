@@ -13,9 +13,12 @@ else {
 
 
 function getEmail() {
-    return eval("'m.' + (function(x) { return 'fau' + x + 'ino'; })('st')"
-        + "+ '@' + 'liamg'.split('').reverse().join('') + '.'"
-        + "+ String.fromCharCode(109, 111, 99).split('').reverse().join('');");
+    var c = [
+        109, 111, 99, 46, 108, 105, 97, 109, 103, 64, 111, 110, 105, 116, 115,
+        117, 97, 102, 98, 109, 111, 105, 99, 114, 97, 109
+    ];
+    
+    return eval('String.fromCharCode.apply(null, c.reverse())');
 }
 
 
