@@ -91,7 +91,7 @@ sub get_saxon {
         print "Downloading Saxon XSLT processor...\n";
         
         my $list = 'http://saxon.sourceforge.net/';
-        my ($file) = (download($list) =~ m/(saxonhe[^j]+j\.zip)/);
+        my ($file) = (download($list) =~ m/(saxonhe[^j"]+j\.zip)/);
         my $url = "http://prdownloads.sourceforge.net/saxon/$file?download";
         
         File::Path::mkpath($cache);
