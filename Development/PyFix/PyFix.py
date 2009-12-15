@@ -9,6 +9,15 @@ _Infinity = float('inf')
 
 
 class _CheckBadPercent (object):
+    """
+    Fixes the regular expression that checks for percent interpolations with
+    invalid syntax.
+    
+    @see: U{http://bugs.python.org/issue5741}
+    @see: U{ConfigParser.ConfigParser<http://docs.python.org/library/configparser.html#ConfigParser.ConfigParser>}
+    """
+    
+    
     class Result (object):
         def __init__(self, index):
             self.__index = index
@@ -28,6 +37,14 @@ class _CheckBadPercent (object):
 
 
 class _RemoveDoublePercents (object):
+    """
+    Fixes the regular expression that removes double percent signs.
+    
+    @see: U{http://bugs.python.org/issue5741}
+    @see: U{ConfigParser.ConfigParser<http://docs.python.org/library/configparser.html#ConfigParser.ConfigParser>}
+    """
+    
+    
     def __init__(self, interpolate_var):
         self.__interpolate_var = interpolate_var
     
