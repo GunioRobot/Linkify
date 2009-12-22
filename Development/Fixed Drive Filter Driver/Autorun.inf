@@ -1,0 +1,5 @@
+[AutoRun]
+action=
+open=
+shell\install\command=Driver\install.bat /autorun
+shell\install=&Install driver
