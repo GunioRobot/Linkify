@@ -11,7 +11,7 @@
  */
 
 if (WScript.Arguments.length != 1) {
-    WScript.Echo('Error: Wrong number of arguments.');
+    WScript.Echo('Wrong number of arguments.');
     WScript.Quit();
 }
 

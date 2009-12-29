@@ -46,7 +46,7 @@ for (var i = 0; i < WScript.Arguments.length; ++i) {
 }
 
 if (arguments.length != fields.length) {
-    WScript.Echo('Error: Wrong number of arguments.');
+    WScript.Echo('Wrong number of arguments.');
     WScript.Quit();
 }
 
