@@ -1,13 +1,3 @@
-========================================================================
-    WIN32 APPLICATION : Viewer Project Overview
-========================================================================
-
-AppWizard has created this Viewer application for you.  
-
-This file contains a summary of what you will find in each of the files that
-make up your Viewer application.
-
-
 Viewer.vcproj
     This is the main project file for VC++ projects generated using an Application Wizard. 
     It contains information about the version of Visual C++ that generated the file, and 
@@ -17,9 +7,8 @@ Viewer.vcproj
 Viewer.cpp
     This is the main application source file.
 
-/////////////////////////////////////////////////////////////////////////////
-AppWizard has created the following resources:
 
+// Resources:
 
 Viewerppc.rc
     This is a listing of all of the Microsoft Windows resources that the
@@ -40,24 +29,13 @@ Resourceppc.h
     This is the standard header file, which defines new resource IDs.
     Microsoft Visual C++ reads and updates this file.
 
-
-
-
 Viewer.ico
     This is an icon file, which is used as the application's icon (32x32).
     This icon is included by the main resource file Viewer.rc.
 
-/////////////////////////////////////////////////////////////////////////////
-Other standard files:
+
+// Standard files:
 
 StdAfx.h, StdAfx.cpp
     These files are used to build a precompiled header (PCH) file
     named Viewer.pch and a precompiled types file named StdAfx.obj.
-
-/////////////////////////////////////////////////////////////////////////////
-Other notes:
-
-AppWizard uses "TODO:" comments to indicate parts of the source code you
-should add to or customize.
-
-/////////////////////////////////////////////////////////////////////////////s
