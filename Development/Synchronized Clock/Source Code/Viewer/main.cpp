@@ -58,10 +58,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
         // Parse the menu selections:
         switch (wmId) {
         case IDM_HELP_ABOUT:
-            DialogBox(_currentApplicationInstance, (LPCTSTR)IDD_ABOUTBOX, hWnd, About);
+            DialogBox(_currentApplicationInstance, (LPCTSTR) IDD_ABOUTBOX, hWnd, About);
             break;
         case IDM_OK:
-            SendMessage (hWnd, WM_CLOSE, 0, 0);				
+            SendMessage(hWnd, WM_CLOSE, 0, 0);				
             break;
         default:
             return DefWindowProc(hWnd, message, wParam, lParam);
