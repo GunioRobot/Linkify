@@ -1,12 +1,12 @@
-// Viewer.cpp : Defines the entry point for the application.
-//
-
+// Order is significant:
+#include "resourceppc.h"
 #include "stdafx.h"
-#include "Viewer.h"
 #include <windows.h>
 #include <commctrl.h>
 
+
 #define MAX_LOADSTRING 100
+
 
 // Global Variables:
 HINSTANCE			g_hInst;			// current instance
