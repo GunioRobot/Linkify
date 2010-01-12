@@ -1,7 +1,6 @@
 // Order is significant:
 #include "resourceppc.h"
 #include "stdafx.h"
-#include <windows.h>
 #include <commctrl.h>
 
 
@@ -138,7 +137,7 @@ static BOOL initializeApplication(HINSTANCE application, int showMode) {
     SHInitExtraControls();
     
     LoadString(application, IDS_APP_TITLE, titleBarText, MAX_LOADSTRING); 
-    LoadString(application, IDC_VIEWER, windowClassName, MAX_LOADSTRING);
+    LoadString(application, IDS_APP_WND_CLASS, windowClassName, MAX_LOADSTRING);
     
     // If it is already running, then focus on the window, and exit.
     window = FindWindow(windowClassName, titleBarText);	
@@ -183,13 +182,31 @@ static BOOL initializeApplication(HINSTANCE application, int showMode) {
 }
 
 
+class Application {
+public:
+    virtual BOOL initialize(HINSTANCE instance, int showMode) {
+        return TRUE;
+    }
+};
+
+
+class Viewer : public Application {
+public:
+    virtual BOOL initialize(HINSTANCE instance, int showMode) {
+        return TRUE;
+    }
+};
+
+
 int WINAPI WinMain(HINSTANCE instance, HINSTANCE previousInstance, LPTSTR commandLine, int showMode) {
+    Application& application = Viewer();
+
 	// Perform application initialization:
 	if (!initializeApplication(instance, showMode)) {
 		return FALSE;
 	}
     
-	HACCEL accelerators = LoadAccelerators(instance, MAKEINTRESOURCE(IDC_VIEWER));
+	HACCEL accelerators = LoadAccelerators(instance, MAKEINTRESOURCE(IDS_APP_WND_CLASS));
 	MSG message;
     
 	// Main message loop:

@@ -27,11 +27,11 @@
 // Windows Header Files:
 #include <windows.h>
 
-// C RunTime Header Files
+/*// C RunTime Header Files
 #include <stdlib.h>
 #include <malloc.h>
 #include <memory.h>
-#include <tchar.h>
+#include <tchar.h>*/
 
 #if defined(WIN32_PLATFORM_PSPC) || defined(WIN32_PLATFORM_WFSP)
 #ifndef _DEVICE_RESOLUTION_AWARE
