@@ -5,211 +5,200 @@
 #include <commctrl.h>
 
 
-#define MAX_LOADSTRING 100
+HINSTANCE _application;
+HWND _menuBar;
 
 
-HINSTANCE _currentApplicationInstance;
-HWND _menuBarWindowHandle;
-
-
-// Message handler for about box.
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
+static INT_PTR CALLBACK aboutDialogBox(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message) {
     case WM_INITDIALOG: {
             // Create a Done button and size it.  
-            SHINITDLGINFO shidi;
-            shidi.dwMask = SHIDIM_FLAGS;
-            shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIPDOWN | SHIDIF_SIZEDLGFULLSCREEN | SHIDIF_EMPTYMENU;
-            shidi.hDlg = hDlg;
-            SHInitDialog(&shidi);
+            SHINITDLGINFO info;
+            info.dwMask = SHIDIM_FLAGS;
+            info.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIPDOWN | SHIDIF_SIZEDLGFULLSCREEN | SHIDIF_EMPTYMENU;
+            info.hDlg = handle;
+            SHInitDialog(&info);
         }
         return (INT_PTR) TRUE;
     case WM_COMMAND:
         if (LOWORD(wParam) == IDOK) {
-            EndDialog(hDlg, LOWORD(wParam));
+            EndDialog(handle, LOWORD(wParam));
             return TRUE;
         }
         break;
     case WM_CLOSE:
-        EndDialog(hDlg, message);
+        EndDialog(handle, message);
         return TRUE;
     }
     
-    return (INT_PTR)FALSE;
+    return (INT_PTR) FALSE;
 }
 
 
-//  PURPOSE:  Processes messages for the main window.
-//
-//  WM_COMMAND	- process the application menu
-//  WM_PAINT	- Paint the main window
-//  WM_DESTROY	- post a quit message and return
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
-    int wmId, wmEvent;
-    PAINTSTRUCT ps;
-    HDC hdc;
-    
-    static SHACTIVATEINFO s_sai;
+static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) {
+    static SHACTIVATEINFO shellActivate;
     
     switch (message) {
-    case WM_COMMAND:
-        wmId = LOWORD(wParam);
-        wmEvent = HIWORD(wParam);
+    // Process the application menu:
+    case WM_COMMAND: {
+        int menuId = LOWORD(wParam);
+        
         // Parse the menu selections:
-        switch (wmId) {
+        switch (menuId) {
         case IDM_HELP_ABOUT:
-            DialogBox(_currentApplicationInstance, (LPCTSTR) IDD_ABOUTBOX, hWnd, About);
+            DialogBox(_application, (LPCTSTR) IDD_ABOUTBOX, handle, aboutDialogBox);
             break;
         case IDM_OK:
-            SendMessage(hWnd, WM_CLOSE, 0, 0);				
+            SendMessage(handle, WM_CLOSE, 0, 0);				
             break;
         default:
-            return DefWindowProc(hWnd, message, wParam, lParam);
+            return DefWindowProc(handle, message, wParam, lParam);
         }
         break;
+    }
     case WM_CREATE:
-        SHMENUBARINFO mbi;
+        SHMENUBARINFO info;
         
-        memset(&mbi, 0, sizeof(SHMENUBARINFO));
-        mbi.cbSize     = sizeof(SHMENUBARINFO);
-        mbi.hwndParent = hWnd;
-        mbi.nToolBarId = IDR_MENU;
-        mbi.hInstRes   = _currentApplicationInstance;
+        memset(&info, 0, sizeof(SHMENUBARINFO));
+        info.cbSize = sizeof(SHMENUBARINFO);
+        info.hwndParent = handle;
+        info.nToolBarId = IDR_MENU;
+        info.hInstRes = _application;
         
-        if (!SHCreateMenuBar(&mbi)) {
-            _menuBarWindowHandle = NULL;
+        if (!SHCreateMenuBar(&info)) {
+            _menuBar = NULL;
         }
         else {
-            _menuBarWindowHandle = mbi.hwndMB;
+            _menuBar = info.hwndMB;
         }
         
-        // Initialize the shell activate info structure
-        memset(&s_sai, 0, sizeof (s_sai));
-        s_sai.cbSize = sizeof (s_sai);
+        // Initialize the shell activate info structure.
+        memset(&shellActivate, 0, sizeof (shellActivate));
+        shellActivate.cbSize = sizeof (shellActivate);
         break;
-    case WM_PAINT:
-        hdc = BeginPaint(hWnd, &ps);
+    // Paint the main window:
+    case WM_PAINT: {
+        PAINTSTRUCT paint;
+        HDC context = BeginPaint(handle, &paint);
         
-        // TODO: Add any drawing code here...
+        // TODO: Add any drawing code here.
         
-        EndPaint(hWnd, &ps);
+        EndPaint(handle, &paint);
         break;
+    }
+    // Post a quit message and return.
     case WM_DESTROY:
-        CommandBar_Destroy(_menuBarWindowHandle);
+        CommandBar_Destroy(_menuBar);
         PostQuitMessage(0);
         break;
     case WM_ACTIVATE:
-        // Notify shell of our activate message
-        SHHandleWMActivate(hWnd, wParam, lParam, &s_sai, FALSE);
+        // Notify shell of our activate message.
+        SHHandleWMActivate(handle, wParam, lParam, &shellActivate, FALSE);
         break;
     case WM_SETTINGCHANGE:
-        SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
+        SHHandleWMSettingChange(handle, wParam, lParam, &shellActivate);
         break;
     default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
+        return DefWindowProc(handle, message, wParam, lParam);
     }
     
     return 0;
 }
 
 
-//  PURPOSE: Registers the window class.
-ATOM MyRegisterClass(HINSTANCE hInstance, LPTSTR szWindowClass) {
-	WNDCLASS wc;
+static ATOM registerWindowClass(HINSTANCE application, LPTSTR windowClassName) {
+	WNDCLASS windowClass;
     
-	wc.style = CS_HREDRAW | CS_VREDRAW;
-	wc.lpfnWndProc = WndProc;
-	wc.cbClsExtra = 0;
-	wc.cbWndExtra = 0;
-	wc.hInstance = hInstance;
-	wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_VIEWER));
-	wc.hCursor = 0;
-	wc.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
-	wc.lpszMenuName = 0;
-	wc.lpszClassName = szWindowClass;
+	windowClass.style = CS_HREDRAW | CS_VREDRAW;
+	windowClass.lpfnWndProc = mainWindow;
+	windowClass.cbClsExtra = 0;
+	windowClass.cbWndExtra = 0;
+	windowClass.hInstance = application;
+	windowClass.hIcon = LoadIcon(application, MAKEINTRESOURCE(IDI_VIEWER));
+	windowClass.hCursor = 0;
+	windowClass.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
+	windowClass.lpszMenuName = 0;
+	windowClass.lpszClassName = windowClassName;
     
-	return RegisterClass(&wc);
+	return RegisterClass(&windowClass);
 }
 
 
-//   PURPOSE: Saves instance handle and creates main window
-//        In this function, we save the instance handle in a global variable and
-//        create and display the main program window.
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow) {
-    HWND hWnd;
-    TCHAR szTitle[MAX_LOADSTRING];		// title bar text
-    TCHAR szWindowClass[MAX_LOADSTRING];	// main window class name
+static BOOL initializeApplication(HINSTANCE application, int showMode) {
+    const size_t MAX_LOADSTRING = 100;
+    TCHAR titleBarText[MAX_LOADSTRING];
+    TCHAR windowClassName[MAX_LOADSTRING];
+    HWND window;
     
-    _currentApplicationInstance = hInstance; // Store instance handle in our global variable
+    // Save instance handle.
+    _application = application;
     
-    // SHInitExtraControls should be called once during your application's initialization to initialize any
-    // of the device specific controls such as CAPEDIT and SIPPREF.
+    // This should be called once during the application's initialization to
+    // initialize any of the device specific controls, e.g. CAPEDIT and SIPPREF.
     SHInitExtraControls();
     
-    LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING); 
-    LoadString(hInstance, IDC_VIEWER, szWindowClass, MAX_LOADSTRING);
+    LoadString(application, IDS_APP_TITLE, titleBarText, MAX_LOADSTRING); 
+    LoadString(application, IDC_VIEWER, windowClassName, MAX_LOADSTRING);
     
-    //If it is already running, then focus on the window, and exit
-    hWnd = FindWindow(szWindowClass, szTitle);	
+    // If it is already running, then focus on the window, and exit.
+    window = FindWindow(windowClassName, titleBarText);	
     
-    if (hWnd) {
-        // set focus to foremost child window
-        // The "| 0x00000001" is used to bring any owned windows to the foreground and
-        // activate them.
-        SetForegroundWindow((HWND)((ULONG) hWnd | 0x00000001));
-        return 0;
+    if (window) {
+        // Set focus to foremost child window. The "| 0x00000001" is used to
+        // bring any owned windows to the foreground and activate them.
+        SetForegroundWindow((HWND)((ULONG) window | 0x00000001));
+        return FALSE;
     } 
     
-    if (!MyRegisterClass(hInstance, szWindowClass)) {
+    if (!registerWindowClass(application, windowClassName)) {
     	return FALSE;
     }
     
-    hWnd = CreateWindow(szWindowClass, szTitle, WS_VISIBLE,
-        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hInstance, NULL);
+    window = CreateWindow(windowClassName, titleBarText, WS_VISIBLE,
+        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, application, NULL);
     
-    if (!hWnd) {
+    if (!window) {
         return FALSE;
     }
     
-    // When the main window is created using CW_USEDEFAULT the height of the menubar (if one
-    // is created is not taken into account). So we resize the window after creating it
-    // if a menubar is present
-    if (_menuBarWindowHandle) {
-        RECT rc;
-        RECT rcMenuBar;
+    // When the main window is created using CW_USEDEFAULT the height of the
+    // menubar (if one is created is not taken into account). So resize the
+    // window after creating it if a menubar is present.
+    if (_menuBar) {
+        RECT windowArea;
+        RECT menuBarArea;
         
-        GetWindowRect(hWnd, &rc);
-        GetWindowRect(_menuBarWindowHandle, &rcMenuBar);
-        rc.bottom -= (rcMenuBar.bottom - rcMenuBar.top);
+        GetWindowRect(window, &windowArea);
+        GetWindowRect(_menuBar, &menuBarArea);
+        windowArea.bottom -= (menuBarArea.bottom - menuBarArea.top);
 	    
-        MoveWindow(hWnd, rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, FALSE);
+        MoveWindow(window, windowArea.left, windowArea.top,
+            windowArea.right - windowArea.left, windowArea.bottom - windowArea.top, FALSE);
     }
     
-    ShowWindow(hWnd, nCmdShow);
-    UpdateWindow(hWnd);
+    ShowWindow(window, showMode);
+    UpdateWindow(window);
 
     return TRUE;
 }
 
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow) {
-	MSG msg;
-    
+int WINAPI WinMain(HINSTANCE instance, HINSTANCE previousInstance, LPTSTR commandLine, int showMode) {
 	// Perform application initialization:
-	if (!InitInstance(hInstance, nCmdShow)) {
+	if (!initializeApplication(instance, showMode)) {
 		return FALSE;
 	}
     
-	HACCEL hAccelTable;
-	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_VIEWER));
+	HACCEL accelerators = LoadAccelerators(instance, MAKEINTRESOURCE(IDC_VIEWER));
+	MSG message;
     
 	// Main message loop:
-	while (GetMessage(&msg, NULL, 0, 0)) {
-		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)) {
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+	while (GetMessage(&message, NULL, 0, 0)) {
+		if (!TranslateAccelerator(message.hwnd, accelerators, &message)) {
+			TranslateMessage(&message);
+			DispatchMessage(&message);
 		}
 	}
     
-	return (int) msg.wParam;
+	return (int) message.wParam;
 }
