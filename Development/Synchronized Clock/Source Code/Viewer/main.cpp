@@ -72,10 +72,24 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
         }
         
         // Initialize the shell activate info structure.
-        memset(&shellActivate, 0, sizeof (shellActivate));
-        shellActivate.cbSize = sizeof (shellActivate);
+        memset(&shellActivate, 0, sizeof(shellActivate));
+        shellActivate.cbSize = sizeof(shellActivate);
+        
+        CreateWindow( 
+            L"BUTTON",   // Predefined class; Unicode assumed. 
+            L"OK",       // Button text. 
+            WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles. 
+            10,         // x position. 
+            10,         // y position. 
+            100,        // Button width.
+            100,        // Button height.
+            handle,       // Parent window.
+            NULL,       // No menu.
+            _application, 
+            NULL);      // Pointer not needed.        
+        
         break;
-    // Paint the main window:
+        // Paint the main window:
     case WM_PAINT: {
         PAINTSTRUCT paint;
         HDC context = BeginPaint(handle, &paint);
@@ -182,25 +196,7 @@ static BOOL initializeApplication(HINSTANCE application, int showMode) {
 }
 
 
-class Application {
-public:
-    virtual BOOL initialize(HINSTANCE instance, int showMode) {
-        return TRUE;
-    }
-};
-
-
-class Viewer : public Application {
-public:
-    virtual BOOL initialize(HINSTANCE instance, int showMode) {
-        return TRUE;
-    }
-};
-
-
 int WINAPI WinMain(HINSTANCE instance, HINSTANCE previousInstance, LPTSTR commandLine, int showMode) {
-    Application& application = Viewer();
-
 	// Perform application initialization:
 	if (!initializeApplication(instance, showMode)) {
 		return FALSE;
