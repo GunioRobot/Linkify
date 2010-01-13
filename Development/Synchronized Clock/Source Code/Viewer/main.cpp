@@ -8,32 +8,6 @@ HINSTANCE _application;
 HWND _menuBar;
 
 
-static INT_PTR CALLBACK aboutDialogBox(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) {
-    switch (message) {
-    case WM_INITDIALOG: {
-            // Create a Done button and size it.  
-            SHINITDLGINFO info;
-            info.dwMask = SHIDIM_FLAGS;
-            info.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIPDOWN | SHIDIF_SIZEDLGFULLSCREEN | SHIDIF_EMPTYMENU;
-            info.hDlg = handle;
-            SHInitDialog(&info);
-        }
-        return (INT_PTR) TRUE;
-    case WM_COMMAND:
-        if (LOWORD(wParam) == IDOK) {
-            EndDialog(handle, LOWORD(wParam));
-            return TRUE;
-        }
-        break;
-    case WM_CLOSE:
-        EndDialog(handle, message);
-        return TRUE;
-    }
-    
-    return (INT_PTR) FALSE;
-}
-
-
 static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) {
     static SHACTIVATEINFO shellActivate;
     
@@ -45,7 +19,6 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
         // Parse the menu selections:
         switch (menuId) {
         case IDM_HELP_ABOUT:
-            DialogBox(_application, (LPCTSTR) IDD_ABOUTBOX, handle, aboutDialogBox);
             break;
         case IDM_OK:
             SendMessage(handle, WM_CLOSE, 0, 0);				
@@ -56,6 +29,10 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
         break;
     }
     case WM_CREATE:
+        // Initialize the shell activate info structure.
+        memset(&shellActivate, 0, sizeof(shellActivate));
+        shellActivate.cbSize = sizeof(shellActivate);
+        
         SHMENUBARINFO info;
         
         memset(&info, 0, sizeof(SHMENUBARINFO));
@@ -70,10 +47,6 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
         else {
             _menuBar = info.hwndMB;
         }
-        
-        // Initialize the shell activate info structure.
-        memset(&shellActivate, 0, sizeof(shellActivate));
-        shellActivate.cbSize = sizeof(shellActivate);
         
         CreateWindow( 
             L"BUTTON",   // Predefined class; Unicode assumed. 

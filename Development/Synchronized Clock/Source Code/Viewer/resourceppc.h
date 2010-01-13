@@ -8,10 +8,6 @@
 #define IDR_MENU                        102
 #define IDS_OK                          103
 #define IDS_HELP                        104
-#define IDD_ABOUTBOX                    105
-#define IDD_ABOUTBOX_WIDE               106
-#define IDC_STATIC_1                    201
-#define IDC_STATIC_2                    202
 #define IDC_STATIC_3                    203
 #define IDM_OK                          40000
 #define IDM_HELP                        40001
