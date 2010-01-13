@@ -33,12 +33,17 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
         memset(&shellActivate, 0, sizeof(shellActivate));
         shellActivate.cbSize = sizeof(shellActivate);
         
-        SHMENUBARINFO info;
+        HMENU hMenu;
+        hMenu = CreateMenu();
+        InsertMenu(hMenu, 0, MF_BYPOSITION, IDM_OK, L"Left");
+        InsertMenu(hMenu, 1, MF_BYPOSITION, IDM_HELP_ABOUT, L"Right"); 
         
+        SHMENUBARINFO info;
         memset(&info, 0, sizeof(SHMENUBARINFO));
         info.cbSize = sizeof(SHMENUBARINFO);
         info.hwndParent = handle;
-        info.nToolBarId = IDR_MENU;
+        info.dwFlags = SHCMBF_HMENU;
+        info.nToolBarId = (UINT) hMenu;
         info.hInstRes = _application;
         
         if (!SHCreateMenuBar(&info)) {
@@ -47,7 +52,7 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
         else {
             _menuBar = info.hwndMB;
         }
-        
+
         CreateWindow( 
             L"BUTTON",   // Predefined class; Unicode assumed. 
             L"OK",       // Button text. 

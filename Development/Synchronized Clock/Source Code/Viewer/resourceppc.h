@@ -5,7 +5,6 @@
 #define IDS_APP_TITLE                   1
 #define IDS_APP_WND_CLASS               2
 #define IDI_VIEWER                      101
-#define IDR_MENU                        102
 #define IDS_OK                          103
 #define IDS_HELP                        104
 #define IDC_STATIC_3                    203

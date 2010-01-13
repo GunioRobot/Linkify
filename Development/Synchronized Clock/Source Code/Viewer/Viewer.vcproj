@@ -219,10 +219,6 @@
 				RelativePath=".\Viewerppc.rc"
 				>
 			</File>
-			<File
-				RelativePath=".\Viewerppc.rc2"
-				>
-			</File>
 		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
