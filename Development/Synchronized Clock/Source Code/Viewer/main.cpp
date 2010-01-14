@@ -1,10 +1,26 @@
 // Order is significant:
-#include "resources.h"
 #include "stdafx.h"
 #include <commctrl.h>
 
+// Order is not significant:
+#include "resources.h"
+#include <string>
 
-#define LOADSTRING_BUFFER_SIZE 100
+
+namespace Win32 {
+    typedef std::basic_string<TCHAR> tstring;
+    
+    
+    tstring LoadStringT(HINSTANCE module, UINT id) {
+        // TODO: Add caching?
+        // TODO: Add error checking.
+        const size_t BUFFER_SIZE = 128;
+        TCHAR buffer[BUFFER_SIZE];
+        int length = LoadString(module, id, buffer, BUFFER_SIZE);
+
+        return tstring(buffer);
+    }
+}
 
 
 HINSTANCE _application;
@@ -22,7 +38,7 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
         // Parse the menu selections:
         switch (menuId) {
         case IDS_SK_EXIT:
-            SendMessage(handle, WM_CLOSE, 0, 0);				
+            SendMessage(handle, WM_CLOSE, 0, 0);
             break;
         case IDS_SK_UPDATE:
             break;
@@ -36,12 +52,16 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
         memset(&shellActivate, 0, sizeof(shellActivate));
         shellActivate.cbSize = sizeof(shellActivate);
         
-        // TODO: Load string resources instead of hardcoded values.
         HMENU menuBar;
         menuBar = CreateMenu();
-        InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_SK_UPDATE, L"Update"); 
-        InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_SK_EXIT, L"Exit");
         
+        {
+        Win32::tstring update = Win32::LoadStringT(_application, IDS_SK_UPDATE);
+        Win32::tstring exit = Win32::LoadStringT(_application, IDS_SK_EXIT);
+        InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_SK_UPDATE, update.c_str()); 
+        InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_SK_EXIT, exit.c_str());
+        }
+
         SHMENUBARINFO menuBarInfo;
         memset(&menuBarInfo, 0, sizeof(SHMENUBARINFO));
         menuBarInfo.cbSize = sizeof(SHMENUBARINFO);
@@ -58,9 +78,9 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
         }
 
         CreateWindow( 
-            L"BUTTON",   // Predefined class; Unicode assumed. 
+            L"BUTTON",   // Predefined class; Unicode assumed.
             L"OK",       // Button text. 
-            WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles. 
+            WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles.
             10,         // x position. 
             10,         // y position. 
             100,        // Button width.
@@ -68,7 +88,7 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
             handle,       // Parent window.
             NULL,       // No menu.
             _application, 
-            NULL);      // Pointer not needed.        
+            NULL);      // Pointer not needed.
         
         break;
         // Paint the main window:
@@ -101,7 +121,7 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
 }
 
 
-static ATOM registerWindowClass(HINSTANCE application, LPTSTR windowClassName) {
+static ATOM registerWindowClass(HINSTANCE application, Win32::tstring name) {
 	WNDCLASS windowClass;
     
 	windowClass.style = CS_HREDRAW | CS_VREDRAW;
@@ -113,15 +133,15 @@ static ATOM registerWindowClass(HINSTANCE application, LPTSTR windowClassName) {
 	windowClass.hCursor = 0;
 	windowClass.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
 	windowClass.lpszMenuName = 0;
-	windowClass.lpszClassName = windowClassName;
+    windowClass.lpszClassName = name.c_str();
     
 	return RegisterClass(&windowClass);
 }
 
 
 static BOOL initializeApplication(HINSTANCE application, int showMode) {
-    TCHAR title[LOADSTRING_BUFFER_SIZE];
-    TCHAR windowClass[LOADSTRING_BUFFER_SIZE];
+    Win32::tstring title = Win32::LoadStringT(application, IDS_TITLE);
+    Win32::tstring windowClass = Win32::LoadStringT(application, IDS_WINDOW_CLASS);
     HWND window;
     
     // Save instance handle.
@@ -131,11 +151,8 @@ static BOOL initializeApplication(HINSTANCE application, int showMode) {
     // initialize any of the device specific controls, e.g. CAPEDIT and SIPPREF.
     SHInitExtraControls();
     
-    LoadString(application, IDS_TITLE, title, LOADSTRING_BUFFER_SIZE);
-    LoadString(application, IDS_WINDOW_CLASS, windowClass, LOADSTRING_BUFFER_SIZE);
-
     // If it is already running, then focus on the window, and exit.
-    window = FindWindow(windowClass, title);	
+    window = FindWindow(windowClass.c_str(), title.c_str());
     
     if (window) {
         // Set focus to foremost child window. The "| 0x00000001" is used to
@@ -148,7 +165,7 @@ static BOOL initializeApplication(HINSTANCE application, int showMode) {
     	return FALSE;
     }
     
-    window = CreateWindow(windowClass, title, WS_VISIBLE,
+    window = CreateWindow(windowClass.c_str(), title.c_str(), WS_VISIBLE,
         CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, application, NULL);
     
     if (!window) {
