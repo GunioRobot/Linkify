@@ -11,7 +11,7 @@ namespace Win32 {
     typedef std::basic_string<TCHAR> tstring;
     
     
-    tstring LoadStringT(HINSTANCE module, UINT id) {
+    tstring LoadStringT(UINT id, HINSTANCE module = GetModuleHandle(NULL)) {
         // TODO: Add caching?
         // TODO: Add error checking.
         const size_t BUFFER_SIZE = 128;
@@ -23,7 +23,6 @@ namespace Win32 {
 }
 
 
-HINSTANCE _application;
 HWND _menuBar;
 
 
@@ -52,12 +51,15 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
         memset(&shellActivate, 0, sizeof(shellActivate));
         shellActivate.cbSize = sizeof(shellActivate);
         
+        HINSTANCE application;
+        application = GetModuleHandle(NULL);
+        
         HMENU menuBar;
         menuBar = CreateMenu();
         
         {
-        Win32::tstring update = Win32::LoadStringT(_application, IDS_SK_UPDATE);
-        Win32::tstring exit = Win32::LoadStringT(_application, IDS_SK_EXIT);
+        Win32::tstring update = Win32::LoadStringT(IDS_SK_UPDATE);
+        Win32::tstring exit = Win32::LoadStringT(IDS_SK_EXIT);
         InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_SK_UPDATE, update.c_str()); 
         InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_SK_EXIT, exit.c_str());
         }
@@ -68,7 +70,7 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
         menuBarInfo.hwndParent = handle;
         menuBarInfo.dwFlags = SHCMBF_HMENU | SHCMBF_HIDESIPBUTTON;
         menuBarInfo.nToolBarId = (UINT) menuBar;
-        menuBarInfo.hInstRes = _application;
+        menuBarInfo.hInstRes = application;
         
         if (!SHCreateMenuBar(&menuBarInfo)) {
             _menuBar = NULL;
@@ -87,7 +89,7 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
             100,        // Button height.
             handle,       // Parent window.
             NULL,       // No menu.
-            _application, 
+            application, 
             NULL);      // Pointer not needed.
         
         break;
@@ -140,12 +142,9 @@ static ATOM registerWindowClass(HINSTANCE application, Win32::tstring name) {
 
 
 static BOOL initializeApplication(HINSTANCE application, int showMode) {
-    Win32::tstring title = Win32::LoadStringT(application, IDS_TITLE);
-    Win32::tstring windowClass = Win32::LoadStringT(application, IDS_WINDOW_CLASS);
+    Win32::tstring title = Win32::LoadStringT(IDS_TITLE);
+    Win32::tstring windowClass = Win32::LoadStringT(IDS_WINDOW_CLASS);
     HWND window;
-    
-    // Save instance handle.
-    _application = application;
     
     // This should be called once during the application's initialization to
     // initialize any of the device specific controls, e.g. CAPEDIT and SIPPREF.
