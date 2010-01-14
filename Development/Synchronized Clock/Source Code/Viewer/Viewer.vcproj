@@ -198,7 +198,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\resourceppc.h"
+				RelativePath=".\resources.h"
 				>
 			</File>
 			<File
@@ -212,11 +212,7 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\Viewer.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\Viewerppc.rc"
+				RelativePath=".\resources.rc"
 				>
 			</File>
 		</Filter>

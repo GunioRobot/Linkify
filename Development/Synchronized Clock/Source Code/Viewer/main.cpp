@@ -1,7 +1,10 @@
 // Order is significant:
-#include "resourceppc.h"
+#include "resources.h"
 #include "stdafx.h"
 #include <commctrl.h>
+
+
+#define LOADSTRING_BUFFER_SIZE 100
 
 
 HINSTANCE _application;
@@ -18,10 +21,10 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
         
         // Parse the menu selections:
         switch (menuId) {
-        case IDS_EXIT:
+        case IDS_SK_EXIT:
             SendMessage(handle, WM_CLOSE, 0, 0);				
             break;
-        case IDS_UPDATE:
+        case IDS_SK_UPDATE:
             break;
         default:
             return DefWindowProc(handle, message, wParam, lParam);
@@ -36,8 +39,8 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
         // TODO: Load string resources instead of hardcoded values.
         HMENU menuBar;
         menuBar = CreateMenu();
-        InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_UPDATE, L"Update");
-        InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_EXIT, L"Exit"); 
+        InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_SK_UPDATE, L"Update"); 
+        InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_SK_EXIT, L"Exit");
         
         SHMENUBARINFO menuBarInfo;
         memset(&menuBarInfo, 0, sizeof(SHMENUBARINFO));
@@ -106,7 +109,7 @@ static ATOM registerWindowClass(HINSTANCE application, LPTSTR windowClassName) {
 	windowClass.cbClsExtra = 0;
 	windowClass.cbWndExtra = 0;
 	windowClass.hInstance = application;
-	windowClass.hIcon = LoadIcon(application, MAKEINTRESOURCE(IDI_VIEWER));
+	windowClass.hIcon = NULL;
 	windowClass.hCursor = 0;
 	windowClass.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
 	windowClass.lpszMenuName = 0;
@@ -117,9 +120,8 @@ static ATOM registerWindowClass(HINSTANCE application, LPTSTR windowClassName) {
 
 
 static BOOL initializeApplication(HINSTANCE application, int showMode) {
-    const size_t MAX_LOADSTRING = 100;
-    TCHAR titleBarText[MAX_LOADSTRING];
-    TCHAR windowClassName[MAX_LOADSTRING];
+    TCHAR title[LOADSTRING_BUFFER_SIZE];
+    TCHAR windowClass[LOADSTRING_BUFFER_SIZE];
     HWND window;
     
     // Save instance handle.
@@ -129,11 +131,11 @@ static BOOL initializeApplication(HINSTANCE application, int showMode) {
     // initialize any of the device specific controls, e.g. CAPEDIT and SIPPREF.
     SHInitExtraControls();
     
-    LoadString(application, IDS_APP_TITLE, titleBarText, MAX_LOADSTRING); 
-    LoadString(application, IDS_APP_WND_CLASS, windowClassName, MAX_LOADSTRING);
-    
+    LoadString(application, IDS_TITLE, title, LOADSTRING_BUFFER_SIZE);
+    LoadString(application, IDS_WINDOW_CLASS, windowClass, LOADSTRING_BUFFER_SIZE);
+
     // If it is already running, then focus on the window, and exit.
-    window = FindWindow(windowClassName, titleBarText);	
+    window = FindWindow(windowClass, title);	
     
     if (window) {
         // Set focus to foremost child window. The "| 0x00000001" is used to
@@ -142,11 +144,11 @@ static BOOL initializeApplication(HINSTANCE application, int showMode) {
         return FALSE;
     } 
     
-    if (!registerWindowClass(application, windowClassName)) {
+    if (!registerWindowClass(application, windowClass)) {
     	return FALSE;
     }
     
-    window = CreateWindow(windowClassName, titleBarText, WS_VISIBLE,
+    window = CreateWindow(windowClass, title, WS_VISIBLE,
         CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, application, NULL);
     
     if (!window) {

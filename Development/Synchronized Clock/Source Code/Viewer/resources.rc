@@ -1,15 +1,13 @@
 // Microsoft Visual C++ generated resource script.
 //
-#include "resourceppc.h"
+#include "resources.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#define APSTUDIO_HIDDEN_SYMBOLS
-#include "resdefce.h"
-#undef APSTUDIO_HIDDEN_SYMBOLS
+#include "afxres.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -23,15 +21,6 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
 #endif //_WIN32
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// Icon
-//
-
-// Icon with lowest ID value placed first to ensure application icon
-// remains consistent on all systems.
-IDI_VIEWER              ICON                    "Viewer.ico"
-
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -40,30 +29,35 @@ IDI_VIEWER              ICON                    "Viewer.ico"
 
 1 TEXTINCLUDE 
 BEGIN
-    "resourceppc.h\0"
+    "resources.h\0"
 END
 
 2 TEXTINCLUDE 
 BEGIN
-    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
-    "#include ""resdefce.h""\r\n"
-    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""afxres.h""\r\n"
     "\0"
 END
 
 3 TEXTINCLUDE 
 BEGIN
     "\r\n"
-    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
-    "LANGUAGE 9, 1\r\n"
-    "#pragma code_page(1252)\r\n"
-    "#include ""Viewerppc.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
-    "#endif\r\n"
     "\0"
 END
 
 #endif    // APSTUDIO_INVOKED
 
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Portuguese (Portugal) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_PTG)
+#ifdef _WIN32
+LANGUAGE LANG_PORTUGUESE, SUBLANG_PORTUGUESE
+#pragma code_page(1252)
+#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -72,17 +66,13 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_APP_TITLE           "Viewer"
-    IDS_APP_WND_CLASS       "VIEWER"
+    IDS_TITLE               "Viewer"
+    IDS_WINDOW_CLASS        "VIEWER"
+    IDS_SK_UPDATE           "Update"
+    IDS_SK_EXIT             "Exit"
 END
 
-STRINGTABLE 
-BEGIN
-    IDS_UPDATE              "Update"
-    IDS_EXIT                "Exit"
-END
-
-#endif    // English (U.S.) resources
+#endif    // Portuguese (Portugal) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -93,11 +83,6 @@ END
 // Generated from the TEXTINCLUDE 3 resource.
 //
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-LANGUAGE 9, 1
-#pragma code_page(1252)
-//#include "Viewerppc.rc2"  // non-Microsoft Visual C++ edited resources
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
