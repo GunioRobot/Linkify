@@ -24,9 +24,6 @@ namespace Win32 {
 }
 
 
-HWND _menuBar;
-
-
 static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) {
     static SHACTIVATEINFO shellActivate;
     
@@ -73,12 +70,7 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
         menuBarInfo.nToolBarId = (UINT) menuBar;
         menuBarInfo.hInstRes = application;
         
-        if (!SHCreateMenuBar(&menuBarInfo)) {
-            _menuBar = NULL;
-        }
-        else {
-            _menuBar = menuBarInfo.hwndMB;
-        }
+        SHCreateMenuBar(&menuBarInfo);
 
         CreateWindow( 
             L"BUTTON",   // Predefined class; Unicode assumed.
@@ -106,7 +98,6 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
     }
     // Post a quit message and return.
     case WM_DESTROY:
-        CommandBar_Destroy(_menuBar);
         PostQuitMessage(0);
         break;
     case WM_ACTIVATE:
@@ -170,21 +161,6 @@ static BOOL initializeApplication(HINSTANCE application, int showMode) {
     
     if (!window) {
         return FALSE;
-    }
-    
-    // When the main window is created using CW_USEDEFAULT the height of the
-    // menubar (if one is created is not taken into account). So resize the
-    // window after creating it if a menubar is present.
-    if (_menuBar) {
-        RECT windowArea;
-        RECT menuBarArea;
-        
-        GetWindowRect(window, &windowArea);
-        GetWindowRect(_menuBar, &menuBarArea);
-        windowArea.bottom -= (menuBarArea.bottom - menuBarArea.top);
-        
-        MoveWindow(window, windowArea.left, windowArea.top,
-            windowArea.right - windowArea.left, windowArea.bottom - windowArea.top, FALSE);
     }
     
     ShowWindow(window, showMode);
