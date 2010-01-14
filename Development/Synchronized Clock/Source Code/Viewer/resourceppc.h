@@ -6,11 +6,12 @@
 #define IDS_APP_WND_CLASS               2
 #define IDI_VIEWER                      101
 #define IDS_OK                          103
+#define IDS_UPDATE                      103
 #define IDS_HELP                        104
+#define IDS_EXIT                        104
 #define IDC_STATIC_3                    203
 #define IDM_OK                          40000
 #define IDM_HELP                        40001
-#define IDM_HELP_ABOUT                  40002
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

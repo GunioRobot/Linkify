@@ -18,10 +18,10 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
         
         // Parse the menu selections:
         switch (menuId) {
-        case IDM_HELP_ABOUT:
-            break;
-        case IDM_OK:
+        case IDS_EXIT:
             SendMessage(handle, WM_CLOSE, 0, 0);				
+            break;
+        case IDS_UPDATE:
             break;
         default:
             return DefWindowProc(handle, message, wParam, lParam);
@@ -33,24 +33,25 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
         memset(&shellActivate, 0, sizeof(shellActivate));
         shellActivate.cbSize = sizeof(shellActivate);
         
-        HMENU hMenu;
-        hMenu = CreateMenu();
-        InsertMenu(hMenu, 0, MF_BYPOSITION, IDM_OK, L"Left");
-        InsertMenu(hMenu, 1, MF_BYPOSITION, IDM_HELP_ABOUT, L"Right"); 
+        // TODO: Load string resources instead of hardcoded values.
+        HMENU menuBar;
+        menuBar = CreateMenu();
+        InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_UPDATE, L"Update");
+        InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_EXIT, L"Exit"); 
         
-        SHMENUBARINFO info;
-        memset(&info, 0, sizeof(SHMENUBARINFO));
-        info.cbSize = sizeof(SHMENUBARINFO);
-        info.hwndParent = handle;
-        info.dwFlags = SHCMBF_HMENU;
-        info.nToolBarId = (UINT) hMenu;
-        info.hInstRes = _application;
+        SHMENUBARINFO menuBarInfo;
+        memset(&menuBarInfo, 0, sizeof(SHMENUBARINFO));
+        menuBarInfo.cbSize = sizeof(SHMENUBARINFO);
+        menuBarInfo.hwndParent = handle;
+        menuBarInfo.dwFlags = SHCMBF_HMENU | SHCMBF_HIDESIPBUTTON;
+        menuBarInfo.nToolBarId = (UINT) menuBar;
+        menuBarInfo.hInstRes = _application;
         
-        if (!SHCreateMenuBar(&info)) {
+        if (!SHCreateMenuBar(&menuBarInfo)) {
             _menuBar = NULL;
         }
         else {
-            _menuBar = info.hwndMB;
+            _menuBar = menuBarInfo.hwndMB;
         }
 
         CreateWindow( 
@@ -180,15 +181,12 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previousInstance, LPTSTR comman
 		return FALSE;
 	}
     
-	HACCEL accelerators = LoadAccelerators(instance, MAKEINTRESOURCE(IDS_APP_WND_CLASS));
 	MSG message;
     
 	// Main message loop:
 	while (GetMessage(&message, NULL, 0, 0)) {
-		if (!TranslateAccelerator(message.hwnd, accelerators, &message)) {
-			TranslateMessage(&message);
-			DispatchMessage(&message);
-		}
+		TranslateMessage(&message);
+		DispatchMessage(&message);
 	}
     
 	return (int) message.wParam;
