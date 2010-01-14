@@ -14,6 +14,7 @@ namespace Win32 {
     tstring LoadStringT(UINT id, HINSTANCE module = GetModuleHandle(NULL)) {
         // TODO: Add caching?
         // TODO: Add error checking.
+        // TODO: Check when the buffer is too small for the whole string.
         const size_t BUFFER_SIZE = 128;
         TCHAR buffer[BUFFER_SIZE];
         int length = LoadString(module, id, buffer, BUFFER_SIZE);
@@ -124,20 +125,20 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
 
 
 static ATOM registerWindowClass(HINSTANCE application, Win32::tstring name) {
-	WNDCLASS windowClass;
+    WNDCLASS windowClass;
     
-	windowClass.style = CS_HREDRAW | CS_VREDRAW;
-	windowClass.lpfnWndProc = mainWindow;
-	windowClass.cbClsExtra = 0;
-	windowClass.cbWndExtra = 0;
-	windowClass.hInstance = application;
-	windowClass.hIcon = NULL;
-	windowClass.hCursor = 0;
-	windowClass.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
-	windowClass.lpszMenuName = 0;
+    windowClass.style = CS_HREDRAW | CS_VREDRAW;
+    windowClass.lpfnWndProc = mainWindow;
+    windowClass.cbClsExtra = 0;
+    windowClass.cbWndExtra = 0;
+    windowClass.hInstance = application;
+    windowClass.hIcon = NULL;
+    windowClass.hCursor = 0;
+    windowClass.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
+    windowClass.lpszMenuName = 0;
     windowClass.lpszClassName = name.c_str();
     
-	return RegisterClass(&windowClass);
+    return RegisterClass(&windowClass);
 }
 
 
@@ -161,7 +162,7 @@ static BOOL initializeApplication(HINSTANCE application, int showMode) {
     } 
     
     if (!registerWindowClass(application, windowClass)) {
-    	return FALSE;
+        return FALSE;
     }
     
     window = CreateWindow(windowClass.c_str(), title.c_str(), WS_VISIBLE,
@@ -181,7 +182,7 @@ static BOOL initializeApplication(HINSTANCE application, int showMode) {
         GetWindowRect(window, &windowArea);
         GetWindowRect(_menuBar, &menuBarArea);
         windowArea.bottom -= (menuBarArea.bottom - menuBarArea.top);
-	    
+        
         MoveWindow(window, windowArea.left, windowArea.top,
             windowArea.right - windowArea.left, windowArea.bottom - windowArea.top, FALSE);
     }
@@ -194,18 +195,18 @@ static BOOL initializeApplication(HINSTANCE application, int showMode) {
 
 
 int WINAPI WinMain(HINSTANCE instance, HINSTANCE previousInstance, LPTSTR commandLine, int showMode) {
-	// Perform application initialization:
-	if (!initializeApplication(instance, showMode)) {
-		return FALSE;
-	}
+    // Perform application initialization:
+    if (!initializeApplication(instance, showMode)) {
+        return FALSE;
+    }
     
-	MSG message;
+    MSG message;
     
-	// Main message loop:
-	while (GetMessage(&message, NULL, 0, 0)) {
-		TranslateMessage(&message);
-		DispatchMessage(&message);
-	}
+    // Main message loop:
+    while (GetMessage(&message, NULL, 0, 0)) {
+        TranslateMessage(&message);
+        DispatchMessage(&message);
+    }
     
-	return (int) message.wParam;
+    return (int) message.wParam;
 }
