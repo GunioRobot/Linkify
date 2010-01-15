@@ -13,7 +13,7 @@ namespace Win32 {
     
     // TODO: Add caching?
     // TODO: Add error checking.
-    // TODO: Check when the buffer is too small for the whole string.
+    // TODO: Check when the buffer is too small for the whole string?
     tstring LoadStringT(UINT id, HINSTANCE module = GetModuleHandle(NULL)) {
         const size_t BUFFER_SIZE = 128;
         TCHAR buffer[BUFFER_SIZE];
@@ -111,23 +111,15 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
 }
 
 
-class Application {
-};
-
-
 static BOOL initializeApplication(HINSTANCE application, int showMode) {
     Win32::tstring title = Win32::LoadStringT(IDS_TITLE);
     Win32::tstring windowClassName = Win32::LoadStringT(IDS_WINDOW_CLASS);
-    HWND window;
-    
-    window = FindWindow(windowClassName.c_str(), title.c_str());
+    HWND window = FindWindow(windowClassName.c_str(), title.c_str());
     
     if (window) {
         SetForegroundWindow(window);
         return FALSE;
     } 
-    
-    SHInitExtraControls();
     
     WNDCLASS windowClass;
     
@@ -153,6 +145,7 @@ static BOOL initializeApplication(HINSTANCE application, int showMode) {
         return FALSE;
     }
     
+    SHInitExtraControls();
     ShowWindow(window, showMode);
     UpdateWindow(window);
 
@@ -160,8 +153,51 @@ static BOOL initializeApplication(HINSTANCE application, int showMode) {
 }
 
 
-int WINAPI WinMain(HINSTANCE instance, HINSTANCE previousInstance, LPTSTR commandLine, int showMode) {
-    if (!initializeApplication(instance, showMode)) {
+class Application {
+public:
+    Application(HINSTANCE instance): _instance(instance) {
+    }
+
+
+    virtual int execute(LPTSTR commandLine, int windowShowMode) {
+        if (!onStart(commandLine, windowShowMode)) {
+            return EXIT_FAILURE;
+        }
+
+        MSG message;
+        
+        while (BOOL result = GetMessage(&message, NULL, 0, 0)) {
+            if (result == -1) {
+                return EXIT_FAILURE;
+            }
+            else {
+                TranslateMessage(&message);
+                DispatchMessage(&message);
+            }
+        }
+        
+        return (int) message.wParam;
+    }
+
+
+protected:
+    virtual BOOL onStart(LPTSTR commandLine, int windowShowMode) {
+        return TRUE;
+    }
+
+
+private:
+    HINSTANCE _instance;
+};
+
+
+int WINAPI WinMain(
+    HINSTANCE instance,
+    HINSTANCE previousInstance,
+    LPTSTR commandLine,
+    int windowShowMode)
+{
+    if (!initializeApplication(instance, windowShowMode)) {
         return FALSE;
     }
     
