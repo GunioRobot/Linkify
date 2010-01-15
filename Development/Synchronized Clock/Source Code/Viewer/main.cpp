@@ -115,7 +115,25 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
 }
 
 
-static ATOM registerWindowClass(HINSTANCE application, Win32::tstring name) {
+static BOOL initializeApplication(HINSTANCE application, int showMode) {
+    Win32::tstring title = Win32::LoadStringT(IDS_TITLE);
+    Win32::tstring windowClassName = Win32::LoadStringT(IDS_WINDOW_CLASS);
+    HWND window;
+    
+    // This should be called once during the application's initialization to
+    // initialize any of the device specific controls, e.g. CAPEDIT and SIPPREF.
+    SHInitExtraControls();
+    
+    // If it is already running, then focus on the window, and exit.
+    window = FindWindow(windowClassName.c_str(), title.c_str());
+    
+    if (window) {
+        // Set focus to foremost child window. The "| 0x00000001" is used to
+        // bring any owned windows to the foreground and activate them.
+        SetForegroundWindow((HWND)((ULONG) window | 0x00000001));
+        return FALSE;
+    } 
+    
     WNDCLASS windowClass;
     
     windowClass.style = CS_HREDRAW | CS_VREDRAW;
@@ -127,36 +145,13 @@ static ATOM registerWindowClass(HINSTANCE application, Win32::tstring name) {
     windowClass.hCursor = 0;
     windowClass.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
     windowClass.lpszMenuName = 0;
-    windowClass.lpszClassName = name.c_str();
+    windowClass.lpszClassName = windowClassName.c_str();
     
-    return RegisterClass(&windowClass);
-}
-
-
-static BOOL initializeApplication(HINSTANCE application, int showMode) {
-    Win32::tstring title = Win32::LoadStringT(IDS_TITLE);
-    Win32::tstring windowClass = Win32::LoadStringT(IDS_WINDOW_CLASS);
-    HWND window;
-    
-    // This should be called once during the application's initialization to
-    // initialize any of the device specific controls, e.g. CAPEDIT and SIPPREF.
-    SHInitExtraControls();
-    
-    // If it is already running, then focus on the window, and exit.
-    window = FindWindow(windowClass.c_str(), title.c_str());
-    
-    if (window) {
-        // Set focus to foremost child window. The "| 0x00000001" is used to
-        // bring any owned windows to the foreground and activate them.
-        SetForegroundWindow((HWND)((ULONG) window | 0x00000001));
-        return FALSE;
-    } 
-    
-    if (!registerWindowClass(application, windowClass)) {
+    if (!RegisterClass(&windowClass)) {
         return FALSE;
     }
-    
-    window = CreateWindow(windowClass.c_str(), title.c_str(), WS_VISIBLE,
+
+    window = CreateWindow(windowClassName.c_str(), title.c_str(), WS_VISIBLE,
         CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, application, NULL);
     
     if (!window) {
