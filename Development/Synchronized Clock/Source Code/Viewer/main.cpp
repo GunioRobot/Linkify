@@ -11,14 +11,14 @@ namespace Win32 {
     typedef std::basic_string<TCHAR> tstring;
     
     
+    // TODO: Add caching?
+    // TODO: Add error checking.
+    // TODO: Check when the buffer is too small for the whole string.
     tstring LoadStringT(UINT id, HINSTANCE module = GetModuleHandle(NULL)) {
-        // TODO: Add caching?
-        // TODO: Add error checking.
-        // TODO: Check when the buffer is too small for the whole string.
         const size_t BUFFER_SIZE = 128;
         TCHAR buffer[BUFFER_SIZE];
-        int length = LoadString(module, id, buffer, BUFFER_SIZE);
-
+        
+        LoadString(module, id, buffer, BUFFER_SIZE);
         return tstring(buffer);
     }
 }
@@ -28,11 +28,9 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
     static SHACTIVATEINFO shellActivate;
     
     switch (message) {
-    // Process the application menu:
     case WM_COMMAND: {
         int menuId = LOWORD(wParam);
         
-        // Parse the menu selections:
         switch (menuId) {
         case IDS_SK_EXIT:
             SendMessage(handle, WM_CLOSE, 0, 0);
@@ -45,7 +43,6 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
         break;
     }
     case WM_CREATE:
-        // Initialize the shell activate info structure.
         memset(&shellActivate, 0, sizeof(shellActivate));
         shellActivate.cbSize = sizeof(shellActivate);
         
@@ -86,8 +83,8 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
             NULL);      // Pointer not needed.
         
         break;
-        // Paint the main window:
     case WM_PAINT: {
+        // Paint the main window:
         PAINTSTRUCT paint;
         HDC context = BeginPaint(handle, &paint);
         
@@ -96,7 +93,6 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
         EndPaint(handle, &paint);
         break;
     }
-    // Post a quit message and return.
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
@@ -115,24 +111,23 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
 }
 
 
+class Application {
+};
+
+
 static BOOL initializeApplication(HINSTANCE application, int showMode) {
     Win32::tstring title = Win32::LoadStringT(IDS_TITLE);
     Win32::tstring windowClassName = Win32::LoadStringT(IDS_WINDOW_CLASS);
     HWND window;
     
-    // This should be called once during the application's initialization to
-    // initialize any of the device specific controls, e.g. CAPEDIT and SIPPREF.
-    SHInitExtraControls();
-    
-    // If it is already running, then focus on the window, and exit.
     window = FindWindow(windowClassName.c_str(), title.c_str());
     
     if (window) {
-        // Set focus to foremost child window. The "| 0x00000001" is used to
-        // bring any owned windows to the foreground and activate them.
-        SetForegroundWindow((HWND)((ULONG) window | 0x00000001));
+        SetForegroundWindow(window);
         return FALSE;
     } 
+    
+    SHInitExtraControls();
     
     WNDCLASS windowClass;
     
@@ -166,14 +161,12 @@ static BOOL initializeApplication(HINSTANCE application, int showMode) {
 
 
 int WINAPI WinMain(HINSTANCE instance, HINSTANCE previousInstance, LPTSTR commandLine, int showMode) {
-    // Perform application initialization:
     if (!initializeApplication(instance, showMode)) {
         return FALSE;
     }
     
     MSG message;
     
-    // Main message loop:
     while (GetMessage(&message, NULL, 0, 0)) {
         TranslateMessage(&message);
         DispatchMessage(&message);
