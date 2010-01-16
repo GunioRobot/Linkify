@@ -116,10 +116,10 @@ static BOOL initializeApplication(HINSTANCE application, int showMode) {
     Win32::tstring windowClassName = Win32::LoadStringT(IDS_WINDOW_CLASS);
     HWND window = FindWindow(windowClassName.c_str(), title.c_str());
     
-    if (window) {
+    if (window != NULL) {
         SetForegroundWindow(window);
         return FALSE;
-    } 
+    }
     
     WNDCLASS windowClass;
     
