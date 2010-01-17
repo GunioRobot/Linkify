@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "Reference.h"
+#include "ref.h"
 
 
 class Animal {
@@ -35,8 +35,8 @@ public:
 
 
 int main() {
-    Reference<Cat> cat = new Cat("Kitty");
-    Reference<Animal> animal = cat;
+    ref<Cat> cat = new Cat("Kitty");
+    ref<Animal> animal = cat;
     
     std::cout << "- Method => \"" << animal->getName() << "\"\n";
     std::cout << "- typeid => \"" << animal.type().name() << "\"\n";

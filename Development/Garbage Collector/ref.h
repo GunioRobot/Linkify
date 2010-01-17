@@ -1,10 +1,10 @@
-#ifndef __REFERENCE__
-#define __REFERENCE__
+#ifndef __REF__
+#define __REF__
 
 
 /**
  * @file
- * @brief Garbage Collector
+ * @brief Smart reference
  * @see http://www.boost.org/doc/libs/release/libs/smart_ptr/shared_ptr.htm
  *
  * Simple garbage collector implemented with reference counting.
@@ -16,44 +16,45 @@
 
 
 template<typename T>
-class Reference {
+class ref {
 public:
-    Reference(): _obj(NULL), _count(NULL), _type(&typeid(NULL)) {
+    ref(): _obj(NULL), _count(NULL), _type(&typeid(NULL)) {
     }
     
     
-    Reference(const Reference<T>& r): _obj(r._obj), _count(r._count), _type(r._type) {
+    ref(const ref<T>& r): _obj(r._obj), _count(r._count), _type(r._type) {
         increment();
     }
     
     
     template<typename U>
-    Reference(const Reference<U>& r): _obj(r._obj), _count(r._count), _type(r._type) {
+    ref(const ref<U>& r): _obj(r._obj), _count(r._count), _type(r._type) {
         increment();
     }
     
     
-    Reference(T* object): _obj(object), _count(NULL), _type(&typeid(T)) {
+    ref(T* object): _obj(object), _count(NULL), _type(&typeid(T)) {
         increment();
     }
     
     
     template<typename U>
-    Reference(U* object): _obj(object), _count(NULL), _type(&typeid(U)) {
+    ref(U* object): _obj(object), _count(NULL), _type(&typeid(U)) {
         increment();
     }
     
     
-    ~Reference() {
+    ~ref() {
         decrement();
     }
     
     
-    Reference<T>& operator =(const Reference<T>& copy) {
+    ref<T>& operator =(const ref<T>& copy) {
         if (this != &copy) {
             decrement();
             
             _obj = copy._obj;
+            _count = copy._count;
             _type = copy._type;
             
             increment();
@@ -63,12 +64,12 @@ public:
     }
     
     
-    bool operator ==(const Reference<T>& other) {
+    bool operator ==(const ref<T>& other) {
         return _obj == other._obj;
     }
     
     
-    bool operator !=(const Reference<T>& other) {
+    bool operator !=(const ref<T>& other) {
         return _obj != other._obj;
     }
     
