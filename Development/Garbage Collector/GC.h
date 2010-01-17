@@ -18,14 +18,6 @@
 
 
 namespace GC {
-    class DuplicateReferenceError: public std::exception {
-    public:
-        virtual const char* what() const throw() {
-            return "Duplicate reference";
-        }
-    };
-    
-    
     class NullReferenceError: public std::exception {
     public:
         virtual const char* what() const throw() {
@@ -52,18 +44,14 @@ namespace GC {
         }
         
         
-        Reference(T* object): _obj(object), _count(new size_t(0)), _type(&typeid(T)) {
-            if (increment() > 1) {
-                throw DuplicateReferenceError();
-            }
+        Reference(T* object): _obj(object), _count(NULL), _type(&typeid(T)) {
+            increment();
         }
         
         
         template<typename U>
-        Reference(U* object): _obj(object), _count(new size_t(0)), _type(&typeid(U)) {
-            if (increment() > 1) {
-                throw DuplicateReferenceError();
-            }
+        Reference(U* object): _obj(object), _count(NULL), _type(&typeid(U)) {
+            increment();
         }
         
         
@@ -128,8 +116,15 @@ namespace GC {
         }
         
         
-        size_t increment() {
-            return _obj != NULL ? ++*_count : 0;
+        void increment() {
+            if (_obj != NULL) {
+                if (_count == NULL) {
+                    _count = new size_t(1);
+                }
+                else {
+                    ++*_count;
+                }
+            }
         }
         
         
