@@ -17,14 +17,6 @@
 
 
 namespace GC {
-    class NullReferenceError: public std::exception {
-    public:
-        virtual const char* what() const throw() {
-            return "Null reference";
-        }
-    };
-    
-    
     template<typename T>
     class Reference {
     public:
@@ -84,20 +76,17 @@ namespace GC {
         
         
         T* operator ->() {
-            if (_obj == NULL) {
-                throw NullReferenceError();
-            }
-            
             return _obj;
         }
         
         
         const T& operator *() {
-            if (_obj == NULL) {
-                throw NullReferenceError();
-            }
-            
             return *_obj;
+        }
+        
+        
+        bool null() {
+            return _obj == NULL;
         }
         
         
