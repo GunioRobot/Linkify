@@ -34,73 +34,52 @@ namespace GC {
     };
     
     
-    class Counter {
-    protected:
-        template<typename T>
-        static void decrement(T* object) {
-            if ((object != NULL) && (--_count[object] == 0)) {
-                delete object;
-                _count.erase(_count.find(object));
-            }
-        }
-        
-        
-        static size_t increment(void* object) {
-            return object != NULL ? ++_count[object] : 0;
-        }
-        
-        
-    private:
-        static std::map<void*, size_t> _count;
-    };
-    
-    
     template<typename T>
-    class Reference: protected Counter {
+    class Reference {
     public:
-        Reference(): _obj(NULL), _type(&typeid(NULL)) {
+        Reference(): _obj(NULL), _count(NULL), _type(&typeid(NULL)) {
         }
         
         
-        Reference(const Reference<T>& r): _obj(r._obj), _type(r._type) {
-            increment(_obj);
+        Reference(const Reference<T>& r): _obj(r._obj), _count(r._count), _type(r._type) {
+            increment();
         }
         
         
         template<typename U>
-        Reference(const Reference<U>& r): _obj(r._obj), _type(r._type) {
-            increment(_obj);
+        Reference(const Reference<U>& r): _obj(r._obj), _count(r._count), _type(r._type) {
+            increment();
         }
         
         
-        Reference(T* object): _obj(object), _type(&typeid(T)) {
-            if (increment(_obj) > 1) {
+        Reference(T* object): _obj(object), _count(new size_t(0)), _type(&typeid(T)) {
+            if (increment() > 1) {
                 throw DuplicateReferenceError();
             }
         }
         
         
         template<typename U>
-        Reference(U* object): _obj(object), _type(&typeid(U)) {
-            if (increment(_obj) > 1) {
+        Reference(U* object): _obj(object), _count(new size_t(0)), _type(&typeid(U)) {
+            if (increment() > 1) {
                 throw DuplicateReferenceError();
             }
         }
         
         
         ~Reference() {
-            decrement(_obj);
+            decrement();
         }
         
         
         Reference<T>& operator =(const Reference<T>& copy) {
             if (this != &copy) {
-                decrement(_obj);
+                decrement();
                 
                 _obj = copy._obj;
                 _type = copy._type;
                 
-                increment(_obj);
+                increment();
             }
             
             return *this;
@@ -140,8 +119,23 @@ namespace GC {
         }
         
         
-    //private:
+    private:
+        void decrement() {
+            if ((_obj != NULL) && (--*_count == 0)) {
+                delete _obj;
+                delete _count;
+            }
+        }
+        
+        
+        size_t increment() {
+            return _obj != NULL ? ++*_count : 0;
+        }
+        
+        
+    public:
         T* _obj;
+        size_t* _count;
         const std::type_info* _type;
     };
 }
