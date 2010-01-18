@@ -3,6 +3,7 @@
 #include <commctrl.h>
 
 // Order is not significant:
+#include "ref.h"
 #include "resources.h"
 #include <string>
 
@@ -11,15 +12,19 @@ namespace Win32 {
     typedef std::basic_string<TCHAR> tstring;
     
     
-    // TODO: Add caching?
-    // TODO: Add error checking.
-    // TODO: Check when the buffer is too small for the whole string?
-    tstring LoadStringT(UINT id, HINSTANCE module = GetModuleHandle(NULL)) {
+    HWND FindWindowT(ref<tstring> className, ref<tstring> title) {
+        return FindWindow(className->c_str(), title->c_str());
+    }
+
+
+    // TODO: Check when the buffer is too small for the whole string.
+    ref<tstring> LoadStringT(UINT id, HINSTANCE module = GetModuleHandle(NULL)) {
         const size_t BUFFER_SIZE = 128;
         TCHAR buffer[BUFFER_SIZE];
-        
-        LoadString(module, id, buffer, BUFFER_SIZE);
-        return tstring(buffer);
+        int length = LoadString(module, id, buffer, BUFFER_SIZE);
+        ref<tstring> string = (length == 0) ? NULL : new tstring(buffer);
+
+        return string;
     }
 }
 
@@ -53,10 +58,10 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
         menuBar = CreateMenu();
         
         {
-        Win32::tstring update = Win32::LoadStringT(IDS_SK_UPDATE);
-        Win32::tstring exit = Win32::LoadStringT(IDS_SK_EXIT);
-        InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_SK_UPDATE, update.c_str()); 
-        InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_SK_EXIT, exit.c_str());
+        ref<Win32::tstring> update = Win32::LoadStringT(IDS_SK_UPDATE);
+        ref<Win32::tstring> exit = Win32::LoadStringT(IDS_SK_EXIT);
+        InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_SK_UPDATE, update->c_str()); 
+        InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_SK_EXIT, exit->c_str());
         }
 
         SHMENUBARINFO menuBarInfo;
@@ -112,9 +117,9 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
 
 
 static BOOL initializeApplication(HINSTANCE application, int showMode) {
-    Win32::tstring title = Win32::LoadStringT(IDS_TITLE);
-    Win32::tstring windowClassName = Win32::LoadStringT(IDS_WINDOW_CLASS);
-    HWND window = FindWindow(windowClassName.c_str(), title.c_str());
+    ref<Win32::tstring> title = Win32::LoadStringT(IDS_TITLE);
+    ref<Win32::tstring> windowClassName = Win32::LoadStringT(IDS_WINDOW_CLASS);
+    HWND window = Win32::FindWindowT(windowClassName, title);
     
     if (window != NULL) {
         SetForegroundWindow(window);
@@ -132,14 +137,15 @@ static BOOL initializeApplication(HINSTANCE application, int showMode) {
     windowClass.hCursor = 0;
     windowClass.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
     windowClass.lpszMenuName = 0;
-    windowClass.lpszClassName = windowClassName.c_str();
+    windowClass.lpszClassName = windowClassName->c_str();
     
     if (!RegisterClass(&windowClass)) {
         return FALSE;
     }
 
-    window = CreateWindow(windowClassName.c_str(), title.c_str(), WS_VISIBLE,
-        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, application, NULL);
+    window = CreateWindow(windowClassName->c_str(), title->c_str(), WS_VISIBLE,
+        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL,
+        application, NULL);
     
     if (!window) {
         return FALSE;
