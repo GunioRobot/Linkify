@@ -5,6 +5,7 @@
 // Order is not significant:
 #include "ref.h"
 #include "resources.h"
+#include <exception>
 #include <string>
 
 
@@ -12,11 +13,6 @@ namespace Win32 {
     typedef std::basic_string<TCHAR> tstring;
     
     
-    HWND FindWindowT(ref<tstring> className, ref<tstring> title) {
-        return FindWindow(className->c_str(), title->c_str());
-    }
-
-
     // TODO: Check when the buffer is too small for the whole string.
     ref<tstring> LoadStringT(UINT id, HINSTANCE module = GetModuleHandle(NULL)) {
         const size_t BUFFER_SIZE = 128;
@@ -116,10 +112,85 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
 }
 
 
+class Window {
+public:
+    static class AlreadyExistsError : public std::exception {
+    };
+    
+
+    static class ClassRegistrationError : public std::exception {
+    };
+    
+
+    static class CreationError : public std::exception {
+    };
+    
+
+    static LRESULT CALLBACK handler(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) {
+        Window* window = *(Window**) (handle + 1);
+        return window->handler(message, wParam, lParam);
+    }
+
+
+public:
+    Window(ref<Win32::tstring> title, ref<Win32::tstring> className) {
+        _handle = FindWindow(className->c_str(), title->c_str());
+
+        if (_handle != NULL) {
+            SetForegroundWindow(_handle);
+            throw AlreadyExistsError();
+        }
+        
+        WNDCLASS windowClass;
+        HINSTANCE module = GetModuleHandle(NULL);
+
+        windowClass.style = CS_HREDRAW | CS_VREDRAW;
+        windowClass.lpfnWndProc = &Window::handler;
+        windowClass.cbClsExtra = 0;
+        
+        // Needed for multiplexing the handler.
+        windowClass.cbWndExtra = sizeof(this);
+
+        windowClass.hInstance = module;
+        windowClass.hIcon = NULL;
+        windowClass.hCursor = NULL;
+        windowClass.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
+        windowClass.lpszMenuName = NULL;
+        windowClass.lpszClassName = className->c_str();
+        
+        if (RegisterClass(&windowClass) == 0) {
+            throw ClassRegistrationError();
+        }
+        
+        _handle = CreateWindow(className->c_str(), title->c_str(), WS_VISIBLE,
+            CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+            NULL, NULL, module, NULL);
+
+        if (_handle == NULL) {
+            throw CreationError();
+        }
+        
+        *(Window**) (_handle + 1) = this;
+        
+        SHInitExtraControls();
+        UpdateWindow(_handle);
+    }
+
+
+private:
+    LRESULT handler(UINT message, WPARAM wParam, LPARAM lParam) {
+    }
+
+
+private:
+    HWND _handle;
+};
+
+
 static BOOL initializeApplication(HINSTANCE application, int showMode) {
     ref<Win32::tstring> title = Win32::LoadStringT(IDS_TITLE);
-    ref<Win32::tstring> windowClassName = Win32::LoadStringT(IDS_WINDOW_CLASS);
-    HWND window = Win32::FindWindowT(windowClassName, title);
+    ref<Win32::tstring> className = Win32::LoadStringT(IDS_WINDOW_CLASS);
+    HWND window = FindWindow(className->c_str(), title->c_str());
     
     if (window != NULL) {
         SetForegroundWindow(window);
@@ -134,16 +205,16 @@ static BOOL initializeApplication(HINSTANCE application, int showMode) {
     windowClass.cbWndExtra = 0;
     windowClass.hInstance = application;
     windowClass.hIcon = NULL;
-    windowClass.hCursor = 0;
-    windowClass.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
-    windowClass.lpszMenuName = 0;
-    windowClass.lpszClassName = windowClassName->c_str();
+    windowClass.hCursor = NULL;
+    windowClass.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1); //(HBRUSH) GetStockObject(WHITE_BRUSH);
+    windowClass.lpszMenuName = NULL;
+    windowClass.lpszClassName = className->c_str();
     
-    if (!RegisterClass(&windowClass)) {
+    if (RegisterClass(&windowClass) == 0) {
         return FALSE;
     }
 
-    window = CreateWindow(windowClassName->c_str(), title->c_str(), WS_VISIBLE,
+    window = CreateWindow(className->c_str(), title->c_str(), WS_VISIBLE,
         CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL,
         application, NULL);
     
@@ -152,7 +223,6 @@ static BOOL initializeApplication(HINSTANCE application, int showMode) {
     }
     
     SHInitExtraControls();
-    ShowWindow(window, showMode);
     UpdateWindow(window);
 
     return TRUE;
