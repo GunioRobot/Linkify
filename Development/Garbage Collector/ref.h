@@ -15,6 +15,7 @@
 #include <typeinfo>
 
 
+// TODO: Add documentation.
 template<typename T>
 class ref {
 public:
@@ -115,6 +116,7 @@ private:
     }
     
     
+// TODO: Is there a way to make these private?
 public:
     T* _obj;
     size_t* _count;
