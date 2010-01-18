@@ -112,6 +112,82 @@ static LRESULT CALLBACK mainWindow(HWND handle, UINT message, WPARAM wParam, LPA
 }
 
 
+static BOOL initializeApplication(HINSTANCE application, int showMode) {
+    ref<Win32::tstring> title = Win32::LoadStringT(IDS_TITLE);
+    ref<Win32::tstring> className = Win32::LoadStringT(IDS_WINDOW_CLASS);
+    HWND window = FindWindow(className->c_str(), title->c_str());
+    
+    if (window != NULL) {
+        SetForegroundWindow(window);
+        return FALSE;
+    }
+    
+    WNDCLASS windowClass;
+    
+    windowClass.style = CS_HREDRAW | CS_VREDRAW;
+    windowClass.lpfnWndProc = mainWindow;
+    windowClass.cbClsExtra = 0;
+    windowClass.cbWndExtra = 0;
+    windowClass.hInstance = application;
+    windowClass.hIcon = NULL;
+    windowClass.hCursor = NULL;
+    windowClass.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1); //(HBRUSH) GetStockObject(WHITE_BRUSH);
+    windowClass.lpszMenuName = NULL;
+    windowClass.lpszClassName = className->c_str();
+    
+    if (RegisterClass(&windowClass) == 0) {
+        return FALSE;
+    }
+
+    window = CreateWindow(className->c_str(), title->c_str(), WS_VISIBLE,
+        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL,
+        application, NULL);
+    
+    if (!window) {
+        return FALSE;
+    }
+    
+    SHInitExtraControls();
+    UpdateWindow(window);
+
+    return TRUE;
+}
+
+
+class Application {
+public:
+    Application() {
+    }
+
+
+    virtual int execute(LPTSTR commandLine, int windowShowMode) {
+        if (!onStart(commandLine, windowShowMode)) {
+            return EXIT_FAILURE;
+        }
+
+        MSG message;
+        
+        while (BOOL result = GetMessage(&message, NULL, 0, 0)) {
+            if (result == -1) {
+                return EXIT_FAILURE;
+            }
+            else {
+                TranslateMessage(&message);
+                DispatchMessage(&message);
+            }
+        }
+        
+        return (int) message.wParam;
+    }
+
+
+protected:
+    virtual BOOL onStart(LPTSTR commandLine, int windowShowMode) {
+        return TRUE;
+    }
+};
+
+
 class Window {
 public:
     static class AlreadyExistsError : public std::exception {
@@ -171,99 +247,24 @@ public:
         }
         
         *(Window**) (_handle + 1) = this;
-        
         SHInitExtraControls();
+    }
+
+
+    virtual void show(int mode) {
+        ShowWindow(_handle, mode);
         UpdateWindow(_handle);
     }
 
 
 private:
     LRESULT handler(UINT message, WPARAM wParam, LPARAM lParam) {
+        return DefWindowProc(_handle, message, wParam, lParam);
     }
 
 
 private:
     HWND _handle;
-};
-
-
-static BOOL initializeApplication(HINSTANCE application, int showMode) {
-    ref<Win32::tstring> title = Win32::LoadStringT(IDS_TITLE);
-    ref<Win32::tstring> className = Win32::LoadStringT(IDS_WINDOW_CLASS);
-    HWND window = FindWindow(className->c_str(), title->c_str());
-    
-    if (window != NULL) {
-        SetForegroundWindow(window);
-        return FALSE;
-    }
-    
-    WNDCLASS windowClass;
-    
-    windowClass.style = CS_HREDRAW | CS_VREDRAW;
-    windowClass.lpfnWndProc = mainWindow;
-    windowClass.cbClsExtra = 0;
-    windowClass.cbWndExtra = 0;
-    windowClass.hInstance = application;
-    windowClass.hIcon = NULL;
-    windowClass.hCursor = NULL;
-    windowClass.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1); //(HBRUSH) GetStockObject(WHITE_BRUSH);
-    windowClass.lpszMenuName = NULL;
-    windowClass.lpszClassName = className->c_str();
-    
-    if (RegisterClass(&windowClass) == 0) {
-        return FALSE;
-    }
-
-    window = CreateWindow(className->c_str(), title->c_str(), WS_VISIBLE,
-        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL,
-        application, NULL);
-    
-    if (!window) {
-        return FALSE;
-    }
-    
-    SHInitExtraControls();
-    UpdateWindow(window);
-
-    return TRUE;
-}
-
-
-class Application {
-public:
-    Application(HINSTANCE instance): _instance(instance) {
-    }
-
-
-    virtual int execute(LPTSTR commandLine, int windowShowMode) {
-        if (!onStart(commandLine, windowShowMode)) {
-            return EXIT_FAILURE;
-        }
-
-        MSG message;
-        
-        while (BOOL result = GetMessage(&message, NULL, 0, 0)) {
-            if (result == -1) {
-                return EXIT_FAILURE;
-            }
-            else {
-                TranslateMessage(&message);
-                DispatchMessage(&message);
-            }
-        }
-        
-        return (int) message.wParam;
-    }
-
-
-protected:
-    virtual BOOL onStart(LPTSTR commandLine, int windowShowMode) {
-        return TRUE;
-    }
-
-
-private:
-    HINSTANCE _instance;
 };
 
 
