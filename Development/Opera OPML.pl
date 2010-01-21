@@ -10,11 +10,11 @@ use Pearl;
 
 if (@ARGV != 1) {
     print "Exports the Opera feed list to OPML.\n";
-    print "Usage: <mail directory>\n";
+    print "Usage: <path to index.ini>\n";
     exit 1;
 }
 
-my $file = File::Spec->catfile(shift @ARGV, 'index.ini');
+my ($file) = @ARGV;
 open my $index, '<', $file or die $ERRNO;
 
 my @sections = split "\n\n", join '', <$index>;
