@@ -62,6 +62,11 @@ ul > li > a.MailAddress:before {
     content: -o-skin("View Mail");
 }
 
+ul > li > a.TogglePlugins:before {
+    content: -o-skin("Mail Attachments");
+}
+
+
 ul > li > a.Up:before {
     content: -o-skin("Parent Folder");
 }
@@ -76,6 +81,7 @@ ul > li > a.Up:before {
       <li><a class="BypassLogin" href="opera:/button/Go to page,%22javascript:void(window.open('http://bugmenot.com/view/' + encodeURI(location)))%22,,Bypass login,Mail Redirected">Bypass login</a></li>
       <li><a class="Up" href="opera:/button/Go to parent directory,,,,Parent folder">Go to parent directory</a></li>
       <li><a class="ClosePage" href="opera:/button/Close page,,,,Pagebar Close Button Skin">Close page</a></li>
+      <li><a class="TogglePlugins" href="opera:/button/Enable plugins,,,,Mail Attachments|Disable plugins,,,,">Toggle plug-ins</a></li>
       <li><a class="MailAddress" href="opera:/button/Send document address in mail,,,,View Mail">Mail document address</a></li>
     </ul>
   </body>
