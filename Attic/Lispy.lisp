@@ -143,6 +143,23 @@
            (not (zerop (rem year 100))))))
 
 
+(defmacro macro (name &environment env)
+  "Converts a macro to a function, e.g. (funcall (macro and) 1 2) --> 2"
+  #-CLISP (error "Only CLISP is supported.")
+  
+  (let ((local-env (gensym))
+        (macro-env (gensym)))
+    
+    `(let ((,local-env (ext:the-environment))
+           (,macro-env ,env))
+       
+       (lambda (&rest arguments)
+         (ext:eval-env (funcall (macro-function ',name ,macro-env)
+                                (cons ',name arguments)
+                                ,macro-env)
+                       ,local-env)))))
+
+
 (define-symbol-macro macro-environment
   (get-current-macro-environment))
 
