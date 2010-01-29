@@ -224,6 +224,7 @@ public:
         windowClass.lpfnWndProc = &Window::handler;
         windowClass.cbClsExtra = 0;
         
+        // TODO: Remove this and use instead a global map.
         // Needed for multiplexing the handler.
         windowClass.cbWndExtra = sizeof(this);
 
