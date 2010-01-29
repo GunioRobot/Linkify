@@ -3,10 +3,7 @@
   
   (:p (:a (@ (:class "Email"))
           "Send me")
-      " an e-mail, "
-      (:a (@ (:href "http://www.google.com/search?q=M%C3%A1rcio+Faustino"))
-          "search me")
-      " on Google, or view "
+      " an e-mail or view "
       (:a (@ (:href "http://www.linkedin.com/in/marciof"))
           "my LinkedIn profile")
       ".")
