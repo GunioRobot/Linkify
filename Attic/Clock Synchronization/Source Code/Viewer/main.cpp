@@ -6,6 +6,7 @@
 #include "ref.h"
 #include "resources.h"
 #include <exception>
+#include <map>
 #include <string>
 
 
@@ -202,9 +203,12 @@ public:
     };
     
 
+private:
+    static std::map<HWND, Window*> _windows;
+
+
     static LRESULT CALLBACK handler(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) {
-        Window* window = *(Window**) (handle + 1);
-        return window->handler(message, wParam, lParam);
+        return _windows[handle]->handler(message, wParam, lParam);
     }
 
 
@@ -223,11 +227,7 @@ public:
         windowClass.style = CS_HREDRAW | CS_VREDRAW;
         windowClass.lpfnWndProc = &Window::handler;
         windowClass.cbClsExtra = 0;
-        
-        // TODO: Remove this and use instead a global map.
-        // Needed for multiplexing the handler.
-        windowClass.cbWndExtra = sizeof(this);
-
+        windowClass.cbWndExtra = 0;
         windowClass.hInstance = module;
         windowClass.hIcon = NULL;
         windowClass.hCursor = NULL;
@@ -247,8 +247,13 @@ public:
             throw CreationError();
         }
         
-        *(Window**) (_handle + 1) = this;
+        _windows[_handle] = this;
         SHInitExtraControls();
+    }
+
+
+    ~Window() {
+        _windows.erase(_handle);
     }
 
 
@@ -264,7 +269,6 @@ private:
     }
 
 
-private:
     HWND _handle;
 };
 
