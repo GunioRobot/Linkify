@@ -165,24 +165,21 @@ private:
             }
             break;
         }
-        case WM_CREATE:
+        case WM_CREATE: {
             memset(&sipInfo, 0, sizeof(sipInfo));
             sipInfo.cbSize = sizeof(sipInfo);
             
-            HINSTANCE application;
-            application = GetModuleHandle(NULL);
+            HINSTANCE application = GetModuleHandle(NULL);
+            HMENU menuBar = CreateMenu();
             
-            HMENU menuBar;
-            menuBar = CreateMenu();
-            
-            {
             ref<Win32::tstring> update = Win32::LoadStringT(IDS_SK_UPDATE);
             ref<Win32::tstring> exit = Win32::LoadStringT(IDS_SK_EXIT);
+            
             InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_SK_UPDATE, update->c_str()); 
             InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_SK_EXIT, exit->c_str());
-            }
 
             SHMENUBARINFO menuBarInfo;
+
             memset(&menuBarInfo, 0, sizeof(SHMENUBARINFO));
             menuBarInfo.cbSize = sizeof(SHMENUBARINFO);
             menuBarInfo.hwndParent = handle;
@@ -206,6 +203,7 @@ private:
                 NULL);      // Pointer not needed.
             
             break;
+        }
         case WM_PAINT: {
             PAINTSTRUCT paint;
             HDC context = BeginPaint(handle, &paint);
