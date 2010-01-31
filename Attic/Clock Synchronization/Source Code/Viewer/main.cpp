@@ -161,12 +161,10 @@ public:
     }
 
 
-    virtual int execute(LPTSTR commandLine, int windowShowMode) {
-        if (!onStart(commandLine, windowShowMode)) {
-            return EXIT_FAILURE;
-        }
-
+    virtual int start(LPTSTR commandLine, int windowShowMode) {
         MSG message;
+        
+        onStart(commandLine, windowShowMode);
         
         while (BOOL result = GetMessage(&message, NULL, 0, 0)) {
             if (result == -1) {
@@ -183,8 +181,7 @@ public:
 
 
 protected:
-    virtual BOOL onStart(LPTSTR commandLine, int windowShowMode) {
-        return TRUE;
+    virtual void onStart(LPTSTR commandLine, int windowShowMode) {
     }
 };
 
@@ -212,12 +209,11 @@ private:
     }
 
 
-public:
-    Window(ref<Win32::tstring> title, ref<Win32::tstring> className) {
-        _handle = FindWindow(className->c_str(), title->c_str());
+    static HWND setup(Window* window, ref<Win32::tstring> title, ref<Win32::tstring> className) {
+        HWND handle = FindWindow(className->c_str(), title->c_str());
 
-        if (_handle != NULL) {
-            SetForegroundWindow(_handle);
+        if (handle != NULL) {
+            SetForegroundWindow(handle);
             throw AlreadyExistsError();
         }
         
@@ -239,16 +235,32 @@ public:
             throw ClassRegistrationError();
         }
         
-        _handle = CreateWindow(className->c_str(), title->c_str(), WS_VISIBLE,
+        handle = CreateWindow(className->c_str(), title->c_str(), WS_VISIBLE,
             CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
             NULL, NULL, module, NULL);
 
-        if (_handle == NULL) {
+        if (handle == NULL) {
             throw CreationError();
         }
         
-        _windows[_handle] = this;
+        _windows[handle] = window;
         SHInitExtraControls();
+
+        return handle;
+    }
+
+
+public:
+    Window(UINT titleId, UINT classNameId) {
+        ref<Win32::tstring> title = Win32::LoadStringT(titleId);
+        ref<Win32::tstring> className = Win32::LoadStringT(classNameId);
+
+        _handle = setup(this, title, className);
+    }
+
+
+    Window(ref<Win32::tstring> title, ref<Win32::tstring> className) {
+        _handle = setup(this, title, className);
     }
 
 
@@ -265,11 +277,27 @@ public:
 
 private:
     LRESULT handler(UINT message, WPARAM wParam, LPARAM lParam) {
-        return DefWindowProc(_handle, message, wParam, lParam);
+        return 0;
     }
 
 
     HWND _handle;
+};
+
+
+std::map<HWND, Window*> Window::_windows;
+
+
+class Viewer : public Application, Window {
+public:
+    Viewer() : Window(IDS_TITLE, IDS_WINDOW_CLASS) {
+    }
+
+
+protected:
+    virtual void onStart(LPTSTR commandLine, int windowShowMode) {
+        show(windowShowMode);
+    }
 };
 
 
@@ -279,16 +307,10 @@ int WINAPI WinMain(
     LPTSTR commandLine,
     int windowShowMode)
 {
-    if (!initializeApplication(instance, windowShowMode)) {
-        return FALSE;
+    try {
+        return Viewer().start(commandLine, windowShowMode);
     }
-    
-    MSG message;
-    
-    while (GetMessage(&message, NULL, 0, 0)) {
-        TranslateMessage(&message);
-        DispatchMessage(&message);
+    catch (std::exception error) {
+        return EXIT_FAILURE;
     }
-    
-    return (int) message.wParam;
 }
