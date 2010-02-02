@@ -83,7 +83,7 @@ namespace Win32 {
 
 
     public:
-        Window(ref<Win32::tstring> title, ref<Win32::tstring> className) {
+        Window(ref<tstring> title, ref<tstring> className) {
             _handle = FindWindow(className->c_str(), title->c_str());
 
             if (_handle != NULL) {
