@@ -213,6 +213,14 @@
 				RelativePath=".\stdafx.h"
 				>
 			</File>
+			<File
+				RelativePath=".\Win32.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Win32.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
