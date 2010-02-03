@@ -126,6 +126,13 @@
                  (flatten (rest values))))))
 
 
+(defun format-size (size)
+  (let ((units #("B" "KiB" "MiB" "GiB" "TiB" "PiB" "EiB" "ZiB" "YiB")))
+    (do ((unit 0 (1+ unit)))
+        ((< size 1024) (format nil "~,2F ~A" size (aref units unit)))
+      (setf size (/ size 1024)))))
+
+
 (defmacro get-current-macro-environment (&environment env)
   env)
 
