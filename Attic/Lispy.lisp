@@ -126,7 +126,7 @@
                  (flatten (rest values))))))
 
 
-(defun format-size (size)
+(defmethod format-size ((size integer))
   (let ((units #("B" "KiB" "MiB" "GiB" "TiB" "PiB" "EiB" "ZiB" "YiB")))
     (do ((unit 0 (1+ unit)))
         ((< size 1024) (format nil "~,2F ~A" size (aref units unit)))
@@ -144,7 +144,7 @@
                         values))))
 
 
-(defmethod leap-year? ((year number))
+(defmethod leap-year? ((year integer))
   (or (zerop (rem year 400))
       (and (zerop (rem year 4))
            (not (zerop (rem year 100))))))
@@ -183,7 +183,7 @@
                   (apply fn arguments)))))))
 
 
-(defmethod next-tab-column ((column number) &key (step 8))
+(defmethod next-tab-column ((column integer) &key (step 8))
   (- (+ column step)
      (rem column step)))
 
