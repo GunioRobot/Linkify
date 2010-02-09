@@ -16,7 +16,36 @@ namespace Win32 {
     typedef std::basic_string<TCHAR> tstring;
     
     
+    ref<tstring> GetLastErrorMessage();
     ref<tstring> LoadStringT(UINT id, HINSTANCE module = GetModuleHandle(NULL));
+
+
+    class Exception : public std::exception {
+    private:
+        ref<tstring> _message;
+
+
+    public:
+        Exception(TCHAR* message) : _message(new tstring(message)) {
+        }
+
+
+        Exception(ref<tstring> message) : _message(message) {
+        }
+
+
+        virtual ref<tstring> getMessage() {
+            return _message;
+        }
+    };
+
+
+    class UnknownStringResourceException : public Exception {
+    public:
+        UnknownStringResourceException()
+            : Exception(TEXT("Unknown string resource.")) {
+        }
+    };
 
 
     class Application {
@@ -52,11 +81,11 @@ namespace Win32 {
 
     class Window {
     public:
-        static class ClassRegistrationError : public std::exception {
+        static class ClassRegistrationException : public std::exception {
         };
         
 
-        static class CreationError : public std::exception {
+        static class CreationException : public std::exception {
         };
         
 
@@ -102,7 +131,7 @@ namespace Win32 {
                 windowClass.lpszClassName = className->c_str();
                 
                 if (RegisterClass(&windowClass) == 0) {
-                    throw ClassRegistrationError();
+                    throw ClassRegistrationException();
                 }
                 
                 _handle = CreateWindow(className->c_str(), title->c_str(),
@@ -110,7 +139,7 @@ namespace Win32 {
                     CW_USEDEFAULT, NULL, NULL, module, NULL);
 
                 if (_handle == NULL) {
-                    throw CreationError();
+                    throw CreationException();
                 }
                 
                 SHInitExtraControls();

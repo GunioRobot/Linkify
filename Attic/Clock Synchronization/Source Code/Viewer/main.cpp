@@ -54,7 +54,10 @@ int WINAPI WinMain(
     try {
         return Viewer().start(windowShowMode);
     }
-    catch (std::exception error) {
+    catch (Win32::Exception exception) {
+        const TCHAR* message = exception.getMessage()->c_str();
+        
+        MessageBox(NULL, message, NULL, MB_OK + MB_ICONERROR);
         return EXIT_FAILURE;
     }
 }
