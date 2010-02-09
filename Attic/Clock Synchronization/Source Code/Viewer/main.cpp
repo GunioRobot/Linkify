@@ -13,7 +13,33 @@ public:
 
 
 protected:
-    virtual void onStart(LPTSTR commandLine, int windowShowMode) {
+    virtual void onPaint() {
+        HINSTANCE application = GetModuleHandle(NULL);
+        HMENU menuBar = CreateMenu();
+        
+        ref<Win32::tstring> update = Win32::LoadStringT(IDS_SK_UPDATE);
+        ref<Win32::tstring> exit = Win32::LoadStringT(IDS_SK_EXIT);
+        
+        InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_SK_UPDATE, update->c_str());
+        InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_SK_EXIT, exit->c_str());
+
+        SHMENUBARINFO menuBarInfo;
+
+        memset(&menuBarInfo, 0, sizeof(SHMENUBARINFO));
+        menuBarInfo.cbSize = sizeof(SHMENUBARINFO);
+        menuBarInfo.hwndParent = getHandle();
+        menuBarInfo.dwFlags = SHCMBF_HMENU | SHCMBF_HIDESIPBUTTON;
+        menuBarInfo.nToolBarId = (UINT) menuBar;
+        menuBarInfo.hInstRes = application;
+        
+        if (!SHCreateMenuBar(&menuBarInfo)) {
+            PostMessage(getHandle(), WM_CLOSE, 0, 0);
+            return;
+        }
+    }
+
+
+    virtual void onStart(int windowShowMode) {
         show(windowShowMode);
     }
 };
@@ -26,7 +52,7 @@ int WINAPI WinMain(
     int windowShowMode)
 {
     try {
-        return Viewer().start(commandLine, windowShowMode);
+        return Viewer().start(windowShowMode);
     }
     catch (std::exception error) {
         return EXIT_FAILURE;
@@ -52,27 +78,7 @@ int WINAPI WinMain(
 */
 
 /*
-        HINSTANCE application = GetModuleHandle(NULL);
-        HMENU menuBar = CreateMenu();
-        
-        ref<Win32::tstring> update = Win32::LoadStringT(IDS_SK_UPDATE);
-        ref<Win32::tstring> exit = Win32::LoadStringT(IDS_SK_EXIT);
-        
-        InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_SK_UPDATE, update->c_str()); 
-        InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_SK_EXIT, exit->c_str());
-
-        SHMENUBARINFO menuBarInfo;
-
-        memset(&menuBarInfo, 0, sizeof(SHMENUBARINFO));
-        menuBarInfo.cbSize = sizeof(SHMENUBARINFO);
-        menuBarInfo.hwndParent = _handle;
-        menuBarInfo.dwFlags = SHCMBF_HMENU | SHCMBF_HIDESIPBUTTON;
-        menuBarInfo.nToolBarId = (UINT) menuBar;
-        menuBarInfo.hInstRes = application;
-        
-        SHCreateMenuBar(&menuBarInfo);
-
-        CreateWindow( 
+        CreateWindow(
             L"BUTTON",   // Predefined class; Unicode assumed.
             L"OK",       // Button text. 
             WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles.
@@ -80,7 +86,7 @@ int WINAPI WinMain(
             10,         // y position. 
             100,        // Button width.
             100,        // Button height.
-            _handle,       // Parent window.
+            getHandle(),       // Parent window.
             NULL,       // No menu.
             application, 
             NULL);      // Pointer not needed.

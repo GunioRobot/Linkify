@@ -25,8 +25,8 @@ namespace Win32 {
         }
 
 
-        virtual int start(LPTSTR commandLine, int windowShowMode) {
-            onStart(commandLine, windowShowMode);
+        virtual int start(int windowShowMode) {
+            onStart(windowShowMode);
             
             MSG message;
             
@@ -45,7 +45,7 @@ namespace Win32 {
 
 
     protected:
-        virtual void onStart(LPTSTR commandLine, int windowShowMode) {
+        virtual void onStart(int windowShowMode) {
         }
     };
 
@@ -128,12 +128,17 @@ namespace Win32 {
 
 
         virtual void show(int mode) {
-            ShowWindow(_handle, mode);
-            UpdateWindow(_handle);
+            ShowWindow(getHandle(), mode);
+            UpdateWindow(getHandle());
         }
 
 
     protected:
+        virtual HWND getHandle() {
+            return _handle;
+        }
+
+
         virtual void onPaint() {
         }
 
@@ -151,21 +156,21 @@ namespace Win32 {
                 PAINTSTRUCT paint;
                 HDC context;
                 
-                context = BeginPaint(_handle, &paint);
+                context = BeginPaint(getHandle(), &paint);
                 onPaint();
-                EndPaint(_handle, &paint);
+                EndPaint(getHandle(), &paint);
                 break;
             case WM_DESTROY:
                 PostQuitMessage(EXIT_SUCCESS);
                 break;
             case WM_ACTIVATE:
-                SHHandleWMActivate(_handle, wParam, lParam, &sipInfo, FALSE);
+                SHHandleWMActivate(getHandle(), wParam, lParam, &sipInfo, FALSE);
                 break;
             case WM_SETTINGCHANGE:
-                SHHandleWMSettingChange(_handle, wParam, lParam, &sipInfo);
+                SHHandleWMSettingChange(getHandle(), wParam, lParam, &sipInfo);
                 break;
             default:
-                return DefWindowProc(_handle, message, wParam, lParam);
+                return DefWindowProc(getHandle(), message, wParam, lParam);
             }
             
             return 0;
