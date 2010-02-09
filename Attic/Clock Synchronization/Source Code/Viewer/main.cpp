@@ -8,13 +8,13 @@
 
 class Viewer : public Win32::Application, Win32::Window {
 public:
-    Viewer() : Win32::Window(TITLE, WINDOW_CLASS) {
+    Viewer(HINSTANCE instance)
+        : Win32::Application(instance), Win32::Window(TITLE, WINDOW_CLASS) {
     }
 
 
 protected:
     virtual void onPaint() {
-        HINSTANCE application = GetModuleHandle(NULL);
         HMENU menuBar = CreateMenu();
         
         ref<Win32::tstring> update = Win32::LoadStringT(IDS_SK_UPDATE);
@@ -30,7 +30,7 @@ protected:
         menuBarInfo.hwndParent = getHandle();
         menuBarInfo.dwFlags = SHCMBF_HMENU | SHCMBF_HIDESIPBUTTON;
         menuBarInfo.nToolBarId = (UINT) menuBar;
-        menuBarInfo.hInstRes = application;
+        menuBarInfo.hInstRes = getInstance();
         
         if (!SHCreateMenuBar(&menuBarInfo)) {
             PostMessage(getHandle(), WM_CLOSE, 0, 0);
@@ -52,12 +52,10 @@ int WINAPI WinMain(
     int windowShowMode)
 {
     try {
-        return Viewer().start(windowShowMode);
+        return Viewer(instance).start(windowShowMode);
     }
-    catch (Win32::Exception exception) {
-        const TCHAR* message = exception.getMessage()->c_str();
-        
-        MessageBox(NULL, message, NULL, MB_OK + MB_ICONERROR);
+    catch (Win32::Exception e) {
+        MessageBox(NULL, e.getMessage()->c_str(), NULL, MB_OK + MB_ICONERROR);
         return EXIT_FAILURE;
     }
 }

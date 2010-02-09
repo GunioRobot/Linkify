@@ -41,8 +41,12 @@ namespace Win32 {
 
 
     class Application {
+    private:
+        HINSTANCE _instance;
+
+
     public:
-        Application() {
+        Application(HINSTANCE instance) : _instance(instance) {
         }
 
 
@@ -66,6 +70,11 @@ namespace Win32 {
 
 
     protected:
+        virtual HINSTANCE getInstance() {
+            return _instance;
+        }
+
+
         virtual void onStart(int windowShowMode) {
         }
     };
@@ -82,31 +91,36 @@ namespace Win32 {
             WPARAM wParam,
             LPARAM lParam)
         {
-            return _windows[handle]->handler(message, wParam, lParam);
+            if (_windows.find(handle) != _windows.end()) {
+                return _windows[handle]->handler(message, wParam, lParam);
+            }
+            else {
+                return DefWindowProc(handle, message, wParam, lParam);
+            }
         }
 
 
     private:
         HWND _handle;
+        SHACTIVATEINFO _sipInfo;
 
 
     public:
-        Window(ref<tstring> title, ref<tstring> className) {
-            _handle = FindWindow(className->c_str(), title->c_str());
+        Window(ref<tstring> title, ref<tstring> className) : _handle(NULL) {
+            HWND window = FindWindow(className->c_str(), title->c_str());
 
-            if (_handle != NULL) {
-                SetForegroundWindow(_handle);
+            if (window != NULL) {
+                SetForegroundWindow(window);
                 PostQuitMessage(EXIT_FAILURE);
             }
             else {
                 WNDCLASS windowClass;
-                HINSTANCE module = GetModuleHandle(NULL);
 
                 windowClass.style = CS_HREDRAW | CS_VREDRAW;
                 windowClass.lpfnWndProc = Window::genericHandler;
                 windowClass.cbClsExtra = 0;
                 windowClass.cbWndExtra = 0;
-                windowClass.hInstance = module;
+                windowClass.hInstance = GetModuleHandle(NULL);
                 windowClass.hIcon = NULL;
                 windowClass.hCursor = NULL;
                 windowClass.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
@@ -116,17 +130,17 @@ namespace Win32 {
                 if (RegisterClass(&windowClass) == 0) {
                     throw Exception(GetLastErrorMessage());
                 }
-                
+
                 _handle = CreateWindow(className->c_str(), title->c_str(),
                     WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-                    CW_USEDEFAULT, NULL, NULL, module, NULL);
+                    CW_USEDEFAULT, NULL, NULL, GetModuleHandle(NULL), NULL);
 
                 if ((_handle == NULL) || !SHInitExtraControls()) {
                     throw Exception(GetLastErrorMessage());
                 }
-            }
 
-            _windows[_handle] = this;
+                _windows[_handle] = this;
+            }
         }
 
 
@@ -153,29 +167,26 @@ namespace Win32 {
 
     private:
         LRESULT handler(UINT message, WPARAM wParam, LPARAM lParam) {
-            static SHACTIVATEINFO sipInfo;
-            
             switch (message) {
-            case WM_CREATE:
-                memset(&sipInfo, 0, sizeof(sipInfo));
-                sipInfo.cbSize = sizeof(sipInfo);
+            case WM_ACTIVATE:
+                SHHandleWMActivate(getHandle(), wParam, lParam, &_sipInfo, FALSE);
                 break;
-            case WM_PAINT:
-                PAINTSTRUCT paint;
-                HDC context;
-                
-                context = BeginPaint(getHandle(), &paint);
-                onPaint();
-                EndPaint(getHandle(), &paint);
+            case WM_CREATE:
+                memset(&_sipInfo, 0, sizeof(_sipInfo));
+                _sipInfo.cbSize = sizeof(_sipInfo);
                 break;
             case WM_DESTROY:
                 PostQuitMessage(EXIT_SUCCESS);
                 break;
-            case WM_ACTIVATE:
-                SHHandleWMActivate(getHandle(), wParam, lParam, &sipInfo, FALSE);
+            case WM_PAINT:
+                PAINTSTRUCT paint;
+                HDC context;
+                context = BeginPaint(getHandle(), &paint);
+                onPaint();
+                EndPaint(getHandle(), &paint);
                 break;
             case WM_SETTINGCHANGE:
-                SHHandleWMSettingChange(getHandle(), wParam, lParam, &sipInfo);
+                SHHandleWMSettingChange(getHandle(), wParam, lParam, &_sipInfo);
                 break;
             default:
                 return DefWindowProc(getHandle(), message, wParam, lParam);
