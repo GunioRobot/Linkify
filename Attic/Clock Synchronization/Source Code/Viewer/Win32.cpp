@@ -8,8 +8,8 @@ namespace Win32 {
     ref<tstring> GetLastErrorMessage() {
         DWORD code = GetLastError();
         TCHAR* buffer;
-
-        FormatMessage(
+        
+        DWORD length = FormatMessage(
             FORMAT_MESSAGE_ALLOCATE_BUFFER + FORMAT_MESSAGE_FROM_SYSTEM,
             NULL,
             code,
@@ -18,8 +18,7 @@ namespace Win32 {
             0,
             NULL);
 
-        ref<tstring> message = new tstring(buffer);
-
+        ref<tstring> message = (length == 0) ? NULL : new tstring(buffer);
         LocalFree(buffer);
         return message;
     }
@@ -31,7 +30,7 @@ namespace Win32 {
         int length = LoadString(module, id, buffer, BUFFER_SIZE);
 
         if (length == 0) {
-            throw UnknownStringResourceException();
+            throw Exception(TEXT("Unknown string resource."));
         }
 
         return new tstring(buffer);

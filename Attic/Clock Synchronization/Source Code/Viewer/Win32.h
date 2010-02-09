@@ -40,14 +40,6 @@ namespace Win32 {
     };
 
 
-    class UnknownStringResourceException : public Exception {
-    public:
-        UnknownStringResourceException()
-            : Exception(TEXT("Unknown string resource.")) {
-        }
-    };
-
-
     class Application {
     public:
         Application() {
@@ -80,15 +72,6 @@ namespace Win32 {
 
 
     class Window {
-    public:
-        static class ClassRegistrationException : public std::exception {
-        };
-        
-
-        static class CreationException : public std::exception {
-        };
-        
-
     private:
         static std::map<HWND, Window*> _windows;
 
@@ -131,18 +114,16 @@ namespace Win32 {
                 windowClass.lpszClassName = className->c_str();
                 
                 if (RegisterClass(&windowClass) == 0) {
-                    throw ClassRegistrationException();
+                    throw Exception(GetLastErrorMessage());
                 }
                 
                 _handle = CreateWindow(className->c_str(), title->c_str(),
                     WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
                     CW_USEDEFAULT, NULL, NULL, module, NULL);
 
-                if (_handle == NULL) {
-                    throw CreationException();
+                if ((_handle == NULL) || !SHInitExtraControls()) {
+                    throw Exception(GetLastErrorMessage());
                 }
-                
-                SHInitExtraControls();
             }
 
             _windows[_handle] = this;
