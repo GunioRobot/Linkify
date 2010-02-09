@@ -52,10 +52,6 @@ namespace Win32 {
 
     class Window {
     public:
-        static class AlreadyExistsError : public std::exception {
-        };
-        
-
         static class ClassRegistrationError : public std::exception {
         };
         
@@ -88,37 +84,39 @@ namespace Win32 {
 
             if (_handle != NULL) {
                 SetForegroundWindow(_handle);
-                throw AlreadyExistsError();
+                PostQuitMessage(EXIT_FAILURE);
             }
-            
-            WNDCLASS windowClass;
-            HINSTANCE module = GetModuleHandle(NULL);
+            else {
+                WNDCLASS windowClass;
+                HINSTANCE module = GetModuleHandle(NULL);
 
-            windowClass.style = CS_HREDRAW | CS_VREDRAW;
-            windowClass.lpfnWndProc = Window::genericHandler;
-            windowClass.cbClsExtra = 0;
-            windowClass.cbWndExtra = 0;
-            windowClass.hInstance = module;
-            windowClass.hIcon = NULL;
-            windowClass.hCursor = NULL;
-            windowClass.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
-            windowClass.lpszMenuName = NULL;
-            windowClass.lpszClassName = className->c_str();
-            
-            if (RegisterClass(&windowClass) == 0) {
-                throw ClassRegistrationError();
-            }
-            
-            _handle = CreateWindow(className->c_str(), title->c_str(),
-                WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-                CW_USEDEFAULT, NULL, NULL, module, NULL);
+                windowClass.style = CS_HREDRAW | CS_VREDRAW;
+                windowClass.lpfnWndProc = Window::genericHandler;
+                windowClass.cbClsExtra = 0;
+                windowClass.cbWndExtra = 0;
+                windowClass.hInstance = module;
+                windowClass.hIcon = NULL;
+                windowClass.hCursor = NULL;
+                windowClass.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
+                windowClass.lpszMenuName = NULL;
+                windowClass.lpszClassName = className->c_str();
+                
+                if (RegisterClass(&windowClass) == 0) {
+                    throw ClassRegistrationError();
+                }
+                
+                _handle = CreateWindow(className->c_str(), title->c_str(),
+                    WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+                    CW_USEDEFAULT, NULL, NULL, module, NULL);
 
-            if (_handle == NULL) {
-                throw CreationError();
+                if (_handle == NULL) {
+                    throw CreationError();
+                }
+                
+                SHInitExtraControls();
             }
-            
+
             _windows[_handle] = this;
-            SHInitExtraControls();
         }
 
 
