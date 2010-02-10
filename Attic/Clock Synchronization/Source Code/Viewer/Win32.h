@@ -52,9 +52,8 @@ namespace Win32 {
 
 
         virtual int start(int windowShowMode) {
-            onStart(windowShowMode);
-            
             MSG message;
+            onStart(windowShowMode);
             
             while (BOOL result = GetMessage(&message, NULL, 0, 0)) {
                 if (result == -1) {
@@ -126,6 +125,7 @@ namespace Win32 {
                     }
                     catch (Exception exception) {
                         state->exceptionCaught = true;
+
                         ErrorMessageBox(exception.getMessage());
                         PostQuitMessage(EXIT_FAILURE);
                     }
@@ -214,17 +214,26 @@ namespace Win32 {
                 PostQuitMessage(EXIT_SUCCESS);
                 break;
             case WM_PAINT:
-                PAINTSTRUCT paint;
-                HDC context;
-                context = BeginPaint(getHandle(), &paint);
-                onPaint();
-                EndPaint(getHandle(), &paint);
+                paint();
                 break;
             default:
                 return DefWindowProc(getHandle(), message, wParam, lParam);
             }
             
             return 0;
+        }
+
+
+        void paint() {
+            PAINTSTRUCT paint;
+            HDC context = BeginPaint(getHandle(), &paint);
+            
+            if (context == NULL) {
+                throw Exception(GetLastErrorMessage());
+            }
+
+            onPaint();
+            EndPaint(getHandle(), &paint);
         }
     };
 }
