@@ -1,1 +1,6 @@
-(XML (:p "Hi, welcome to my personal Web site!"))
+(XML
+  (:p "Welcome!")
+  
+  (:p "If you have any questions, just "
+      (:a (@ (:class "Email")) "send me")
+      " an e-mail."))

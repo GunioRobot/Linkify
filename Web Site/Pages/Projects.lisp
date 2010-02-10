@@ -1,8 +1,8 @@
 (XML
-  (:p "Check out "
+  (:p "To check out this web site's code and other minor random projects, visit "
       (:a (@ (:href "http://code.assembla.com/marciof/subversion/nodes"))
           "my public SVN repository")
-      " which contains this web site's code and other minor random projects.")
+      ".")
   
   (:h3 "Projects")
   
