@@ -2,9 +2,13 @@
 
 
 namespace Win32 {
-    std::map<HWND, Window*> Window::_windows;
-    std::map<HWND, SHACTIVATEINFO> Window::_sipInfos;
+    std::map<HWND, ref<Window::State>> Window::_windows;
     
+
+    void ErrorMessageBox(ref<tstring> message) {
+        MessageBox(NULL, message->c_str(), NULL, MB_OK + MB_ICONERROR);
+    }
+
 
     ref<tstring> GetLastErrorMessage() {
         DWORD code = GetLastError();

@@ -54,8 +54,8 @@ int WINAPI WinMain(
     try {
         return Viewer(instance).start(windowShowMode);
     }
-    catch (Win32::Exception e) {
-        MessageBox(NULL, e.getMessage()->c_str(), NULL, MB_OK + MB_ICONERROR);
+    catch (Win32::Exception exception) {
+        Win32::ErrorMessageBox(exception.getMessage());
         return EXIT_FAILURE;
     }
 }

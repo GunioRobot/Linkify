@@ -16,6 +16,7 @@ namespace Win32 {
     typedef std::basic_string<TCHAR> tstring;
     
     
+    void ErrorMessageBox(ref<tstring> message);
     ref<tstring> GetLastErrorMessage();
     ref<tstring> LoadStringT(UINT id, HINSTANCE module = GetModuleHandle(NULL));
 
@@ -82,36 +83,55 @@ namespace Win32 {
 
     class Window {
     private:
-        static std::map<HWND, Window*> _windows;
-        static std::map<HWND, SHACTIVATEINFO> _sipInfos;
+        static struct State {
+            Window* instance;
+            SHACTIVATEINFO sip;
+            bool exceptionCaught;
+
+            State() : instance(NULL), exceptionCaught(false) {
+                memset(&sip, 0, sizeof(sip));
+                sip.cbSize = sizeof(sip);
+            }
+        };
+
+    private:
+        static std::map<HWND, ref<State>> _windows;
 
 
-        static LRESULT CALLBACK genericHandler(
+        static LRESULT CALLBACK handler(
             HWND handle,
             UINT message,
             WPARAM wParam,
             LPARAM lParam)
         {
+            if (_windows.find(handle) == _windows.end()) {
+                _windows[handle] = new State();
+            }
+            
+            ref<State> state = _windows[handle];
+
             switch (message) {
             case WM_ACTIVATE:
-                SHHandleWMActivate(handle, wParam, lParam, &_sipInfos[handle], FALSE);
+                SHHandleWMActivate(handle, wParam, lParam, &state->sip, FALSE);
                 break;
             case WM_CREATE:
-                SHACTIVATEINFO sipInfo;
-                memset(&sipInfo, 0, sizeof(sipInfo));
-                sipInfo.cbSize = sizeof(sipInfo);
-                _sipInfos[handle] = sipInfo;
                 break;
             case WM_SETTINGCHANGE:
-                SHHandleWMSettingChange(handle, wParam, lParam, &_sipInfos[handle]);
+                SHHandleWMSettingChange(handle, wParam, lParam, &state->sip);
                 break;
             default:
-                if (_windows.find(handle) != _windows.end()) {
-                    return _windows[handle]->handler(message, wParam, lParam);
+                if (!state->exceptionCaught && (state->instance != NULL)) {
+                    try {
+                        return state->instance->handler(message, wParam, lParam);
+                    }
+                    catch (Exception exception) {
+                        state->exceptionCaught = true;
+                        ErrorMessageBox(exception.getMessage());
+                        PostQuitMessage(EXIT_FAILURE);
+                    }
                 }
-                else {
-                    return DefWindowProc(handle, message, wParam, lParam);
-                }
+                
+                return DefWindowProc(handle, message, wParam, lParam);
             }
             
             return 0;
@@ -134,7 +154,7 @@ namespace Win32 {
                 WNDCLASS windowClass;
 
                 windowClass.style = CS_HREDRAW | CS_VREDRAW;
-                windowClass.lpfnWndProc = Window::genericHandler;
+                windowClass.lpfnWndProc = Window::handler;
                 windowClass.cbClsExtra = 0;
                 windowClass.cbWndExtra = 0;
                 windowClass.hInstance = GetModuleHandle(NULL);
@@ -156,14 +176,13 @@ namespace Win32 {
                     throw Exception(GetLastErrorMessage());
                 }
 
-                _windows[_handle] = this;
+                _windows[_handle]->instance = this;
             }
         }
 
 
         ~Window() {
             _windows.erase(_handle);
-            _sipInfos.erase(_handle);
         }
 
 
