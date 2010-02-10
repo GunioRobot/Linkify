@@ -3,6 +3,7 @@
 
 namespace Win32 {
     std::map<HWND, Window*> Window::_windows;
+    std::map<HWND, SHACTIVATEINFO> Window::_sipInfos;
     
 
     ref<tstring> GetLastErrorMessage() {

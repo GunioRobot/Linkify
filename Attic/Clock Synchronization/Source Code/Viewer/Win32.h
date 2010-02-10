@@ -83,6 +83,7 @@ namespace Win32 {
     class Window {
     private:
         static std::map<HWND, Window*> _windows;
+        static std::map<HWND, SHACTIVATEINFO> _sipInfos;
 
 
         static LRESULT CALLBACK genericHandler(
@@ -91,18 +92,34 @@ namespace Win32 {
             WPARAM wParam,
             LPARAM lParam)
         {
-            if (_windows.find(handle) != _windows.end()) {
-                return _windows[handle]->handler(message, wParam, lParam);
+            switch (message) {
+            case WM_ACTIVATE:
+                SHHandleWMActivate(handle, wParam, lParam, &_sipInfos[handle], FALSE);
+                break;
+            case WM_CREATE:
+                SHACTIVATEINFO sipInfo;
+                memset(&sipInfo, 0, sizeof(sipInfo));
+                sipInfo.cbSize = sizeof(sipInfo);
+                _sipInfos[handle] = sipInfo;
+                break;
+            case WM_SETTINGCHANGE:
+                SHHandleWMSettingChange(handle, wParam, lParam, &_sipInfos[handle]);
+                break;
+            default:
+                if (_windows.find(handle) != _windows.end()) {
+                    return _windows[handle]->handler(message, wParam, lParam);
+                }
+                else {
+                    return DefWindowProc(handle, message, wParam, lParam);
+                }
             }
-            else {
-                return DefWindowProc(handle, message, wParam, lParam);
-            }
+            
+            return 0;
         }
 
 
     private:
         HWND _handle;
-        SHACTIVATEINFO _sipInfo;
 
 
     public:
@@ -146,12 +163,16 @@ namespace Win32 {
 
         ~Window() {
             _windows.erase(_handle);
+            _sipInfos.erase(_handle);
         }
 
 
         virtual void show(int mode) {
             ShowWindow(getHandle(), mode);
-            UpdateWindow(getHandle());
+
+            if (UpdateWindow(getHandle()) == 0) {
+                throw Exception(GetLastErrorMessage());
+            }
         }
 
 
@@ -168,13 +189,6 @@ namespace Win32 {
     private:
         LRESULT handler(UINT message, WPARAM wParam, LPARAM lParam) {
             switch (message) {
-            case WM_ACTIVATE:
-                SHHandleWMActivate(getHandle(), wParam, lParam, &_sipInfo, FALSE);
-                break;
-            case WM_CREATE:
-                memset(&_sipInfo, 0, sizeof(_sipInfo));
-                _sipInfo.cbSize = sizeof(_sipInfo);
-                break;
             case WM_DESTROY:
                 PostQuitMessage(EXIT_SUCCESS);
                 break;
@@ -184,9 +198,6 @@ namespace Win32 {
                 context = BeginPaint(getHandle(), &paint);
                 onPaint();
                 EndPaint(getHandle(), &paint);
-                break;
-            case WM_SETTINGCHANGE:
-                SHHandleWMSettingChange(getHandle(), wParam, lParam, &_sipInfo);
                 break;
             default:
                 return DefWindowProc(getHandle(), message, wParam, lParam);
