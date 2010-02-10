@@ -187,10 +187,12 @@ namespace Win32 {
 
 
         virtual void show(int mode) {
-            ShowWindow(getHandle(), mode);
+            if (getHandle() != NULL) {
+                ShowWindow(getHandle(), mode);
 
-            if (UpdateWindow(getHandle()) == 0) {
-                throw Exception(GetLastErrorMessage());
+                if (UpdateWindow(getHandle()) == 0) {
+                    throw Exception(GetLastErrorMessage());
+                }
             }
         }
 
