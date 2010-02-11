@@ -14,6 +14,30 @@ public:
 
 
 protected:
+    virtual void onPaint() {
+        HMENU menuBar = CreateMenu();
+        
+        ref<Win32::tstring> update = Win32::LoadStringT(IDS_SK_UPDATE);
+        ref<Win32::tstring> exit = Win32::LoadStringT(IDS_SK_EXIT);
+        
+        InsertMenu(menuBar, -1, MF_BYPOSITION + MF_STRING, IDS_SK_UPDATE, update->c_str());
+        InsertMenu(menuBar, -1, MF_BYPOSITION + MF_STRING, IDS_SK_EXIT, exit->c_str());
+
+        SHMENUBARINFO menuBarInfo;
+
+        memset(&menuBarInfo, 0, sizeof(SHMENUBARINFO));
+        menuBarInfo.cbSize = sizeof(SHMENUBARINFO);
+        menuBarInfo.hwndParent = getHandle();
+        menuBarInfo.dwFlags = SHCMBF_HMENU | SHCMBF_HIDESIPBUTTON;
+        menuBarInfo.nToolBarId = (UINT) menuBar;
+        menuBarInfo.hInstRes = getInstance();
+        
+        if (!SHCreateMenuBar(&menuBarInfo)) {
+            throw Win32::Exception(Win32::GetLastErrorMessage());
+        }
+    }
+
+
     virtual void onStart(int windowShowMode) {
         show(windowShowMode);
     }
@@ -66,28 +90,4 @@ int WINAPI WinMain(
             NULL,       // No menu.
             application, 
             NULL);      // Pointer not needed.
-*/
-
-/*
-        HMENU menuBar = CreateMenu();
-        
-        ref<Win32::tstring> update = Win32::LoadStringT(IDS_SK_UPDATE);
-        ref<Win32::tstring> exit = Win32::LoadStringT(IDS_SK_EXIT);
-        
-        InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_SK_UPDATE, update->c_str());
-        InsertMenu(menuBar, -1, MF_BYPOSITION, IDS_SK_EXIT, exit->c_str());
-
-        SHMENUBARINFO menuBarInfo;
-
-        memset(&menuBarInfo, 0, sizeof(SHMENUBARINFO));
-        menuBarInfo.cbSize = sizeof(SHMENUBARINFO);
-        menuBarInfo.hwndParent = getHandle();
-        menuBarInfo.dwFlags = SHCMBF_HMENU | SHCMBF_HIDESIPBUTTON;
-        menuBarInfo.nToolBarId = (UINT) menuBar;
-        menuBarInfo.hInstRes = getInstance();
-        
-        if (!SHCreateMenuBar(&menuBarInfo)) {
-            PostMessage(getHandle(), WM_CLOSE, 0, 0);
-            return;
-        }
 */
