@@ -5,12 +5,12 @@ namespace Win32 {
     std::map<HWND, ref<Window::State>> Window::_windows;
     
 
-    void ErrorMessageBox(ref<tstring> message) {
+    void ErrorMessageBox(ref<String> message) {
         MessageBox(NULL, message->c_str(), NULL, MB_OK + MB_ICONERROR);
     }
 
 
-    ref<tstring> GetLastErrorMessage() {
+    ref<String> GetLastErrorMessage() {
         DWORD code = GetLastError();
         TCHAR* buffer;
         
@@ -23,13 +23,13 @@ namespace Win32 {
             0,
             NULL);
 
-        ref<tstring> message = (length == 0) ? NULL : new tstring(buffer);
+        ref<String> message = (length == 0) ? NULL : new String(buffer);
         LocalFree(buffer);
         return message;
     }
 
     
-    ref<tstring> LoadStringT(UINT id, HINSTANCE module) {
+    ref<String> LoadStringT(UINT id, HINSTANCE module) {
         const size_t BUFFER_SIZE = BUFSIZ;
         TCHAR buffer[BUFFER_SIZE];
         int length = LoadString(module, id, buffer, BUFFER_SIZE);
@@ -38,6 +38,6 @@ namespace Win32 {
             throw Exception(TEXT("Unknown string resource."));
         }
 
-        return new tstring(buffer);
+        return new String(buffer);
     }
 }

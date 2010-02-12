@@ -8,34 +8,37 @@
 // Order is not significant:
 #include <exception>
 #include <map>
+#include <sstream>
 #include <string>
+#include <vector>
 #include "ref.h"
 
 
 namespace Win32 {
-    typedef std::basic_string<TCHAR> tstring;
+    typedef std::basic_string<TCHAR> String;
+    typedef std::basic_stringstream<TCHAR> StringStream;
     
-    
-    void ErrorMessageBox(ref<tstring> message);
-    ref<tstring> GetLastErrorMessage();
-    ref<tstring> LoadStringT(UINT id, HINSTANCE module = GetModuleHandle(NULL));
+
+    void ErrorMessageBox(ref<String> message);
+    ref<String> GetLastErrorMessage();
+    ref<String> LoadStringT(UINT id, HINSTANCE module = GetModuleHandle(NULL));
 
 
     class Exception : public std::exception {
     private:
-        ref<tstring> _message;
+        ref<String> _message;
 
 
     public:
-        Exception(TCHAR* message) : _message(new tstring(message)) {
+        Exception(TCHAR* message) : _message(new String(message)) {
         }
 
 
-        Exception(ref<tstring> message) : _message(message) {
+        Exception(ref<String> message) : _message(message) {
         }
 
 
-        virtual ref<tstring> getMessage() {
+        virtual ref<String> getMessage() {
             return _message;
         }
     };
@@ -82,16 +85,20 @@ namespace Win32 {
 
     class MenuItem {
     private:
-        ref<tstring> _caption;
+        ref<String> _caption;
 
 
     public:
-        MenuItem(ref<tstring> caption) : _caption(caption) {
+        MenuItem(ref<String> caption) : _caption(caption) {
         }
 
 
-        virtual ref<tstring> getCaption() {
+        virtual ref<String> getCaption() {
             return _caption;
+        }
+
+
+        virtual void onChoose() {
         }
     };
     
@@ -99,11 +106,11 @@ namespace Win32 {
     class Menu {
     private:
         HMENU _handle;
-        size_t _items;
+        std::vector<ref<MenuItem>> _items;
 
 
     public:
-        Menu() : _handle(CreateMenu()), _items(0) {
+        Menu() : _handle(CreateMenu()) {
             if (_handle == NULL) {
                 throw Exception(GetLastErrorMessage());
             }
@@ -111,18 +118,30 @@ namespace Win32 {
 
 
         ~Menu() {
-            DestroyMenu(_handle);
+            if (_handle != NULL) {
+                DestroyMenu(_handle);
+            }
         }
 
 
         virtual void addItem(ref<MenuItem> item) {
             const TCHAR* caption = item->getCaption()->c_str();
+            size_t id = getItemCount();
 
-            if (InsertMenu(getHandle(), -1, MF_BYPOSITION, 0, caption) == 0) {
+            if (InsertMenu(getHandle(), -1, MF_BYPOSITION, id, caption) == 0) {
                 throw Exception(GetLastErrorMessage());
             }
 
-            ++_items;
+            _items.push_back(item);
+        }
+
+
+        virtual void chooseItem(size_t position) {
+            if (position >= getItemCount()) {
+                throw Exception(TEXT("Menu item position out of bounds."));
+            }
+
+            _items[position]->onChoose();
         }
         
         
@@ -132,7 +151,7 @@ namespace Win32 {
 
 
         virtual size_t getItemCount() {
-            return _items;
+            return _items.size();
         }
     };
 
@@ -198,10 +217,11 @@ namespace Win32 {
 
     private:
         HWND _handle;
+        ref<Menu> _menuBar;
 
 
     public:
-        Window(ref<tstring> title, ref<tstring> className) : _handle(NULL) {
+        Window(ref<String> title, ref<String> className) {
             HWND window = FindWindow(className->c_str(), title->c_str());
 
             if (window != NULL) {
@@ -241,7 +261,7 @@ namespace Win32 {
 
 
         virtual void addMenuBar(ref<Menu> menu) {
-            if (menu->getItemCount() >= 2) {
+            if (menu->getItemCount() > 2) {
                 throw Exception(TEXT("Too many items in the menu bar."));
             }
             
@@ -257,6 +277,8 @@ namespace Win32 {
             if (!SHCreateMenuBar(&info)) {
                 throw Exception(GetLastErrorMessage());
             }
+
+            _menuBar = menu;
         }
 
 
@@ -279,6 +301,14 @@ namespace Win32 {
     private:
         LRESULT handler(UINT message, WPARAM wParam, LPARAM lParam) {
             switch (message) {
+            case WM_COMMAND:
+                if (_menuBar != NULL) {
+                    _menuBar->chooseItem(LOWORD(wParam));
+                }
+                else {
+                    DefWindowProc(getHandle(), message, wParam, lParam);
+                }
+                break;
             case WM_DESTROY:
                 PostQuitMessage(EXIT_SUCCESS);
                 break;

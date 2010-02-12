@@ -2,6 +2,7 @@
 #include "Win32.h"
 
 
+#define SK_EXIT Win32::LoadStringT(IDS_SK_EXIT)
 #define SK_UPDATE Win32::LoadStringT(IDS_SK_UPDATE)
 #define TITLE Win32::LoadStringT(IDS_TITLE)
 #define WINDOW_CLASS Win32::LoadStringT(IDS_WINDOW_CLASS)
@@ -17,9 +18,9 @@ public:
 protected:
     virtual void onStart(int windowShowMode) {
         ref<Win32::Menu> menuBar = new Win32::Menu();
-        ref<Win32::MenuItem> updateSoftKey = new Win32::MenuItem(SK_UPDATE);
 
-        menuBar->addItem(updateSoftKey);
+        menuBar->addItem(new Win32::MenuItem(SK_UPDATE));
+        menuBar->addItem(new Win32::MenuItem(SK_EXIT));
         
         addMenuBar(menuBar);
         show(windowShowMode);
@@ -44,23 +45,6 @@ int WINAPI WinMain(
 
 
 /*
-        case WM_COMMAND: {
-            int menuId = LOWORD(wParam);
-            
-            switch (menuId) {
-            case IDS_SK_EXIT:
-                SendMessage(handle, WM_CLOSE, 0, 0);
-                break;
-            case IDS_SK_UPDATE:
-                break;
-            default:
-                return DefWindowProc(handle, message, wParam, lParam);
-            }
-            break;
-        }
-*/
-
-/*
         CreateWindow(
             L"BUTTON",   // Predefined class; Unicode assumed.
             L"OK",       // Button text. 
@@ -78,8 +62,8 @@ int WINAPI WinMain(
 /*
         HMENU menuBar = CreateMenu();
         
-        ref<Win32::tstring> update = Win32::LoadStringT(IDS_SK_UPDATE);
-        ref<Win32::tstring> exit = Win32::LoadStringT(IDS_SK_EXIT);
+        ref<Win32::String> update = Win32::LoadStringT(IDS_SK_UPDATE);
+        ref<Win32::String> exit = Win32::LoadStringT(IDS_SK_EXIT);
         
         InsertMenu(menuBar, -1, MF_BYPOSITION + MF_STRING, IDS_SK_UPDATE, update->c_str());
         InsertMenu(menuBar, -1, MF_BYPOSITION + MF_STRING, IDS_SK_EXIT, exit->c_str());
@@ -95,5 +79,17 @@ int WINAPI WinMain(
         
         if (!SHCreateMenuBar(&menuBarInfo)) {
             throw Win32::Exception(Win32::GetLastErrorMessage());
+        }
+*/
+
+/*
+        switch (LOWORD(wParam)) {
+        case IDS_SK_EXIT:
+            SendMessage(handle, WM_CLOSE, 0, 0);
+            break;
+        case IDS_SK_UPDATE:
+            break;
+        default:
+            return DefWindowProc(handle, message, wParam, lParam);
         }
 */
