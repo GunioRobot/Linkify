@@ -109,6 +109,11 @@ namespace Win32 {
         }
 
 
+        ~Menu() {
+            DestroyMenu(_handle);
+        }
+
+
         virtual void addItem(ref<MenuItem> item) {
             const TCHAR* caption = item->getCaption()->c_str();
 
@@ -136,6 +141,7 @@ namespace Win32 {
                 sip.cbSize = sizeof(sip);
             }
         };
+
 
     private:
         static std::map<HWND, ref<State>> _windows;
