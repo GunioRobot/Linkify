@@ -52,8 +52,8 @@ namespace Win32 {
 
 
         virtual int start(int windowShowMode) {
-            MSG message;
             onStart(windowShowMode);
+            MSG message;
             
             while (BOOL result = GetMessage(&message, NULL, 0, 0)) {
                 if (result == -1) {
