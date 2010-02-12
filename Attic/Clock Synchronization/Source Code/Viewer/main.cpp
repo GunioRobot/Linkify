@@ -86,7 +86,7 @@ int WINAPI WinMain(
 
         SHMENUBARINFO menuBarInfo;
 
-        memset(&menuBarInfo, 0, sizeof(SHMENUBARINFO));
+        ZeroMemory(&menuBarInfo, sizeof(SHMENUBARINFO));
         menuBarInfo.cbSize = sizeof(SHMENUBARINFO);
         menuBarInfo.hwndParent = Win32::Window::getHandle();
         menuBarInfo.dwFlags = SHCMBF_HMENU | SHCMBF_HIDESIPBUTTON;

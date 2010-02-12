@@ -132,7 +132,7 @@ namespace Win32 {
             bool exceptionCaught;
 
             State() : instance(NULL), exceptionCaught(false) {
-                memset(&sip, 0, sizeof(sip));
+                ZeroMemory(&sip, sizeof(sip));
                 sip.cbSize = sizeof(sip);
             }
         };
@@ -197,7 +197,7 @@ namespace Win32 {
             else {
                 WNDCLASS windowClass;
 
-                memset(&windowClass, 0, sizeof(WNDCLASS));
+                ZeroMemory(&windowClass, sizeof(WNDCLASS));
                 windowClass.style = CS_HREDRAW | CS_VREDRAW;
                 windowClass.lpfnWndProc = Window::handler;
                 windowClass.hInstance = GetModuleHandle(NULL);
@@ -229,7 +229,7 @@ namespace Win32 {
         virtual void addMenuBar(ref<Menu> menu) {
             SHMENUBARINFO info;
 
-            memset(&info, 0, sizeof(SHMENUBARINFO));
+            ZeroMemory(&info, sizeof(SHMENUBARINFO));
             info.cbSize = sizeof(SHMENUBARINFO);
             info.hwndParent = getHandle();
             info.dwFlags = SHCMBF_HMENU | SHCMBF_HIDESIPBUTTON;
