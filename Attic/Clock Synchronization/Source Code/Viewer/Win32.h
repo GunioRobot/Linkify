@@ -43,11 +43,11 @@ namespace Win32 {
 
     class Application {
     private:
-        HINSTANCE _instance;
+        HINSTANCE _handle;
 
 
     public:
-        Application(HINSTANCE instance) : _instance(instance) {
+        Application(HINSTANCE handle) : _handle(handle) {
         }
 
 
@@ -69,13 +69,57 @@ namespace Win32 {
         }
 
 
-    protected:
-        virtual HINSTANCE getInstance() {
-            return _instance;
+        virtual HINSTANCE getHandle() {
+            return _handle;
         }
 
 
+    protected:
         virtual void onStart(int windowShowMode) {
+        }
+    };
+
+
+    class MenuItem {
+    private:
+        ref<tstring> _caption;
+
+
+    public:
+        MenuItem(ref<tstring> caption) : _caption(caption) {
+        }
+
+
+        virtual ref<tstring> getCaption() {
+            return _caption;
+        }
+    };
+    
+    
+    class Menu {
+    private:
+        HMENU _handle;
+
+
+    public:
+        Menu() : _handle(CreateMenu()) {
+            if (_handle == NULL) {
+                throw Exception(GetLastErrorMessage());
+            }
+        }
+
+
+        virtual void addItem(ref<MenuItem> item) {
+            const TCHAR* caption = item->getCaption()->c_str();
+
+            if (InsertMenu(_handle, -1, MF_BYPOSITION, 0, caption) == 0) {
+                throw Exception(GetLastErrorMessage());
+            }
+        }
+        
+        
+        virtual HMENU getHandle() {
+            return _handle;
         }
     };
 
@@ -153,15 +197,11 @@ namespace Win32 {
             else {
                 WNDCLASS windowClass;
 
+                memset(&windowClass, 0, sizeof(WNDCLASS));
                 windowClass.style = CS_HREDRAW | CS_VREDRAW;
                 windowClass.lpfnWndProc = Window::handler;
-                windowClass.cbClsExtra = 0;
-                windowClass.cbWndExtra = 0;
                 windowClass.hInstance = GetModuleHandle(NULL);
-                windowClass.hIcon = NULL;
-                windowClass.hCursor = NULL;
                 windowClass.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
-                windowClass.lpszMenuName = NULL;
                 windowClass.lpszClassName = className->c_str();
                 
                 if (RegisterClass(&windowClass) == 0) {
@@ -186,6 +226,27 @@ namespace Win32 {
         }
 
 
+        virtual void addMenuBar(ref<Menu> menu) {
+            SHMENUBARINFO info;
+
+            memset(&info, 0, sizeof(SHMENUBARINFO));
+            info.cbSize = sizeof(SHMENUBARINFO);
+            info.hwndParent = getHandle();
+            info.dwFlags = SHCMBF_HMENU | SHCMBF_HIDESIPBUTTON;
+            info.nToolBarId = (UINT) menu->getHandle();
+            info.hInstRes = GetModuleHandle(NULL);
+            
+            if (!SHCreateMenuBar(&info)) {
+                throw Exception(GetLastErrorMessage());
+            }
+        }
+
+
+        virtual HWND getHandle() {
+            return _handle;
+        }
+
+
         virtual void show(int mode) {
             if (getHandle() != NULL) {
                 ShowWindow(getHandle(), mode);
@@ -197,43 +258,17 @@ namespace Win32 {
         }
 
 
-    protected:
-        virtual HWND getHandle() {
-            return _handle;
-        }
-
-
-        virtual void onPaint() {
-        }
-
-
     private:
         LRESULT handler(UINT message, WPARAM wParam, LPARAM lParam) {
             switch (message) {
             case WM_DESTROY:
                 PostQuitMessage(EXIT_SUCCESS);
                 break;
-            case WM_PAINT:
-                paint();
-                break;
             default:
                 return DefWindowProc(getHandle(), message, wParam, lParam);
             }
             
             return 0;
-        }
-
-
-        void paint() {
-            PAINTSTRUCT paint;
-            HDC context = BeginPaint(getHandle(), &paint);
-            
-            if (context == NULL) {
-                throw Exception(GetLastErrorMessage());
-            }
-
-            onPaint();
-            EndPaint(getHandle(), &paint);
         }
     };
 }
