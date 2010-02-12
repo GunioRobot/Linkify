@@ -99,10 +99,11 @@ namespace Win32 {
     class Menu {
     private:
         HMENU _handle;
+        size_t _items;
 
 
     public:
-        Menu() : _handle(CreateMenu()) {
+        Menu() : _handle(CreateMenu()), _items(0) {
             if (_handle == NULL) {
                 throw Exception(GetLastErrorMessage());
             }
@@ -117,14 +118,21 @@ namespace Win32 {
         virtual void addItem(ref<MenuItem> item) {
             const TCHAR* caption = item->getCaption()->c_str();
 
-            if (InsertMenu(_handle, -1, MF_BYPOSITION, 0, caption) == 0) {
+            if (InsertMenu(getHandle(), -1, MF_BYPOSITION, 0, caption) == 0) {
                 throw Exception(GetLastErrorMessage());
             }
+
+            ++_items;
         }
         
         
         virtual HMENU getHandle() {
             return _handle;
+        }
+
+
+        virtual size_t getItemCount() {
+            return _items;
         }
     };
 
@@ -233,6 +241,10 @@ namespace Win32 {
 
 
         virtual void addMenuBar(ref<Menu> menu) {
+            if (menu->getItemCount() >= 2) {
+                throw Exception(TEXT("Too many items in the menu bar."));
+            }
+            
             SHMENUBARINFO info;
 
             ZeroMemory(&info, sizeof(SHMENUBARINFO));
