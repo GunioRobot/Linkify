@@ -92,10 +92,12 @@ namespace Win32 {
 
     private:
         ref<String> _caption;
+        bool _hasId;
+        UINT_PTR _id;
 
 
     public:
-        MenuItem(ref<String> caption) : _caption(caption) {
+        MenuItem(ref<String> caption) : _caption(caption), _hasId(false) {
         }
 
 
@@ -105,6 +107,24 @@ namespace Win32 {
 
 
     protected:
+        virtual UINT_PTR getId() {
+            // Must not be zero for popup menus to work.
+            static UINT_PTR counter = 1;
+
+            if (!_hasId) {
+                _id = counter++;
+                _hasId = true;
+            }
+
+            return _id;
+        }
+
+
+        virtual UINT getType() {
+            return MF_STRING;
+        }
+
+
         virtual void onChoose() {
         }
     };
@@ -126,28 +146,10 @@ namespace Win32 {
         }
 
 
-        ~Menu() {
-            if (_handle != NULL) {
-                DestroyMenu(_handle);
-            }
-        }
-
-
         virtual void addItem(ref<MenuItem> item) {
-            ref<Menu> menu = item.cast<Menu>();
-            
-            UINT flags;
-            UINT_PTR id;
+            UINT flags = item->getType();
+            UINT_PTR id = item->getId();
             LPCTSTR caption = item->getCaption()->c_str();
-
-            if (menu == NULL) {
-                flags = MF_STRING;
-                id = getItemCount();
-            }
-            else {
-                flags = MF_POPUP;
-                id = (UINT_PTR) menu->getHandle();
-            }
 
             if (!AppendMenu(getHandle(), flags, id, caption)) {
                 throw Exception(GetLastErrorMessage());
@@ -157,15 +159,27 @@ namespace Win32 {
         }
 
 
-        virtual void chooseItem(size_t position) {
-            if (position >= getItemCount()) {
-                throw Exception(TEXT("Menu item position out of bounds."));
+        virtual bool chooseItem(UINT_PTR id) {
+            for (size_t i = 0; i < _items.size(); ++i) {
+                ref<MenuItem> item = _items[i];
+
+                if (item->getId() == id) {
+                    item->onChoose();
+                    return true;
+                }
+                else if (item->getType() == MF_POPUP) {
+                    ref<Menu> menu = item.cast<Menu>();
+
+                    if (menu->chooseItem(id)) {
+                        return true;
+                    }
+                }
             }
 
-            _items[position]->onChoose();
+            return false;
         }
-        
-        
+
+
         virtual HMENU getHandle() {
             return _handle;
         }
@@ -173,6 +187,17 @@ namespace Win32 {
 
         virtual size_t getItemCount() {
             return _items.size();
+        }
+
+
+    protected:
+        virtual UINT_PTR getId() {
+            return (UINT_PTR) getHandle();
+        }
+
+
+        virtual UINT getType() {
+            return MF_POPUP;
         }
     };
 
@@ -325,9 +350,6 @@ namespace Win32 {
             case WM_COMMAND:
                 if (_menuBar != NULL) {
                     _menuBar->chooseItem(LOWORD(wParam));
-                }
-                else {
-                    DefWindowProc(getHandle(), message, wParam, lParam);
                 }
                 break;
             case WM_DESTROY:

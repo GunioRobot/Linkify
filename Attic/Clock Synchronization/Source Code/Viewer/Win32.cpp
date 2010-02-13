@@ -3,7 +3,7 @@
 
 namespace Win32 {
     std::map<HWND, ref<Window::State>> Window::_windows;
-    
+
 
     void ErrorMessageBox(ref<String> message) {
         MessageBox(NULL, message->c_str(), NULL, MB_OK + MB_ICONERROR);
