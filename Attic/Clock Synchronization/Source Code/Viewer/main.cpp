@@ -24,9 +24,9 @@ public:
     }
 
 
-protected:
-    virtual void onStart(int windowShowMode) {
+    virtual int start(int windowShowMode) {
         show(windowShowMode);
+        return Win32::Application::start(windowShowMode);
     }
 };
 

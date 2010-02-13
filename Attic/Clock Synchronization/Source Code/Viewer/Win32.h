@@ -62,7 +62,6 @@ namespace Win32 {
 
 
         virtual int start(int windowShowMode) {
-            onStart(windowShowMode);
             MSG message;
             
             while (BOOL result = GetMessage(&message, NULL, 0, 0)) {
@@ -82,17 +81,10 @@ namespace Win32 {
         virtual HINSTANCE getHandle() {
             return _handle;
         }
-
-
-    protected:
-        virtual void onStart(int windowShowMode) {
-        }
     };
 
 
     class MenuItem : public Object {
-        friend class Menu;
-
     private:
         ref<String> _caption;
         bool _hasId;
@@ -109,7 +101,6 @@ namespace Win32 {
         }
 
 
-    protected:
         virtual UINT_PTR getId() {
             // Must not be zero for popup menus to work.
             static UINT_PTR counter = 1;
@@ -191,14 +182,13 @@ namespace Win32 {
         }
 
 
-        virtual size_t getItemCount() {
-            return _items.size();
+        virtual UINT_PTR getId() {
+            return (UINT_PTR) getHandle();
         }
 
 
-    protected:
-        virtual UINT_PTR getId() {
-            return (UINT_PTR) getHandle();
+        virtual size_t getItemCount() {
+            return _items.size();
         }
 
 
