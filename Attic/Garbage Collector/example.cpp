@@ -9,7 +9,7 @@ public:
         std::cout << "Animal()\n";
     }
     
-    ~Animal() {
+    virtual ~Animal() {
         std::cout << "~Animal()\n";
     }
     
@@ -35,10 +35,12 @@ public:
 
 
 int main() {
-    ref<Cat> cat = new Cat("Kitty");
-    ref<Animal> animal = cat;
+    ref<Cat> kitty = new Cat("Kitty");
+    ref<Animal> animal = kitty;           // Up-cast.
+    ref<Cat> cat = animal.cast<Cat>();    // Down-cast.
     
-    std::cout << "- Method => \"" << animal->getName() << "\"\n";
-    std::cout << "- typeid => \"" << animal.type().name() << "\"\n";
-    std::cout << "- De-reference => " << *animal << "\n";
+    std::cout << "- Down-cast " << (cat == NULL ? "failed" : "ok") << ".\n";
+    std::cout << "- Method => \"" << cat->getName() << "\"\n";
+    std::cout << "- typeid => \"" << cat.type().name() << "\"\n";
+    std::cout << "- De-reference => " << *cat << "\n";
 }
