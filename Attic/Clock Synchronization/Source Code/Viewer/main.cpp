@@ -14,7 +14,7 @@ public:
         : Win32::Application(handle), Win32::Window(TITLE, WINDOW_CLASS)
     {
         ref<Win32::Menu> optionsMenu = new Win32::Menu(new Win32::String(TEXT("Options")));
-        ref<Win32::Menu> menuBar = new Win32::Menu();
+        ref<Win32::Menu> menuBar = new Win32::Menu(new Win32::String(TEXT("Menu")));
 
         optionsMenu->addItem(new Win32::MenuItem(SK_EXIT));
         menuBar->addItem(new Win32::MenuItem(SK_UPDATE));

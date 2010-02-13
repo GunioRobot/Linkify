@@ -25,6 +25,9 @@ namespace Win32 {
 
 
     class Object {
+    public:
+        virtual ~Object() {
+        }
     };
 
 
@@ -130,6 +133,7 @@ namespace Win32 {
     };
     
 
+    // TODO: Distinguish between MenuBar and PopupMenu?
     class Menu : public MenuItem {
     private:
         HMENU _handle;
@@ -137,8 +141,8 @@ namespace Win32 {
 
 
     public:
-        Menu(ref<String> caption = NULL) : MenuItem(caption) {
-            _handle = CreateMenu();
+        Menu(ref<String> caption) : MenuItem(caption) {
+            _handle = CreatePopupMenu();
 
             if (_handle == NULL) {
                 throw Exception(GetLastErrorMessage());
@@ -165,12 +169,14 @@ namespace Win32 {
 
                 if (item->getId() == id) {
                     item->onChoose();
+                    onChoose();
                     return true;
                 }
                 else if (item->getType() == MF_POPUP) {
                     ref<Menu> menu = item.cast<Menu>();
 
                     if (menu->chooseItem(id)) {
+                        onChoose();
                         return true;
                     }
                 }
