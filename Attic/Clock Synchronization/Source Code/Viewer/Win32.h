@@ -24,7 +24,11 @@ namespace Win32 {
     ref<String> LoadStringT(UINT id, HINSTANCE module = GetModuleHandle(NULL));
 
 
-    class Exception : public std::exception {
+    class Object {
+    };
+
+
+    class Exception : public Object, public std::exception {
     private:
         ref<String> _message;
 
@@ -44,7 +48,7 @@ namespace Win32 {
     };
 
 
-    class Application {
+    class Application : public Object {
     private:
         HINSTANCE _handle;
 
@@ -83,7 +87,9 @@ namespace Win32 {
     };
 
 
-    class MenuItem {
+    class MenuItem : public Object {
+        friend class Menu;
+
     private:
         ref<String> _caption;
 
@@ -98,19 +104,22 @@ namespace Win32 {
         }
 
 
+    protected:
         virtual void onChoose() {
         }
     };
     
-    
-    class Menu {
+
+    class Menu : public MenuItem {
     private:
         HMENU _handle;
         std::vector<ref<MenuItem>> _items;
 
 
     public:
-        Menu() : _handle(CreateMenu()) {
+        Menu(ref<String> caption = NULL) : MenuItem(caption) {
+            _handle = CreateMenu();
+
             if (_handle == NULL) {
                 throw Exception(GetLastErrorMessage());
             }
@@ -125,10 +134,22 @@ namespace Win32 {
 
 
         virtual void addItem(ref<MenuItem> item) {
-            const TCHAR* caption = item->getCaption()->c_str();
-            size_t id = getItemCount();
+            ref<Menu> menu = item.cast<Menu>();
+            
+            UINT flags;
+            UINT_PTR id;
+            LPCTSTR caption = item->getCaption()->c_str();
 
-            if (InsertMenu(getHandle(), -1, MF_BYPOSITION, id, caption) == 0) {
+            if (menu == NULL) {
+                flags = MF_STRING;
+                id = getItemCount();
+            }
+            else {
+                flags = MF_POPUP;
+                id = (UINT_PTR) menu->getHandle();
+            }
+
+            if (!AppendMenu(getHandle(), flags, id, caption)) {
                 throw Exception(GetLastErrorMessage());
             }
 
@@ -156,7 +177,7 @@ namespace Win32 {
     };
 
 
-    class Window {
+    class Window : public Object {
     private:
         static struct State {
             Window* instance;

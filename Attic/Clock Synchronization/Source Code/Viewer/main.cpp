@@ -17,10 +17,12 @@ public:
 
 protected:
     virtual void onStart(int windowShowMode) {
+        ref<Win32::Menu> optionsMenu = new Win32::Menu(new Win32::String(TEXT("Options")));
         ref<Win32::Menu> menuBar = new Win32::Menu();
 
+        optionsMenu->addItem(new Win32::MenuItem(SK_EXIT));
         menuBar->addItem(new Win32::MenuItem(SK_UPDATE));
-        menuBar->addItem(new Win32::MenuItem(SK_EXIT));
+        menuBar->addItem(optionsMenu);
         
         addMenuBar(menuBar);
         show(windowShowMode);

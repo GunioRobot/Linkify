@@ -24,41 +24,41 @@ public:
     
     
     ref(const ref<T>& r): _obj(r._obj), _count(r._count), _type(r._type) {
-        increment();
+        _increment();
     }
     
     
     template<typename U>
     ref(const ref<U>& r): _obj(r._obj), _count(r._count), _type(r._type) {
-        increment();
+        _increment();
     }
     
     
     ref(T* object): _obj(object), _count(NULL), _type(&typeid(T)) {
-        increment();
+        _increment();
     }
     
     
     template<typename U>
     ref(U* object): _obj(object), _count(NULL), _type(&typeid(U)) {
-        increment();
+        _increment();
     }
     
     
     ~ref() {
-        decrement();
+        _decrement();
     }
     
     
     ref<T>& operator =(const ref<T>& copy) {
         if (this != &copy) {
-            decrement();
+            _decrement();
             
             _obj = copy._obj;
             _count = copy._count;
             _type = copy._type;
             
-            increment();
+            _increment();
         }
         
         return *this;
@@ -85,6 +85,22 @@ public:
     }
     
     
+    template<typename U>
+    ref<U> cast() {
+        ref<U> r = NULL;
+        U* object = dynamic_cast<U*>(_obj);
+        
+        if (object != NULL) {
+            r._obj = object;
+            r._count = _count;
+            r._type = &typeid(U);
+            r._increment();
+        }
+        
+        return r;
+    }
+    
+    
     bool null() {
         return _obj == NULL;
     }
@@ -95,8 +111,9 @@ public:
     }
     
     
-private:
-    void decrement() {
+// TODO: Is there a way to make these private?
+public:
+    void _decrement() {
         if ((_obj != NULL) && (--*_count == 0)) {
             delete _obj;
             delete _count;
@@ -104,7 +121,7 @@ private:
     }
     
     
-    void increment() {
+    void _increment() {
         if (_obj != NULL) {
             if (_count == NULL) {
                 _count = new size_t(1);
@@ -116,8 +133,6 @@ private:
     }
     
     
-// TODO: Is there a way to make these private?
-public:
     T* _obj;
     size_t* _count;
     const std::type_info* _type;
