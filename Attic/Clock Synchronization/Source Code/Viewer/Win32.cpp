@@ -6,7 +6,10 @@ namespace Win32 {
 
 
     void ErrorMessageBox(ref<String> message) {
-        MessageBox(NULL, message->c_str(), NULL, MB_OK + MB_ICONERROR);
+        HWND owner = GetForegroundWindow();
+        UINT type = MB_OK + MB_ICONERROR;
+
+        MessageBox(owner, message->c_str(), NULL, type);
     }
 
 
