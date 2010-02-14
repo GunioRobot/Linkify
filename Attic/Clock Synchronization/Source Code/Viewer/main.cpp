@@ -1,24 +1,15 @@
-#include "resources.h"
 #include "Win32.h"
-
-
-#define SK_EXIT Win32::LoadStringT(IDS_SK_EXIT)
-#define SK_UPDATE Win32::LoadStringT(IDS_SK_UPDATE)
-#define TITLE Win32::LoadStringT(IDS_TITLE)
-#define WINDOW_CLASS Win32::LoadStringT(IDS_WINDOW_CLASS)
 
 
 class Viewer : public Win32::Application, Win32::Window {
 public:
     Viewer(HINSTANCE handle)
-        : Win32::Application(handle), Win32::Window(TITLE, WINDOW_CLASS)
+        : Win32::Application(handle), Win32::Window(S("Viewer"), S("VIEWER"))
     {
-        ref<Win32::Menu> optionsMenu = new Win32::Menu(new Win32::String(TEXT("Options")));
-        ref<Win32::Menu> menuBar = new Win32::Menu(new Win32::String(TEXT("Menu")));
+        ref<Win32::Menu> menuBar = new Win32::Menu(S("Menu"));
 
-        optionsMenu->addItem(new Win32::MenuItem(SK_EXIT));
-        menuBar->addItem(new Win32::MenuItem(SK_UPDATE));
-        menuBar->addItem(optionsMenu);
+        menuBar->addItem(new Win32::MenuItem(S("Update")));
+        menuBar->addItem(new Win32::MenuItem(S("Exit")));
         
         addMenuBar(menuBar);
     }

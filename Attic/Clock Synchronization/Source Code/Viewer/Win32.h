@@ -14,6 +14,9 @@
 #include "ref.h"
 
 
+#define S(string) Win32::ToString(TEXT(string))
+
+
 namespace Win32 {
     typedef std::basic_string<TCHAR> String;
     typedef std::basic_stringstream<TCHAR> StringStream;
@@ -22,6 +25,7 @@ namespace Win32 {
     void ErrorMessageBox(ref<String> message, bool useWindow = true);
     ref<String> GetLastErrorMessage();
     ref<String> LoadStringT(UINT id, HINSTANCE module = GetModuleHandle(NULL));
+    ref<String> ToString(const TCHAR* string);
 
 
     class Object {
@@ -37,10 +41,6 @@ namespace Win32 {
 
 
     public:
-        Exception(TCHAR* message) : _message(new String(message)) {
-        }
-
-
         Exception(ref<String> message) : _message(message) {
         }
 
@@ -270,7 +270,7 @@ namespace Win32 {
 
             if (window != NULL) {
                 SetForegroundWindow(window);
-                throw Exception(TEXT("Duplicate window instance."));
+                throw Exception(S("Duplicate window instance."));
             }
             else {
                 WNDCLASS windowClass;
@@ -306,7 +306,7 @@ namespace Win32 {
 
         virtual void addMenuBar(ref<Menu> menu) {
             if (menu->getItemCount() > 2) {
-                throw Exception(TEXT("Too many items in the menu bar."));
+                throw Exception(S("Too many items in the menu bar."));
             }
             
             SHMENUBARINFO info;

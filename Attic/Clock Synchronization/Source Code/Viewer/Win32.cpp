@@ -40,9 +40,14 @@ namespace Win32 {
         int length = LoadString(module, id, buffer, BUFFER_SIZE);
 
         if (length == 0) {
-            throw Exception(TEXT("Unknown string resource."));
+            throw Exception(S("Unknown string resource."));
         }
 
         return new String(buffer);
+    }
+
+
+    ref<String> ToString(const TCHAR* string) {
+        return new String(string);
     }
 }
