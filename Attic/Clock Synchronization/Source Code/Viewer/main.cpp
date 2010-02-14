@@ -60,44 +60,8 @@ int WINAPI WinMain(
             NULL,       // No menu.
             application, 
             NULL);      // Pointer not needed.
-*/
 
-/*
-        HMENU menuBar = CreateMenu();
-        HMENU optionsMenu = CreatePopupMenu();
-        
-        if (!AppendMenu(optionsMenu, MF_STRING, 1, TEXT("Exit"))) {
-            throw Win32::Exception(Win32::GetLastErrorMessage());
-        }
-        if (!AppendMenu(menuBar, MF_STRING, 2, TEXT("Update"))) {
-            throw Win32::Exception(Win32::GetLastErrorMessage());
-        }
-        if (!AppendMenu(menuBar, MF_POPUP, (UINT_PTR) optionsMenu, TEXT("Options"))) {
-            throw Win32::Exception(Win32::GetLastErrorMessage());
-        }
-
-        SHMENUBARINFO menuBarInfo;
-
-        ZeroMemory(&menuBarInfo, sizeof(SHMENUBARINFO));
-        menuBarInfo.cbSize = sizeof(SHMENUBARINFO);
-        menuBarInfo.hwndParent = Win32::Window::getHandle();
-        menuBarInfo.dwFlags = SHCMBF_HMENU | SHCMBF_HIDESIPBUTTON;
-        menuBarInfo.nToolBarId = (UINT) menuBar;
-        menuBarInfo.hInstRes = GetModuleHandle(NULL);
-        
-        if (!SHCreateMenuBar(&menuBarInfo)) {
-            throw Win32::Exception(Win32::GetLastErrorMessage());
-        }
-*/
-
-/*
-        switch (LOWORD(wParam)) {
         case IDS_SK_EXIT:
             SendMessage(handle, WM_CLOSE, 0, 0);
             break;
-        case IDS_SK_UPDATE:
-            break;
-        default:
-            return DefWindowProc(handle, message, wParam, lParam);
-        }
 */

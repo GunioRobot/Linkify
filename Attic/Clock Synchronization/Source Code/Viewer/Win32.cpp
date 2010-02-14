@@ -33,6 +33,7 @@ namespace Win32 {
 
     
     // TODO: Check when the buffer is too small for the whole string?
+    // TODO: Cache loaded strings?
     ref<String> LoadStringT(UINT id, HINSTANCE module) {
         const size_t BUFFER_SIZE = BUFSIZ;
         TCHAR buffer[BUFFER_SIZE];
