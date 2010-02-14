@@ -19,7 +19,7 @@ namespace Win32 {
     typedef std::basic_stringstream<TCHAR> StringStream;
     
 
-    void ErrorMessageBox(ref<String> message);
+    void ErrorMessageBox(ref<String> message, bool useWindow = true);
     ref<String> GetLastErrorMessage();
     ref<String> LoadStringT(UINT id, HINSTANCE module = GetModuleHandle(NULL));
 
@@ -263,12 +263,14 @@ namespace Win32 {
 
 
     public:
-        Window(ref<String> title, ref<String> className) {
+        Window(ref<String> title, ref<String> className)
+            : _handle(NULL), _menuBar(NULL)
+        {
             HWND window = FindWindow(className->c_str(), title->c_str());
 
             if (window != NULL) {
                 SetForegroundWindow(window);
-                PostQuitMessage(EXIT_FAILURE);
+                throw Exception(TEXT("Duplicate window instance."));
             }
             else {
                 WNDCLASS windowClass;

@@ -5,8 +5,8 @@ namespace Win32 {
     std::map<HWND, ref<Window::State>> Window::_windows;
 
 
-    void ErrorMessageBox(ref<String> message) {
-        HWND owner = GetForegroundWindow();
+    void ErrorMessageBox(ref<String> message, bool useWindow) {
+        HWND owner = useWindow ? GetForegroundWindow() : NULL;
         UINT type = MB_OK + MB_ICONERROR;
 
         MessageBox(owner, message->c_str(), NULL, type);
