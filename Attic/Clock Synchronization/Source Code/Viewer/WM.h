@@ -14,10 +14,10 @@
 #include "ref.h"
 
 
-#define S(string) Win32::ToString(TEXT(string))
+#define S(string) WM::ToString(TEXT(string))
 
 
-namespace Win32 {
+namespace WM {
     typedef std::basic_string<TCHAR> String;
     typedef std::basic_stringstream<TCHAR> StringStream;
     

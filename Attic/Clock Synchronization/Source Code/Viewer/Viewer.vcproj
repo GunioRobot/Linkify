@@ -210,11 +210,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Win32.cpp"
+				RelativePath=".\WM.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Win32.h"
+				RelativePath=".\WM.h"
 				>
 			</File>
 		</Filter>

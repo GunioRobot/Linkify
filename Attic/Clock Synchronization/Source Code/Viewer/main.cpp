@@ -1,27 +1,27 @@
-#include "Win32.h"
+#include "WM.h"
 
 
-class Viewer: public Win32::Application, Win32::Window {
+class Viewer: public WM::Application, WM::Window {
 private:
-    ref<Win32::String> _exitOption;
-    ref<Win32::String> _updateOption;
+    ref<WM::String> _exitOption;
+    ref<WM::String> _updateOption;
 
 
 public:
     Viewer(HINSTANCE handle):
-        Win32::Application(handle), Win32::Window(S("Viewer"), S("VIEWER")),
+        WM::Application(handle), WM::Window(S("Viewer"), S("VIEWER")),
         _exitOption(S("Exit")), _updateOption(S("Update"))
     {
-        ref<Win32::Menu> menuBar = new Win32::Menu(S("Menu"));
+        ref<WM::Menu> menuBar = new WM::Menu(S("Menu"));
 
-        menuBar->addItem(new Win32::MenuItem(_updateOption));
-        menuBar->addItem(new Win32::MenuItem(_exitOption));
+        menuBar->addItem(new WM::MenuItem(_updateOption));
+        menuBar->addItem(new WM::MenuItem(_exitOption));
         
         enableMenuBar(menuBar);
     }
 
 
-    virtual void chooseMenuItem(ref<Win32::MenuItem> item) {
+    virtual void chooseMenuItem(ref<WM::MenuItem> item) {
         if (item->getCaption() == _exitOption) {
             close();
         }
@@ -30,7 +30,7 @@ public:
 
     virtual int start(int windowShowMode) {
         show(windowShowMode);
-        return Win32::Application::start(windowShowMode);
+        return WM::Application::start(windowShowMode);
     }
 };
 
@@ -44,8 +44,8 @@ int WINAPI WinMain(
     try {
         return Viewer(instance).start(windowShowMode);
     }
-    catch (Win32::Exception exception) {
-        Win32::ErrorMessageBox(exception.getMessage());
+    catch (WM::Exception exception) {
+        WM::ErrorMessageBox(exception.getMessage());
         return EXIT_FAILURE;
     }
 }

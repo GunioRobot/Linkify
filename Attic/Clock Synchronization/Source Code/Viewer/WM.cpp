@@ -1,7 +1,7 @@
-#include "Win32.h"
+#include "WM.h"
 
 
-namespace Win32 {
+namespace WM {
     std::map<HWND, ref<Window::State>> Window::_windows;
 
 
