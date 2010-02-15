@@ -1,17 +1,30 @@
 #include "Win32.h"
 
 
-class Viewer : public Win32::Application, Win32::Window {
+class Viewer: public Win32::Application, Win32::Window {
+private:
+    ref<Win32::String> _exitOption;
+    ref<Win32::String> _updateOption;
+
+
 public:
-    Viewer(HINSTANCE handle)
-        : Win32::Application(handle), Win32::Window(S("Viewer"), S("VIEWER"))
+    Viewer(HINSTANCE handle):
+        Win32::Application(handle), Win32::Window(S("Viewer"), S("VIEWER")),
+        _exitOption(S("Exit")), _updateOption(S("Update"))
     {
         ref<Win32::Menu> menuBar = new Win32::Menu(S("Menu"));
 
-        menuBar->addItem(new Win32::MenuItem(S("Update")));
-        menuBar->addItem(new Win32::MenuItem(S("Exit")));
+        menuBar->addItem(new Win32::MenuItem(_updateOption));
+        menuBar->addItem(new Win32::MenuItem(_exitOption));
         
-        addMenuBar(menuBar);
+        enableMenuBar(menuBar);
+    }
+
+
+    virtual void chooseMenuItem(ref<Win32::MenuItem> item) {
+        if (item->getCaption() == _exitOption) {
+            close();
+        }
     }
 
 
@@ -51,8 +64,4 @@ int WINAPI WinMain(
             NULL,       // No menu.
             application, 
             NULL);      // Pointer not needed.
-
-        case IDS_SK_EXIT:
-            SendMessage(handle, WM_CLOSE, 0, 0);
-            break;
 */

@@ -35,13 +35,13 @@ namespace Win32 {
     };
 
 
-    class Exception : public Object, public std::exception {
+    class Exception: public Object, public std::exception {
     private:
         ref<String> _message;
 
 
     public:
-        Exception(ref<String> message) : _message(message) {
+        Exception(ref<String> message): _message(message) {
         }
 
 
@@ -51,13 +51,13 @@ namespace Win32 {
     };
 
 
-    class Application : public Object {
+    class Application: public Object {
     private:
         HINSTANCE _handle;
 
 
     public:
-        Application(HINSTANCE handle) : _handle(handle) {
+        Application(HINSTANCE handle): _handle(handle) {
         }
 
 
@@ -84,7 +84,7 @@ namespace Win32 {
     };
 
 
-    class MenuItem : public Object {
+    class MenuItem: public Object {
     private:
         ref<String> _caption;
         bool _hasId;
@@ -92,7 +92,7 @@ namespace Win32 {
 
 
     public:
-        MenuItem(ref<String> caption) : _caption(caption), _hasId(false) {
+        MenuItem(ref<String> caption): _caption(caption), _hasId(false) {
         }
 
 
@@ -117,24 +117,20 @@ namespace Win32 {
         virtual UINT getType() {
             return MF_STRING;
         }
-
-
-        virtual void onChoose() {
-        }
     };
     
 
     // TODO: Distinguish between MenuBar and PopupMenu?
-    class Menu : public MenuItem {
+    class Menu: public MenuItem {
     private:
         HMENU _handle;
         std::vector<ref<MenuItem>> _items;
 
 
     public:
-        Menu(ref<String> caption) : MenuItem(caption) {
-            _handle = CreatePopupMenu();
-
+        Menu(ref<String> caption):
+            MenuItem(caption), _handle(CreatePopupMenu())
+        {
             if (_handle == NULL) {
                 throw Exception(GetLastErrorMessage());
             }
@@ -154,29 +150,6 @@ namespace Win32 {
         }
 
 
-        virtual bool chooseItem(UINT_PTR id) {
-            for (size_t i = 0; i < _items.size(); ++i) {
-                ref<MenuItem> item = _items[i];
-
-                if (item->getId() == id) {
-                    item->onChoose();
-                    onChoose();
-                    return true;
-                }
-                else if (item->getType() == MF_POPUP) {
-                    ref<Menu> menu = item.cast<Menu>();
-
-                    if (menu->chooseItem(id)) {
-                        onChoose();
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-
         virtual HMENU getHandle() {
             return _handle;
         }
@@ -184,6 +157,26 @@ namespace Win32 {
 
         virtual UINT_PTR getId() {
             return (UINT_PTR) getHandle();
+        }
+
+
+        virtual ref<MenuItem> getItemById(UINT_PTR id) {
+            for (size_t i = 0; i < getItemCount(); ++i) {
+                ref<MenuItem> item = _items[i];
+
+                if (item->getId() == id) {
+                    return item;
+                }
+                else if (item->getType() == MF_POPUP) {
+                    ref<MenuItem> child = item.cast<Menu>()->getItemById(id);
+
+                    if (child != NULL) {
+                        return child;
+                    }
+                }
+            }
+
+            return NULL;
         }
 
 
@@ -198,7 +191,7 @@ namespace Win32 {
     };
 
 
-    class Window : public Object {
+    class Window: public Object {
     private:
         static struct State {
             Window* instance;
@@ -263,8 +256,8 @@ namespace Win32 {
 
 
     public:
-        Window(ref<String> title, ref<String> className)
-            : _handle(NULL), _menuBar(NULL)
+        Window(ref<String> title, ref<String> className):
+            _handle(NULL), _menuBar(NULL)
         {
             HWND window = FindWindow(className->c_str(), title->c_str());
 
@@ -304,7 +297,16 @@ namespace Win32 {
         }
 
 
-        virtual void addMenuBar(ref<Menu> menu) {
+        virtual void chooseMenuItem(ref<MenuItem> item) {
+        }
+
+
+        virtual void close() {
+            SendMessage(getHandle(), WM_CLOSE, 0, 0);
+        }
+
+
+        virtual void enableMenuBar(ref<Menu> menu) {
             if (menu->getItemCount() > 2) {
                 throw Exception(S("Too many items in the menu bar."));
             }
@@ -326,23 +328,16 @@ namespace Win32 {
         }
 
 
-        virtual void close() {
-            SendMessage(getHandle(), WM_CLOSE, 0, 0);
-        }
-
-
         virtual HWND getHandle() {
             return _handle;
         }
 
 
         virtual void show(int mode) {
-            if (getHandle() != NULL) {
-                ShowWindow(getHandle(), mode);
+            ShowWindow(getHandle(), mode);
 
-                if (UpdateWindow(getHandle()) == 0) {
-                    throw Exception(GetLastErrorMessage());
-                }
+            if (UpdateWindow(getHandle()) == 0) {
+                throw Exception(GetLastErrorMessage());
             }
         }
 
@@ -352,7 +347,7 @@ namespace Win32 {
             switch (message) {
             case WM_COMMAND:
                 if ((HIWORD(wParam) == 0) && (_menuBar != NULL)) {
-                    _menuBar->chooseItem(LOWORD(wParam));
+                    chooseMenuItem(_menuBar->getItemById(LOWORD(wParam)));
                 }
                 break;
             case WM_DESTROY:
