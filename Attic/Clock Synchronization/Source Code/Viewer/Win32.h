@@ -351,7 +351,7 @@ namespace Win32 {
         LRESULT handler(UINT message, WPARAM wParam, LPARAM lParam) {
             switch (message) {
             case WM_COMMAND:
-                if (_menuBar != NULL) {
+                if ((HIWORD(wParam) == 0) && (_menuBar != NULL)) {
                     _menuBar->chooseItem(LOWORD(wParam));
                 }
                 break;
