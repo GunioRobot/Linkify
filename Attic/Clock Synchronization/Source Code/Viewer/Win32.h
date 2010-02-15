@@ -326,6 +326,11 @@ namespace Win32 {
         }
 
 
+        virtual void close() {
+            SendMessage(getHandle(), WM_CLOSE, 0, 0);
+        }
+
+
         virtual HWND getHandle() {
             return _handle;
         }
