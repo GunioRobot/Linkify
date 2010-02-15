@@ -343,15 +343,21 @@ namespace WM {
 
 
     private:
+        void handleCommand(WPARAM wParam, LPARAM lParam) {
+            WORD notifyCode = HIWORD(wParam);
+            WORD id = LOWORD(wParam);
+            HWND handle = (HWND) lParam;
+
+            if ((notifyCode == 0) && (id != 0) && (_menuBar != NULL)) {
+                chooseMenuItem(_menuBar->getItemById(id));
+            }
+        }
+
+
         LRESULT handler(UINT message, WPARAM wParam, LPARAM lParam) {
             switch (message) {
             case WM_COMMAND:
-                if ((HIWORD(wParam) == 0) && (LOWORD(wParam) != 0) && (_menuBar != NULL)) {
-                    chooseMenuItem(_menuBar->getItemById(LOWORD(wParam)));
-                }
-                else {
-                    return DefWindowProc(getHandle(), message, wParam, lParam);
-                }
+                handleCommand(wParam, lParam);
                 break;
             case WM_DESTROY:
                 PostQuitMessage(EXIT_SUCCESS);
