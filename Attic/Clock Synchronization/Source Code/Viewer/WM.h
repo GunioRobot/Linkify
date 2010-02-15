@@ -102,7 +102,7 @@ namespace WM {
 
 
         virtual UINT_PTR getId() {
-            // Must not be zero for popup menus to work.
+            // Zero is reserved for controls.
             static UINT_PTR counter = 1;
 
             if (!_hasId) {
@@ -346,8 +346,11 @@ namespace WM {
         LRESULT handler(UINT message, WPARAM wParam, LPARAM lParam) {
             switch (message) {
             case WM_COMMAND:
-                if ((HIWORD(wParam) == 0) && (_menuBar != NULL)) {
+                if ((HIWORD(wParam) == 0) && (LOWORD(wParam) != 0) && (_menuBar != NULL)) {
                     chooseMenuItem(_menuBar->getItemById(LOWORD(wParam)));
+                }
+                else {
+                    return DefWindowProc(getHandle(), message, wParam, lParam);
                 }
                 break;
             case WM_DESTROY:
