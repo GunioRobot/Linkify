@@ -5,11 +5,9 @@ namespace WM {
     std::map<HWND, ref<Window::State>> Window::_windows;
 
 
-    void ErrorMessageBox(ref<String> message, bool useWindow) {
-        HWND owner = useWindow ? GetForegroundWindow() : NULL;
+    void ErrorMessageBox(ref<String> message) {
         UINT type = MB_OK + MB_ICONERROR;
-
-        MessageBox(owner, message->c_str(), NULL, type);
+        MessageBox(GetForegroundWindow(), message->c_str(), NULL, type);
     }
 
 
@@ -32,21 +30,6 @@ namespace WM {
     }
 
     
-    // TODO: Check when the buffer is too small for the whole string?
-    // TODO: Cache loaded strings?
-    ref<String> LoadStringT(UINT id, HINSTANCE module) {
-        const size_t BUFFER_SIZE = BUFSIZ;
-        TCHAR buffer[BUFFER_SIZE];
-        int length = LoadString(module, id, buffer, BUFFER_SIZE);
-
-        if (length == 0) {
-            throw Exception(S("Unknown string resource."));
-        }
-
-        return new String(buffer);
-    }
-
-
     ref<String> ToString(const TCHAR* string) {
         return new String(string);
     }

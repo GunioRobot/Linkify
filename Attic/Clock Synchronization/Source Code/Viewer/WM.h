@@ -22,9 +22,8 @@ namespace WM {
     typedef std::basic_stringstream<TCHAR> StringStream;
     
 
-    void ErrorMessageBox(ref<String> message, bool useWindow = true);
+    void ErrorMessageBox(ref<String> message);
     ref<String> GetLastErrorMessage();
-    ref<String> LoadStringT(UINT id, HINSTANCE module = GetModuleHandle(NULL));
     ref<String> ToString(const TCHAR* string);
 
 

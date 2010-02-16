@@ -73,7 +73,3 @@ int WINAPI WinMain(
         return EXIT_FAILURE;
     }
 }
-
-
-/*
-*/
