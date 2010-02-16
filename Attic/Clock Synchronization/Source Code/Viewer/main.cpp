@@ -1,10 +1,4 @@
 #include "WM.h"
-#include <cmath>
-
-
-size_t mmToPx(double mm, int pixelsPerInch) {
-    return (size_t) ceil(mm * 0.0393700787401575 * pixelsPerInch);
-}
 
 
 class Viewer: public WM::Application, WM::Window {
@@ -25,23 +19,18 @@ public:
         
         enableMenuBar(menuBar);
 
-        HDC screen = GetDC(NULL);
-        int xPxPerIn = GetDeviceCaps(screen, LOGPIXELSX);
-        int yPxPerIn = GetDeviceCaps(screen, LOGPIXELSY);
-        ReleaseDC(NULL, screen);
-
         CreateWindow(
-            TEXT("BUTTON"),   // Predefined class; Unicode assumed.
-            TEXT("OK"),       // Button text. 
-            WS_CHILD + WS_TABSTOP + WS_VISIBLE + BS_PUSHBUTTON,  // Styles.
-            mmToPx(3, xPxPerIn),         // x position. 
-            mmToPx(3, yPxPerIn),         // y position. 
-            mmToPx(10, xPxPerIn),        // Button width.
-            mmToPx(10, yPxPerIn),        // Button height.
-            WM::Window::getHandle(),       // Parent window.
-            NULL,       // No menu.
+            TEXT("BUTTON"),
+            TEXT("OK"),
+            WS_CHILD + WS_TABSTOP + WS_VISIBLE + BS_PUSHBUTTON,
+            WM::ScaleX(3),
+            WM::ScaleY(3),
+            WM::ScaleX(15),
+            WM::ScaleY(10),
+            WM::Window::getHandle(),
+            NULL,
             GetModuleHandle(NULL), 
-            NULL);      // Pointer not needed.
+            NULL);
     }
 
 

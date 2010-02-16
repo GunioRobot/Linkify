@@ -23,7 +23,11 @@ namespace WM {
     
 
     void ErrorMessageBox(ref<String> message);
+    int GetDeviceCaps(int item, HDC deviceContext = NULL);
     ref<String> GetLastErrorMessage();
+    size_t Scale(double logicalMm, int pxPerLogicalIn);
+    size_t ScaleX(double logicalMm);
+    size_t ScaleY(double logicalMm);
     ref<String> ToString(const TCHAR* string);
 
 

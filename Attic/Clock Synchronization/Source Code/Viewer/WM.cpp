@@ -1,4 +1,5 @@
 #include "WM.h"
+#include <cmath>
 
 
 namespace WM {
@@ -11,6 +12,27 @@ namespace WM {
     }
 
 
+    int GetDeviceCaps(int item, HDC deviceContext) {
+        HDC handle = deviceContext;
+
+        if (deviceContext == NULL) {
+            handle = GetDC(NULL);
+
+            if (handle == NULL) {
+                throw Exception(GetLastErrorMessage());
+            }
+        }
+
+        int value = GetDeviceCaps(handle, item);
+
+        if (deviceContext == NULL) {
+            ReleaseDC(NULL, handle);
+        }
+
+        return value;
+    }
+    
+    
     ref<String> GetLastErrorMessage() {
         DWORD code = GetLastError();
         TCHAR* buffer;
@@ -27,6 +49,23 @@ namespace WM {
         ref<String> message = (length == 0) ? NULL : new String(buffer);
         LocalFree(buffer);
         return message;
+    }
+
+
+    size_t Scale(double logicalMm, int pxPerLogicalIn) {
+        return (size_t) ceil(logicalMm * 0.0393700787401575 * pxPerLogicalIn);
+    }
+
+
+    size_t ScaleX(double logicalMm) {
+        static int pxPerLogicalIn = GetDeviceCaps(LOGPIXELSX);
+        return Scale(logicalMm, pxPerLogicalIn);
+    }
+
+
+    size_t ScaleY(double logicalMm) {
+        static int pxPerLogicalIn = GetDeviceCaps(LOGPIXELSY);
+        return Scale(logicalMm, pxPerLogicalIn);
     }
 
     
