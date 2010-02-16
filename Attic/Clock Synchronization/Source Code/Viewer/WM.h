@@ -369,4 +369,23 @@ namespace WM {
             return 0;
         }
     };
+    
+    
+    /*class Label: public Object {
+    public:
+        Label(ref<String> caption, ref<Window> owner, size_t x, size_t y, size_t width, size_t height) {
+            CreateWindow(
+                TEXT("STATIC"),
+                caption->c_str(),
+                WS_CHILD + WS_TABSTOP + WS_VISIBLE,
+                x,
+                y,
+                width,
+                height,
+                owner->getHandle(),
+                NULL,
+                GetModuleHandle(NULL), 
+                NULL);
+        }
+    };*/
 }

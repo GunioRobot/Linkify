@@ -1,4 +1,10 @@
 #include "WM.h"
+#include <cmath>
+
+
+size_t mmToPx(double mm, int pixelsPerInch) {
+    return (size_t) ceil(mm * 0.0393700787401575 * pixelsPerInch);
+}
 
 
 class Viewer: public WM::Application, WM::Window {
@@ -18,6 +24,24 @@ public:
         menuBar->addItem(new WM::MenuItem(_exitOption));
         
         enableMenuBar(menuBar);
+
+        HDC screen = GetDC(NULL);
+        int xPxPerIn = GetDeviceCaps(screen, LOGPIXELSX);
+        int yPxPerIn = GetDeviceCaps(screen, LOGPIXELSY);
+        ReleaseDC(NULL, screen);
+
+        CreateWindow(
+            TEXT("BUTTON"),   // Predefined class; Unicode assumed.
+            TEXT("OK"),       // Button text. 
+            WS_CHILD + WS_TABSTOP + WS_VISIBLE + BS_PUSHBUTTON,  // Styles.
+            mmToPx(3, xPxPerIn),         // x position. 
+            mmToPx(3, yPxPerIn),         // y position. 
+            mmToPx(10, xPxPerIn),        // Button width.
+            mmToPx(10, yPxPerIn),        // Button height.
+            WM::Window::getHandle(),       // Parent window.
+            NULL,       // No menu.
+            GetModuleHandle(NULL), 
+            NULL);      // Pointer not needed.
     }
 
 
@@ -52,16 +76,4 @@ int WINAPI WinMain(
 
 
 /*
-        CreateWindow(
-            L"BUTTON",   // Predefined class; Unicode assumed.
-            L"OK",       // Button text. 
-            WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles.
-            10,         // x position. 
-            10,         // y position. 
-            100,        // Button width.
-            100,        // Button height.
-            getHandle(),       // Parent window.
-            NULL,       // No menu.
-            application, 
-            NULL);      // Pointer not needed.
 */
