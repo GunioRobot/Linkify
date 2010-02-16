@@ -15,7 +15,12 @@
 #include <typeinfo>
 
 
+#define noref \
+    ref<void>() <<
+
+
 // TODO: Add documentation.
+// TODO: Change visibility of identifiers with a leading underscore to private.
 template<typename T>
 class ref {
 public:
@@ -34,13 +39,13 @@ public:
     }
     
     
-    ref(T* object): _obj(object), _count(NULL), _type(&typeid(T)) {
+    ref(T* object): _obj(object), _count(new size_t(0)), _type(&typeid(T)) {
         _increment();
     }
     
     
     template<typename U>
-    ref(U* object): _obj(object), _count(NULL), _type(&typeid(U)) {
+    ref(U* object): _obj(object), _count(new size_t(0)), _type(&typeid(U)) {
         _increment();
     }
     
@@ -111,10 +116,9 @@ public:
     }
     
     
-// TODO: Is there a way to make these private?
-public:
+//private:
     void _decrement() {
-        if ((_obj != NULL) && (--*_count == 0)) {
+        if ((_obj != NULL) && (_count != NULL) && (--*_count == 0)) {
             delete _obj;
             delete _count;
         }
@@ -122,13 +126,8 @@ public:
     
     
     void _increment() {
-        if (_obj != NULL) {
-            if (_count == NULL) {
-                _count = new size_t(1);
-            }
-            else {
-                ++*_count;
-            }
+        if ((_obj != NULL) && (_count != NULL)) {
+            ++*_count;
         }
     }
     
@@ -136,6 +135,22 @@ public:
     T* _obj;
     size_t* _count;
     const std::type_info* _type;
+};
+
+
+template<>
+class ref<void> {
+public:
+    template<typename T>
+    ref<T> operator <<(T* object) {
+        ref<T> r = NULL;
+        
+        r._obj = object;
+        r._count = NULL;
+        r._type = &typeid(T);
+        
+        return r;
+    }
 };
 
 

@@ -6,11 +6,11 @@
 class Animal {
 public:
     Animal(std::string name): _name(name) {
-        std::cout << "Animal()\n";
+        std::cout << "Animal(\"" << _name << "\")\n";
     }
     
     virtual ~Animal() {
-        std::cout << "~Animal()\n";
+        std::cout << "~Animal(\"" << _name << "\")\n";
     }
     
     std::string getName() const {
@@ -34,13 +34,23 @@ public:
 };
 
 
+void test(ref<Animal> animal) {
+    std::cout << "Testing:\n";
+    std::cout << "- Method => \"" << animal->getName() << "\"\n";
+    std::cout << "- typeid => \"" << animal.type().name() << "\"\n";
+    std::cout << "- De-reference => " << *animal << "\n";
+}
+
+
 int main() {
-    ref<Cat> kitty = new Cat("Kitty");
-    ref<Animal> animal = kitty;           // Up-cast.
+    Cat kitten("Kitten");
+    
+    ref<Cat> pet_1 = noref &kitten;       // Don't use garbage collection.
+    ref<Cat> pet_2 = new Cat("Kitty");    // Use garbage collection.
+    
+    ref<Animal> animal = pet_2;           // Up-cast.
     ref<Cat> cat = animal.cast<Cat>();    // Down-cast.
     
-    std::cout << "- Down-cast " << (cat == NULL ? "failed" : "ok") << ".\n";
-    std::cout << "- Method => \"" << cat->getName() << "\"\n";
-    std::cout << "- typeid => \"" << cat.type().name() << "\"\n";
-    std::cout << "- De-reference => " << *cat << "\n";
+    test(pet_1);
+    test(cat);
 }
