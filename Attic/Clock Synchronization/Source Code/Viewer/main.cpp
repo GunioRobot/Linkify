@@ -24,16 +24,17 @@ public:
     }
 
 
+    virtual int start(int windowShowMode) {
+        open(windowShowMode);
+        return WM::Application::start(windowShowMode);
+    }
+
+
+protected:
     virtual void choose(ref<WM::MenuItem> item) {
         if (item == _exitOption) {
             close();
         }
-    }
-
-
-    virtual int start(int windowShowMode) {
-        open(windowShowMode);
-        return WM::Application::start(windowShowMode);
     }
 };
 

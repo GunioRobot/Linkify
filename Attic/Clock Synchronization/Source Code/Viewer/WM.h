@@ -89,6 +89,8 @@ namespace WM {
 
 
     class MenuItem: public Object {
+        friend class Menu;
+
     private:
         ref<String> _caption;
         bool _hasId;
@@ -105,6 +107,7 @@ namespace WM {
         }
 
 
+    protected:
         virtual UINT_PTR getId() {
             // Zero is reserved for controls.
             static UINT_PTR counter = 1;
@@ -126,6 +129,8 @@ namespace WM {
 
     // TODO: Distinguish between MenuBar and PopupMenu?
     class Menu: public MenuItem {
+        friend class Window;
+
     private:
         HMENU _handle;
         std::vector<ref<MenuItem>> _items;
@@ -159,6 +164,12 @@ namespace WM {
         }
 
 
+        virtual size_t getItemCount() {
+            return _items.size();
+        }
+
+
+    protected:
         virtual UINT_PTR getId() {
             return (UINT_PTR) getHandle();
         }
@@ -181,11 +192,6 @@ namespace WM {
             }
 
             return NULL;
-        }
-
-
-        virtual size_t getItemCount() {
-            return _items.size();
         }
 
 
@@ -213,7 +219,6 @@ namespace WM {
         };
 
 
-    private:
         static std::map<HWND, ref<State>> _windows;
 
 
@@ -309,10 +314,6 @@ namespace WM {
         }
 
 
-        virtual void choose(ref<MenuItem> item) {
-        }
-
-
         virtual void close() {
             SendMessage(getHandle(), WM_CLOSE, 0, 0);
         }
@@ -351,6 +352,11 @@ namespace WM {
             if (UpdateWindow(getHandle()) == 0) {
                 throw Exception(GetLastErrorMessage());
             }
+        }
+
+
+    protected:
+        virtual void choose(ref<MenuItem> item) {
         }
 
 
