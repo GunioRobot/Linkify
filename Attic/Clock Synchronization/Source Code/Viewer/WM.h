@@ -140,7 +140,7 @@ namespace WM {
         }
 
 
-        virtual void addItem(ref<MenuItem> item) {
+        virtual void add(ref<MenuItem> item) {
             UINT flags = item->getType();
             UINT_PTR id = item->getId();
             LPCTSTR caption = item->getCaption()->c_str();
@@ -300,7 +300,7 @@ namespace WM {
         }
 
 
-        virtual void chooseMenuItem(ref<MenuItem> item) {
+        virtual void choose(ref<MenuItem> item) {
         }
 
 
@@ -336,7 +336,7 @@ namespace WM {
         }
 
 
-        virtual void show(int mode) {
+        virtual void open(int mode) {
             ShowWindow(getHandle(), mode);
 
             if (UpdateWindow(getHandle()) == 0) {
@@ -352,7 +352,7 @@ namespace WM {
             HWND handle = (HWND) lParam;
 
             if ((notifyCode == 0) && (id != 0) && (_menuBar != NULL)) {
-                chooseMenuItem(_menuBar->getItemById(id));
+                choose(_menuBar->getItemById(id));
             }
         }
 
@@ -374,21 +374,33 @@ namespace WM {
     };
     
     
-    /*class Label: public Object {
+    class Widget: public Object {
+    };
+
+
+    class Label: public Widget {
+    private:
+        HWND _handle;
+
+
     public:
-        Label(ref<String> caption, ref<Window> owner, size_t x, size_t y, size_t width, size_t height) {
-            CreateWindow(
+        Label(ref<String> caption, ref<Window> owner) {
+            _handle = CreateWindow(
                 TEXT("STATIC"),
                 caption->c_str(),
-                WS_CHILD + WS_TABSTOP + WS_VISIBLE,
-                x,
-                y,
-                width,
-                height,
+                WS_CHILD + WS_TABSTOP,
+                0,
+                0,
+                0,
+                0,
                 owner->getHandle(),
                 NULL,
                 GetModuleHandle(NULL), 
                 NULL);
+
+            if (_handle == NULL) {
+                throw Exception(GetLastErrorMessage());
+            }
         }
-    };*/
+    };
 }
