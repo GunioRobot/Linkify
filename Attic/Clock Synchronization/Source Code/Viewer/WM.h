@@ -27,8 +27,8 @@ namespace WM {
     int GetDeviceCaps(int item, HDC deviceContext = NULL);
     ref<String> GetLastErrorMessage();
     size_t Scale(LogicalMm logicalMm, int pxPerLogicalIn);
-    size_t ScaleX(LogicalMm logicalMm);
-    size_t ScaleY(LogicalMm logicalMm);
+    size_t ScaleHorizontal(LogicalMm logicalMm);
+    size_t ScaleVertical(LogicalMm logicalMm);
     ref<String> ToString(const TCHAR* string);
 
 
@@ -202,6 +202,10 @@ namespace WM {
 
 
     class Widget: public Object {
+        friend class Window;
+
+    protected:
+        virtual void onAddTo(ref<Window> owner, LogicalMm x, LogicalMm y) = 0;
     };
 
 
@@ -310,7 +314,8 @@ namespace WM {
         }
 
 
-        virtual void add(ref<Widget> widget, LogicalMm x, LogicalMm y) {
+        virtual void add(ref<Widget> widget, LogicalMm left, LogicalMm top) {
+            widget->onAddTo(noref this, left, top);
         }
 
 
@@ -356,7 +361,7 @@ namespace WM {
 
 
     protected:
-        virtual void choose(ref<MenuItem> item) {
+        virtual void onChoose(ref<MenuItem> item) {
         }
 
 
@@ -367,7 +372,7 @@ namespace WM {
             HWND handle = (HWND) lParam;
 
             if ((notifyCode == 0) && (id != 0) && (_menuBar != NULL)) {
-                choose(_menuBar->getItemById(id));
+                onChoose(_menuBar->getItemById(id));
             }
         }
 
@@ -391,19 +396,30 @@ namespace WM {
     
     class Label: public Widget {
     private:
+        ref<String> _caption;
+        LogicalMm _width;
+        LogicalMm _height;
         HWND _handle;
 
 
     public:
-        Label(ref<String> caption) {
-            /*_handle = CreateWindow(
+        Label(ref<String> caption, LogicalMm width, LogicalMm height):
+            _caption(caption), _width(width), _height(height), _handle(NULL)
+        {
+        }
+    
+    
+    protected:
+        // TODO: Prevent adding to multiple windows?
+        virtual void onAddTo(ref<Window> owner, LogicalMm left, LogicalMm top) {
+            _handle = CreateWindow(
                 TEXT("STATIC"),
-                caption->c_str(),
-                WS_CHILD + WS_TABSTOP,
-                0,
-                0,
-                0,
-                0,
+                _caption->c_str(),
+                WS_CHILD + WS_TABSTOP + WS_VISIBLE,
+                ScaleHorizontal(left),
+                ScaleVertical(top),
+                ScaleHorizontal(_width),
+                ScaleVertical(_height),
                 owner->getHandle(),
                 NULL,
                 GetModuleHandle(NULL), 
@@ -411,7 +427,7 @@ namespace WM {
 
             if (_handle == NULL) {
                 throw Exception(GetLastErrorMessage());
-            }*/
+            }
         }
     };
 }

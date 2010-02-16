@@ -15,12 +15,13 @@ public:
         _updateOption = new WM::MenuItem(S("Update"));
         
         ref<WM::Menu> mainMenu = new WM::Menu(S("Menu"));
-        ref<WM::Label> localTime = new WM::Label(S("Local time:"));
+        ref<WM::Label> localTimeLabel = new WM::Label(S("Local time:"), 30, 10);
 
         mainMenu->add(_updateOption);
         mainMenu->add(_exitOption);
         
         enableMenuBar(mainMenu);
+        add(localTimeLabel, 3, 3);
     }
 
 
@@ -31,7 +32,7 @@ public:
 
 
 protected:
-    virtual void choose(ref<WM::MenuItem> item) {
+    virtual void onChoose(ref<WM::MenuItem> item) {
         if (item == _exitOption) {
             close();
         }
@@ -53,35 +54,3 @@ int WINAPI WinMain(
         return EXIT_FAILURE;
     }
 }
-
-
-/*
-        CreateWindow(
-            TEXT("BUTTON"),
-            TEXT("OK"),
-            WS_CHILD + WS_TABSTOP + WS_VISIBLE + BS_PUSHBUTTON,
-            WM::ScaleX(3),
-            WM::ScaleY(3),
-            WM::ScaleX(15),
-            WM::ScaleY(10),
-            WM::Window::getHandle(),
-            NULL,
-            GetModuleHandle(NULL), 
-            NULL);
-*/
-
-
-/*
-        CreateWindow(
-            TEXT("STATIC"),
-            TEXT("Hello world!"),
-            WS_CHILD + WS_TABSTOP + WS_VISIBLE,
-            WM::ScaleX(3),
-            WM::ScaleY(3),
-            WM::ScaleX(30),
-            WM::ScaleY(10),
-            WM::Window::getHandle(),
-            NULL,
-            GetModuleHandle(NULL), 
-            NULL);
-*/

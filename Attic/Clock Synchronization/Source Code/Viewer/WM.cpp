@@ -57,15 +57,15 @@ namespace WM {
     }
 
 
-    size_t ScaleX(LogicalMm logicalMm) {
-        static int pxPerLogicalIn = GetDeviceCaps(LOGPIXELSX);
-        return Scale(logicalMm, pxPerLogicalIn);
+    size_t ScaleHorizontal(LogicalMm logicalMm) {
+        static int dpi = GetDeviceCaps(LOGPIXELSX);
+        return Scale(logicalMm, dpi);
     }
 
 
-    size_t ScaleY(LogicalMm logicalMm) {
-        static int pxPerLogicalIn = GetDeviceCaps(LOGPIXELSY);
-        return Scale(logicalMm, pxPerLogicalIn);
+    size_t ScaleVertical(LogicalMm logicalMm) {
+        static int dpi = GetDeviceCaps(LOGPIXELSY);
+        return Scale(logicalMm, dpi);
     }
 
     
