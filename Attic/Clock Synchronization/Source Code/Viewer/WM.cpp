@@ -52,18 +52,18 @@ namespace WM {
     }
 
 
-    size_t Scale(double logicalMm, int pxPerLogicalIn) {
+    size_t Scale(LogicalMm logicalMm, int pxPerLogicalIn) {
         return (size_t) ceil(logicalMm * 0.0393700787401575 * pxPerLogicalIn);
     }
 
 
-    size_t ScaleX(double logicalMm) {
+    size_t ScaleX(LogicalMm logicalMm) {
         static int pxPerLogicalIn = GetDeviceCaps(LOGPIXELSX);
         return Scale(logicalMm, pxPerLogicalIn);
     }
 
 
-    size_t ScaleY(double logicalMm) {
+    size_t ScaleY(LogicalMm logicalMm) {
         static int pxPerLogicalIn = GetDeviceCaps(LOGPIXELSY);
         return Scale(logicalMm, pxPerLogicalIn);
     }

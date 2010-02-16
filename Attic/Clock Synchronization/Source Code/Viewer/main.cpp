@@ -3,28 +3,29 @@
 
 class Viewer: public WM::Application, WM::Window {
 private:
-    ref<WM::String> _exitOption;
-    ref<WM::String> _updateOption;
+    ref<WM::MenuItem> _exitOption;
+    ref<WM::MenuItem> _updateOption;
 
 
 public:
     Viewer(HINSTANCE handle):
-        WM::Application(handle), WM::Window(S("Viewer"), S("VIEWER")),
-        _exitOption(S("Exit")), _updateOption(S("Update"))
+        WM::Application(handle), WM::Window(S("Viewer"), S("VIEWER"))
     {
+        _exitOption = new WM::MenuItem(S("Exit"));
+        _updateOption = new WM::MenuItem(S("Update"));
+        
         ref<WM::Menu> mainMenu = new WM::Menu(S("Menu"));
+        ref<WM::Label> localTime = new WM::Label(S("Local time:"));
 
-        mainMenu->add(new WM::MenuItem(_updateOption));
-        mainMenu->add(new WM::MenuItem(_exitOption));
+        mainMenu->add(_updateOption);
+        mainMenu->add(_exitOption);
+        
         enableMenuBar(mainMenu);
-
-        ref<WM::Window> owner = noref (WM::Window*) this;
-        ref<WM::Label> localTime = new WM::Label(S("Local time:"), owner);
     }
 
 
     virtual void choose(ref<WM::MenuItem> item) {
-        if (item->getCaption() == _exitOption) {
+        if (item == _exitOption) {
             close();
         }
     }

@@ -18,6 +18,7 @@
 
 
 namespace WM {
+    typedef double LogicalMm;
     typedef std::basic_string<TCHAR> String;
     typedef std::basic_stringstream<TCHAR> StringStream;
     
@@ -25,9 +26,9 @@ namespace WM {
     void ErrorMessageBox(ref<String> message);
     int GetDeviceCaps(int item, HDC deviceContext = NULL);
     ref<String> GetLastErrorMessage();
-    size_t Scale(double logicalMm, int pxPerLogicalIn);
-    size_t ScaleX(double logicalMm);
-    size_t ScaleY(double logicalMm);
+    size_t Scale(LogicalMm logicalMm, int pxPerLogicalIn);
+    size_t ScaleX(LogicalMm logicalMm);
+    size_t ScaleY(LogicalMm logicalMm);
     ref<String> ToString(const TCHAR* string);
 
 
@@ -194,6 +195,10 @@ namespace WM {
     };
 
 
+    class Widget: public Object {
+    };
+
+
     class Window: public Object {
     private:
         static struct State {
@@ -300,6 +305,10 @@ namespace WM {
         }
 
 
+        virtual void add(ref<Widget> widget, LogicalMm x, LogicalMm y) {
+        }
+
+
         virtual void choose(ref<MenuItem> item) {
         }
 
@@ -374,18 +383,14 @@ namespace WM {
     };
     
     
-    class Widget: public Object {
-    };
-
-
     class Label: public Widget {
     private:
         HWND _handle;
 
 
     public:
-        Label(ref<String> caption, ref<Window> owner) {
-            _handle = CreateWindow(
+        Label(ref<String> caption) {
+            /*_handle = CreateWindow(
                 TEXT("STATIC"),
                 caption->c_str(),
                 WS_CHILD + WS_TABSTOP,
@@ -400,7 +405,7 @@ namespace WM {
 
             if (_handle == NULL) {
                 throw Exception(GetLastErrorMessage());
-            }
+            }*/
         }
     };
 }
