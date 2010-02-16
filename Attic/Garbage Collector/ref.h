@@ -15,6 +15,15 @@
 #include <typeinfo>
 
 
+/**
+ * Indicates that a pointer must not be automatically managed.
+ *
+ * @hideinitializer
+ * @code
+ * std::string buffer;
+ * ref<std::string> r = noref &buffer;
+ * @endcode
+ */
 #define noref \
     ref<void>() <<
 
@@ -132,8 +141,13 @@ public:
     }
     
     
+    /** Pointer to the object being managed. */
     T* _obj;
+    
+    /** Number of references to the object, or @c NULL if it's not managed. */
     size_t* _count;
+    
+    /** Type information about the object. */
     const std::type_info* _type;
 };
 
