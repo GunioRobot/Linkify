@@ -18,7 +18,6 @@
 
 
 namespace WM {
-    typedef double LogicalMm;
     typedef std::basic_string<TCHAR> String;
     typedef std::basic_stringstream<TCHAR> StringStream;
     
@@ -26,9 +25,8 @@ namespace WM {
     void ErrorMessageBox(ref<String> message);
     int GetDeviceCaps(int item, HDC deviceContext = NULL);
     ref<String> GetLastErrorMessage();
-    size_t Scale(LogicalMm logicalMm, int pxPerLogicalIn);
-    size_t ScaleHorizontal(LogicalMm logicalMm);
-    size_t ScaleVertical(LogicalMm logicalMm);
+    size_t ScaleHorizontal(size_t pixels);
+    size_t ScaleVertical(size_t pixels);
     ref<String> ToString(const TCHAR* string);
 
 
@@ -205,7 +203,7 @@ namespace WM {
         friend class Window;
 
     protected:
-        virtual void onAddTo(ref<Window> owner, LogicalMm x, LogicalMm y) = 0;
+        virtual void onAddTo(ref<Window> owner, size_t left, size_t top) = 0;
     };
 
 
@@ -314,7 +312,7 @@ namespace WM {
         }
 
 
-        virtual void add(ref<Widget> widget, LogicalMm left, LogicalMm top) {
+        virtual void add(ref<Widget> widget, size_t left, size_t top) {
             widget->onAddTo(noref this, left, top);
         }
 
@@ -397,13 +395,13 @@ namespace WM {
     class Label: public Widget {
     private:
         ref<String> _caption;
-        LogicalMm _width;
-        LogicalMm _height;
+        size_t _width;
+        size_t _height;
         HWND _handle;
 
 
     public:
-        Label(ref<String> caption, LogicalMm width, LogicalMm height):
+        Label(ref<String> caption, size_t width, size_t height):
             _caption(caption), _width(width), _height(height), _handle(NULL)
         {
         }
@@ -411,7 +409,7 @@ namespace WM {
     
     protected:
         // TODO: Prevent adding to multiple windows?
-        virtual void onAddTo(ref<Window> owner, LogicalMm left, LogicalMm top) {
+        virtual void onAddTo(ref<Window> owner, size_t left, size_t top) {
             _handle = CreateWindow(
                 TEXT("STATIC"),
                 _caption->c_str(),

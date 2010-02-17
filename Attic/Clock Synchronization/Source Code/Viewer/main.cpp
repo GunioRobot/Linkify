@@ -15,7 +15,7 @@ public:
         _updateOption = new WM::MenuItem(S("Update"));
         
         ref<WM::Menu> mainMenu = new WM::Menu(S("Menu"));
-        ref<WM::Label> localTimeLabel = new WM::Label(S("Local time:"), 30, 10);
+        ref<WM::Label> localTimeLabel = new WM::Label(S("Local time:"), 80, 20);
 
         mainMenu->add(_updateOption);
         mainMenu->add(_exitOption);
