@@ -13,15 +13,18 @@ public:
     {
         _exitOption = new WM::MenuItem(S("Exit"));
         _updateOption = new WM::MenuItem(S("Update"));
-        
+     
+        const size_t PADDING = 4;
         ref<WM::Menu> mainMenu = new WM::Menu(S("Menu"));
-        ref<WM::Label> localTimeLabel = new WM::Label(S("Local time:"), 80, 20);
+        ref<WM::Label> localTimeLabel = new WM::Label(S("Local time:"), 65, 20);
+        ref<WM::TextBox> localTime = new WM::TextBox(S("-"), 165, 20);
 
         mainMenu->add(_updateOption);
         mainMenu->add(_exitOption);
         
         enableMenuBar(mainMenu);
-        add(localTimeLabel, 3, 3);
+        add(localTimeLabel, PADDING, PADDING + 2);
+        add(localTime, PADDING + localTimeLabel->getWidth(), PADDING);
     }
 
 

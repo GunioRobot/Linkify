@@ -199,11 +199,52 @@ namespace WM {
     };
 
 
+    // TODO: Prevent adding a widget to multiple windows, and multiple times to
+    // the same window?
     class Widget: public Object {
         friend class Window;
 
+    private:
+        HWND _handle;
+        ref<String> _text;
+        size_t _width;
+        size_t _height;
+
+
+    public:
+        Widget(ref<String> text, size_t width, size_t height):
+            _handle(NULL), _text(text), _width(width), _height(height)
+        {
+        }
+
+
+        virtual HWND getHandle() {
+            return _handle;
+        }
+
+
+        virtual size_t getHeight() {
+            return _height;
+        }
+
+
+        virtual ref<String> getText() {
+            return _text;
+        }
+
+
+        virtual size_t getWidth() {
+            return _width;
+        }
+
+
     protected:
         virtual void onAddTo(ref<Window> owner, size_t left, size_t top) = 0;
+
+
+        virtual void setHandle(HWND handle) {
+            _handle = handle;
+        }
     };
 
 
@@ -393,39 +434,65 @@ namespace WM {
     
     
     class Label: public Widget {
-    private:
-        ref<String> _caption;
-        size_t _width;
-        size_t _height;
-        HWND _handle;
-
-
     public:
-        Label(ref<String> caption, size_t width, size_t height):
-            _caption(caption), _width(width), _height(height), _handle(NULL)
+        Label(ref<String> text, size_t width, size_t height):
+            Widget(text, width, height)
         {
         }
     
     
     protected:
-        // TODO: Prevent adding to multiple windows?
         virtual void onAddTo(ref<Window> owner, size_t left, size_t top) {
-            _handle = CreateWindow(
+            HWND handle = CreateWindow(
                 TEXT("STATIC"),
-                _caption->c_str(),
+                getText()->c_str(),
                 WS_CHILD + WS_TABSTOP + WS_VISIBLE,
                 ScaleHorizontal(left),
                 ScaleVertical(top),
-                ScaleHorizontal(_width),
-                ScaleVertical(_height),
+                ScaleHorizontal(getWidth()),
+                ScaleVertical(getHeight()),
                 owner->getHandle(),
                 NULL,
                 GetModuleHandle(NULL), 
                 NULL);
 
-            if (_handle == NULL) {
+            if (handle == NULL) {
                 throw Exception(GetLastErrorMessage());
             }
+
+            setHandle(handle);
+        }
+    };
+
+
+    class TextBox: public Widget {
+    public:
+        TextBox(ref<String> text, size_t width, size_t height):
+            Widget(text, width, height)
+        {
+        }
+
+
+    protected:
+        virtual void onAddTo(ref<Window> owner, size_t left, size_t top) {
+            HWND handle = CreateWindow(
+                TEXT("EDIT"),
+                getText()->c_str(),
+                WS_CHILD + WS_TABSTOP + WS_VISIBLE + WS_BORDER + ES_AUTOHSCROLL,
+                ScaleHorizontal(left),
+                ScaleVertical(top),
+                ScaleHorizontal(getWidth()),
+                ScaleVertical(getHeight()),
+                owner->getHandle(),
+                NULL,
+                GetModuleHandle(NULL), 
+                NULL);
+
+            if (handle == NULL) {
+                throw Exception(GetLastErrorMessage());
+            }
+
+            setHandle(handle);
         }
     };
 }
