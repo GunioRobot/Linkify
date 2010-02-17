@@ -4,7 +4,7 @@
 
 /**
  * @file
- * @brief Smart reference
+ * @brief Smart pointer
  * @see http://www.boost.org/doc/libs/release/libs/smart_ptr/shared_ptr.htm
  *
  * Simple garbage collector implemented with reference counting.
@@ -16,7 +16,7 @@
 
 
 /**
- * Indicates that a pointer must not be automatically managed.
+ * Indicates that an object must not be managed.
  *
  * @hideinitializer
  * @code
@@ -28,31 +28,62 @@
     ref<void>() <<
 
 
-// TODO: Add documentation.
-// TODO: Change visibility of identifiers with a leading underscore to private.
+/**
+ * Wrapper class for managed objects.
+ *
+ * Any object pointer stored will be automatically memory managed.
+ *
+ * @code
+ * ref<std::string> name = new std::string("John");
+ * @endcode
+ * @todo Change visibility of identifiers with a leading underscore to private.
+ */
 template<typename T>
 class ref {
 public:
+    /**
+     * Creates a null reference.
+     */
     ref(): _obj(NULL), _count(NULL), _type(&typeid(NULL)) {
     }
     
     
+    /**
+     * Creates a copy of a reference.
+     *
+     * @param [in] r reference to copy
+     */
     ref(const ref<T>& r): _obj(r._obj), _count(r._count), _type(r._type) {
         _increment();
     }
     
     
+    /**
+     * Creates a copy of a reference with a different but compatible type.
+     *
+     * @param [in] r reference to copy
+     */
     template<typename U>
     ref(const ref<U>& r): _obj(r._obj), _count(r._count), _type(r._type) {
         _increment();
     }
     
     
+    /**
+     * Creates a reference to an object.
+     *
+     * @param [in] object object pointer
+     */
     ref(T* object): _obj(object), _count(new size_t(0)), _type(&typeid(T)) {
         _increment();
     }
     
     
+    /**
+     * Creates a reference to an object with a different but compatible type.
+     *
+     * @param [in] object object pointer
+     */
     template<typename U>
     ref(U* object): _obj(object), _count(new size_t(0)), _type(&typeid(U)) {
         _increment();
@@ -99,6 +130,12 @@ public:
     }
     
     
+    /**
+     * Performs a dynamic cast.
+     *
+     * @return copy to the same object using a different type if successful,
+     *         otherwise is a null reference
+     */
     template<typename U>
     ref<U> cast() {
         ref<U> r = NULL;
@@ -115,11 +152,21 @@ public:
     }
     
     
+    /**
+     * Checks if this is a null reference.
+     *
+     * @return @c true if the object points to @c NULL, or @c false otherwise
+     */
     bool null() {
         return _obj == NULL;
     }
     
     
+    /**
+     * Gets type information.
+     *
+     * @return value of @c typeid applied to the managed object
+     */
     const std::type_info& type() {
         return *_type;
     }
