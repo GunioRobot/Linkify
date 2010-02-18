@@ -5,10 +5,14 @@
 #include "Object.h"
 
 
-#define S(string) WM::ToString(TEXT(string))
+#define S(string) \
+    ref<WM::String>(new WM::String(TEXT(string)))
 
 
 namespace WM {
-    typedef std::basic_string<TCHAR> String;
-    ref<String> ToString(const TCHAR* string);
+    class String: public std::basic_string<TCHAR> {
+    public:
+        String(const TCHAR* string): std::basic_string<TCHAR>(string) {
+        }
+    };
 }

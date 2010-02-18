@@ -21,7 +21,7 @@ namespace WM {
             MenuItem(caption), _handle(CreatePopupMenu())
         {
             if (_handle == NULL) {
-                throw Exception(GetLastErrorMessage());
+                Exception::throwLastError();
             }
         }
 
@@ -32,7 +32,7 @@ namespace WM {
             LPCTSTR caption = item->getCaption()->c_str();
 
             if (!AppendMenu(getHandle(), flags, id, caption)) {
-                throw Exception(GetLastErrorMessage());
+                Exception::throwLastError();
             }
 
             _items.push_back(item);

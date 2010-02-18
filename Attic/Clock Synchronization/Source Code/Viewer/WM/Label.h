@@ -31,7 +31,7 @@ namespace WM {
                 NULL);
 
             if (handle == NULL) {
-                throw Exception(GetLastErrorMessage());
+                Exception::throwLastError();
             }
 
             setHandle(handle);

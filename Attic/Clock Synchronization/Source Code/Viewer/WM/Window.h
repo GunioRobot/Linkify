@@ -95,7 +95,7 @@ namespace WM {
                 windowClass.lpszClassName = className->c_str();
                 
                 if (RegisterClass(&windowClass) == 0) {
-                    throw Exception(GetLastErrorMessage());
+                    Exception::throwLastError();
                 }
 
                 _handle = CreateWindow(className->c_str(), title->c_str(),
@@ -103,7 +103,7 @@ namespace WM {
                     CW_USEDEFAULT, NULL, NULL, GetModuleHandle(NULL), NULL);
 
                 if ((_handle == NULL) || !SHInitExtraControls()) {
-                    throw Exception(GetLastErrorMessage());
+                    Exception::throwLastError();
                 }
 
                 _windows[_handle]->instance = this;
@@ -141,7 +141,7 @@ namespace WM {
             info.hInstRes = GetModuleHandle(NULL);
             
             if (!SHCreateMenuBar(&info)) {
-                throw Exception(GetLastErrorMessage());
+                Exception::throwLastError();
             }
 
             _menuBar = menu;
@@ -157,7 +157,7 @@ namespace WM {
             ShowWindow(getHandle(), mode);
 
             if (UpdateWindow(getHandle()) == 0) {
-                throw Exception(GetLastErrorMessage());
+                Exception::throwLastError();
             }
         }
 
