@@ -4,7 +4,9 @@
 #pragma comment(linker, "/nodefaultlib:libcd.lib")
 
 // NOTE - this value is not strongly correlated to the Windows CE OS version being targeted
+#if !defined(WINVER) && defined(_WIN32_WCE)
 #define WINVER _WIN32_WCE
+#endif
 
 #include <ceconfig.h>
 #if defined(WIN32_PLATFORM_PSPC) || defined(WIN32_PLATFORM_WFSP)

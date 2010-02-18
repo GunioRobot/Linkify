@@ -17,8 +17,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
-			OutputDirectory="Build\$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="Build\$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="..\..\Binaries\$(ProjectName)\$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="..\..\Binaries\$(ProjectName)\$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
 			>
@@ -100,8 +100,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
-			OutputDirectory="Build\$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="Build\$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="..\..\Binaries\$(ProjectName)\$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="..\..\Binaries\$(ProjectName)\$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
 			>
@@ -192,7 +192,19 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\WM\Exception.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\String.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\Window.cpp"
 				>
 			</File>
 		</Filter>
@@ -202,15 +214,51 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\ref.h"
+				RelativePath=".\WM\Application.h"
 				>
 			</File>
 			<File
-				RelativePath=".\stdafx.h"
+				RelativePath=".\WM\Exception.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM.cpp"
+				RelativePath=".\WM\Label.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\Menu.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\MenuItem.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\Object.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\ref.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\String.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\TextBox.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\Widget.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\Window.h"
 				>
 			</File>
 			<File
