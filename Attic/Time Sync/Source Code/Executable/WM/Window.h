@@ -170,18 +170,6 @@ namespace WM {
         }
 
 
-        virtual void onResizeLandscape(long width, long height) {
-        }
-
-        
-        virtual void onResizePortait(long width, long height) {
-        }
-
-
-        virtual void onResizeSquare(long width, long height) {
-        }
-
-
     private:
         void handleCommand(WPARAM wParam, LPARAM lParam) {
             WORD notifyCode = HIWORD(wParam);
@@ -199,19 +187,7 @@ namespace WM {
             long height = HIWORD(lParam);
 
             for (size_t i = 0; i < _widgets.size(); ++i) {
-                _widgets[i]->onLayoutResize(width, height);
-            }
-            
-            switch (DRA::GetDisplayMode()) {
-            case DRA::Landscape:
-                onResizeLandscape(width, height);
-                break;
-            case DRA::Portrait:
-                onResizePortait(width, height);
-                break;
-            case DRA::Square:
-                onResizeSquare(width, height);
-                break;
+                _widgets[i]->onContainerResize(width, height);
             }
         }
 

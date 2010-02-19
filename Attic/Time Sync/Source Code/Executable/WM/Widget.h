@@ -93,7 +93,7 @@ namespace WM {
         virtual void onAddTo(ref<Window> owner) = 0;
 
 
-        virtual void onLayoutResize(long width, long height) {
+        virtual void onContainerResize(long width, long height) {
             if (getWidth() != EXPANDABLE) {
                 return;
             }
