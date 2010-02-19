@@ -41,7 +41,9 @@ public:
             2 * deviceTime->getTop() + deviceTime->getHeight());
 
         deviceTime->setMarginRight(MARGIN);
+        deviceTime->setReadOnly(true);
         gpsTime->setMarginRight(MARGIN);
+        gpsTime->setReadOnly(true);
 
         mainMenu->add(_updateOption);
         mainMenu->add(_exitOption);
