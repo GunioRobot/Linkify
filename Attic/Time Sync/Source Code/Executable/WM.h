@@ -9,5 +9,6 @@
 #include "WM/Object.h"
 #include "WM/String.h"
 #include "WM/TextBox.h"
+#include "WM/Timer.h"
 #include "WM/Widget.h"
 #include "WM/Window.h"

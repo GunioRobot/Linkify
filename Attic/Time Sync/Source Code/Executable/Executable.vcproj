@@ -200,6 +200,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\WM\Timer.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\WM\Window.cpp"
 				>
 			</File>
@@ -247,6 +251,10 @@
 			</File>
 			<File
 				RelativePath=".\WM\TextBox.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\Timer.h"
 				>
 			</File>
 			<File

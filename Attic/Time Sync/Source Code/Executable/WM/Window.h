@@ -29,7 +29,7 @@ namespace WM {
         static std::map<HWND, ref<State>> _windows;
 
 
-        static LRESULT CALLBACK genericHandler(
+        static LRESULT CALLBACK handler(
             HWND handle,
             UINT message,
             WPARAM wParam,
@@ -91,7 +91,7 @@ namespace WM {
 
                 ZeroMemory(&windowClass, sizeof(WNDCLASS));
                 windowClass.style = CS_HREDRAW | CS_VREDRAW;
-                windowClass.lpfnWndProc = Window::genericHandler;
+                windowClass.lpfnWndProc = handler;
                 windowClass.hInstance = GetModuleHandle(NULL);
                 windowClass.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
                 windowClass.lpszClassName = className->c_str();
