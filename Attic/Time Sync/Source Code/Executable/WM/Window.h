@@ -118,8 +118,8 @@ namespace WM {
         }
 
 
-        virtual void add(ref<Widget> widget, size_t left, size_t top) {
-            widget->onAddTo(noref this, left, top);
+        virtual void add(ref<Widget> widget) {
+            widget->onAddTo(noref this);
             _widgets.push_back(widget);
         }
 

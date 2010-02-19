@@ -9,20 +9,18 @@
 namespace WM {
     class Label: public Widget {
     public:
-        Label(ref<String> text, long width, long height):
-            Widget(text, width, height)
-        {
+        Label(ref<String> text): Widget(text) {
         }
     
     
     protected:
-        virtual void onAddTo(ref<Window> owner, size_t left, size_t top) {
+        virtual void onAddTo(ref<Window> owner) {
             HWND handle = CreateWindow(
                 TEXT("STATIC"),
                 getText()->c_str(),
                 WS_CHILD + WS_TABSTOP + WS_VISIBLE,
-                DRA::SCALEX(left),
-                DRA::SCALEY(top),
+                DRA::SCALEX(getLeft()),
+                DRA::SCALEY(getTop()),
                 DRA::SCALEX(getWidth()),
                 DRA::SCALEY(getHeight()),
                 owner->getHandle(),

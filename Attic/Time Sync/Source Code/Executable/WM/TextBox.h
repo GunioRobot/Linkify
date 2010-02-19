@@ -9,20 +9,18 @@
 namespace WM {
     class TextBox: public Widget {
     public:
-        TextBox(ref<String> text, long width, long height):
-            Widget(text, width, height)
-        {
+        TextBox(ref<String> text): Widget(text) {
         }
 
 
     protected:
-        virtual void onAddTo(ref<Window> owner, size_t left, size_t top) {
+        virtual void onAddTo(ref<Window> owner) {
             HWND handle = CreateWindow(
                 TEXT("EDIT"),
                 getText()->c_str(),
                 WS_CHILD + WS_TABSTOP + WS_VISIBLE + WS_BORDER + ES_AUTOHSCROLL,
-                DRA::SCALEX(left),
-                DRA::SCALEY(top),
+                DRA::SCALEX(getLeft()),
+                DRA::SCALEY(getTop()),
                 DRA::SCALEX(getWidth()),
                 DRA::SCALEY(getHeight()),
                 owner->getHandle(),

@@ -9,7 +9,7 @@ namespace WM {
     // TODO: Prevent adding a widget to multiple windows, and multiple times to
     // the same window?
     //
-    // TODO: Include all possible margins.
+    // TODO: Include remaining margins.
     class Widget: public Object {
         friend class Window;
 
@@ -22,16 +22,17 @@ namespace WM {
     private:
         HWND _handle;
         ref<String> _text;
-        long _width;
-        long _height;
-        long _rightMargin;
+        long _width, _height;
+        long _left, _top;
+        long _marginRight;
 
 
     public:
-        Widget(ref<String> text, long width, long height):
-            _handle(NULL), _text(text), _width(width), _height(height),
-            _rightMargin(0)
-        {
+        Widget(ref<String> text): _text(text) {
+            _handle = NULL;
+            _width = _height = 0;
+            _left = _top = 0;
+            _marginRight = 0;
         }
 
 
@@ -45,8 +46,18 @@ namespace WM {
         }
 
 
+        virtual long getLeft() {
+            return _left;
+        }
+
+
         virtual ref<String> getText() {
             return _text;
+        }
+
+
+        virtual long getTop() {
+            return _top;
         }
 
 
@@ -55,13 +66,31 @@ namespace WM {
         }
 
 
-        virtual void setRightMargin(long rightMargin) {
-            _rightMargin = rightMargin;
+        virtual void setMarginRight(long marginRight) {
+            _marginRight = marginRight;
+        }
+
+
+        virtual void setPosition(long left, long top) {
+            _left = left;
+            _top = top;
+        }
+
+
+        virtual void setSize(long width, long height) {
+            _width = width;
+            _height = height;
+        }
+
+
+        virtual void setSize(ref<Widget> widget) {
+            _width = widget->getWidth();
+            _height = widget->getHeight();
         }
 
 
     protected:
-        virtual void onAddTo(ref<Window> owner, size_t left, size_t top) = 0;
+        virtual void onAddTo(ref<Window> owner) = 0;
 
 
         virtual void onLayoutResize(long width, long height) {
@@ -80,7 +109,7 @@ namespace WM {
                 NULL,
                 0,
                 0,
-                width - window.left - DRA::SCALEX(_rightMargin),
+                width - window.left - DRA::SCALEX(_marginRight),
                 DRA::SCALEY(getHeight()),
                 SWP_NOMOVE + SWP_NOZORDER);
 
