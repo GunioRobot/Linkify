@@ -12,52 +12,54 @@
 {\pntext\f1\'B7\tab}Move WM code to a separate project as a library.\par
 {\pntext\f1\'B7\tab}Add documentation when the interface is final.\par
 {\pntext\f1\'B7\tab}Remove or clean up "stdafx.h".\par
-{\pntext\f1\'B7\tab}Change name to "Time Sync" or "Time Synchronization"?\par
+{\pntext\f1\'B7\tab}Change solution name to "Time Sync" or "Time Synchronization":\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 Change project "Viewer" to "Application": an executable to manage time synchronization.\par
+{\pntext\f1\'B7\tab}There will also be a project "Applet": a control panel applet to manage time synchronization.\par
+{\pntext\f1\'B7\tab}There will also be a project "Service": a system service to automatically synchronize time.\par
 \pard\par
 \b Ideas:\b0  \par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284\lang1033 First create an application, then convert it to a system service with a control panel applet.\par
-{\pntext\f1\'B7\tab}Make the graphical interface orientation-aware and resolution-aware.\par
-{\pntext\f1\'B7\tab}Add accelerators for the graphical interface?\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284\lang1033 Add accelerators for the graphical interface?\par
 {\pntext\f1\'B7\tab}Use an icon based on official Windows Mobile icons?\par
-\lang2070{\pntext\f1\'B7\tab}Close application when clicking the smart minimize button?\par
-{\pntext\f1\'B7\tab}Correct the time using Daylight saving time?\par
+\lang2070{\pntext\f1\'B7\tab}Correct the time using Daylight saving time?\par
 \lang1033{\pntext\f1\'B7\tab}Time sources:\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li568 FM radio RDS time.\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 FM radio RDS time.\par
 {\pntext\f1\'B7\tab}GPS time (from time to time, when GPS is on and fixed, when the current phone tower cell changes).\par
 {\pntext\f1\'B7\tab}Internet time (from time to time, when on-line).\par
 {\pntext\f1\'B7\tab}Cellular towers.\par
 \pard\par
 \b Links:\b0  \par
 \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 GPS:\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li568 GPS Clock: {\field{\*\fldinst{HYPERLINK "http://www.cjcraft.com/blog/2008/06/22/30DaysOfNETWindowsMobileApplicationsDay22GPSClock.aspx"}}{\fldrslt{\ul\cf1 http://www.cjcraft.com/blog/2008/06/22/30DaysOfNETWindowsMobileApplicationsDay22GPSClock.aspx}}}\f0\fs20\par
-\lang2070{\pntext\f1\'B7\tab}Creating Applications that Utilize GPS: \lang1033{\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/bb158727.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/bb158727.aspx}}}\f0\fs20\par
-{\pntext\f1\'B7\tab}Developing Location Aware Applications for Windows Mobile: {\field{\*\fldinst{HYPERLINK "http://blogs.msdn.com/windowsmobile/archive/2009/01/16/developing-location-aware-applications-for-windows-mobile.aspx"}}{\fldrslt{\ul\cf1 http://blogs.msdn.com/windowsmobile/archive/2009/01/16/developing-location-aware-applications-for-windows-mobile.aspx}}}\f0\fs20\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Windows services:\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li568{\field{\*\fldinst{HYPERLINK "http://bansky.net/blog/2008/04/services-for-windows-mobile-in-managed-code/"}}{\fldrslt{\ul\cf1 http://bansky.net/blog/2008/04/services-for-windows-mobile-in-managed-code/}}}\f0\fs20\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 GPS Clock: {\field{\*\fldinst{HYPERLINK "http://www.cjcraft.com/blog/2008/06/22/30DaysOfNETWindowsMobileApplicationsDay22GPSClock.aspx"}}{\fldrslt{\ul\cf1 http://www.cjcraft.com/blog/2008/06/22/30DaysOfNETWindowsMobileApplicationsDay22GPSClock.aspx}}}\f0\fs20  \par
+\lang2070{\pntext\f1\'B7\tab}Creating Applications that Utilize GPS: \lang1033{\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/bb158727.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/bb158727.aspx}}}\f0\fs20  Developing Location Aware Applications for Windows Mobile: {\field{\*\fldinst{HYPERLINK "http://blogs.msdn.com/windowsmobile/archive/2009/01/16/developing-location-aware-applications-for-windows-mobile.aspx"}}{\fldrslt{\ul\cf1 http://blogs.msdn.com/windowsmobile/archive/2009/01/16/developing-location-aware-applications-for-windows-mobile.aspx}}}\f0\fs20\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Services:\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644{\field{\*\fldinst{HYPERLINK "http://bansky.net/blog/2008/04/services-for-windows-mobile-in-managed-code/"}}{\fldrslt{\ul\cf1 http://bansky.net/blog/2008/04/services-for-windows-mobile-in-managed-code/}}}\f0\fs20  \par
 {\field{\*\fldinst{HYPERLINK "{\pntext\f1\'B7\tab}http://www.codeplex.com/managedserviceswm"}}{\fldrslt{\ul\cf1 http://www.codeplex.com/managedserviceswm}}}\f0\fs20\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Control Panel Applet:\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 API: {\field{\*\fldinst{HYPERLINK "http://msdn2.microsoft.com/en-us/library/ms914264.aspx"}}{\fldrslt{\ul\cf1 http://msdn2.microsoft.com/en-us/library/ms914264.aspx}}}\f0\fs20  \par
+{\pntext\f1\'B7\tab}Programmatically show applets: {\field{\*\fldinst{HYPERLINK "http://knowledgepointer.wordpress.com/2009/02/07/how-to-show-control-panel-applets/"}}{\fldrslt{\ul\cf1 http://knowledgepointer.wordpress.com/2009/02/07/how-to-show-control-panel-applets/}}}\f0\fs20  \par
 \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Orientation, resolution and DPI aware:\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li568 Step by Step: Developing Orientation-Aware and Resolution-Aware Windows Mobile-based Applications in Native Code: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/library/aa454895.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/library/aa454895.aspx}}}\f0\fs20\par
-{\pntext\f1\'B7\tab}Step by Step: Develop Orientation-Aware and DPI-Aware Applications for Pocket PC: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/ms838275.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/ms838275.aspx}}}\f0\fs20\par
-{\pntext\f1\'B7\tab}Developing DPI Aware Applications: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/bb416656.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/bb416656.aspx}}}\f0\fs20\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 Step by Step: Developing Orientation-Aware and Resolution-Aware Windows Mobile-based Applications in Native Code: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/library/aa454895.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/library/aa454895.aspx}}}\f0\fs20  \par
+{\pntext\f1\'B7\tab}Step by Step: Develop Orientation-Aware and DPI-Aware Applications for Pocket PC: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/ms838275.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/ms838275.aspx}}}\f0\fs20  \par
+{\pntext\f1\'B7\tab}Developing DPI Aware Applications: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/bb416656.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/bb416656.aspx}}}\f0\fs20  \par
 {\pntext\f1\'B7\tab}Starter Kits: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/windowsmobile/bb264330.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/windowsmobile/bb264330.aspx}}}\f0\fs20\par
 \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Etc:\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li568 Windows Mobile Technical Articles: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/ms838215.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/ms838215.aspx}}}\f0\fs20\par
-{\pntext\f1\'B7\tab}Resources: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/ms632583(VS.85).aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/ms632583(VS.85).aspx}}}\f0\fs20\par
-{\pntext\f1\'B7\tab}How To's: {\field{\*\fldinst{HYPERLINK "https://mvp.support.microsoft.com/default.aspx/profile/joao.paulo"}}{\fldrslt{\ul\cf1 https://mvp.support.microsoft.com/default.aspx/profile/joao.paulo}}}\f0\fs20\par
-{\pntext\f1\'B7\tab}Windows Mobile Remote Controller: {\field{\*\fldinst{HYPERLINK "http://www.codeproject.com/KB/mobile/CeRemoteClient.aspx"}}{\fldrslt{\ul\cf1 http://www.codeproject.com/KB/mobile/CeRemoteClient.aspx}}}\f0\fs20\par
-\lang2070{\pntext\f1\'B7\tab}WTL: {\field{\*\fldinst{HYPERLINK "http://wtl.sourceforge.net/"}}{\fldrslt{\ul\cf1 http://wtl.sourceforge.net/}}}\lang1033\f0\fs20\par
-{\pntext\f1\'B7\tab}Device information (model name, etc): {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/aa932539.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/aa932539.aspx}}}\f0\fs20\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 Windows Mobile Technical Articles: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/ms838215.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/ms838215.aspx}}}\f0\fs20  \par
+{\pntext\f1\'B7\tab}Resources: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/ms632583(VS.85).aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/ms632583(VS.85).aspx}}}\f0\fs20  \par
+{\pntext\f1\'B7\tab}How To's: {\field{\*\fldinst{HYPERLINK "https://mvp.support.microsoft.com/default.aspx/profile/joao.paulo"}}{\fldrslt{\ul\cf1 https://mvp.support.microsoft.com/default.aspx/profile/joao.paulo}}}\f0\fs20  \par
+{\pntext\f1\'B7\tab}Windows Mobile Remote Controller: {\field{\*\fldinst{HYPERLINK "http://www.codeproject.com/KB/mobile/CeRemoteClient.aspx"}}{\fldrslt{\ul\cf1 http://www.codeproject.com/KB/mobile/CeRemoteClient.aspx}}}\f0\fs20  \par
+\lang2070{\pntext\f1\'B7\tab}WTL: {\field{\*\fldinst{HYPERLINK "http://wtl.sourceforge.net/"}}{\fldrslt{\ul\cf1 http://wtl.sourceforge.net/}}}\lang1033\f0\fs20  \par
+{\pntext\f1\'B7\tab}Device information (model name, etc): {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/aa932539.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/aa932539.aspx}}}\f0\fs20  \par
 {\pntext\f1\'B7\tab}batti - Battery indicator for PocketPC: {\field{\*\fldinst{HYPERLINK "http://code.google.com/p/batti/"}}{\fldrslt{\ul\cf1 http://code.google.com/p/batti/}}}\f0\fs20\par
 \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 GUI:\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li568 30 Days of Windows Mobile in Native: {\field{\*\fldinst{HYPERLINK "http://www.christec.co.nz/blog/archives/350"}}{\fldrslt{\ul\cf1 http://www.christec.co.nz/blog/archives/350}}}\f0\fs20\par
-{\pntext\f1\'B7\tab}Utilizing Windows Mobile-specific Controls: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/bb158692.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/bb158692.aspx}}}\f0\fs20\par
-{\pntext\f1\'B7\tab}GWES Reference: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/aa928140.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/aa928140.aspx}}}\f0\fs20\par
-{\pntext\f1\'B7\tab}Shell reference: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/bb431802.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/bb431802.aspx}}}\f0\fs20\par
-{\pntext\f1\'B7\tab}GDI Functions: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/aa923590.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/aa923590.aspx}}}\f0\fs20\par
-{\pntext\f1\'B7\tab}Fullscreen toggle: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/aa931828.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/aa931828.aspx}}}\f0\fs20\par
-{\pntext\f1\'B7\tab}Today item: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/ms839327.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/ms839327.aspx}}}\f0\fs20\par
-{\pntext\f1\'B7\tab}Dvorak Soft Input Panel: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/ms881221.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/ms881221.aspx}}}\f0\fs20\par
-{\pntext\f1\'B7\tab}Control library: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/bb773169(VS.85).aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/bb773169(VS.85).aspx}}}\f0\fs20\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 30 Days of Windows Mobile in Native: {\field{\*\fldinst{HYPERLINK "http://www.christec.co.nz/blog/archives/350"}}{\fldrslt{\ul\cf1 http://www.christec.co.nz/blog/archives/350}}}\f0\fs20  \par
+{\pntext\f1\'B7\tab}Utilizing Windows Mobile-specific Controls: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/bb158692.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/bb158692.aspx}}}\f0\fs20  \par
+{\pntext\f1\'B7\tab}GWES Reference: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/aa928140.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/aa928140.aspx}}}\f0\fs20  \par
+{\pntext\f1\'B7\tab}Shell reference: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/bb431802.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/bb431802.aspx}}}\f0\fs20  \par
+{\pntext\f1\'B7\tab}GDI Functions: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/aa923590.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/aa923590.aspx}}}\f0\fs20  \par
+{\pntext\f1\'B7\tab}Fullscreen toggle: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/aa931828.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/aa931828.aspx}}}\f0\fs20  \par
+{\pntext\f1\'B7\tab}Today item: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/ms839327.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/ms839327.aspx}}}\f0\fs20  \par
+{\pntext\f1\'B7\tab}Dvorak Soft Input Panel: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/ms881221.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/ms881221.aspx}}}\f0\fs20  \par
+{\pntext\f1\'B7\tab}Control library: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/bb773169(VS.85).aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/bb773169(VS.85).aspx}}}\f0\fs20  \par
 {\pntext\f1\'B7\tab}'X' close: \lang2070{\field{\*\fldinst{HYPERLINK "http://windowsmobiledn.com/articles/close_app.html"}}{\fldrslt{\ul\cf1 http://windowsmobiledn.com/articles/close_app.html}}}\lang1033\f0\fs20\par
 \pard\par
 }

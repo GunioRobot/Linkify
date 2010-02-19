@@ -167,6 +167,18 @@ namespace WM {
         }
 
 
+        virtual void onResizeLandscape(size_t width, size_t height) {
+        }
+
+        
+        virtual void onResizePortait(size_t width, size_t height) {
+        }
+
+
+        virtual void onResizeSquare(size_t width, size_t height) {
+        }
+
+
     private:
         void handleCommand(WPARAM wParam, LPARAM lParam) {
             WORD notifyCode = HIWORD(wParam);
@@ -179,6 +191,24 @@ namespace WM {
         }
 
 
+        void handleResize(WPARAM wParam, LPARAM lParam) {
+            size_t width = LOWORD(lParam);
+            size_t height = HIWORD(lParam);
+
+            switch (DRA::GetDisplayMode()) {
+            case DRA::Landscape:
+                onResizeLandscape(width, height);
+                break;
+            case DRA::Portrait:
+                onResizePortait(width, height);
+                break;
+            case DRA::Square:
+                onResizeSquare(width, height);
+                break;
+            }
+        }
+
+
         LRESULT handler(UINT message, WPARAM wParam, LPARAM lParam) {
             switch (message) {
             case WM_COMMAND:
@@ -186,6 +216,9 @@ namespace WM {
                 break;
             case WM_DESTROY:
                 PostQuitMessage(EXIT_SUCCESS);
+                break;
+            case WM_SIZE:
+                handleResize(wParam, lParam);
                 break;
             default:
                 return DefWindowProc(getHandle(), message, wParam, lParam);
