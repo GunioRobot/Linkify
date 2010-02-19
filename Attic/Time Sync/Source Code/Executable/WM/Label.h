@@ -9,7 +9,7 @@
 namespace WM {
     class Label: public Widget {
     public:
-        Label(ref<String> text, size_t width, size_t height):
+        Label(ref<String> text, long width, long height):
             Widget(text, width, height)
         {
         }

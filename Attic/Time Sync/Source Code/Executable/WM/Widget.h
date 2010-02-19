@@ -8,19 +8,29 @@
 namespace WM {
     // TODO: Prevent adding a widget to multiple windows, and multiple times to
     // the same window?
+    //
+    // TODO: Include all possible margins.
     class Widget: public Object {
         friend class Window;
+
+    public:
+        enum {
+            EXPANDABLE = -1,
+        };
+
 
     private:
         HWND _handle;
         ref<String> _text;
-        size_t _width;
-        size_t _height;
+        long _width;
+        long _height;
+        long _rightMargin;
 
 
     public:
-        Widget(ref<String> text, size_t width, size_t height):
-            _handle(NULL), _text(text), _width(width), _height(height)
+        Widget(ref<String> text, long width, long height):
+            _handle(NULL), _text(text), _width(width), _height(height),
+            _rightMargin(0)
         {
         }
 
@@ -30,7 +40,7 @@ namespace WM {
         }
 
 
-        virtual size_t getHeight() {
+        virtual long getHeight() {
             return _height;
         }
 
@@ -40,13 +50,44 @@ namespace WM {
         }
 
 
-        virtual size_t getWidth() {
+        virtual long getWidth() {
             return _width;
+        }
+
+
+        virtual void setRightMargin(long rightMargin) {
+            _rightMargin = rightMargin;
         }
 
 
     protected:
         virtual void onAddTo(ref<Window> owner, size_t left, size_t top) = 0;
+
+
+        virtual void onLayoutResize(long width, long height) {
+            if (getWidth() != EXPANDABLE) {
+                return;
+            }
+
+            RECT window;
+            
+            if (!GetWindowRect(getHandle(), &window)) {
+                Exception::throwLastError();
+            }
+
+            BOOL success = SetWindowPos(
+                getHandle(),
+                NULL,
+                0,
+                0,
+                width - window.left - DRA::SCALEX(_rightMargin),
+                DRA::SCALEY(getHeight()),
+                SWP_NOMOVE + SWP_NOZORDER);
+
+            if (!success) {
+                Exception::throwLastError();
+            }
+        }
 
 
         virtual void setHandle(HWND handle) {

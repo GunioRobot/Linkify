@@ -14,16 +14,19 @@ public:
         _exitOption = new WM::MenuItem(S("Exit"));
         _updateOption = new WM::MenuItem(S("Update"));
      
+        const long MARGIN = 4;
         ref<WM::Menu> mainMenu = new WM::Menu(S("Menu"));
-        ref<WM::Label> deviceTimeLabel = new WM::Label(S("Device:"), 44, 20);
-        ref<WM::TextBox> deviceTime = new WM::TextBox(S("-"), 187, 20);
+
+        ref<WM::Label> deviceLabel = new WM::Label(S("Device:"), 44, 20 - 2);
+        ref<WM::TextBox> deviceTime = new WM::TextBox(S("-"), WM::Widget::EXPANDABLE, 20);
 
         mainMenu->add(_updateOption);
         mainMenu->add(_exitOption);
-        
         enableMenuBar(mainMenu);
-        add(deviceTimeLabel, 4, 6);
-        add(deviceTime, 4 + deviceTimeLabel->getWidth(), 4);
+
+        deviceTime->setRightMargin(4);
+        add(deviceLabel, MARGIN, MARGIN + 2);
+        add(deviceTime, MARGIN + deviceLabel->getWidth(), MARGIN);
     }
 
 

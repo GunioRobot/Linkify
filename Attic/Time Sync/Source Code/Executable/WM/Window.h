@@ -2,6 +2,7 @@
 
 
 #include <map>
+#include <vector>
 #include "Exception.h"
 #include "Menu.h"
 #include "MenuItem.h"
@@ -72,6 +73,7 @@ namespace WM {
     private:
         HWND _handle;
         ref<Menu> _menuBar;
+        std::vector<ref<Widget>> _widgets;
 
 
     public:
@@ -118,6 +120,7 @@ namespace WM {
 
         virtual void add(ref<Widget> widget, size_t left, size_t top) {
             widget->onAddTo(noref this, left, top);
+            _widgets.push_back(widget);
         }
 
 
@@ -167,15 +170,15 @@ namespace WM {
         }
 
 
-        virtual void onResizeLandscape(size_t width, size_t height) {
+        virtual void onResizeLandscape(long width, long height) {
         }
 
         
-        virtual void onResizePortait(size_t width, size_t height) {
+        virtual void onResizePortait(long width, long height) {
         }
 
 
-        virtual void onResizeSquare(size_t width, size_t height) {
+        virtual void onResizeSquare(long width, long height) {
         }
 
 
@@ -192,9 +195,13 @@ namespace WM {
 
 
         void handleResize(WPARAM wParam, LPARAM lParam) {
-            size_t width = LOWORD(lParam);
-            size_t height = HIWORD(lParam);
+            long width = LOWORD(lParam);
+            long height = HIWORD(lParam);
 
+            for (size_t i = 0; i < _widgets.size(); ++i) {
+                _widgets[i]->onLayoutResize(width, height);
+            }
+            
             switch (DRA::GetDisplayMode()) {
             case DRA::Landscape:
                 onResizeLandscape(width, height);

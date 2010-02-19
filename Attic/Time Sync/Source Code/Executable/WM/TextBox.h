@@ -9,7 +9,7 @@
 namespace WM {
     class TextBox: public Widget {
     public:
-        TextBox(ref<String> text, size_t width, size_t height):
+        TextBox(ref<String> text, long width, long height):
             Widget(text, width, height)
         {
         }
