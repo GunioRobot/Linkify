@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="Viewer"
+	Name="Executable"
 	ProjectGUID="{83F76A2A-A3BE-437A-BB92-9901383DA14B}"
-	RootNamespace="Viewer"
+	RootNamespace="Executable"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -65,11 +65,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/Viewer.exe"
+				OutputFile="$(OutDir)/Executable.exe"
 				LinkIncremental="2"
 				DelayLoadDLLs="$(NOINHERIT)"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/Viewer.pdb"
+				ProgramDatabaseFile="$(OutDir)/Executable.pdb"
 				SubSystem="0"
 				StackReserveSize="65536"
 				StackCommitSize="4096"
@@ -147,11 +147,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/Viewer.exe"
+				OutputFile="$(OutDir)/Executable.exe"
 				LinkIncremental="1"
 				DelayLoadDLLs="$(NOINHERIT)"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/Viewer.pdb"
+				ProgramDatabaseFile="$(OutDir)/Executable.pdb"
 				SubSystem="0"
 				StackReserveSize="65536"
 				StackCommitSize="4096"

@@ -1,15 +1,15 @@
 #include "WM.h"
 
 
-class Viewer: public WM::Application, WM::Window {
+class Executable: public WM::Application, WM::Window {
 private:
     ref<WM::MenuItem> _exitOption;
     ref<WM::MenuItem> _updateOption;
 
 
 public:
-    Viewer(HINSTANCE handle):
-        WM::Application(handle), WM::Window(S("Viewer"), S("VIEWER"))
+    Executable(HINSTANCE handle):
+        WM::Application(handle), WM::Window(S("Time Sync"), S("TIMESYNC"))
     {
         _exitOption = new WM::MenuItem(S("Exit"));
         _updateOption = new WM::MenuItem(S("Update"));
@@ -49,7 +49,7 @@ int WINAPI WinMain(
     int windowShowMode)
 {
     try {
-        return Viewer(instance).start(windowShowMode);
+        return Executable(instance).start(windowShowMode);
     }
     catch (WM::Exception exception) {
         WM::ErrorMessageBox(exception.getMessage());
