@@ -7,8 +7,9 @@
 
 
 namespace WM {
-    // TODO: Simulate a single-line text box with text alignment, by using the
-    // multi-line style.
+    // TODO: Fix the vertical alignment, because on a single-line control the
+    // text seems to be centered, but on a multi-line control the text seems to
+    // be top-aligned.
     class TextBox: public Widget {
     public:
         enum TextAlignment {
