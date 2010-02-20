@@ -31,7 +31,18 @@ namespace WM {
         }
 
 
+        virtual bool isReadOnly() {
+            return _readWriteStyle == ES_READONLY;
+        }
+
+
         virtual void setReadOnly(bool readOnly) {
+            if ((getHandle() != NULL)
+                && !SendMessage(getHandle(), EM_SETREADONLY, readOnly, 0))
+            {
+                Exception::throwLastError();
+            }
+            
             _readWriteStyle = readOnly ? ES_READONLY : 0;
         }
 
