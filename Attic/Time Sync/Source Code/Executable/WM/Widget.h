@@ -8,7 +8,6 @@
 namespace WM {
     // TODO: Prevent adding a widget to multiple windows, and multiple times to
     // the same window?
-    //
     // TODO: Include remaining margins.
     class Widget: public Object {
         friend class Window;

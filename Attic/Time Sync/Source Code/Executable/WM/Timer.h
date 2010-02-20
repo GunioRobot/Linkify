@@ -2,6 +2,7 @@
 
 
 #include <map>
+#include "Application.h"
 #include "Exception.h"
 #include "Object.h"
 
@@ -28,8 +29,7 @@ namespace WM {
                 }
                 catch (Exception exception) {
                     timer->stop();
-                    ErrorMessageBox(exception.getMessage());
-                    PostQuitMessage(EXIT_FAILURE);
+                    Application::exit(exception);
                 }
             }
         }

@@ -3,6 +3,7 @@
 
 #include <map>
 #include <vector>
+#include "Application.h"
 #include "Exception.h"
 #include "Menu.h"
 #include "MenuItem.h"
@@ -12,6 +13,8 @@
 
 
 namespace WM {
+    // TODO: Implement removal of child widgets.
+    // TODO: Implement removal of the menu bar.
     class Window: public Object {
     private:
         static struct State {
@@ -57,9 +60,7 @@ namespace WM {
                     }
                     catch (Exception exception) {
                         state->exceptionCaught = true;
-
-                        ErrorMessageBox(exception.getMessage());
-                        PostQuitMessage(EXIT_FAILURE);
+                        Application::exit(exception);
                     }
                 }
                 
@@ -74,6 +75,7 @@ namespace WM {
         HWND _handle;
         ref<Menu> _menuBar;
         std::vector<ref<Widget>> _widgets;
+        RECT _padding;
 
 
     public:
@@ -86,30 +88,32 @@ namespace WM {
                 SetForegroundWindow(window);
                 throw Exception(S("Duplicate window instance."));
             }
-            else {
-                WNDCLASS windowClass;
+            
+            WNDCLASS windowClass;
 
-                ZeroMemory(&windowClass, sizeof(WNDCLASS));
-                windowClass.style = CS_HREDRAW | CS_VREDRAW;
-                windowClass.lpfnWndProc = handler;
-                windowClass.hInstance = GetModuleHandle(NULL);
-                windowClass.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
-                windowClass.lpszClassName = className->c_str();
-                
-                if (RegisterClass(&windowClass) == 0) {
-                    Exception::throwLastError();
-                }
-
-                _handle = CreateWindow(className->c_str(), title->c_str(),
-                    WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-                    CW_USEDEFAULT, NULL, NULL, GetModuleHandle(NULL), NULL);
-
-                if ((_handle == NULL) || !SHInitExtraControls()) {
-                    Exception::throwLastError();
-                }
-
-                _windows[_handle]->instance = this;
+            ZeroMemory(&windowClass, sizeof(WNDCLASS));
+            windowClass.style = CS_HREDRAW | CS_VREDRAW;
+            windowClass.lpfnWndProc = handler;
+            windowClass.hInstance = GetModuleHandle(NULL);
+            windowClass.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
+            windowClass.lpszClassName = className->c_str();
+            
+            if (RegisterClass(&windowClass) == 0) {
+                Exception::throwLastError();
             }
+
+            _handle = CreateWindow(className->c_str(), title->c_str(),
+                WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+                CW_USEDEFAULT, NULL, NULL, GetModuleHandle(NULL), NULL);
+
+            if ((_handle == NULL) || !SHInitExtraControls()) {
+                Exception::throwLastError();
+            }
+
+            _windows[_handle]->instance = this;
+            
+            _padding.bottom = _padding.top = 0;
+            _padding.left = _padding.right = 0;
         }
 
 
@@ -162,6 +166,11 @@ namespace WM {
             if (UpdateWindow(getHandle()) == 0) {
                 Exception::throwLastError();
             }
+        }
+
+
+        virtual void setPadding(RECT padding) {
+            _padding = padding;
         }
 
 

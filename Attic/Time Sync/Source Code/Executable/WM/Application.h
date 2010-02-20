@@ -1,11 +1,33 @@
 #pragma once
 
 
+#include "Exception.h"
 #include "Object.h"
 
 
 namespace WM {
     class Application: public Object {
+    public:
+        static void error(Exception exception) {
+            UINT type = MB_OK + MB_ICONERROR;
+            const TCHAR* message = exception.getMessage()->c_str();
+
+            MessageBox(GetForegroundWindow(), message, NULL, type);
+        }
+
+
+        static void exit(int code) {
+            ExitProcess(code);
+            while (true);
+        }
+
+
+        static void exit(Exception exception) {
+            error(exception);
+            exit(EXIT_FAILURE);
+        }
+
+
     private:
         HINSTANCE _handle;
 

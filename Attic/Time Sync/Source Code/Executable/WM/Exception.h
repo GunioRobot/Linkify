@@ -7,9 +7,6 @@
 
 
 namespace WM {
-    void ErrorMessageBox(ref<String> message);
-    
-    
     class Exception: public Object, public std::exception {
     public:
         static void throwLastError() {
