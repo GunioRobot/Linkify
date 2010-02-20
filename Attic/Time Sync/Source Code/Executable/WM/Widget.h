@@ -89,6 +89,18 @@ namespace WM {
         }
 
 
+        virtual void setText(ref<String> text) {
+            _text = text;
+
+            if (getHandle() == NULL) {
+                return;
+            }
+            if (!SetWindowText(getHandle(), _text->c_str())) {
+                Exception::throwLastError();
+            }
+        }
+
+
     protected:
         virtual void onAddTo(ref<Window> owner) = 0;
 
