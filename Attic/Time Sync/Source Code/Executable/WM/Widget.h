@@ -90,14 +90,13 @@ namespace WM {
 
 
         virtual void setText(ref<String> text) {
-            _text = text;
-
-            if (getHandle() == NULL) {
-                return;
-            }
-            if (!SetWindowText(getHandle(), _text->c_str())) {
+            if ((getHandle() != NULL)
+                && !SetWindowText(getHandle(), text->c_str()))
+            {
                 Exception::throwLastError();
             }
+            
+            _text = text;
         }
 
 
