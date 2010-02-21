@@ -3,13 +3,9 @@
 
 #include "Exception.h"
 #include "Widget.h"
-#include "Window.h"
 
 
 namespace WM {
-    // TODO: Fix the vertical alignment, because on a single-line control the
-    // text seems to be centered, but on a multi-line control the text seems to
-    // be top-aligned.
     class TextBox: public Widget {
     public:
         enum TextAlignment {
@@ -25,9 +21,16 @@ namespace WM {
 
 
     public:
-        TextBox(ref<String> text):
-            Widget(text), _readWriteStyle(0), _textAlignment(ALIGN_LEFT)
-        {
+        TextBox(ref<String> text): Widget(text, S("EDIT")) {
+            _readWriteStyle = 0;
+            _textAlignment = ALIGN_LEFT;
+
+            updateStyle(_readWriteStyle + (DWORD) _textAlignment);
+        }
+
+
+        virtual TextAlignment getTextAlignment() {
+            return _textAlignment;
         }
 
 
@@ -37,9 +40,7 @@ namespace WM {
 
 
         virtual void setReadOnly(bool readOnly) {
-            if ((getHandle() != NULL)
-                && !SendMessage(getHandle(), EM_SETREADONLY, readOnly, 0))
-            {
+            if (!SendMessage(getHandle(), EM_SETREADONLY, readOnly, 0)) {
                 Exception::throwLastError();
             }
             
@@ -48,33 +49,15 @@ namespace WM {
 
 
         virtual void setTextAlignment(TextAlignment textAlignment) {
+            updateStyle(_readWriteStyle + (DWORD) textAlignment);
             _textAlignment = textAlignment;
         }
 
 
     protected:
-        virtual void onAddTo(ref<Window> owner) {
-            DWORD style = WS_BORDER + ES_AUTOHSCROLL + ES_MULTILINE
-                + _readWriteStyle + (DWORD) _textAlignment;
-            
-            HWND handle = CreateWindow(
-                TEXT("EDIT"),
-                getText()->c_str(),
-                WS_CHILD + WS_TABSTOP + WS_VISIBLE + style,
-                DRA::SCALEX(getLeft()),
-                DRA::SCALEY(getTop()),
-                DRA::SCALEX(getWidth()),
-                DRA::SCALEY(getHeight()),
-                owner->getHandle(),
-                NULL,
-                GetModuleHandle(NULL), 
-                NULL);
-
-            if (handle == NULL) {
-                Exception::throwLastError();
-            }
-
-            setHandle(handle);
+        virtual void updateStyle(DWORD style) {
+            Widget::updateStyle(WS_BORDER + ES_AUTOHSCROLL + ES_MULTILINE
+                + style);
         }
     };
 }

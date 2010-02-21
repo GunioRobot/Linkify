@@ -121,7 +121,11 @@ namespace WM {
 
 
         virtual void add(ref<Widget> widget) {
-            widget->onAddTo(noref this);
+            if (SetParent(widget->getHandle(), getHandle()) == NULL) {
+                Exception::throwLastError();
+            }
+            
+            ShowWindow(widget->getHandle(), SW_SHOWNORMAL);
             _widgets.push_back(widget);
         }
 

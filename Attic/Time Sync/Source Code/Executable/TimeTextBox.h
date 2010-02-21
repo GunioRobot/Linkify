@@ -18,17 +18,12 @@ public:
     TimeTextBox(void (*getTime)(SYSTEMTIME*)):
         WM::TextBox(S("-")), _getTime(getTime), _time(TEXT(""))
     {
-    }
-
-
-protected:
-    virtual void onAddTo(ref<WM::Window> owner) {
-        WM::TextBox::onAddTo(owner);
         onTimeout();
         start(1);
     }
 
 
+protected:
     virtual void onTimeout() {
         SYSTEMTIME time;
         _getTime(&time);
