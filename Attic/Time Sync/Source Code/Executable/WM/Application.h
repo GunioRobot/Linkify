@@ -16,15 +16,10 @@ namespace WM {
         }
 
 
-        static void exit(int code) {
-            ExitProcess(code);
-            while (true);
-        }
-
-
         static void exit(Exception exception) {
             error(exception);
-            exit(EXIT_FAILURE);
+            ExitProcess(EXIT_FAILURE);
+            while (true);
         }
 
 

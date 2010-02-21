@@ -8,7 +8,6 @@
 namespace WM {
     // TODO: Prevent adding a widget to multiple windows, and multiple times to
     // the same window?
-    // TODO: Include remaining margins.
     class Widget: public Object {
         friend class Window;
 
@@ -23,15 +22,18 @@ namespace WM {
         ref<String> _text;
         long _width, _height;
         long _left, _top;
-        long _marginRight;
+        RECT _margin;
 
 
     public:
         Widget(ref<String> text): _text(text) {
             _handle = NULL;
+            
             _width = _height = 0;
             _left = _top = 0;
-            _marginRight = 0;
+            
+            _margin.bottom = _margin.top = 0;
+            _margin.left = _margin.right = 0;
         }
 
 
@@ -50,6 +52,11 @@ namespace WM {
         }
 
 
+        virtual RECT getMargin() {
+            return _margin;
+        }
+
+
         virtual ref<String> getText() {
             return _text;
         }
@@ -65,8 +72,8 @@ namespace WM {
         }
 
 
-        virtual void setMarginRight(long marginRight) {
-            _marginRight = marginRight;
+        virtual void setMargin(RECT margin) {
+            _margin = margin;
         }
 
 
@@ -103,25 +110,29 @@ namespace WM {
         virtual void onAddTo(ref<Window> owner) = 0;
 
 
-        virtual void onContainerResize(long width, long height) {
-            if (getWidth() != EXPANDABLE) {
-                return;
+        virtual void onContainerResize(long areaWidth, long areaHeight) {
+            RECT margin = getMargin();
+            long left = DRA::SCALEX(getLeft() + margin.left);
+            long top = DRA::SCALEY(getTop() + margin.top);
+            long width = getWidth();
+            long height = getHeight();
+
+            if (width == EXPANDABLE) {
+                width = areaWidth - left - DRA::SCALEX(margin.right);
+            }
+            else {
+                width = DRA::SCALEX(width - margin.right);
             }
 
-            RECT window;
-            
-            if (!GetWindowRect(getHandle(), &window)) {
-                Exception::throwLastError();
+            if (height == EXPANDABLE) {
+                height = areaHeight - top - DRA::SCALEY(margin.bottom);
+            }
+            else {
+                height = DRA::SCALEY(height - margin.bottom);
             }
 
-            BOOL success = SetWindowPos(
-                getHandle(),
-                NULL,
-                0,
-                0,
-                width - window.left - DRA::SCALEX(_marginRight),
-                DRA::SCALEY(getHeight()),
-                SWP_NOMOVE + SWP_NOZORDER);
+            BOOL success = SetWindowPos(getHandle(), NULL,
+                left, top, width, height, SWP_NOZORDER);
 
             if (!success) {
                 Exception::throwLastError();

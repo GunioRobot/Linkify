@@ -14,49 +14,46 @@ public:
     {
         _exitOption = new WM::MenuItem(S("Exit"));
         _updateOption = new WM::MenuItem(S("Update"));
-        
+
         ref<WM::Menu> mainMenu = new WM::Menu(S("Menu"));
         ref<WM::Label> deviceLabel = new WM::Label(S("Device:"));
-        ref<WM::TextBox> deviceTime = new TimeTextBox(GetLocalTime);
+        ref<WM::TextBox> deviceBox = new TimeTextBox(GetLocalTime);
         ref<WM::Label> gpsLabel = new WM::Label(S("GPS:"));
-        ref<WM::TextBox> gpsTime = new WM::TextBox(S("-"));
+        ref<WM::TextBox> gpsBox = new WM::TextBox(S("-"));
 
-        const long MARGIN = 8;
-        const long PADDING = 2;
-        const long HEIGHT = 20;
-        
-        deviceLabel->setSize(50, HEIGHT - PADDING);
-        deviceTime->setSize(WM::Widget::EXPANDABLE, HEIGHT);
+        const long margin = 8;
+        const long padding = 3;
+        const RECT labelMargin = {margin, margin + padding, margin, margin};
+        const RECT boxMargin = {margin, margin, margin, margin};
+
+        deviceLabel->setSize(50 + padding, 20 + margin);
+        deviceLabel->setPosition(0, 0);
+        deviceLabel->setMargin(labelMargin);
+
         gpsLabel->setSize(deviceLabel);
-        gpsTime->setSize(deviceTime);
+        gpsLabel->setPosition(0, deviceLabel->getHeight());
+        gpsLabel->setMargin(labelMargin);
 
-        deviceLabel->setPosition(MARGIN, MARGIN + PADDING);
-        deviceTime->setPosition(MARGIN + deviceLabel->getWidth(), MARGIN);
-        
-        gpsLabel->setPosition(
-            deviceLabel->getLeft(),
-            2 * deviceLabel->getTop() + deviceLabel->getHeight());
-        
-        gpsTime->setPosition(
-            deviceTime->getLeft(),
-            2 * deviceTime->getTop() + deviceTime->getHeight());
+        deviceBox->setSize(WM::Widget::EXPANDABLE, deviceLabel->getHeight());
+        deviceBox->setPosition(deviceLabel->getWidth(), 0);
+        deviceBox->setMargin(boxMargin);
+        deviceBox->setReadOnly(true);
+        deviceBox->setTextAlignment(WM::TextBox::ALIGN_CENTER);
 
-        deviceTime->setMarginRight(MARGIN);
-        deviceTime->setReadOnly(true);
-        deviceTime->setTextAlignment(WM::TextBox::ALIGN_CENTER);
-
-        gpsTime->setMarginRight(MARGIN);
-        gpsTime->setReadOnly(true);
-        gpsTime->setTextAlignment(WM::TextBox::ALIGN_CENTER);
+        gpsBox->setSize(deviceBox);
+        gpsBox->setPosition(gpsLabel->getWidth(), gpsLabel->getTop());
+        gpsBox->setMargin(boxMargin);
+        gpsBox->setReadOnly(true);
+        gpsBox->setTextAlignment(WM::TextBox::ALIGN_CENTER);
 
         mainMenu->add(_updateOption);
         mainMenu->add(_exitOption);
-        enableMenuBar(mainMenu);
-        
+
+        setMenuBar(mainMenu);
         add(deviceLabel);
-        add(deviceTime);
+        add(deviceBox);
         add(gpsLabel);
-        add(gpsTime);
+        add(gpsBox);
     }
 
 

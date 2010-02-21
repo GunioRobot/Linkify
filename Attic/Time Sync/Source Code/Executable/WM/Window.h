@@ -14,7 +14,8 @@
 
 namespace WM {
     // TODO: Implement removal of child widgets.
-    // TODO: Implement removal of the menu bar.
+    // TODO: Implement removal of the menu bar, and check if one has been added
+    // already.
     class Window: public Object {
     private:
         static struct State {
@@ -74,13 +75,13 @@ namespace WM {
     private:
         HWND _handle;
         ref<Menu> _menuBar;
+        HWND _menuBarWindowHandle;
         std::vector<ref<Widget>> _widgets;
-        RECT _padding;
 
 
     public:
         Window(ref<String> title, ref<String> className):
-            _handle(NULL), _menuBar(NULL)
+            _handle(NULL), _menuBar(NULL), _menuBarWindowHandle(NULL)
         {
             HWND window = FindWindow(className->c_str(), title->c_str());
 
@@ -111,9 +112,6 @@ namespace WM {
             }
 
             _windows[_handle]->instance = this;
-            
-            _padding.bottom = _padding.top = 0;
-            _padding.left = _padding.right = 0;
         }
 
 
@@ -133,7 +131,21 @@ namespace WM {
         }
 
 
-        virtual void enableMenuBar(ref<Menu> menu) {
+        virtual HWND getHandle() {
+            return _handle;
+        }
+
+
+        virtual void open(int mode) {
+            ShowWindow(getHandle(), mode);
+
+            if (UpdateWindow(getHandle()) == 0) {
+                Exception::throwLastError();
+            }
+        }
+
+
+        virtual void setMenuBar(ref<Menu> menu) {
             if (menu->getItemCount() > 2) {
                 throw Exception(S("Too many items in the menu bar."));
             }
@@ -152,25 +164,7 @@ namespace WM {
             }
 
             _menuBar = menu;
-        }
-
-
-        virtual HWND getHandle() {
-            return _handle;
-        }
-
-
-        virtual void open(int mode) {
-            ShowWindow(getHandle(), mode);
-
-            if (UpdateWindow(getHandle()) == 0) {
-                Exception::throwLastError();
-            }
-        }
-
-
-        virtual void setPadding(RECT padding) {
-            _padding = padding;
+            _menuBarWindowHandle = info.hwndMB;
         }
 
 
@@ -194,6 +188,16 @@ namespace WM {
         void handleResize(WPARAM wParam, LPARAM lParam) {
             long width = LOWORD(lParam);
             long height = HIWORD(lParam);
+
+            if (_menuBarWindowHandle != NULL) {
+                RECT size;
+                
+                if (!GetWindowRect(_menuBarWindowHandle, &size)) {
+                    Exception::throwLastError();
+                }
+
+                height -= size.bottom - size.top;
+            }
 
             for (size_t i = 0; i < _widgets.size(); ++i) {
                 _widgets[i]->onContainerResize(width, height);
