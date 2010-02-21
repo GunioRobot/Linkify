@@ -22,11 +22,6 @@ namespace WM {
         static const long DEFAULT_STYLE = WS_TABSTOP;
 
 
-        static HWND getPlaceholderWindow() {
-            return GetDesktopWindow();
-        }
-
-
     private:
         HWND _handle;
         ref<String> _text;
@@ -36,22 +31,18 @@ namespace WM {
 
 
     public:
-        Widget(ref<String> text, ref<String> className): _text(text) {
-            _width = _height = 0;
-            _left = _top = 0;
-            
-            _margin.bottom = _margin.top = 0;
-            _margin.left = _margin.right = 0;
-
+        Widget(ref<String> className, ref<String> text = S(""), DWORD style = 0):
+            _text(text), _width(0), _height(0), _left(0), _top(0)
+        {
             _handle = CreateWindow(
                 className->c_str(),
                 text->c_str(),
-                WS_CHILD + DEFAULT_STYLE,
+                WS_CHILD + DEFAULT_STYLE + style,
                 CW_USEDEFAULT,
                 CW_USEDEFAULT,
                 CW_USEDEFAULT,
                 CW_USEDEFAULT,
-                getPlaceholderWindow(),
+                GetDesktopWindow(),
                 NULL,
                 GetModuleHandle(NULL), 
                 NULL);
@@ -59,6 +50,9 @@ namespace WM {
             if (_handle == NULL) {
                 Exception::throwLastError();
             }
+            
+            _margin.bottom = _margin.top = 0;
+            _margin.left = _margin.right = 0;
         }
 
 
@@ -130,6 +124,27 @@ namespace WM {
 
 
     protected:
+        virtual void changeStyle(DWORD style) {
+            style += DEFAULT_STYLE;
+
+            // Distinguish between a previous value of zero and zero as an
+            // indicator of an error.
+            SetLastError(0);
+
+            if (SetWindowLong(getHandle(), GWL_STYLE, style) == 0) {
+                Exception::throwLastError();
+            }
+
+            // Update cached data.
+            BOOL success = SetWindowPos(getHandle(), NULL, 0, 0, 0, 0,
+                SWP_NOMOVE + SWP_NOSIZE + SWP_NOZORDER + SWP_FRAMECHANGED);
+            
+            if (!success) {
+                Exception::throwLastError();
+            }
+        }
+        
+        
         virtual void onContainerResize(long areaWidth, long areaHeight) {
             RECT margin = getMargin();
             long left = DRA::SCALEX(getLeft() + margin.left);
@@ -154,27 +169,6 @@ namespace WM {
             BOOL success = SetWindowPos(getHandle(), NULL,
                 left, top, width, height, SWP_NOZORDER);
 
-            if (!success) {
-                Exception::throwLastError();
-            }
-        }
-
-
-        virtual void updateStyle(DWORD style) {
-            style += DEFAULT_STYLE;
-
-            // Distinguish between a previous value of zero and zero as an
-            // indicator of an error.
-            SetLastError(0);
-
-            if (SetWindowLong(getHandle(), GWL_STYLE, style) == 0) {
-                Exception::throwLastError();
-            }
-
-            // Update cached data.
-            BOOL success = SetWindowPos(getHandle(), NULL, 0, 0, 0, 0,
-                SWP_NOMOVE + SWP_NOSIZE + SWP_NOZORDER + SWP_FRAMECHANGED);
-            
             if (!success) {
                 Exception::throwLastError();
             }

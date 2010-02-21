@@ -7,7 +7,7 @@
 namespace WM {
     class Label: public Widget {
     public:
-        Label(ref<String> text): Widget(text, S("STATIC")) {
+        Label(ref<String> text): Widget(S("STATIC"), text) {
         }
     };
 }

@@ -10,6 +10,7 @@
 namespace WM {
     class Timer: public Object {
     private:
+        static const UINT INVALID_ID = 0;
         static std::map<UINT, Timer*> _timers;
 
 
@@ -40,7 +41,7 @@ namespace WM {
 
 
     public:
-        Timer(): _id(0) {
+        Timer(): _id(INVALID_ID) {
         }
 
 
@@ -50,13 +51,13 @@ namespace WM {
 
 
         virtual void start(long seconds) {
-            if (_id != 0) {
+            if (_id != INVALID_ID) {
                 throw Exception(S("Timer already started."));
             }
 
             _timers[_id = SetTimer(NULL, 0, seconds * 1000, handler)] = this;
 
-            if (_id == 0) {
+            if (_id == INVALID_ID) {
                 _timers.erase(_id);
                 Exception::throwLastError();
             }
@@ -64,7 +65,7 @@ namespace WM {
 
 
         virtual void stop() {
-            if (_id == 0) {
+            if (_id == INVALID_ID) {
                 return;
             }
 
@@ -73,7 +74,7 @@ namespace WM {
             }
 
             _timers.erase(_id);
-            _id = 0;
+            _id = INVALID_ID;
         }
 
 

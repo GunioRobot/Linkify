@@ -16,26 +16,25 @@ namespace WM {
 
 
     private:
-        DWORD _readWriteStyle;
-        TextAlignment _textAlignment;
+        static const long DEFAULT_STYLE = WS_BORDER + ES_AUTOHSCROLL
+            + ES_MULTILINE;
 
 
     public:
-        TextBox(ref<String> text): Widget(text, S("EDIT")) {
-            _readWriteStyle = 0;
-            _textAlignment = ALIGN_LEFT;
-
-            updateStyle(_readWriteStyle + (DWORD) _textAlignment);
-        }
-
-
-        virtual TextAlignment getTextAlignment() {
-            return _textAlignment;
+        TextBox(TextAlignment textAlignment, ref<String> text = S("")):
+            Widget(S("EDIT"), text, DEFAULT_STYLE + (DWORD) textAlignment)
+        {
         }
 
 
         virtual bool isReadOnly() {
-            return _readWriteStyle == ES_READONLY;
+            LONG style = GetWindowLong(getHandle(), GWL_STYLE);
+
+            if (style == 0) {
+                Exception::throwLastError();
+            }
+
+            return (style & ES_READONLY) != 0;
         }
 
 
@@ -43,21 +42,6 @@ namespace WM {
             if (!SendMessage(getHandle(), EM_SETREADONLY, readOnly, 0)) {
                 Exception::throwLastError();
             }
-            
-            _readWriteStyle = readOnly ? ES_READONLY : 0;
-        }
-
-
-        virtual void setTextAlignment(TextAlignment textAlignment) {
-            updateStyle(_readWriteStyle + (DWORD) textAlignment);
-            _textAlignment = textAlignment;
-        }
-
-
-    protected:
-        virtual void updateStyle(DWORD style) {
-            Widget::updateStyle(WS_BORDER + ES_AUTOHSCROLL + ES_MULTILINE
-                + style);
         }
     };
 }

@@ -10,16 +10,15 @@ private:
 
 public:
     Executable(HINSTANCE handle):
-        WM::Application(handle), WM::Window(S("Time Sync"), S("TIMESYNC"))
+        WM::Application(handle), WM::Window(S("Time Sync"), S("TIMESYNC")),
+        _exitOption(new WM::MenuItem(S("Exit"))),
+        _updateOption(new WM::MenuItem(S("Update")))
     {
-        _exitOption = new WM::MenuItem(S("Exit"));
-        _updateOption = new WM::MenuItem(S("Update"));
-
         ref<WM::Menu> mainMenu = new WM::Menu(S("Menu"));
         ref<WM::Label> deviceLabel = new WM::Label(S("Device:"));
         ref<WM::TextBox> deviceBox = new TimeTextBox(GetLocalTime);
         ref<WM::Label> gpsLabel = new WM::Label(S("GPS:"));
-        ref<WM::TextBox> gpsBox = new WM::TextBox(S("-"));
+        ref<WM::TextBox> gpsBox = new WM::TextBox(WM::TextBox::ALIGN_CENTER);
 
         const long margin = 8;
         const long padding = 3;
@@ -38,13 +37,11 @@ public:
         deviceBox->setPosition(deviceLabel->getWidth(), 0);
         deviceBox->setMargin(boxMargin);
         deviceBox->setReadOnly(true);
-        deviceBox->setTextAlignment(WM::TextBox::ALIGN_CENTER);
 
         gpsBox->setSize(deviceBox);
         gpsBox->setPosition(gpsLabel->getWidth(), gpsLabel->getTop());
         gpsBox->setMargin(boxMargin);
         gpsBox->setReadOnly(true);
-        gpsBox->setTextAlignment(WM::TextBox::ALIGN_CENTER);
 
         mainMenu->add(_updateOption);
         mainMenu->add(_exitOption);

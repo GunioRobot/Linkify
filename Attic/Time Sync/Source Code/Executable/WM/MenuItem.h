@@ -10,13 +10,17 @@ namespace WM {
         friend class Menu;
 
     private:
+        // Reserved for controls.
+        static const UINT_PTR RESERVED_ID = 0;
+
+
+    private:
         ref<String> _caption;
-        bool _hasId;
         UINT_PTR _id;
 
 
     public:
-        MenuItem(ref<String> caption): _caption(caption), _hasId(false) {
+        MenuItem(ref<String> caption): _caption(caption), _id(RESERVED_ID) {
         }
 
 
@@ -27,12 +31,10 @@ namespace WM {
 
     protected:
         virtual UINT_PTR getId() {
-            // Zero is reserved for controls.
-            static UINT_PTR counter = 1;
+            static UINT_PTR counter = RESERVED_ID;
 
-            if (!_hasId) {
-                _id = counter++;
-                _hasId = true;
+            if (_id == RESERVED_ID) {
+                _id = ++counter;
             }
 
             return _id;
