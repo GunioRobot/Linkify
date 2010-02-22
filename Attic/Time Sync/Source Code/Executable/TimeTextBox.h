@@ -16,7 +16,7 @@ private:
 
 public:
     TimeTextBox(void (*getTime)(SYSTEMTIME*)):
-        WM::TextBox(WM::TextBox::ALIGN_CENTER), _getTime(getTime)
+        WM::TextBox(), _getTime(getTime)
     {
         onTimeout();
         start(1);

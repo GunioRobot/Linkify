@@ -8,21 +8,8 @@
 namespace WM {
     class TextBox: public Widget {
     public:
-        enum TextAlignment {
-            ALIGN_CENTER = ES_CENTER,
-            ALIGN_LEFT = ES_LEFT,
-            ALIGN_RIGHT = ES_RIGHT,
-        };
-
-
-    private:
-        static const DWORD DEFAULT_STYLE = WS_BORDER + ES_AUTOHSCROLL
-            + ES_MULTILINE;
-
-
-    public:
-        TextBox(TextAlignment textAlignment, ref<String> text = S("")):
-            Widget(S("EDIT"), text, DEFAULT_STYLE + (DWORD) textAlignment)
+        TextBox(ref<String> text = S("")):
+            Widget(S("EDIT"), text, WS_BORDER + ES_AUTOHSCROLL)
         {
         }
 

@@ -18,7 +18,7 @@ public:
         ref<WM::Label> deviceLabel = new WM::Label(S("Device:"));
         ref<WM::TextBox> deviceBox = new TimeTextBox(GetLocalTime);
         ref<WM::Label> gpsLabel = new WM::Label(S("GPS:"));
-        ref<WM::TextBox> gpsBox = new WM::TextBox(WM::TextBox::ALIGN_CENTER);
+        ref<WM::TextBox> gpsBox = new WM::TextBox();
 
         const long margin = 8;
         const long padding = 3;
