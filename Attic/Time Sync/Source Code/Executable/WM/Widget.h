@@ -19,7 +19,7 @@ namespace WM {
 
 
     private:
-        static const long DEFAULT_STYLE = WS_TABSTOP;
+        static const DWORD DEFAULT_STYLE = WS_TABSTOP;
 
 
     private:
@@ -44,7 +44,7 @@ namespace WM {
                 CW_USEDEFAULT,
                 GetDesktopWindow(),
                 NULL,
-                GetModuleHandle(NULL), 
+                GetModuleHandle(NULL),
                 NULL);
 
             if (_handle == NULL) {

@@ -16,7 +16,7 @@ namespace WM {
 
 
     private:
-        static const long DEFAULT_STYLE = WS_BORDER + ES_AUTOHSCROLL
+        static const DWORD DEFAULT_STYLE = WS_BORDER + ES_AUTOHSCROLL
             + ES_MULTILINE;
 
 
