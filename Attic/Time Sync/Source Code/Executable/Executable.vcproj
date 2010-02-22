@@ -242,6 +242,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\WM\Size.h"
+				>
+			</File>
+			<File
 				RelativePath=".\WM\stdafx.h"
 				>
 			</File>

@@ -3,10 +3,11 @@
 {\*\generator Msftedit 5.41.21.2509;}\viewkind4\uc1\pard\lang2070\b\f0\fs20 To Do:\b0  \par
 \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Add license.\par
 {\pntext\f1\'B7\tab}Ensure {\field{\*\fldinst{HYPERLINK "http://code.google.com/webtoolkit/makinggwtbetter.html#codestyle"}}{\fldrslt{\ul\cf1 http://code.google.com/webtoolkit/makinggwtbetter.html#codestyle}}}\f0\fs20\par
-{\pntext\f1\'B7\tab}Create size and position wrapper classes?\par
+{\pntext\f1\'B7\tab}Create position wrapper classes?\par
+{\pntext\f1\'B7\tab}Change the Size wrapper class to be immutable and treat it as a value type (instead of ref)?\par
+{\pntext\f1\'B7\tab}Update immediately Widget functions that modify state, e.g. setSize, setPosition. Or create a function e.g. "update()" for that purpose? With it, if the size's height is modified that function can be called to apply the changes made.\par
 {\pntext\f1\'B7\tab}Revise all code for missing parts: implement TODO comments or move them here.\par
 {\pntext\f1\'B7\tab}Prevent exception for duplicate window instance from generating an error message box.\par
-{\pntext\f1\'B7\tab}Update immediatly Widget functions that modify state, e.g. setSize, setPosition.\par
 {\pntext\f1\'B7\tab}Change labels to also display "time:" when in landscape, to make better use of screen space? Implement fit to width, and then it's just a matter of changing the text?\par
 {\pntext\f1\'B7\tab}Find out why the SIP icon appears after screen rotation, in my Sony Ericsson X1.\par
 {\pntext\f1\'B7\tab}Make Window inherit from Widget? With that, the "container resize" widget event can be changed to receive instead the container widget.\par

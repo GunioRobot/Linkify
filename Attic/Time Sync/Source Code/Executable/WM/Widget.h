@@ -3,6 +3,7 @@
 
 #include "Exception.h"
 #include "Object.h"
+#include "Size.h"
 #include "String.h"
 
 
@@ -12,12 +13,6 @@ namespace WM {
     class Widget: public Object {
         friend class Window;
 
-    public:
-        enum {
-            EXPANDABLE = -1,
-        };
-
-
     private:
         static const DWORD DEFAULT_STYLE = WS_TABSTOP;
 
@@ -25,14 +20,14 @@ namespace WM {
     private:
         HWND _handle;
         ref<String> _text;
-        long _width, _height;
+        ref<Size> _size;
         long _left, _top;
         RECT _margin;
 
 
     public:
         Widget(ref<String> className, ref<String> text = S(""), DWORD style = 0):
-            _text(text), _width(0), _height(0), _left(0), _top(0)
+            _text(text), _size(new Size(0, 0)), _left(0), _top(0)
         {
             _handle = CreateWindow(
                 className->c_str(),
@@ -61,11 +56,6 @@ namespace WM {
         }
 
 
-        virtual long getHeight() {
-            return _height;
-        }
-
-
         virtual long getLeft() {
             return _left;
         }
@@ -76,6 +66,11 @@ namespace WM {
         }
 
 
+        virtual ref<Size> getSize() {
+            return _size;
+        }
+
+
         virtual ref<String> getText() {
             return _text;
         }
@@ -83,11 +78,6 @@ namespace WM {
 
         virtual long getTop() {
             return _top;
-        }
-
-
-        virtual long getWidth() {
-            return _width;
         }
 
 
@@ -102,15 +92,8 @@ namespace WM {
         }
 
 
-        virtual void setSize(long width, long height) {
-            _width = width;
-            _height = height;
-        }
-
-
-        virtual void setSize(ref<Widget> widget) {
-            _width = widget->getWidth();
-            _height = widget->getHeight();
+        virtual void setSize(ref<Size> size) {
+            _size = size;
         }
 
 
@@ -149,17 +132,17 @@ namespace WM {
             RECT margin = getMargin();
             long left = DRA::SCALEX(getLeft() + margin.left);
             long top = DRA::SCALEY(getTop() + margin.top);
-            long width = getWidth();
-            long height = getHeight();
+            long width = getSize()->getWidth();
+            long height = getSize()->getHeight();
 
-            if (width == EXPANDABLE) {
+            if (width == Size::EXPANDABLE) {
                 width = areaWidth - left - DRA::SCALEX(margin.right);
             }
             else {
                 width = DRA::SCALEX(width - margin.right);
             }
 
-            if (height == EXPANDABLE) {
+            if (height == Size::EXPANDABLE) {
                 height = areaHeight - top - DRA::SCALEY(margin.bottom);
             }
             else {

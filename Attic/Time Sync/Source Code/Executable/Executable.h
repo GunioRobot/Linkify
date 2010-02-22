@@ -20,26 +20,30 @@ public:
         ref<WM::Label> gpsLabel = new WM::Label(S("GPS:"));
         ref<WM::TextBox> gpsBox = new WM::TextBox();
 
-        const long margin = 8;
-        const long padding = 3;
-        const RECT labelMargin = {margin, margin + padding, margin, margin};
-        const RECT boxMargin = {margin, margin, margin, margin};
+        long margin = 8;
+        long padding = 3;
+        
+        RECT labelMargin = {margin, margin + padding, margin, margin};
+        RECT boxMargin = {margin, margin, margin, margin};
+        
+        ref<WM::Size> labelSize = new WM::Size(50 + padding, 20 + margin);
+        ref<WM::Size> boxSize = new WM::Size(WM::Size::EXPANDABLE, labelSize->getHeight());
 
-        deviceLabel->setSize(50 + padding, 20 + margin);
+        deviceLabel->setSize(labelSize);
         deviceLabel->setPosition(0, 0);
         deviceLabel->setMargin(labelMargin);
 
-        gpsLabel->setSize(deviceLabel);
-        gpsLabel->setPosition(0, deviceLabel->getHeight());
+        gpsLabel->setSize(labelSize);
+        gpsLabel->setPosition(0, labelSize->getHeight());
         gpsLabel->setMargin(labelMargin);
 
-        deviceBox->setSize(WM::Widget::EXPANDABLE, deviceLabel->getHeight());
-        deviceBox->setPosition(deviceLabel->getWidth(), 0);
+        deviceBox->setSize(boxSize);
+        deviceBox->setPosition(labelSize->getWidth(), 0);
         deviceBox->setMargin(boxMargin);
         deviceBox->setReadOnly(true);
 
-        gpsBox->setSize(deviceBox);
-        gpsBox->setPosition(gpsLabel->getWidth(), gpsLabel->getTop());
+        gpsBox->setSize(boxSize);
+        gpsBox->setPosition(labelSize->getWidth(), gpsLabel->getTop());
         gpsBox->setMargin(boxMargin);
         gpsBox->setReadOnly(true);
 
