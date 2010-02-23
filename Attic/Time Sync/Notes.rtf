@@ -1,60 +1,61 @@
-{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fswiss\fcharset0 Arial;}{\f1\fnil\fcharset2 Symbol;}}
+{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fswiss\fcharset0 Arial;}{\f1\fnil\fcharset0 Courier New;}{\f2\fnil\fcharset2 Symbol;}}
 {\colortbl ;\red0\green0\blue255;}
 {\*\generator Msftedit 5.41.21.2509;}\viewkind4\uc1\pard\lang2070\b\f0\fs20 To Do:\b0  \par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Add license.\par
-{\pntext\f1\'B7\tab}Ensure {\field{\*\fldinst{HYPERLINK "http://code.google.com/webtoolkit/makinggwtbetter.html#codestyle"}}{\fldrslt{\ul\cf1 http://code.google.com/webtoolkit/makinggwtbetter.html#codestyle}}}\f0\fs20\par
-{\pntext\f1\'B7\tab}Create position wrapper classes?\par
-{\pntext\f1\'B7\tab}Change the Size wrapper class to be immutable and treat it as a value type (instead of ref)?\par
-{\pntext\f1\'B7\tab}Update immediately Widget functions that modify state, e.g. setSize, setPosition. Or create a function e.g. "update()" for that purpose? With it, if the size's height is modified that function can be called to apply the changes made.\par
-{\pntext\f1\'B7\tab}Revise all code for missing parts: implement TODO comments or move them here.\par
-{\pntext\f1\'B7\tab}Prevent exception for duplicate window instance from generating an error message box.\par
-{\pntext\f1\'B7\tab}Change labels to also display "time:" when in landscape, to make better use of screen space? Implement fit to width, and then it's just a matter of changing the text?\par
-{\pntext\f1\'B7\tab}Find out why the SIP icon appears after screen rotation, in my Sony Ericsson X1.\par
-{\pntext\f1\'B7\tab}Make Window inherit from Widget? With that, the "container resize" widget event can be changed to receive instead the container widget.\par
-{\pntext\f1\'B7\tab}Move WM code to a separate project as a library?\par
-{\pntext\f1\'B7\tab}Add documentation when the interface is final.\par
-{\pntext\f1\'B7\tab}Remove or clean up "stdafx.h".\par
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-284\li284 Add license.\par
+{\pntext\f2\'B7\tab}Ensure {\field{\*\fldinst{HYPERLINK "http://code.google.com/webtoolkit/makinggwtbetter.html#codestyle"}}{\fldrslt{\ul\cf1 http://code.google.com/webtoolkit/makinggwtbetter.html#codestyle}}}\f0\fs20\par
+{\pntext\f2\'B7\tab}Create a Position wrapper classe?\par
+{\pntext\f2\'B7\tab}Change the Size wrapper class to be immutable and treat it as a value type (instead of ref)?\par
+{\pntext\f2\'B7\tab}Remove the EXPANDABLE constant and create a Length wrapper class? Use macros to define number units? e.g. \f1 Size(100 px, Percentage(20))\f0\par
+{\pntext\f2\'B7\tab}Update immediately Widget functions that modify state, e.g. setSize, setPosition. Or create a function e.g. "update()" for that purpose? With it, if the size's height is modified that function can be called to apply the changes made.\par
+{\pntext\f2\'B7\tab}Revise all code for missing parts: implement TODO comments or move them here.\par
+{\pntext\f2\'B7\tab}Prevent exception for duplicate window instance from generating an error message box.\par
+{\pntext\f2\'B7\tab}Change labels to also display "time:" when in landscape, to make better use of screen space? Implement fit to width, and then it's just a matter of changing the text?\par
+{\pntext\f2\'B7\tab}Find out why the SIP icon appears after screen rotation, in my Sony Ericsson X1.\par
+{\pntext\f2\'B7\tab}Make Window inherit from Widget? With that, the "container resize" widget event can be changed to receive instead the container widget.\par
+{\pntext\f2\'B7\tab}Move WM code to a separate project as a library?\par
+{\pntext\f2\'B7\tab}Add documentation when the interface is final.\par
+{\pntext\f2\'B7\tab}Remove or clean up "stdafx.h".\par
 \pard\par
 \b Ideas:\b0  \par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284\lang1033 Projects: \lang2070 "Executable", "Applet", "Service".\lang1033\par
-{\pntext\f1\'B7\tab}Add accelerators for the graphical interface?\par
-{\pntext\f1\'B7\tab}Use an icon based on official Windows Mobile icons?\par
-\lang2070{\pntext\f1\'B7\tab}Correct the time using Daylight saving time?\par
-\lang1033{\pntext\f1\'B7\tab}Time sources (as plug-ins to make the application more extensible):\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 FM radio RDS time.\par
-{\pntext\f1\'B7\tab}GPS time (from time to time, when GPS is on and fixed, when the current phone tower cell changes).\par
-{\pntext\f1\'B7\tab}Internet time (from time to time, when on-line).\par
-{\pntext\f1\'B7\tab}Cellular towers.\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 TextBox:\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644\lang2070 Preserve cursor position and selection if the text is changed.\lang1033\par
-{\pntext\f1\'B7\tab}Align text horizontally and vertically.\par
-{\pntext\f1\'B7\tab}Change horizontal alignment regardless of single or multi-line.\par
-{\pntext\f1\'B7\tab}Change horizontal alignment regardless of widget creation time.\par
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-284\li284\lang1033 Projects: \lang2070 "Executable", "Applet", "Service".\lang1033\par
+{\pntext\f2\'B7\tab}Add accelerators for the graphical interface?\par
+{\pntext\f2\'B7\tab}Use an icon based on official Windows Mobile icons?\par
+\lang2070{\pntext\f2\'B7\tab}Correct the time using Daylight saving time?\par
+\lang1033{\pntext\f2\'B7\tab}Time sources (as plug-ins to make the application more extensible):\par
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-284\li644 FM radio RDS time.\par
+{\pntext\f2\'B7\tab}GPS time (from time to time, when GPS is on and fixed, when the current phone tower cell changes).\par
+{\pntext\f2\'B7\tab}Internet time (from time to time, when on-line).\par
+{\pntext\f2\'B7\tab}Cellular towers.\par
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-284\li284 TextBox:\par
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-284\li644\lang2070 Preserve cursor position and selection if the text is changed.\lang1033\par
+{\pntext\f2\'B7\tab}Align text horizontally and vertically.\par
+{\pntext\f2\'B7\tab}Change horizontal alignment regardless of single or multi-line.\par
+{\pntext\f2\'B7\tab}Change horizontal alignment regardless of widget creation time.\par
 \pard\par
 \b Links:\b0  \par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Location aware:\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 GPS Clock: {\field{\*\fldinst{HYPERLINK "http://www.cjcraft.com/blog/2008/06/22/30DaysOfNETWindowsMobileApplicationsDay22GPSClock.aspx"}}{\fldrslt{\ul\cf1 http://www.cjcraft.com/blog/2008/06/22/30DaysOfNETWindowsMobileApplicationsDay22GPSClock.aspx}}}\f0\fs20  \par
-\lang2070{\pntext\f1\'B7\tab}Applications that use GPS: \lang1033{\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/bb158727.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/bb158727.aspx}}}\f0\fs20  \par
-{\pntext\f1\'B7\tab}Creating Location-Aware: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/dd938890.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/dd938890.aspx}}}\f0\fs20\par
-{\pntext\f1\'B7\tab}CellID: {\field{\*\fldinst{HYPERLINK "http://www.devx.com/wireless/Article/39709/1954"}}{\fldrslt{\ul\cf1 http://www.devx.com/wireless/Article/39709/1954}}}\f0\fs20\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Services:\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644{\field{\*\fldinst{HYPERLINK "http://bansky.net/blog/2008/04/services-for-windows-mobile-in-managed-code/"}}{\fldrslt{\ul\cf1 http://bansky.net/blog/2008/04/services-for-windows-mobile-in-managed-code/}}}\f0\fs20  \par
-{\field{\*\fldinst{HYPERLINK "{\pntext\f1\'B7\tab}http://www.codeplex.com/managedserviceswm"}}{\fldrslt{\ul\cf1 http://www.codeplex.com/managedserviceswm}}}\f0\fs20\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Control Panel Applet:\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 API: {\field{\*\fldinst{HYPERLINK "http://msdn2.microsoft.com/en-us/library/ms914264.aspx"}}{\fldrslt{\ul\cf1 http://msdn2.microsoft.com/en-us/library/ms914264.aspx}}}\f0\fs20  \par
-{\pntext\f1\'B7\tab}Programmatically show applets: {\field{\*\fldinst{HYPERLINK "http://knowledgepointer.wordpress.com/2009/02/07/how-to-show-control-panel-applets/"}}{\fldrslt{\ul\cf1 http://knowledgepointer.wordpress.com/2009/02/07/how-to-show-control-panel-applets/}}}\f0\fs20  \par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Interface:\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 Developing DPI Aware Applications: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/bb416656.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/bb416656.aspx}}}\f0\fs20  \par
-{\pntext\f1\'B7\tab}Today Screen Plug-in: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/windowsmobile/bb264330.aspx#WMPStatusPlugin"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/windowsmobile/bb264330.aspx#WMPStatusPlugin}}}\f0\fs20\par
-{\pntext\f1\'B7\tab}Today item: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/ms839327.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/ms839327.aspx}}}\f0\fs20  \par
-{\pntext\f1\'B7\tab}Dvorak Soft Input Panel: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/ms881221.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/ms881221.aspx}}}\f0\fs20  \par
-{\pntext\f1\'B7\tab}Auto vertical scrollbar multiline text box: {\field{\*\fldinst{HYPERLINK "http://stackoverflow.com/questions/562313/automatically-display-vertical-scrollbar-in-multiline-text-edit-control"}}{\fldrslt{\ul\cf1 http://stackoverflow.com/questions/562313/automatically-display-vertical-scrollbar-in-multiline-text-edit-control}}}\f0\fs20\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Etc:\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 Window Mobile (reference, docs, articles): {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/bb158484.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/bb158484.aspx}}}\f0\fs20\par
-{\pntext\f1\'B7\tab}How To's: {\field{\*\fldinst{HYPERLINK "https://mvp.support.microsoft.com/default.aspx/profile/joao.paulo"}}{\fldrslt{\ul\cf1 https://mvp.support.microsoft.com/default.aspx/profile/joao.paulo}}}\f0\fs20  \par
-{\pntext\f1\'B7\tab}Battery indicator for PocketPC: {\field{\*\fldinst{HYPERLINK "http://code.google.com/p/batti/"}}{\fldrslt{\ul\cf1 http://code.google.com/p/batti/}}}\f0\fs20\par
-{\pntext\f1\'B7\tab}30 Days of Windows Mobile in Native: {\field{\*\fldinst{HYPERLINK "http://www.christec.co.nz/blog/archives/350"}}{\fldrslt{\ul\cf1 http://www.christec.co.nz/blog/archives/350}}}\f0\fs20  \par
-{\pntext\f1\'B7\tab}Hook kernel functions: {\field{\*\fldinst{HYPERLINK "http://forum.xda-developers.com/showthread.php?t=255831"}}{\fldrslt{\ul\cf1 http://forum.xda-developers.com/showthread.php?t=255831}}}\f0\fs20  \par
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-284\li284 Location aware:\par
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-284\li644 GPS Clock: {\field{\*\fldinst{HYPERLINK "http://www.cjcraft.com/blog/2008/06/22/30DaysOfNETWindowsMobileApplicationsDay22GPSClock.aspx"}}{\fldrslt{\ul\cf1 http://www.cjcraft.com/blog/2008/06/22/30DaysOfNETWindowsMobileApplicationsDay22GPSClock.aspx}}}\f0\fs20  \par
+\lang2070{\pntext\f2\'B7\tab}Applications that use GPS: \lang1033{\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/bb158727.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/bb158727.aspx}}}\f0\fs20  \par
+{\pntext\f2\'B7\tab}Creating Location-Aware: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/dd938890.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/dd938890.aspx}}}\f0\fs20\par
+{\pntext\f2\'B7\tab}CellID: {\field{\*\fldinst{HYPERLINK "http://www.devx.com/wireless/Article/39709/1954"}}{\fldrslt{\ul\cf1 http://www.devx.com/wireless/Article/39709/1954}}}\f0\fs20\par
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-284\li284 Services:\par
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-284\li644{\field{\*\fldinst{HYPERLINK "http://bansky.net/blog/2008/04/services-for-windows-mobile-in-managed-code/"}}{\fldrslt{\ul\cf1 http://bansky.net/blog/2008/04/services-for-windows-mobile-in-managed-code/}}}\f0\fs20  \par
+{\field{\*\fldinst{HYPERLINK "{\pntext\f2\'B7\tab}http://www.codeplex.com/managedserviceswm"}}{\fldrslt{\ul\cf1 http://www.codeplex.com/managedserviceswm}}}\f0\fs20\par
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-284\li284 Control Panel Applet:\par
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-284\li644 API: {\field{\*\fldinst{HYPERLINK "http://msdn2.microsoft.com/en-us/library/ms914264.aspx"}}{\fldrslt{\ul\cf1 http://msdn2.microsoft.com/en-us/library/ms914264.aspx}}}\f0\fs20  \par
+{\pntext\f2\'B7\tab}Programmatically show applets: {\field{\*\fldinst{HYPERLINK "http://knowledgepointer.wordpress.com/2009/02/07/how-to-show-control-panel-applets/"}}{\fldrslt{\ul\cf1 http://knowledgepointer.wordpress.com/2009/02/07/how-to-show-control-panel-applets/}}}\f0\fs20  \par
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-284\li284 Interface:\par
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-284\li644 Developing DPI Aware Applications: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/bb416656.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/bb416656.aspx}}}\f0\fs20  \par
+{\pntext\f2\'B7\tab}Today Screen Plug-in: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/windowsmobile/bb264330.aspx#WMPStatusPlugin"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/windowsmobile/bb264330.aspx#WMPStatusPlugin}}}\f0\fs20\par
+{\pntext\f2\'B7\tab}Today item: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/ms839327.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/ms839327.aspx}}}\f0\fs20  \par
+{\pntext\f2\'B7\tab}Dvorak Soft Input Panel: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/ms881221.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/ms881221.aspx}}}\f0\fs20  \par
+{\pntext\f2\'B7\tab}Auto vertical scrollbar multiline text box: {\field{\*\fldinst{HYPERLINK "http://stackoverflow.com/questions/562313/automatically-display-vertical-scrollbar-in-multiline-text-edit-control"}}{\fldrslt{\ul\cf1 http://stackoverflow.com/questions/562313/automatically-display-vertical-scrollbar-in-multiline-text-edit-control}}}\f0\fs20\par
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-284\li284 Etc:\par
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-284\li644 Window Mobile (reference, docs, articles): {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/bb158484.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/bb158484.aspx}}}\f0\fs20\par
+{\pntext\f2\'B7\tab}How To's: {\field{\*\fldinst{HYPERLINK "https://mvp.support.microsoft.com/default.aspx/profile/joao.paulo"}}{\fldrslt{\ul\cf1 https://mvp.support.microsoft.com/default.aspx/profile/joao.paulo}}}\f0\fs20  \par
+{\pntext\f2\'B7\tab}Battery indicator for PocketPC: {\field{\*\fldinst{HYPERLINK "http://code.google.com/p/batti/"}}{\fldrslt{\ul\cf1 http://code.google.com/p/batti/}}}\f0\fs20\par
+{\pntext\f2\'B7\tab}30 Days of Windows Mobile in Native: {\field{\*\fldinst{HYPERLINK "http://www.christec.co.nz/blog/archives/350"}}{\fldrslt{\ul\cf1 http://www.christec.co.nz/blog/archives/350}}}\f0\fs20  \par
+{\pntext\f2\'B7\tab}Hook kernel functions: {\field{\*\fldinst{HYPERLINK "http://forum.xda-developers.com/showthread.php?t=255831"}}{\fldrslt{\ul\cf1 http://forum.xda-developers.com/showthread.php?t=255831}}}\f0\fs20  \par
 \pard\par
 }
  
