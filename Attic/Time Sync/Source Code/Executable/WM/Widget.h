@@ -81,15 +81,15 @@ namespace WM {
             size_t areaWidth = area.width().value();
             size_t areaHeight = area.width().value();
 
-            size_t left = position.left().get(areaWidth)
-                + margin.left().get(areaWidth);
-            size_t top = position.top().get(areaHeight)
-                + margin.top().get(areaHeight);
+            size_t left = position.left().value(areaWidth)
+                + margin.left().value(areaWidth);
+            size_t top = position.top().value(areaHeight)
+                + margin.top().value(areaHeight);
             
-            size_t width = size.width().get(areaWidth - left)
-                - margin.right().get(areaWidth);
-            size_t height = size.height().get(areaHeight - top)
-                - margin.bottom().get(areaHeight);
+            size_t width = size.width().value(areaWidth - left)
+                - margin.right().value(areaWidth);
+            size_t height = size.height().value(areaHeight - top)
+                - margin.bottom().value(areaHeight);
 
             BOOL success = SetWindowPos(getHandle(), NULL,
                 DRA::SCALEX(left), DRA::SCALEY(top),
