@@ -34,6 +34,10 @@ namespace WM {
 
         virtual void setFitToWidth(bool fitToWidth) {
             _fitToWidth = fitToWidth;
+            
+            if (isFitToWidth()) {
+                onParentResize();
+            }
         }
 
 
