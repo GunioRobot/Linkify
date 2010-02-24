@@ -122,11 +122,7 @@ namespace WM {
 
 
         virtual void add(ref<Widget> widget) {
-            if (SetParent(widget->getHandle(), getHandle()) == NULL) {
-                Exception::throwLastError();
-            }
-            
-            ShowWindow(widget->getHandle(), SW_SHOWNORMAL);
+            widget->setParent(noref this);
             _widgets.push_back(widget);
         }
 
@@ -136,6 +132,31 @@ namespace WM {
         }
 
 
+        virtual Size getSize() {
+            RECT area;
+            size_t menuBarHeight = 0;
+            
+            if (!GetWindowRect(getHandle(), &area)) {
+                Exception::throwLastError();
+            }
+
+            if (_menuBarWindowHandle != NULL) {
+                RECT size;
+                
+                if (!GetWindowRect(_menuBarWindowHandle, &size)) {
+                    Exception::throwLastError();
+                }
+
+                menuBarHeight = size.bottom - size.top;
+            }
+            
+            Length width(DRA::UNSCALEX(area.right - area.left));
+            Length height(DRA::UNSCALEY(area.bottom - area.top - menuBarHeight));
+
+            return Size(width, height);
+        }
+        
+        
         virtual void onChoose(ref<MenuItem> item) {
         }
 
@@ -185,23 +206,8 @@ namespace WM {
 
 
         void handleResize(WPARAM wParam, LPARAM lParam) {
-            size_t width = DRA::UNSCALEX(LOWORD(lParam));
-            size_t height = DRA::UNSCALEY(HIWORD(lParam));
-
-            if (_menuBarWindowHandle != NULL) {
-                RECT size;
-                
-                if (!GetWindowRect(_menuBarWindowHandle, &size)) {
-                    Exception::throwLastError();
-                }
-
-                height -= DRA::UNSCALEY(size.bottom - size.top);
-            }
-
-            Size area(width, height);
-
             for (size_t i = 0; i < _widgets.size(); ++i) {
-                _widgets[i]->onLayoutResize(area);
+                _widgets[i]->onParentResize();
             }
         }
 

@@ -13,6 +13,7 @@ namespace WM {
     class Widget: public Object {
     private:
         HWND _handle;
+        ref<Widget> _parent;
         ref<String> _text;
         Margin _margin;
         Position _position;
@@ -21,7 +22,7 @@ namespace WM {
 
     public:
         Widget(ref<String> className, ref<String> text = S(""), DWORD style = 0):
-            _text(text)
+            _parent(NULL), _text(text)
         {
             HWND parent = ((style & WS_CHILD) != 0) ? GetDesktopWindow() : NULL;
 
@@ -54,6 +55,11 @@ namespace WM {
         }
         
         
+        virtual ref<Widget> getParent() {
+            return _parent;
+        }
+
+
         virtual Position getPosition() {
             return _position;
         }
@@ -69,10 +75,11 @@ namespace WM {
         }
         
         
-        virtual void onLayoutResize(Size area) {
+        virtual void onParentResize() {
             Margin margin = getMargin();
             Position position = getPosition();
             Size size = getSize();
+            Size area = getParent()->getSize();
 
             size_t areaWidth = area.width().value();
             size_t areaHeight = area.width().value();
@@ -100,6 +107,16 @@ namespace WM {
 
         virtual void setMargin(Margin margin) {
             _margin = margin;
+        }
+
+
+        virtual void setParent(ref<Widget> parent) {
+            if (SetParent(getHandle(), parent->getHandle()) == NULL) {
+                Exception::throwLastError();
+            }
+            
+            ShowWindow(getHandle(), SW_SHOWNORMAL);
+            _parent = parent;
         }
 
 
