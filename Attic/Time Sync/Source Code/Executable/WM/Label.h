@@ -51,7 +51,7 @@ namespace WM {
 
 
     private:
-        virtual Size getTextSize() {
+        Size getTextSize() {
             HWND window = (getParent() == NULL) ? NULL : getParent()->getHandle();
             HDC display = GetDC(window);
             SIZE text;

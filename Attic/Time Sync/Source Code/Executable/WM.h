@@ -2,6 +2,7 @@
 
 
 #include "WM/Application.h"
+#include "WM/DynamicLabel.h"
 #include "WM/Exception.h"
 #include "WM/Label.h"
 #include "WM/Length.h"

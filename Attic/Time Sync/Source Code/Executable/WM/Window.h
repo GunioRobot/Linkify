@@ -210,11 +210,11 @@ namespace WM {
 
 
         void handleResize(WPARAM wParam, LPARAM lParam) {
-            onResize();
-
             for (size_t i = 0; i < _widgets.size(); ++i) {
                 _widgets[i]->onParentResize();
             }
+            
+            onResize();
         }
 
 

@@ -222,6 +222,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\WM\DynamicLabel.h"
+				>
+			</File>
+			<File
 				RelativePath=".\WM\Exception.h"
 				>
 			</File>

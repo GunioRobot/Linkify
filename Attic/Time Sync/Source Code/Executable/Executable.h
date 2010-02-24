@@ -2,10 +2,16 @@
 #include "WM.h"
 
 
-#define LABEL_DEVICE S("Device")
-#define LABEL_GPS S("GPS")
 #define LABEL_LANDSCAPE S(" time")
 #define LABEL_SUFFIX S(":")
+
+#define LABEL_DEVICE S("Device")
+#define LABEL_DEVICE_LONG (LABEL_DEVICE + LABEL_LANDSCAPE + LABEL_SUFFIX)
+#define LABEL_DEVICE_SHORT (LABEL_DEVICE + LABEL_SUFFIX)
+
+#define LABEL_GPS S("GPS")
+#define LABEL_GPS_LONG (LABEL_GPS + LABEL_LANDSCAPE + LABEL_SUFFIX)
+#define LABEL_GPS_SHORT (LABEL_GPS + LABEL_SUFFIX)
 
 #define MENU_BAR S("Menu")
 #define OPTION_EXIT S("Exit")
@@ -29,11 +35,12 @@ private:
 
 public:
     Executable(HINSTANCE handle):
-        WM::Application(handle), WM::Window(WINDOW_CLASS, TITLE),
+        WM::Application(handle),
+        WM::Window(WINDOW_CLASS, TITLE),
         _exitOption(new WM::MenuItem(OPTION_EXIT)),
         _updateOption(new WM::MenuItem(OPTION_UPDATE)),
-        _deviceLabel(new WM::Label()),
-        _gpsLabel(new WM::Label()),
+        _deviceLabel(new WM::DynamicLabel(LABEL_DEVICE_SHORT, LABEL_DEVICE_LONG)),
+        _gpsLabel(new WM::DynamicLabel(LABEL_GPS_SHORT, LABEL_GPS_LONG)),
         _deviceBox(new TimeTextBox(GetLocalTime)),
         _gpsBox(new WM::TextBox())
     {
@@ -85,15 +92,6 @@ public:
 
 
     virtual void onResize() {
-        if (DRA::GetDisplayMode() == DRA::Landscape) {
-            _deviceLabel->setText(LABEL_DEVICE + LABEL_LANDSCAPE + LABEL_SUFFIX);
-            _gpsLabel->setText(LABEL_GPS + LABEL_LANDSCAPE + LABEL_SUFFIX);
-        }
-        else {
-            _deviceLabel->setText(LABEL_DEVICE + LABEL_SUFFIX);
-            _gpsLabel->setText(LABEL_GPS + LABEL_SUFFIX);
-        }
-        
         _deviceBox->setPosition(WM::Position(_deviceLabel->getSize().width(),
             _deviceLabel->getPosition().top()));
         
