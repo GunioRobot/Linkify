@@ -35,16 +35,17 @@ public:
         long margin = 8;
         long padding = 3;
         
-        WM::Margin labelMargin(margin, margin + padding, margin, margin + padding);
-        WM::Margin boxMargin(margin, margin, margin, margin);
+        WM::Margin labelMargin(margin, margin + padding, 0, margin + padding);
+        WM::Margin boxMargin(margin + margin, margin, margin, margin);
         
-        WM::Size labelSize(50 + padding, 20 + margin);
+        WM::Size labelSize(0, 20 + margin);
         WM::Size boxSize(WM::Length(100, WM::Percent), labelSize.height());
 
         deviceLabel->setSize(labelSize);
         deviceLabel->setMargin(labelMargin);
+        deviceLabel->setFitToWidth(true);
 
-        gpsLabel->setSize(labelSize);
+        gpsLabel->setSize(deviceLabel->getSize());
         gpsLabel->setPosition(WM::Position(deviceLabel->getPosition().left(), deviceLabel->getSize().height()));
         gpsLabel->setMargin(labelMargin);
 
@@ -54,7 +55,7 @@ public:
         deviceBox->setReadOnly(true);
 
         gpsBox->setSize(boxSize);
-        gpsBox->setPosition(WM::Position(gpsLabel->getSize().width(), gpsLabel->getPosition().top()));
+        gpsBox->setPosition(WM::Position(deviceLabel->getSize().width(), gpsLabel->getPosition().top()));
         gpsBox->setMargin(boxMargin);
         gpsBox->setReadOnly(true);
 
