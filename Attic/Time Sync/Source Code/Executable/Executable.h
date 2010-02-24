@@ -35,7 +35,7 @@ public:
         long margin = 8;
         long padding = 3;
         
-        WM::Margin labelMargin(margin, margin + padding, margin, margin);
+        WM::Margin labelMargin(margin, margin + padding, margin, margin + padding);
         WM::Margin boxMargin(margin, margin, margin, margin);
         
         WM::Size labelSize(50 + padding, 20 + margin);
