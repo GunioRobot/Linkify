@@ -50,6 +50,9 @@ namespace WM {
         }
 
 
+        virtual void onTimeout() = 0;
+
+
         virtual void start(long seconds) {
             if (_id != INVALID_ID) {
                 throw Exception(S("Timer already started."));
@@ -76,9 +79,5 @@ namespace WM {
             _timers.erase(_id);
             _id = INVALID_ID;
         }
-
-
-    protected:
-        virtual void onTimeout() = 0;
     };
 }

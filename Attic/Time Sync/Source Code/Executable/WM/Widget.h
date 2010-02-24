@@ -13,8 +13,6 @@ namespace WM {
     // TODO: Prevent adding a widget to multiple windows, and multiple times to
     // the same window?
     class Widget: public Object {
-        friend class Window;
-
     private:
         static const DWORD DEFAULT_STYLE = WS_TABSTOP;
 
@@ -73,6 +71,35 @@ namespace WM {
         virtual ref<String> getText() {
             return _text;
         }
+        
+        
+        virtual void onLayoutResize(Size area) {
+            Margin margin = getMargin();
+            Position position = getPosition();
+            Size size = getSize();
+
+            size_t areaWidth = area.width().value();
+            size_t areaHeight = area.width().value();
+
+            size_t left = position.left().get(areaWidth)
+                + margin.left().get(areaWidth);
+            size_t top = position.top().get(areaHeight)
+                + margin.top().get(areaHeight);
+            
+            size_t width = size.width().get(areaWidth - left)
+                - margin.right().get(areaWidth);
+            size_t height = size.height().get(areaHeight - top)
+                - margin.bottom().get(areaHeight);
+
+            BOOL success = SetWindowPos(getHandle(), NULL,
+                DRA::SCALEX(left), DRA::SCALEY(top),
+                DRA::SCALEX(width), DRA::SCALEY(height),
+                SWP_NOZORDER);
+
+            if (!success) {
+                Exception::throwLastError();
+            }
+        }
 
 
         virtual void setMargin(Margin margin) {
@@ -115,35 +142,6 @@ namespace WM {
             BOOL success = SetWindowPos(getHandle(), NULL, 0, 0, 0, 0,
                 SWP_NOMOVE + SWP_NOSIZE + SWP_NOZORDER + SWP_FRAMECHANGED);
             
-            if (!success) {
-                Exception::throwLastError();
-            }
-        }
-        
-        
-        virtual void onOwnerResize(Size area) {
-            Margin margin = getMargin();
-            Position position = getPosition();
-            Size size = getSize();
-
-            size_t areaWidth = area.width().value();
-            size_t areaHeight = area.width().value();
-
-            size_t left = position.left().get(areaWidth)
-                + margin.left().get(areaWidth);
-            size_t top = position.top().get(areaHeight)
-                + margin.top().get(areaHeight);
-            
-            size_t width = size.width().get(areaWidth - left)
-                - margin.right().get(areaWidth);
-            size_t height = size.height().get(areaHeight - top)
-                - margin.bottom().get(areaHeight);
-
-            BOOL success = SetWindowPos(getHandle(), NULL,
-                DRA::SCALEX(left), DRA::SCALEY(top),
-                DRA::SCALEX(width), DRA::SCALEY(height),
-                SWP_NOZORDER);
-
             if (!success) {
                 Exception::throwLastError();
             }

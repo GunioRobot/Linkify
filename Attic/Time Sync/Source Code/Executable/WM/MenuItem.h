@@ -7,8 +7,6 @@
 
 namespace WM {
     class MenuItem: public Object {
-        friend class Menu;
-
     private:
         // Reserved for controls.
         static const UINT_PTR RESERVED_ID = 0;
@@ -29,7 +27,6 @@ namespace WM {
         }
 
 
-    protected:
         virtual UINT_PTR getId() {
             static UINT_PTR counter = RESERVED_ID;
 

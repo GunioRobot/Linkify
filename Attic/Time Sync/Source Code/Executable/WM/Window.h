@@ -140,6 +140,10 @@ namespace WM {
         }
 
 
+        virtual void onChoose(ref<MenuItem> item) {
+        }
+
+
         virtual void open(int mode) {
             ShowWindow(getHandle(), mode);
 
@@ -172,11 +176,6 @@ namespace WM {
         }
 
 
-    protected:
-        virtual void onChoose(ref<MenuItem> item) {
-        }
-
-
     private:
         void handleCommand(WPARAM wParam, LPARAM lParam) {
             WORD notifyCode = HIWORD(wParam);
@@ -206,7 +205,7 @@ namespace WM {
             Size area(width, height);
 
             for (size_t i = 0; i < _widgets.size(); ++i) {
-                _widgets[i]->onOwnerResize(area);
+                _widgets[i]->onLayoutResize(area);
             }
         }
 

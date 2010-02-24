@@ -9,8 +9,6 @@
 namespace WM {
     // TODO: Distinguish between MenuBar and PopupMenu?
     class Menu: public MenuItem {
-        friend class Window;
-
     private:
         HMENU _handle;
         std::vector<ref<MenuItem>> _items;
@@ -44,12 +42,6 @@ namespace WM {
         }
 
 
-        virtual size_t getItemCount() {
-            return _items.size();
-        }
-
-
-    protected:
         virtual UINT_PTR getId() {
             return (UINT_PTR) getHandle();
         }
@@ -71,7 +63,12 @@ namespace WM {
                 }
             }
 
-            return NULL;
+            throw Exception(S("No menu item with such identifier."));
+        }
+
+
+        virtual size_t getItemCount() {
+            return _items.size();
         }
 
 
