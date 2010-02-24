@@ -13,16 +13,16 @@ namespace WM {
 
 
     private:
-        ref<String> _caption;
+        String _caption;
         UINT_PTR _id;
 
 
     public:
-        MenuItem(ref<String> caption): _caption(caption), _id(RESERVED_ID) {
+        MenuItem(String caption): _caption(caption), _id(RESERVED_ID) {
         }
 
 
-        virtual ref<String> getCaption() {
+        virtual String& getCaption() {
             return _caption;
         }
 

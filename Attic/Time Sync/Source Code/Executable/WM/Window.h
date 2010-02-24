@@ -29,7 +29,7 @@ namespace WM {
 
 
     public:
-        static void createClass(ref<String> className) {
+        static void createClass(String className) {
             WNDCLASS windowClass;
 
             ZeroMemory(&windowClass, sizeof(WNDCLASS));
@@ -37,7 +37,7 @@ namespace WM {
             windowClass.lpfnWndProc = handler;
             windowClass.hInstance = NULL;
             windowClass.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
-            windowClass.lpszClassName = className->c_str();
+            windowClass.lpszClassName = className.c_str();
             
             if (RegisterClass(&windowClass) == 0) {
                 Exception::throwLastError();
@@ -45,8 +45,8 @@ namespace WM {
         }
 
 
-        static bool exists(ref<String> className, ref<String> title) {
-            HWND window = FindWindow(className->c_str(), title->c_str());
+        static bool exists(String className, String title) {
+            HWND window = FindWindow(className.c_str(), title.c_str());
 
             if (window != NULL) {
                 SetForegroundWindow(window);
@@ -104,7 +104,7 @@ namespace WM {
 
 
     public:
-        Window(ref<String> className, ref<String> title):
+        Window(String className, String title):
             Widget(className, title, WS_SYSMENU),
             _menuBar(NULL), _menuBarWindowHandle(NULL)
         {
@@ -161,6 +161,10 @@ namespace WM {
         }
 
 
+        virtual void onResize() {
+        }
+
+
         virtual void open(int mode) {
             ShowWindow(getHandle(), mode);
 
@@ -206,6 +210,8 @@ namespace WM {
 
 
         void handleResize(WPARAM wParam, LPARAM lParam) {
+            onResize();
+
             for (size_t i = 0; i < _widgets.size(); ++i) {
                 _widgets[i]->onParentResize();
             }

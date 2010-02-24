@@ -12,7 +12,9 @@ namespace WM {
 
 
     public:
-        Label(ref<String> text): Control(S("STATIC"), text), _fitToWidth(false) {
+        Label(String text = S("")):
+            Control(S("STATIC"), text), _fitToWidth(false)
+        {
         }
 
 
@@ -21,10 +23,7 @@ namespace WM {
                 return WM::Control::getSize();
             }
 
-            Length width = getTextSize().width();
-            Length height = WM::Control::getSize().height();
-
-            return Size(width, height);
+            return Size(getTextSize().width(), Control::getSize().height());
         }
 
 
@@ -35,6 +34,15 @@ namespace WM {
 
         virtual void setFitToWidth(bool fitToWidth) {
             _fitToWidth = fitToWidth;
+        }
+
+
+        virtual void setText(String text) {
+            Control::setText(text);
+
+            if (isFitToWidth()) {
+                onParentResize();
+            }
         }
 
 
@@ -49,8 +57,8 @@ namespace WM {
             }
 
             BOOL success = GetTextExtentPoint(display,
-                getText()->c_str(),
-                getText()->length(),
+                getText().c_str(),
+                getText().length(),
                 &text);
 
             ReleaseDC(window, display);
@@ -59,7 +67,7 @@ namespace WM {
                 Exception::throwLastError();
             }
 
-            return Size(DRA::UNSCALEX(text.cx), DRA::UNSCALEY(text.cy));
+            return Size(DRA::UNSCALEX(text.cx) + DRA::SCALEX(2), DRA::UNSCALEY(text.cy));
         }
     };
 }

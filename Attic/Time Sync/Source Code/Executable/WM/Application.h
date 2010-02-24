@@ -10,7 +10,7 @@ namespace WM {
     public:
         static void error(Exception exception) {
             UINT type = MB_OK + MB_ICONERROR;
-            const TCHAR* message = exception.getMessage()->c_str();
+            const TCHAR* message = exception.getMessage().c_str();
 
             MessageBox(GetForegroundWindow(), message, NULL, type);
         }

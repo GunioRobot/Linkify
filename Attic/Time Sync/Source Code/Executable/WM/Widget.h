@@ -14,21 +14,21 @@ namespace WM {
     private:
         HWND _handle;
         ref<Widget> _parent;
-        ref<String> _text;
+        String _text;
         Margin _margin;
         Position _position;
         Size _size;
 
 
     public:
-        Widget(ref<String> className, ref<String> text = S(""), DWORD style = 0):
+        Widget(String className, String text = S(""), DWORD style = 0):
             _parent(NULL), _text(text)
         {
             HWND parent = ((style & WS_CHILD) != 0) ? GetDesktopWindow() : NULL;
 
             _handle = CreateWindow(
-                className->c_str(),
-                text->c_str(),
+                className.c_str(),
+                text.c_str(),
                 style,
                 CW_USEDEFAULT,
                 CW_USEDEFAULT,
@@ -70,7 +70,7 @@ namespace WM {
         }
 
 
-        virtual ref<String> getText() {
+        virtual String& getText() {
             return _text;
         }
         
@@ -137,8 +137,8 @@ namespace WM {
         }
 
 
-        virtual void setText(ref<String> text) {
-            if (!SetWindowText(getHandle(), text->c_str())) {
+        virtual void setText(String text) {
+            if (!SetWindowText(getHandle(), text.c_str())) {
                 Exception::throwLastError();
             }
             

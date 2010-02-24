@@ -2,11 +2,12 @@
 #include "WM.h"
 
 
-#define LABEL_DEVICE S("Device:")
-#define LABEL_GPS S("GPS:")
+#define LABEL_DEVICE S("Device")
+#define LABEL_GPS S("GPS")
+#define LABEL_LANDSCAPE S(" time")
+#define LABEL_SUFFIX S(":")
 
 #define MENU_BAR S("Menu")
-
 #define OPTION_EXIT S("Exit")
 #define OPTION_UPDATE S("Update")
 
@@ -19,18 +20,24 @@ private:
     ref<WM::MenuItem> _exitOption;
     ref<WM::MenuItem> _updateOption;
 
+    ref<WM::Label> _deviceLabel;
+    ref<WM::Label> _gpsLabel;
+    
+    ref<WM::TextBox> _deviceBox;
+    ref<WM::TextBox> _gpsBox;
+
 
 public:
     Executable(HINSTANCE handle):
         WM::Application(handle), WM::Window(WINDOW_CLASS, TITLE),
         _exitOption(new WM::MenuItem(OPTION_EXIT)),
-        _updateOption(new WM::MenuItem(OPTION_UPDATE))
+        _updateOption(new WM::MenuItem(OPTION_UPDATE)),
+        _deviceLabel(new WM::Label()),
+        _gpsLabel(new WM::Label()),
+        _deviceBox(new TimeTextBox(GetLocalTime)),
+        _gpsBox(new WM::TextBox())
     {
         ref<WM::Menu> menuBar = new WM::Menu(MENU_BAR);
-        ref<WM::Label> deviceLabel = new WM::Label(LABEL_DEVICE);
-        ref<WM::TextBox> deviceBox = new TimeTextBox(GetLocalTime);
-        ref<WM::Label> gpsLabel = new WM::Label(LABEL_GPS);
-        ref<WM::TextBox> gpsBox = new WM::TextBox();
 
         long margin = 8;
         long padding = 3;
@@ -41,32 +48,32 @@ public:
         WM::Size labelSize(0, 20 + margin);
         WM::Size boxSize(WM::Length(100, WM::Percent), labelSize.height());
 
-        deviceLabel->setSize(labelSize);
-        deviceLabel->setMargin(labelMargin);
-        deviceLabel->setFitToWidth(true);
+        _deviceLabel->setSize(labelSize);
+        _deviceLabel->setMargin(labelMargin);
+        _deviceLabel->setFitToWidth(true);
 
-        gpsLabel->setSize(deviceLabel->getSize());
-        gpsLabel->setPosition(WM::Position(deviceLabel->getPosition().left(), deviceLabel->getSize().height()));
-        gpsLabel->setMargin(labelMargin);
+        _gpsLabel->setSize(labelSize);
+        _gpsLabel->setPosition(WM::Position(_deviceLabel->getPosition().left(),
+            _deviceLabel->getSize().height()));
+        _gpsLabel->setMargin(labelMargin);
+        _gpsLabel->setFitToWidth(true);
 
-        deviceBox->setSize(boxSize);
-        deviceBox->setPosition(WM::Position(deviceLabel->getSize().width(), deviceLabel->getPosition().top()));
-        deviceBox->setMargin(boxMargin);
-        deviceBox->setReadOnly(true);
+        _deviceBox->setSize(boxSize);
+        _deviceBox->setMargin(boxMargin);
+        _deviceBox->setReadOnly(true);
 
-        gpsBox->setSize(boxSize);
-        gpsBox->setPosition(WM::Position(deviceLabel->getSize().width(), gpsLabel->getPosition().top()));
-        gpsBox->setMargin(boxMargin);
-        gpsBox->setReadOnly(true);
+        _gpsBox->setSize(boxSize);
+        _gpsBox->setMargin(boxMargin);
+        _gpsBox->setReadOnly(true);
 
         menuBar->add(_updateOption);
         menuBar->add(_exitOption);
 
         setMenuBar(menuBar);
-        add(deviceLabel);
-        add(deviceBox);
-        add(gpsLabel);
-        add(gpsBox);
+        add(_deviceLabel);
+        add(_deviceBox);
+        add(_gpsLabel);
+        add(_gpsBox);
     }
 
 
@@ -74,6 +81,24 @@ public:
         if (item == _exitOption) {
             close();
         }
+    }
+
+
+    virtual void onResize() {
+        if (DRA::GetDisplayMode() == DRA::Landscape) {
+            _deviceLabel->setText(LABEL_DEVICE + LABEL_LANDSCAPE + LABEL_SUFFIX);
+            _gpsLabel->setText(LABEL_GPS + LABEL_LANDSCAPE + LABEL_SUFFIX);
+        }
+        else {
+            _deviceLabel->setText(LABEL_DEVICE + LABEL_SUFFIX);
+            _gpsLabel->setText(LABEL_GPS + LABEL_SUFFIX);
+        }
+        
+        _deviceBox->setPosition(WM::Position(_deviceLabel->getSize().width(),
+            _deviceLabel->getPosition().top()));
+        
+        _gpsBox->setPosition(WM::Position(_deviceLabel->getSize().width(),
+            _gpsLabel->getPosition().top()));
     }
 
 

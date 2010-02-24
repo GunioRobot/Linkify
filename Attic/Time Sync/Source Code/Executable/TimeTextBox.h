@@ -11,7 +11,6 @@ private:
 private:
     void (*_getTime)(SYSTEMTIME*);
     TCHAR _buffer[_LENGTH];
-    WM::String _time;
 
 
 public:
@@ -32,7 +31,6 @@ protected:
             time.wYear, time.wMonth, time.wDay,
             time.wHour, time.wMinute, time.wSecond);
 
-        _time = _buffer;
-        setText(noref &_time);
+        setText(_buffer);
     }
 };

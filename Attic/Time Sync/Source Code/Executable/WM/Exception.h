@@ -22,7 +22,7 @@ namespace WM {
                 0,
                 NULL);
 
-            ref<String> message = (length == 0) ? NULL : new String(buffer);
+            String message = (length == 0) ? NULL : buffer;
             LocalFree(buffer);
             
             throw Exception(message);
@@ -30,15 +30,15 @@ namespace WM {
 
 
     private:
-        ref<String> _message;
+        String _message;
 
 
     public:
-        Exception(ref<String> message): _message(message) {
+        Exception(String message): _message(message) {
         }
 
 
-        virtual ref<String> getMessage() {
+        virtual String& getMessage() {
             return _message;
         }
     };

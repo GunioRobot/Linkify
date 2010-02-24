@@ -14,7 +14,7 @@ namespace WM {
 
 
     public:
-        Menu(ref<String> caption):
+        Menu(String caption):
             MenuItem(caption), _handle(CreatePopupMenu())
         {
             if (_handle == NULL) {
@@ -26,7 +26,7 @@ namespace WM {
         virtual void add(ref<MenuItem> item) {
             UINT flags = item->getType();
             UINT_PTR id = item->getId();
-            LPCTSTR caption = item->getCaption()->c_str();
+            LPCTSTR caption = item->getCaption().c_str();
 
             if (!AppendMenu(getHandle(), flags, id, caption)) {
                 Exception::throwLastError();

@@ -8,7 +8,7 @@
 namespace WM {
     class TextBox: public Control {
     public:
-        TextBox(ref<String> text = S("")):
+        TextBox(String text = S("")):
             Control(S("EDIT"), text, WS_BORDER + ES_AUTOHSCROLL)
         {
         }
