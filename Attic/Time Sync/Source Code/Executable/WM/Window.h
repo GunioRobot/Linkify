@@ -7,16 +7,11 @@
 #include "Exception.h"
 #include "Menu.h"
 #include "MenuItem.h"
-#include "Object.h"
-#include "String.h"
 #include "Widget.h"
 
 
 namespace WM {
-    // TODO: Implement removal of child widgets.
-    // TODO: Implement removal of the menu bar, and check if one has been added
-    // already.
-    class Window: public Object {
+    class Window: public Widget {
     private:
         static struct State {
             Window* instance;
@@ -34,7 +29,23 @@ namespace WM {
 
 
     public:
-        static bool exists(ref<String> title, ref<String> className) {
+        static void createClass(ref<String> className) {
+            WNDCLASS windowClass;
+
+            ZeroMemory(&windowClass, sizeof(WNDCLASS));
+            windowClass.style = CS_HREDRAW | CS_VREDRAW;
+            windowClass.lpfnWndProc = handler;
+            windowClass.hInstance = NULL;
+            windowClass.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
+            windowClass.lpszClassName = className->c_str();
+            
+            if (RegisterClass(&windowClass) == 0) {
+                Exception::throwLastError();
+            }
+        }
+
+
+        static bool exists(ref<String> className, ref<String> title) {
             HWND window = FindWindow(className->c_str(), title->c_str());
 
             if (window != NULL) {
@@ -87,47 +98,26 @@ namespace WM {
 
 
     private:
-        HWND _handle;
         ref<Menu> _menuBar;
         HWND _menuBarWindowHandle;
         std::vector<ref<Widget>> _widgets;
 
 
     public:
-        Window(ref<String> title, ref<String> className):
-            _handle(NULL), _menuBar(NULL), _menuBarWindowHandle(NULL)
+        Window(ref<String> className, ref<String> title):
+            Widget(className, title, WS_SYSMENU),
+            _menuBar(NULL), _menuBarWindowHandle(NULL)
         {
-            if (exists(title, className)) {
-                throw Exception(S("Duplicate window."));
-            }
-            
-            WNDCLASS windowClass;
-
-            ZeroMemory(&windowClass, sizeof(WNDCLASS));
-            windowClass.style = CS_HREDRAW | CS_VREDRAW;
-            windowClass.lpfnWndProc = handler;
-            windowClass.hInstance = NULL;
-            windowClass.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
-            windowClass.lpszClassName = className->c_str();
-            
-            if (RegisterClass(&windowClass) == 0) {
+            if (!SHInitExtraControls()) {
                 Exception::throwLastError();
             }
 
-            _handle = CreateWindow(className->c_str(), title->c_str(),
-                WS_SYSMENU, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-                CW_USEDEFAULT, NULL, NULL, NULL, NULL);
-
-            if ((_handle == NULL) || !SHInitExtraControls()) {
-                Exception::throwLastError();
-            }
-
-            _windows[_handle]->instance = this;
+            _windows[getHandle()]->instance = this;
         }
 
 
         ~Window() {
-            _windows.erase(_handle);
+            _windows.erase(getHandle());
         }
 
 
@@ -146,11 +136,6 @@ namespace WM {
         }
 
 
-        virtual HWND getHandle() {
-            return _handle;
-        }
-
-
         virtual void onChoose(ref<MenuItem> item) {
         }
 
@@ -166,7 +151,7 @@ namespace WM {
 
         virtual void setMenuBar(ref<Menu> menu) {
             if (menu->getItemCount() > 2) {
-                throw Exception(S("Too many items in the menu bar."));
+                throw Exception(S("Too many items for a menu bar."));
             }
             
             SHMENUBARINFO info;

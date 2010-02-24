@@ -218,6 +218,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\WM\Control.h"
+				>
+			</File>
+			<File
 				RelativePath=".\WM\Exception.h"
 				>
 			</File>

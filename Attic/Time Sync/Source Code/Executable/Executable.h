@@ -22,7 +22,7 @@ private:
 
 public:
     Executable(HINSTANCE handle):
-        WM::Application(handle), WM::Window(TITLE, WINDOW_CLASS),
+        WM::Application(handle), WM::Window(WINDOW_CLASS, TITLE),
         _exitOption(new WM::MenuItem(OPTION_EXIT)),
         _updateOption(new WM::MenuItem(OPTION_UPDATE))
     {

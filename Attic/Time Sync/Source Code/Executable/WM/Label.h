@@ -1,13 +1,13 @@
 #pragma once
 
 
-#include "Widget.h"
+#include "Control.h"
 
 
 namespace WM {
-    class Label: public Widget {
+    class Label: public Control {
     public:
-        Label(ref<String> text): Widget(S("STATIC"), text) {
+        Label(ref<String> text): Control(S("STATIC"), text) {
         }
     };
 }

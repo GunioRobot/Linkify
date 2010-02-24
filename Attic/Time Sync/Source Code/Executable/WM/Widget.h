@@ -10,13 +10,7 @@
 
 
 namespace WM {
-    // TODO: Prevent adding a widget to multiple windows, and multiple times to
-    // the same window?
     class Widget: public Object {
-    private:
-        static const DWORD DEFAULT_STYLE = WS_TABSTOP;
-
-
     private:
         HWND _handle;
         ref<String> _text;
@@ -29,15 +23,17 @@ namespace WM {
         Widget(ref<String> className, ref<String> text = S(""), DWORD style = 0):
             _text(text)
         {
+            HWND parent = ((style & WS_CHILD) != 0) ? GetDesktopWindow() : NULL;
+
             _handle = CreateWindow(
                 className->c_str(),
                 text->c_str(),
-                WS_CHILD + DEFAULT_STYLE + style,
+                style,
                 CW_USEDEFAULT,
                 CW_USEDEFAULT,
                 CW_USEDEFAULT,
                 CW_USEDEFAULT,
-                GetDesktopWindow(),
+                parent,
                 NULL,
                 NULL,
                 NULL);
@@ -51,13 +47,13 @@ namespace WM {
         virtual HWND getHandle() {
             return _handle;
         }
-
-
+        
+            
         virtual Margin getMargin() {
             return _margin;
         }
-
-
+        
+        
         virtual Position getPosition() {
             return _position;
         }
@@ -128,8 +124,6 @@ namespace WM {
 
     protected:
         virtual void changeStyle(DWORD style) {
-            style += DEFAULT_STYLE;
-
             // Distinguish between a previous value of zero and zero as an
             // indicator of an error.
             SetLastError(0);

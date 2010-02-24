@@ -2,14 +2,14 @@
 
 
 #include "Exception.h"
-#include "Widget.h"
+#include "Control.h"
 
 
 namespace WM {
-    class TextBox: public Widget {
+    class TextBox: public Control {
     public:
         TextBox(ref<String> text = S("")):
-            Widget(S("EDIT"), text, WS_BORDER + ES_AUTOHSCROLL)
+            Control(S("EDIT"), text, WS_BORDER + ES_AUTOHSCROLL)
         {
         }
 
