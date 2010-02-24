@@ -3,6 +3,7 @@
 
 #include "Exception.h"
 #include "Object.h"
+#include "Position.h"
 #include "Size.h"
 #include "String.h"
 
@@ -20,14 +21,14 @@ namespace WM {
     private:
         HWND _handle;
         ref<String> _text;
-        ref<Size> _size;
-        long _left, _top;
+        Size _size;
+        Position _position;
         RECT _margin;
 
 
     public:
         Widget(ref<String> className, ref<String> text = S(""), DWORD style = 0):
-            _text(text), _size(new Size(0, 0)), _left(0), _top(0)
+            _text(text)
         {
             _handle = CreateWindow(
                 className->c_str(),
@@ -56,17 +57,17 @@ namespace WM {
         }
 
 
-        virtual long getLeft() {
-            return _left;
-        }
-
-
         virtual RECT getMargin() {
             return _margin;
         }
 
 
-        virtual ref<Size> getSize() {
+        virtual Position getPosition() {
+            return _position;
+        }
+
+
+        virtual Size getSize() {
             return _size;
         }
 
@@ -76,23 +77,17 @@ namespace WM {
         }
 
 
-        virtual long getTop() {
-            return _top;
-        }
-
-
         virtual void setMargin(RECT margin) {
             _margin = margin;
         }
 
 
-        virtual void setPosition(long left, long top) {
-            _left = left;
-            _top = top;
+        virtual void setPosition(Position position) {
+            _position = position;
         }
 
 
-        virtual void setSize(ref<Size> size) {
+        virtual void setSize(Size size) {
             _size = size;
         }
 
@@ -128,29 +123,21 @@ namespace WM {
         }
         
         
-        virtual void onContainerResize(long areaWidth, long areaHeight) {
+        virtual void onContainerResize(size_t totalWidth, size_t totalHeight) {
             RECT margin = getMargin();
-            long left = DRA::SCALEX(getLeft() + margin.left);
-            long top = DRA::SCALEY(getTop() + margin.top);
-            long width = getSize()->getWidth();
-            long height = getSize()->getHeight();
+            Position position = getPosition();
+            Size size = getSize();
 
-            if (width == Size::EXPANDABLE) {
-                width = areaWidth - left - DRA::SCALEX(margin.right);
-            }
-            else {
-                width = DRA::SCALEX(width - margin.right);
-            }
-
-            if (height == Size::EXPANDABLE) {
-                height = areaHeight - top - DRA::SCALEY(margin.bottom);
-            }
-            else {
-                height = DRA::SCALEY(height - margin.bottom);
-            }
+            size_t left = position.getLeft().compute(totalWidth) + margin.left;
+            size_t top = position.getTop().compute(totalHeight) + margin.top;
+            
+            size_t width = size.getWidth().compute(totalWidth - left) - margin.right;
+            size_t height = size.getHeight().compute(totalHeight - top) - margin.bottom;
 
             BOOL success = SetWindowPos(getHandle(), NULL,
-                left, top, width, height, SWP_NOZORDER);
+                DRA::SCALEX(left), DRA::SCALEY(top),
+                DRA::SCALEX(width), DRA::SCALEY(height),
+                SWP_NOZORDER);
 
             if (!success) {
                 Exception::throwLastError();

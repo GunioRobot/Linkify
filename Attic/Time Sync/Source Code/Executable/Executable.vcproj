@@ -200,6 +200,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\WM\Unit.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\WM\Window.cpp"
 				>
 			</File>
@@ -226,6 +230,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\WM\Length.h"
+				>
+			</File>
+			<File
 				RelativePath=".\WM\Menu.h"
 				>
 			</File>
@@ -235,6 +243,10 @@
 			</File>
 			<File
 				RelativePath=".\WM\Object.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\Position.h"
 				>
 			</File>
 			<File
@@ -263,6 +275,10 @@
 			</File>
 			<File
 				RelativePath=".\TimeTextBox.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\Unit.h"
 				>
 			</File>
 			<File

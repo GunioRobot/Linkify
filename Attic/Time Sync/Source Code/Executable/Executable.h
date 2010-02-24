@@ -26,24 +26,23 @@ public:
         RECT labelMargin = {margin, margin + padding, margin, margin};
         RECT boxMargin = {margin, margin, margin, margin};
         
-        ref<WM::Size> labelSize = new WM::Size(50 + padding, 20 + margin);
-        ref<WM::Size> boxSize = new WM::Size(WM::Size::EXPANDABLE, labelSize->getHeight());
+        WM::Size labelSize(50 + padding, 20 + margin);
+        WM::Size boxSize(WM::Length(100, WM::Percent), labelSize.getHeight());
 
         deviceLabel->setSize(labelSize);
-        deviceLabel->setPosition(0, 0);
         deviceLabel->setMargin(labelMargin);
 
         gpsLabel->setSize(labelSize);
-        gpsLabel->setPosition(0, labelSize->getHeight());
+        gpsLabel->setPosition(WM::Position(deviceLabel->getPosition().getLeft(), deviceLabel->getSize().getHeight()));
         gpsLabel->setMargin(labelMargin);
 
         deviceBox->setSize(boxSize);
-        deviceBox->setPosition(labelSize->getWidth(), 0);
+        deviceBox->setPosition(WM::Position(deviceLabel->getSize().getWidth(), deviceLabel->getPosition().getTop()));
         deviceBox->setMargin(boxMargin);
         deviceBox->setReadOnly(true);
 
         gpsBox->setSize(boxSize);
-        gpsBox->setPosition(labelSize->getWidth(), gpsLabel->getTop());
+        gpsBox->setPosition(WM::Position(gpsLabel->getSize().getWidth(), gpsLabel->getPosition().getTop()));
         gpsBox->setMargin(boxMargin);
         gpsBox->setReadOnly(true);
 

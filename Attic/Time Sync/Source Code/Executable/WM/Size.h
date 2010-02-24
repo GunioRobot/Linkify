@@ -1,33 +1,32 @@
 #pragma once
 
 
+#include "Length.h"
 #include "Object.h"
 
 
 namespace WM {
     class Size: public Object {
-    public:
-        enum {
-            EXPANDABLE = -1,
-        };
-
-
     private:
-        long _width;
-        long _height;
+        Length _width;
+        Length _height;
 
 
     public:
-        Size(long width, long height): _width(width), _height(height) {
+        Size(): _width(0), _height(0) {
         }
 
 
-        virtual long getHeight() {
+        Size(Length width, Length height): _width(width), _height(height) {
+        }
+
+
+        Length getHeight() {
             return _height;
         }
 
 
-        virtual long getWidth() {
+        Length getWidth() {
             return _width;
         }
     };

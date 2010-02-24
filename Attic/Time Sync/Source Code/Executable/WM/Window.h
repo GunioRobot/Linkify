@@ -190,8 +190,8 @@ namespace WM {
 
 
         void handleResize(WPARAM wParam, LPARAM lParam) {
-            long width = LOWORD(lParam);
-            long height = HIWORD(lParam);
+            size_t width = DRA::UNSCALEX(LOWORD(lParam));
+            size_t height = DRA::UNSCALEY(HIWORD(lParam));
 
             if (_menuBarWindowHandle != NULL) {
                 RECT size;
@@ -200,7 +200,7 @@ namespace WM {
                     Exception::throwLastError();
                 }
 
-                height -= size.bottom - size.top;
+                height -= DRA::UNSCALEY(size.bottom - size.top);
             }
 
             for (size_t i = 0; i < _widgets.size(); ++i) {
