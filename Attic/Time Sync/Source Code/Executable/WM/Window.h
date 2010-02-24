@@ -204,7 +204,7 @@ namespace WM {
             }
 
             for (size_t i = 0; i < _widgets.size(); ++i) {
-                _widgets[i]->onContainerResize(width, height);
+                _widgets[i]->onOwnerResize(width, height);
             }
         }
 

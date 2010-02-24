@@ -2,6 +2,7 @@
 
 
 #include "Exception.h"
+#include "Margin.h"
 #include "Object.h"
 #include "Position.h"
 #include "Size.h"
@@ -21,9 +22,9 @@ namespace WM {
     private:
         HWND _handle;
         ref<String> _text;
-        Size _size;
+        Margin _margin;
         Position _position;
-        RECT _margin;
+        Size _size;
 
 
     public:
@@ -46,9 +47,6 @@ namespace WM {
             if (_handle == NULL) {
                 Exception::throwLastError();
             }
-            
-            _margin.bottom = _margin.top = 0;
-            _margin.left = _margin.right = 0;
         }
 
 
@@ -57,7 +55,7 @@ namespace WM {
         }
 
 
-        virtual RECT getMargin() {
+        virtual Margin getMargin() {
             return _margin;
         }
 
@@ -77,7 +75,7 @@ namespace WM {
         }
 
 
-        virtual void setMargin(RECT margin) {
+        virtual void setMargin(Margin margin) {
             _margin = margin;
         }
 
@@ -123,16 +121,16 @@ namespace WM {
         }
         
         
-        virtual void onContainerResize(size_t totalWidth, size_t totalHeight) {
-            RECT margin = getMargin();
+        virtual void onOwnerResize(size_t totalWidth, size_t totalHeight) {
+            Margin margin = getMargin();
             Position position = getPosition();
             Size size = getSize();
 
-            size_t left = position.getLeft().compute(totalWidth) + margin.left;
-            size_t top = position.getTop().compute(totalHeight) + margin.top;
+            size_t left = position.left().compute(totalWidth) + margin.left().compute(totalWidth);
+            size_t top = position.top().compute(totalHeight) + margin.top().compute(totalHeight);
             
-            size_t width = size.getWidth().compute(totalWidth - left) - margin.right;
-            size_t height = size.getHeight().compute(totalHeight - top) - margin.bottom;
+            size_t width = size.width().compute(totalWidth - left) - margin.right().compute(totalWidth);
+            size_t height = size.height().compute(totalHeight - top) - margin.bottom().compute(totalHeight);
 
             BOOL success = SetWindowPos(getHandle(), NULL,
                 DRA::SCALEX(left), DRA::SCALEY(top),

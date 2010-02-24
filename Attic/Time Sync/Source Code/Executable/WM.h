@@ -5,6 +5,7 @@
 #include "WM/Exception.h"
 #include "WM/Label.h"
 #include "WM/Length.h"
+#include "WM/Margin.h"
 #include "WM/Menu.h"
 #include "WM/MenuItem.h"
 #include "WM/Object.h"

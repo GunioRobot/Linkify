@@ -21,12 +21,12 @@ namespace WM {
         }
 
 
-        Length getLeft() {
+        Length left() {
             return _left;
         }
 
 
-        Length getTop() {
+        Length top() {
             return _top;
         }
     };

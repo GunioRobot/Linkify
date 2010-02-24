@@ -234,6 +234,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\WM\Margin.h"
+				>
+			</File>
+			<File
 				RelativePath=".\WM\Menu.h"
 				>
 			</File>
