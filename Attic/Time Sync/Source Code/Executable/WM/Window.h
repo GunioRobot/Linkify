@@ -115,7 +115,7 @@ namespace WM {
             }
 
             _handle = CreateWindow(className->c_str(), title->c_str(),
-                WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+                WS_SYSMENU, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
                 CW_USEDEFAULT, NULL, NULL, GetModuleHandle(NULL), NULL);
 
             if ((_handle == NULL) || !SHInitExtraControls()) {
