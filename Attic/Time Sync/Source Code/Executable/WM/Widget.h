@@ -75,7 +75,7 @@ namespace WM {
         }
         
         
-        virtual void onParentResize() {
+        virtual void onResize() {
             if (getParent() == NULL) {
                 return;
             }
@@ -111,7 +111,7 @@ namespace WM {
 
         virtual void setMargin(Margin margin) {
             _margin = margin;
-            onParentResize();
+            onResize();
         }
 
 
@@ -127,13 +127,13 @@ namespace WM {
 
         virtual void setPosition(Position position) {
             _position = position;
-            onParentResize();
+            onResize();
         }
 
 
         virtual void setSize(Size size) {
             _size = size;
-            onParentResize();
+            onResize();
         }
 
 

@@ -2,5 +2,5 @@
 
 
 namespace WM {
-    std::map<HWND, ref<Window::State>> Window::_windows;
+    std::map<HWND, Window::State> Window::_windows;
 }

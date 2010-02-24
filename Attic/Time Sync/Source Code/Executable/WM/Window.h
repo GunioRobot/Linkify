@@ -25,7 +25,7 @@ namespace WM {
         };
 
 
-        static std::map<HWND, ref<State>> _windows;
+        static std::map<HWND, State> _windows;
 
 
     public:
@@ -65,27 +65,27 @@ namespace WM {
             LPARAM lParam)
         {
             if (_windows.find(handle) == _windows.end()) {
-                _windows[handle] = new State();
+                _windows[handle] = State();
             }
             
-            ref<State> state = _windows[handle];
+            State& state = _windows[handle];
 
             switch (message) {
             case WM_ACTIVATE:
-                SHHandleWMActivate(handle, wParam, lParam, &state->sip, FALSE);
+                SHHandleWMActivate(handle, wParam, lParam, &state.sip, FALSE);
                 break;
             case WM_CREATE:
                 break;
             case WM_SETTINGCHANGE:
-                SHHandleWMSettingChange(handle, wParam, lParam, &state->sip);
+                SHHandleWMSettingChange(handle, wParam, lParam, &state.sip);
                 break;
             default:
-                if (!state->exceptionCaught && (state->instance != NULL)) {
+                if (!state.exceptionCaught && (state.instance != NULL)) {
                     try {
-                        return state->instance->handler(message, wParam, lParam);
+                        return state.instance->handler(message, wParam, lParam);
                     }
                     catch (Exception exception) {
-                        state->exceptionCaught = true;
+                        state.exceptionCaught = true;
                         Application::exit(exception);
                     }
                 }
@@ -106,13 +106,14 @@ namespace WM {
     public:
         Window(String className, String title):
             Widget(className, title, WS_SYSMENU),
-            _menuBar(NULL), _menuBarWindowHandle(NULL)
+            _menuBar(NULL),
+            _menuBarWindowHandle(NULL)
         {
             if (!SHInitExtraControls()) {
                 Exception::throwLastError();
             }
 
-            _windows[getHandle()]->instance = this;
+            _windows[getHandle()].instance = this;
         }
 
 
@@ -201,7 +202,6 @@ namespace WM {
         void handleCommand(WPARAM wParam, LPARAM lParam) {
             WORD notifyCode = HIWORD(wParam);
             WORD id = LOWORD(wParam);
-            HWND handle = (HWND) lParam;
 
             if ((notifyCode == 0) && (id != 0) && (_menuBar != NULL)) {
                 onChoose(_menuBar->getItemById(id));
@@ -211,7 +211,7 @@ namespace WM {
 
         void handleResize(WPARAM wParam, LPARAM lParam) {
             for (size_t i = 0; i < _widgets.size(); ++i) {
-                _widgets[i]->onParentResize();
+                _widgets[i]->onResize();
             }
             
             onResize();

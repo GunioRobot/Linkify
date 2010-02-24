@@ -22,7 +22,6 @@ public:
     }
 
 
-protected:
     virtual void onTimeout() {
         SYSTEMTIME time;
         _getTime(&time);

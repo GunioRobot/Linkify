@@ -18,11 +18,11 @@ namespace WM {
         }
 
 
-        virtual void onParentResize() {
+        virtual void onResize() {
             String& intended = getIntendedText();
             
             if (getText() == intended) {
-                Label::onParentResize();
+                Label::onResize();
             }
             else {
                 setText(intended);

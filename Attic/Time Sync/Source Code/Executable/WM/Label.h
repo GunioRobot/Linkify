@@ -36,7 +36,7 @@ namespace WM {
             _fitToWidth = fitToWidth;
             
             if (isFitToWidth()) {
-                onParentResize();
+                onResize();
             }
         }
 
@@ -45,7 +45,7 @@ namespace WM {
             Control::setText(text);
 
             if (isFitToWidth()) {
-                onParentResize();
+                onResize();
             }
         }
 

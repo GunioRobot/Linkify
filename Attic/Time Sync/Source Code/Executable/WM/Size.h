@@ -21,12 +21,12 @@ namespace WM {
         }
 
 
-        Length height() {
+        virtual Length height() {
             return _height;
         }
 
 
-        Length width() {
+        virtual Length width() {
             return _width;
         }
     };

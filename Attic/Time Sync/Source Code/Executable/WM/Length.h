@@ -17,12 +17,12 @@ namespace WM {
         }
 
 
-        size_t value() {
+        virtual size_t value() {
             return _value;
         }
 
 
-        size_t value(size_t total) {
+        virtual size_t value(size_t total) {
             return (_unit == NULL) ? _value : _unit(_value, total);
         }
     };
