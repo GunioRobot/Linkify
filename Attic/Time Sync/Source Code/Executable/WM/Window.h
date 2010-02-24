@@ -33,6 +33,20 @@ namespace WM {
         static std::map<HWND, ref<State>> _windows;
 
 
+    public:
+        static bool exists(ref<String> title, ref<String> className) {
+            HWND window = FindWindow(className->c_str(), title->c_str());
+
+            if (window != NULL) {
+                SetForegroundWindow(window);
+                return true;
+            }
+
+            return false;
+        }
+
+
+    private:
         static LRESULT CALLBACK handler(
             HWND handle,
             UINT message,
@@ -83,11 +97,8 @@ namespace WM {
         Window(ref<String> title, ref<String> className):
             _handle(NULL), _menuBar(NULL), _menuBarWindowHandle(NULL)
         {
-            HWND window = FindWindow(className->c_str(), title->c_str());
-
-            if (window != NULL) {
-                SetForegroundWindow(window);
-                throw Exception(S("Duplicate window instance."));
+            if (exists(title, className)) {
+                throw Exception(S("Duplicate window."));
             }
             
             WNDCLASS windowClass;

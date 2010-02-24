@@ -9,6 +9,9 @@ int WINAPI WinMain(
     int windowShowMode)
 {
     try {
+        if (WM::Window::exists(TITLE, WINDOW_CLASS)) {
+            return EXIT_SUCCESS;
+        }
         return Executable(instance).start(windowShowMode);
     }
     catch (WM::Exception exception) {

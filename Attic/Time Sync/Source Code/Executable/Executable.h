@@ -2,6 +2,18 @@
 #include "WM.h"
 
 
+#define LABEL_DEVICE S("Device:")
+#define LABEL_GPS S("GPS:")
+
+#define MENU_BAR S("Menu")
+
+#define OPTION_EXIT S("Exit")
+#define OPTION_UPDATE S("Update")
+
+#define TITLE S("Time Sync")
+#define WINDOW_CLASS S("TIMESYNC")
+
+
 class Executable: public WM::Application, WM::Window {
 private:
     ref<WM::MenuItem> _exitOption;
@@ -10,14 +22,14 @@ private:
 
 public:
     Executable(HINSTANCE handle):
-        WM::Application(handle), WM::Window(S("Time Sync"), S("TIMESYNC")),
-        _exitOption(new WM::MenuItem(S("Exit"))),
-        _updateOption(new WM::MenuItem(S("Update")))
+        WM::Application(handle), WM::Window(TITLE, WINDOW_CLASS),
+        _exitOption(new WM::MenuItem(OPTION_EXIT)),
+        _updateOption(new WM::MenuItem(OPTION_UPDATE))
     {
-        ref<WM::Menu> mainMenu = new WM::Menu(S("Menu"));
-        ref<WM::Label> deviceLabel = new WM::Label(S("Device:"));
+        ref<WM::Menu> menuBar = new WM::Menu(MENU_BAR);
+        ref<WM::Label> deviceLabel = new WM::Label(LABEL_DEVICE);
         ref<WM::TextBox> deviceBox = new TimeTextBox(GetLocalTime);
-        ref<WM::Label> gpsLabel = new WM::Label(S("GPS:"));
+        ref<WM::Label> gpsLabel = new WM::Label(LABEL_GPS);
         ref<WM::TextBox> gpsBox = new WM::TextBox();
 
         long margin = 8;
@@ -46,10 +58,10 @@ public:
         gpsBox->setMargin(boxMargin);
         gpsBox->setReadOnly(true);
 
-        mainMenu->add(_updateOption);
-        mainMenu->add(_exitOption);
+        menuBar->add(_updateOption);
+        menuBar->add(_exitOption);
 
-        setMenuBar(mainMenu);
+        setMenuBar(menuBar);
         add(deviceLabel);
         add(deviceBox);
         add(gpsLabel);
