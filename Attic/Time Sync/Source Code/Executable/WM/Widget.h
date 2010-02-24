@@ -39,7 +39,7 @@ namespace WM {
                 CW_USEDEFAULT,
                 GetDesktopWindow(),
                 NULL,
-                GetModuleHandle(NULL),
+                NULL,
                 NULL);
 
             if (_handle == NULL) {

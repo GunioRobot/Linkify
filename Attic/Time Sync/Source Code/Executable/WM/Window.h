@@ -106,7 +106,7 @@ namespace WM {
             ZeroMemory(&windowClass, sizeof(WNDCLASS));
             windowClass.style = CS_HREDRAW | CS_VREDRAW;
             windowClass.lpfnWndProc = handler;
-            windowClass.hInstance = GetModuleHandle(NULL);
+            windowClass.hInstance = NULL;
             windowClass.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
             windowClass.lpszClassName = className->c_str();
             
@@ -116,7 +116,7 @@ namespace WM {
 
             _handle = CreateWindow(className->c_str(), title->c_str(),
                 WS_SYSMENU, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-                CW_USEDEFAULT, NULL, NULL, GetModuleHandle(NULL), NULL);
+                CW_USEDEFAULT, NULL, NULL, NULL, NULL);
 
             if ((_handle == NULL) || !SHInitExtraControls()) {
                 Exception::throwLastError();
