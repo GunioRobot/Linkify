@@ -7,7 +7,6 @@
 
 
 namespace WM {
-    // TODO: Distinguish between MenuBar and PopupMenu?
     class Menu: public MenuItem {
     private:
         HMENU _handle;

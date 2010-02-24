@@ -76,13 +76,17 @@ namespace WM {
         
         
         virtual void onParentResize() {
+            if (getParent() == NULL) {
+                return;
+            }
+
             Margin margin = getMargin();
             Position position = getPosition();
             Size size = getSize();
             Size area = getParent()->getSize();
 
             size_t areaWidth = area.width().value();
-            size_t areaHeight = area.width().value();
+            size_t areaHeight = area.height().value();
 
             size_t left = position.left().value(areaWidth)
                 + margin.left().value(areaWidth);
@@ -107,6 +111,7 @@ namespace WM {
 
         virtual void setMargin(Margin margin) {
             _margin = margin;
+            onParentResize();
         }
 
 
@@ -122,11 +127,13 @@ namespace WM {
 
         virtual void setPosition(Position position) {
             _position = position;
+            onParentResize();
         }
 
 
         virtual void setSize(Size size) {
             _size = size;
+            onParentResize();
         }
 
 
