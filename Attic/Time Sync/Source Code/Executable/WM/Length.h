@@ -13,12 +13,12 @@ namespace WM {
 
 
     public:
-        Length(size_t value, Unit unit = Pixel): _value(value), _unit(unit) {
+        Length(size_t value, Unit unit = NULL): _value(value), _unit(unit) {
         }
 
 
         size_t compute(size_t total) {
-            return _unit(_value, total);
+            return (_unit == NULL) ? _value : _unit(_value, total);
         }
     };
 }
