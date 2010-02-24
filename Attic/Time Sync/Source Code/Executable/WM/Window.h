@@ -203,8 +203,10 @@ namespace WM {
                 height -= DRA::UNSCALEY(size.bottom - size.top);
             }
 
+            Size area(width, height);
+
             for (size_t i = 0; i < _widgets.size(); ++i) {
-                _widgets[i]->onOwnerResize(width, height);
+                _widgets[i]->onOwnerResize(area);
             }
         }
 

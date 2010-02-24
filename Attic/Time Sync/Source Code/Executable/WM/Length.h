@@ -1,6 +1,7 @@
 #pragma once
 
 
+#include "Exception.h"
 #include "Object.h"
 #include "Unit.h"
 
@@ -17,8 +18,17 @@ namespace WM {
         }
 
 
-        size_t compute(size_t total) {
+        size_t get(size_t total) {
             return (_unit == NULL) ? _value : _unit(_value, total);
+        }
+
+
+        size_t value() {
+            if (_unit != NULL) {
+                throw Exception(S("Length value is abstract."));
+            }
+
+            return _value;
         }
     };
 }

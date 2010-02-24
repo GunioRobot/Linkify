@@ -121,16 +121,23 @@ namespace WM {
         }
         
         
-        virtual void onOwnerResize(size_t totalWidth, size_t totalHeight) {
+        virtual void onOwnerResize(Size area) {
             Margin margin = getMargin();
             Position position = getPosition();
             Size size = getSize();
 
-            size_t left = position.left().compute(totalWidth) + margin.left().compute(totalWidth);
-            size_t top = position.top().compute(totalHeight) + margin.top().compute(totalHeight);
+            size_t areaWidth = area.width().value();
+            size_t areaHeight = area.width().value();
+
+            size_t left = position.left().get(areaWidth)
+                + margin.left().get(areaWidth);
+            size_t top = position.top().get(areaHeight)
+                + margin.top().get(areaHeight);
             
-            size_t width = size.width().compute(totalWidth - left) - margin.right().compute(totalWidth);
-            size_t height = size.height().compute(totalHeight - top) - margin.bottom().compute(totalHeight);
+            size_t width = size.width().get(areaWidth - left)
+                - margin.right().get(areaWidth);
+            size_t height = size.height().get(areaHeight - top)
+                - margin.bottom().get(areaHeight);
 
             BOOL success = SetWindowPos(getHandle(), NULL,
                 DRA::SCALEX(left), DRA::SCALEY(top),
