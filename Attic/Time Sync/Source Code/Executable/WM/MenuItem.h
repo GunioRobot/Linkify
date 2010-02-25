@@ -9,7 +9,7 @@ namespace WM {
     class MenuItem: public Object {
     private:
         // Reserved for controls.
-        static const UINT_PTR RESERVED_ID = 0;
+        static const UINT_PTR _RESERVED_ID = 0;
 
 
     private:
@@ -18,7 +18,7 @@ namespace WM {
 
 
     public:
-        MenuItem(String caption): _caption(caption), _id(RESERVED_ID) {
+        MenuItem(String caption): _caption(caption), _id(_RESERVED_ID) {
         }
 
 
@@ -28,9 +28,9 @@ namespace WM {
 
 
         virtual UINT_PTR getId() {
-            static UINT_PTR counter = RESERVED_ID;
+            static UINT_PTR counter = _RESERVED_ID;
 
-            if (_id == RESERVED_ID) {
+            if (_id == _RESERVED_ID) {
                 _id = ++counter;
             }
 

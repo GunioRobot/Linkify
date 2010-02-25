@@ -15,6 +15,7 @@
 #include "WM/Ril.h"
 #include "WM/Size.h"
 #include "WM/String.h"
+#include "WM/StringBuffer.h"
 #include "WM/TextBox.h"
 #include "WM/Timer.h"
 #include "WM/Unit.h"

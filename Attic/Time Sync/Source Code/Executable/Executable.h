@@ -44,7 +44,8 @@ public:
         _deviceLabel(new WM::DynamicLabel(LABEL_DEVICE_SHORT, LABEL_DEVICE_LONG)),
         _gpsLabel(new WM::DynamicLabel(LABEL_GPS_SHORT, LABEL_GPS_LONG)),
         _deviceBox(new TimeTextBox(GetLocalTime)),
-        _gpsBox(new WM::TextBox())
+        _gpsBox(new WM::TextBox()),
+        _ril(new WM::Ril())
     {
         ref<WM::Menu> menuBar = new WM::Menu(MENU_BAR);
 
@@ -83,13 +84,6 @@ public:
         add(_deviceBox);
         add(_gpsLabel);
         add(_gpsBox);
-
-        try {
-            _ril = new WM::Ril();
-        }
-        catch (WM::Exception exception) {
-            _ril = NULL;
-        }
     }
 
 

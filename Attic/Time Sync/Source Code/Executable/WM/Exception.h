@@ -4,6 +4,7 @@
 #include <exception>
 #include "Object.h"
 #include "String.h"
+#include "StringBuffer.h"
 
 
 namespace WM {
@@ -21,11 +22,19 @@ namespace WM {
                 (LPTSTR) &buffer,
                 0,
                 NULL);
-
-            String message = (length == 0) ? NULL : buffer;
-            LocalFree(buffer);
             
-            throw Exception(message);
+            if (length == 0) {
+                StringBuffer message;
+                
+                message << TEXT("Code ") << code << TEXT(".");
+                throw Exception(message.str());
+            }
+            else {
+                String message(buffer);
+                
+                LocalFree(buffer);
+                throw Exception(message);
+            }
         }
 
 
