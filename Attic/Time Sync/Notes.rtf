@@ -3,10 +3,10 @@
 {\*\generator Msftedit 5.41.21.2509;}\viewkind4\uc1\pard\lang2070\b\f0\fs20 To Do:\b0  \par
 \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Add license.\par
 {\pntext\f1\'B7\tab}To get system time from RIL first check device capabilities {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/aa917950.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/aa917950.aspx}}}\f0\fs20 , then ask for the time {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/aa921517.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/aa921517.aspx}}}\f0\fs20  \par
-\lang1033{\pntext\f1\'B7\tab}Rename "Ril" to "CellularRadio"?\par
-{\pntext\f1\'B7\tab}Handle the "RIL_NOTIFY_RADIOPRESENCECHANGED" notification. Use special result objects built using mutexes, that allow querying and waiting for the asynchronous function call result?\par
-{\pntext\f1\'B7\tab}Convert RIL error codes to strings (use "FormatMessage" with the library handle).\par
-{\pntext\f1\'B7\tab}Create a TimeSource class. (Use it to wrap Ril.)\par
+\lang1033{\pntext\f1\'B7\tab}Handle the "RIL_NOTIFY_RADIOPRESENCECHANGED" notification. Use special result objects built using mutexes, that allow querying and waiting for the asynchronous function call result?\par
+{\pntext\f1\'B7\tab}Convert RIL error codes to strings (use "FormatMessage" with the library handle). Use better error messages for thrown exceptions.\par
+{\pntext\f1\'B7\tab}Create a mock RIL to use for testing under the debugger/emulator?\par
+{\pntext\f1\'B7\tab}Create a TimeSource class.\par
 \lang2070{\pntext\f1\'B7\tab}Move WM code to a separate project as a library.\lang1033\par
 \lang2070{\pntext\f1\'B7\tab}Add documentation when the interface is final.\par
 {\pntext\f1\'B7\tab}Read Windows Mobile documentation on MSDN.\par

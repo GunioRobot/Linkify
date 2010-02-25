@@ -7,11 +7,11 @@
 
 
 namespace WM {
-    class Ril: public Object {
+    class CellularRadio: public Object {
     private:
         static const DWORD _PORT = 1;
         static size_t _references;
-        static std::map<HRIL, Ril*> _instances;
+        static std::map<HRIL, CellularRadio*> _instances;
 
 
         static void CALLBACK notifyHandler(
@@ -38,9 +38,9 @@ namespace WM {
 
 
     public:
-        Ril(): _handle(NULL) {
+        CellularRadio(): _handle(NULL) {
             if ((_references == 0) && !RIL_Load()) {
-                throw Exception(S("RIL loading failed."));
+                throw Exception(S("RIL_Load"));
             }
             
             ++_references;
@@ -49,20 +49,20 @@ namespace WM {
                 resultHandler, notifyHandler, RIL_NCLASS_ALL, 0, &_handle);
 
             if (FAILED(result)) {
-                throw Exception(S("RIL initialization failed."));
+                throw Exception(S("RIL_Initialize"));
             }
         }
 
 
-        virtual ~Ril() {
+        virtual ~CellularRadio() {
             HRESULT result = RIL_Deinitialize(_handle);
 
             if ((--_references == 0) && !RIL_Unload()) {
-                throw Exception(S("RIL unloading failed."));
+                throw Exception(S("RIL_Unload"));
             }
 
             if (FAILED(result)) {
-                throw Exception(S("RIL finalization failed."));
+                throw Exception(S("RIL_Deinitialize"));
             }
         }
     };

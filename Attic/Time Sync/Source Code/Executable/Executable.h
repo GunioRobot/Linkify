@@ -32,7 +32,7 @@ private:
     ref<WM::TextBox> _deviceBox;
     ref<WM::TextBox> _gpsBox;
 
-    ref<WM::Ril> _ril;
+    ref<WM::CellularRadio> _cellularRadio;
 
 
 public:
@@ -45,7 +45,7 @@ public:
         _gpsLabel(new WM::DynamicLabel(LABEL_GPS_SHORT, LABEL_GPS_LONG)),
         _deviceBox(new TimeTextBox(GetLocalTime)),
         _gpsBox(new WM::TextBox()),
-        _ril(new WM::Ril())
+        _cellularRadio(new WM::CellularRadio())
     {
         ref<WM::Menu> menuBar = new WM::Menu(MENU_BAR);
 

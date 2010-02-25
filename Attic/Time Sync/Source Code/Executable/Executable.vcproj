@@ -192,11 +192,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\main.cpp"
+				RelativePath=".\WM\CellularRadio.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Ril.cpp"
+				RelativePath=".\main.cpp"
 				>
 			</File>
 			<File
@@ -223,6 +223,10 @@
 			>
 			<File
 				RelativePath=".\WM\Application.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\CellularRadio.h"
 				>
 			</File>
 			<File
@@ -271,10 +275,6 @@
 			</File>
 			<File
 				RelativePath=".\WM\Core\ref.h"
-				>
-			</File>
-			<File
-				RelativePath=".\WM\Ril.h"
 				>
 			</File>
 			<File
