@@ -196,6 +196,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\WM\Ril.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\Core\rilWrapper.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\WM\Timer.cpp"
 				>
 			</File>
@@ -262,7 +270,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\WM\ref.h"
+				RelativePath=".\WM\Core\ref.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\Ril.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\Core\ril.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\Core\rilWrapper.h"
 				>
 			</File>
 			<File
@@ -270,7 +290,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\WM\stdafx.h"
+				RelativePath=".\WM\Core\stdafx.h"
 				>
 			</File>
 			<File

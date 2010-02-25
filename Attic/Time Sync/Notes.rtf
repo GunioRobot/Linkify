@@ -3,6 +3,7 @@
 {\*\generator Msftedit 5.41.21.2509;}\viewkind4\uc1\pard\lang2070\b\f0\fs20 To Do:\b0  \par
 \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Add license.\par
 {\pntext\f1\'B7\tab}Find out why the SIP icon appears after screen rotation, in my Sony Ericsson X1.\par
+{\pntext\f1\'B7\tab}To get system time from RIL first check device capabilities {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/aa917950.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/aa917950.aspx}}}\f0\fs20 , then ask for the time {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/aa921517.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/aa921517.aspx}}}\f0\fs20  \par
 {\pntext\f1\'B7\tab}Add documentation when the interface is final.\par
 {\pntext\f1\'B7\tab}Move WM code to a separate project as a library.\lang1033\par
 \lang2070{\pntext\f1\'B7\tab}Read Windows Mobile documentation on MSDN.\par
@@ -21,7 +22,9 @@
 \pard\par
 \b WM Library:\b0  \par
 \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284\lang2070 Remove or clean up "stdafx.h".\par
-{\pntext\f1\'B7\tab}WM::Label\par
+{\pntext\f1\'B7\tab}WM::String:\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 Create a function to convert from "char" to "wchar_t", and vice-versa.\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 WM::Label\par
 \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 Remove the spacing variable when calculating the text size.\par
 \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 WM::Menu\par
 \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 Distinguish between MenuBar and PopupMenu?\par
@@ -39,12 +42,14 @@
 {\pntext\f1\'B7\tab}Align text horizontally and vertically.\par
 {\pntext\f1\'B7\tab}Change horizontal alignment regardless of single or multi-line.\par
 {\pntext\f1\'B7\tab}Change horizontal alignment regardless of widget creation time.\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 "ril.h":\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 Taken as "ril-2009.h" from: {\field{\*\fldinst{HYPERLINK "http://nah6.com/~itsme/cvs-xdadevtools/itsutils/libril/"}}{\fldrslt{\ul\cf1 http://nah6.com/~itsme/cvs-xdadevtools/itsutils/libril/}}}\f0\fs20  \par
+{\pntext\f1\'B7\tab}Old version? {\field{\*\fldinst{HYPERLINK "http://www.xs4all.nl/~itsme/projects/xda/ril/"}}{\fldrslt{\ul\cf1 http://www.xs4all.nl/~itsme/projects/xda/ril/}}}\f0\fs20\par
 \pard\par
 \b Links:\b0  \par
 \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Location aware:\par
 \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 GPS Clock: {\field{\*\fldinst{HYPERLINK "http://www.cjcraft.com/blog/2008/06/22/30DaysOfNETWindowsMobileApplicationsDay22GPSClock.aspx"}}{\fldrslt{\ul\cf1 http://www.cjcraft.com/blog/2008/06/22/30DaysOfNETWindowsMobileApplicationsDay22GPSClock.aspx}}}\f0\fs20  \par
 \lang2070{\pntext\f1\'B7\tab}Applications that use GPS: \lang1033{\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/bb158727.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/bb158727.aspx}}}\f0\fs20  \par
-{\pntext\f1\'B7\tab}CellID: {\field{\*\fldinst{HYPERLINK "http://www.devx.com/wireless/Article/39709/1954"}}{\fldrslt{\ul\cf1 http://www.devx.com/wireless/Article/39709/1954}}}\f0\fs20\par
 \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Services:\par
 \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644{\field{\*\fldinst{HYPERLINK "http://bansky.net/blog/2008/04/services-for-windows-mobile-in-managed-code/"}}{\fldrslt{\ul\cf1 http://bansky.net/blog/2008/04/services-for-windows-mobile-in-managed-code/}}}\f0\fs20  \par
 {\field{\*\fldinst{HYPERLINK "{\pntext\f1\'B7\tab}http://www.codeplex.com/managedserviceswm"}}{\fldrslt{\ul\cf1 http://www.codeplex.com/managedserviceswm}}}\f0\fs20\par
@@ -62,6 +67,7 @@
 {\pntext\f1\'B7\tab}Battery indicator for PocketPC: {\field{\*\fldinst{HYPERLINK "http://code.google.com/p/batti/"}}{\fldrslt{\ul\cf1 http://code.google.com/p/batti/}}}\f0\fs20\par
 {\pntext\f1\'B7\tab}30 Days of Windows Mobile in Native: {\field{\*\fldinst{HYPERLINK "http://www.christec.co.nz/blog/archives/350"}}{\fldrslt{\ul\cf1 http://www.christec.co.nz/blog/archives/350}}}\f0\fs20  \par
 {\pntext\f1\'B7\tab}Hook kernel functions: {\field{\*\fldinst{HYPERLINK "http://forum.xda-developers.com/showthread.php?t=255831"}}{\fldrslt{\ul\cf1 http://forum.xda-developers.com/showthread.php?t=255831}}}\f0\fs20  \par
+{\pntext\f1\'B7\tab}Vibrate/Trap hardware buttons: {\field{\*\fldinst{HYPERLINK "http://www.xs4all.nl/~itsme/projects/xda/wince-misc-programming-tips.html"}}{\fldrslt{\ul\cf1 http://www.xs4all.nl/~itsme/projects/xda/wince-misc-programming-tips.html}}}\f0\fs20  \par
 \pard\par
 }
  

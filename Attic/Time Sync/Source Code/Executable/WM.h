@@ -12,6 +12,7 @@
 #include "WM/MenuItem.h"
 #include "WM/Object.h"
 #include "WM/Position.h"
+#include "WM/Ril.h"
 #include "WM/Size.h"
 #include "WM/String.h"
 #include "WM/TextBox.h"

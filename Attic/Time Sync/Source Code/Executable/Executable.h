@@ -32,6 +32,8 @@ private:
     ref<WM::TextBox> _deviceBox;
     ref<WM::TextBox> _gpsBox;
 
+    ref<WM::Ril> _ril;
+
 
 public:
     Executable(HINSTANCE handle):
@@ -81,6 +83,13 @@ public:
         add(_deviceBox);
         add(_gpsLabel);
         add(_gpsBox);
+
+        try {
+            _ril = new WM::Ril();
+        }
+        catch (WM::Exception exception) {
+            _ril = NULL;
+        }
     }
 
 
