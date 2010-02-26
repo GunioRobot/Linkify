@@ -3,7 +3,7 @@
 
 #include "Application.h"
 #include "Exception.h"
-#include "Logger.h"
+#include "Log.h"
 #include "Object.h"
 
 
@@ -98,8 +98,7 @@ namespace WM {
                     _radioPresent = true;
                     break;
                 default:
-                    Logger::error(TEXT("Invalid radio presence state: 0x%X\n"),
-                        data);
+                    Log::error(TEXT("Invalid radio presence state: 0x%X\n"), data);
                     break;
                 }
             }

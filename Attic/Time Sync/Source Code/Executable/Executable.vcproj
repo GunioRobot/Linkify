@@ -196,6 +196,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\WM\Log.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\main.cpp"
 				>
 			</File>
@@ -254,7 +258,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Logger.h"
+				RelativePath=".\WM\Log.h"
 				>
 			</File>
 			<File
