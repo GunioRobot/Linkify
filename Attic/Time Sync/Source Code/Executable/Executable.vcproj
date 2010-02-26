@@ -322,6 +322,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Wm\SystemTimeResult.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Wm\TextBox.h"
 				>
 			</File>

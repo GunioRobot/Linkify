@@ -1,2 +1,0 @@
-            Log::error(L"result: %x, %x, %x, %d\n", code, id, data, size);
-            Log::error(L"notify: %x, %x, %d\n", code, data, size);

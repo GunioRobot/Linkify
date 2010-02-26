@@ -19,6 +19,7 @@
 #include "Wm/Size.h"
 #include "Wm/String.h"
 #include "Wm/StringBuffer.h"
+#include "Wm/SystemTimeResult.h"
 #include "Wm/TextBox.h"
 #include "Wm/Timer.h"
 #include "Wm/Unit.h"

@@ -32,8 +32,6 @@ private:
     ref<Wm::TextBox> _deviceBox;
     ref<Wm::TextBox> _gpsBox;
 
-    ref<Wm::CellularRadio> _cellularRadio;
-
 
 public:
     Executable(HINSTANCE handle):
@@ -44,8 +42,7 @@ public:
         _deviceLabel(new Wm::DynamicLabel(LABEL_DEVICE_SHORT, LABEL_DEVICE_LONG)),
         _gpsLabel(new Wm::DynamicLabel(LABEL_GPS_SHORT, LABEL_GPS_LONG)),
         _deviceBox(new TimeTextBox(GetLocalTime)),
-        _gpsBox(new Wm::TextBox()),
-        _cellularRadio(new Wm::CellularRadio())
+        _gpsBox(new Wm::TextBox())
     {
         ref<Wm::Menu> menuBar = new Wm::Menu(MENU_BAR);
 

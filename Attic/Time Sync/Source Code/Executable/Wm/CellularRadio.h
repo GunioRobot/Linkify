@@ -5,9 +5,9 @@
 #include "Application.h"
 #include "BoolResult.h"
 #include "Exception.h"
-#include "Log.h"
 #include "Object.h"
 #include "Result.h"
+#include "SystemTimeResult.h"
 
 
 namespace Wm {
@@ -122,6 +122,19 @@ namespace Wm {
         }
 
 
+        virtual ref<SystemTimeResult> getSystemTime() {
+            ref<SystemTimeResult> result = new SystemTimeResult();
+            HRESULT id = Api::Ril::GetSystemTime(getHandle());
+
+            if (FAILED(id)) {
+                throw Exception(S("RIL_GetSystemTime"));
+            }
+            
+            _results[id] = result;
+            return result;
+        }
+
+
         virtual ref<BoolResult> isNitzSupported() {
             ref<BoolResult> result = new BoolResult(
                 RIL_CAPS_NITZ_DISABLED,
@@ -130,13 +143,14 @@ namespace Wm {
             HRESULT id = Api::Ril::GetDevCaps(getHandle(),
                 RIL_CAPSTYPE_NITZNOTIFICATION);
 
-            _results[id] = result;
-            
+            if (HRESULT_CODE(id) == ERROR_INVALID_PARAMETER) {
+                return false;
+            }
             if (FAILED(id)) {
-                _results.erase(id);
                 throw Exception(S("RIL_GetDevCaps"));
             }
 
+            _results[id] = result;
             return result;
         }
 
@@ -149,13 +163,15 @@ namespace Wm {
     private:
         void CALLBACK notifyHandler(DWORD code, const void* data, DWORD size) {
             if (code == RIL_NOTIFY_RADIOPRESENCECHANGED) {
-                switch ((DWORD) data) {
+                switch (*(DWORD*) data) {
                 case RIL_RADIOPRESENCE_NOTPRESENT:
                     _radioPresent = false;
                     break;
                 case RIL_RADIOPRESENCE_PRESENT:
                     _radioPresent = true;
                     break;
+                default:
+                    throw Exception(S("RIL_NOTIFY_RADIOPRESENCECHANGED"));
                 }
             }
         }
@@ -169,12 +185,13 @@ namespace Wm {
         {
             std::map<HRESULT, ref<Result>>::iterator it = _results.find(id);
             
-            if (it != _results.end()) {
-                ref<Result> result = (*it).second;
-                
-                _results.erase(id);
-                result->setRawValue(data, size);
+            if (it == _results.end()) {
+                throw Exception(S("RILRESULTCALLBACK"));
             }
+            
+            ref<Result> result = (*it).second;
+            _results.erase(id);
+            result->setRawValue(data, size);
         }
     };
 }

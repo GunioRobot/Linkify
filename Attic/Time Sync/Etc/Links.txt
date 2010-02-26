@@ -9,3 +9,5 @@ http://www.krvarma.com/
 
 NiceTrack
 http://www.nicecuppa.net/
+
+RIL_GetSerialPortHandle

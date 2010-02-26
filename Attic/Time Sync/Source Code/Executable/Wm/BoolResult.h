@@ -20,12 +20,12 @@ namespace Wm {
 
     public:
         virtual bool getValue() {
-            const INT32* value = static_cast<const INT32*>(getRawValue());
+            const DWORD value = *(DWORD*) getRawValue();
 
-            if (*value == _falsehood) {
+            if (value == _falsehood) {
                 return false;
             }
-            else if (*value == _truth) {
+            else if (value == _truth) {
                 return true;
             }
 
