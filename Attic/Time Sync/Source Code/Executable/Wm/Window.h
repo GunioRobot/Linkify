@@ -10,7 +10,7 @@
 #include "Widget.h"
 
 
-namespace WM {
+namespace Wm {
     class Window: public Widget {
     private:
         static struct State {

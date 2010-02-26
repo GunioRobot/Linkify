@@ -10,7 +10,7 @@
 #include "Result.h"
 
 
-namespace WM {
+namespace Wm {
     class CellularRadio: public Object {
     private:
         static const DWORD _PORT = 1;

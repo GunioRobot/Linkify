@@ -4,7 +4,7 @@
 #include "Label.h"
 
 
-namespace WM {
+namespace Wm {
     class DynamicLabel: public Label {
     private:
         String _shortText;

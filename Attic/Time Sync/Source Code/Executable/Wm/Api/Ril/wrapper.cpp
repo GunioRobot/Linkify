@@ -20,7 +20,7 @@
 static HINSTANCE _library = NULL;
 
 
-namespace WM {
+namespace Wm {
 namespace Api {
 namespace Ril {
     bool Load() {

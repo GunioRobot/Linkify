@@ -5,7 +5,7 @@
 #include "Control.h"
 
 
-namespace WM {
+namespace Wm {
     class Label: public Control {
     private:
         bool _fitToWidth;
@@ -20,7 +20,7 @@ namespace WM {
 
         virtual Size getSize() {
             if (!isFitToWidth()) {
-                return WM::Control::getSize();
+                return Wm::Control::getSize();
             }
 
             return Size(getTextSize().width(), Control::getSize().height());

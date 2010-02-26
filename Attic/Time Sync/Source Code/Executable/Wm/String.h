@@ -6,10 +6,10 @@
 
 
 #define S(string) \
-    WM::String(TEXT(string))
+    Wm::String(TEXT(string))
 
 
-namespace WM {
+namespace Wm {
     class String: public std::basic_string<TCHAR> {
     public:
         String(): std::basic_string<TCHAR>(TEXT("")) {

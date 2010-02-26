@@ -5,7 +5,7 @@
 #include "Control.h"
 
 
-namespace WM {
+namespace Wm {
     class TextBox: public Control {
     public:
         TextBox(String text = S("")):

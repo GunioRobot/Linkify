@@ -5,7 +5,7 @@
 #include "Unit.h"
 
 
-namespace WM {
+namespace Wm {
     class Length: public Object {
     private:
         size_t _value;

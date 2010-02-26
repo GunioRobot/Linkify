@@ -9,7 +9,7 @@
 #include "String.h"
 
 
-namespace WM {
+namespace Wm {
     class Widget: public Object {
     private:
         HWND _handle;

@@ -6,7 +6,7 @@
 #include "String.h"
 
 
-namespace WM {
+namespace Wm {
     class Log: public Object {
     private:
         static const size_t _MAXIMUM_LENGTH = 128;

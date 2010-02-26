@@ -5,6 +5,6 @@
 #include "Object.h"
 
 
-namespace WM {
+namespace Wm {
     typedef std::basic_stringstream<TCHAR> StringBuffer;
 }

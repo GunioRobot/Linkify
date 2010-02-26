@@ -5,7 +5,7 @@
 #include "Core.h"
 
 
-namespace WM {
+namespace Wm {
     class Object {
     public:
         virtual ~Object() {

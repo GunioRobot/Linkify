@@ -5,7 +5,7 @@
 #include "Object.h"
 
 
-namespace WM {
+namespace Wm {
     class Position: public Object {
     private:
         Length _left;

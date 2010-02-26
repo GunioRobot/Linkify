@@ -5,7 +5,7 @@
 #include "Object.h"
 
 
-namespace WM {
+namespace Wm {
     class Result: public Object {
     private:
         HANDLE _ready;

@@ -4,7 +4,7 @@
 #include "Result.h"
 
 
-namespace WM {
+namespace Wm {
     class BoolResult: public Result {
     private:
         long _falsehood;

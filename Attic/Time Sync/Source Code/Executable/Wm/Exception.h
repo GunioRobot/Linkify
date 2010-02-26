@@ -7,7 +7,7 @@
 #include "StringBuffer.h"
 
 
-namespace WM {
+namespace Wm {
     class Exception: public Object, public std::exception {
     public:
         static void throwLastError() {
