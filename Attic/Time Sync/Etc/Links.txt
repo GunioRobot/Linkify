@@ -1,0 +1,11 @@
+http://forum.xda-developers.com/showthread.php?t=228459
+http://forum.xda-developers.com/showthread.php?t=218080 
+http://stackoverflow.com/questions/262219/windows-mobile-6-at-commands 
+http://nah6.com/~itsme/cvs-xdadevtools/itsutils/dll/gsmdevice.cpp 
+http://nah6.com/~itsme/cvs-xdadevtools/xdaunlock/gsmdevice.cpp
+http://nah6.com/~itsme/cvs-xdadevtools/tstmodem/SerialPort.cpp 
+http://www.pudn.com/downloads124/sourcecode/comm/detail528271.html 
+http://www.krvarma.com/ 
+
+NiceTrack
+http://www.nicecuppa.net/

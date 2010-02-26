@@ -204,10 +204,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Core\rilWrapper.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\WM\Timer.cpp"
 				>
 			</File>
@@ -219,12 +215,20 @@
 				RelativePath=".\WM\Window.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\WM\Api\Ril\wrapper.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\WM\Api.h"
+				>
+			</File>
 			<File
 				RelativePath=".\WM\Application.h"
 				>
@@ -239,6 +243,10 @@
 			</File>
 			<File
 				RelativePath=".\WM\Control.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\Core.h"
 				>
 			</File>
 			<File
@@ -294,11 +302,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Core\ril.h"
-				>
-			</File>
-			<File
-				RelativePath=".\WM\Core\rilWrapper.h"
+				RelativePath=".\WM\Api\Ril\ril.h"
 				>
 			</File>
 			<File
@@ -343,6 +347,10 @@
 			</File>
 			<File
 				RelativePath=".\WM.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\Api\Ril\wrapper.h"
 				>
 			</File>
 		</Filter>

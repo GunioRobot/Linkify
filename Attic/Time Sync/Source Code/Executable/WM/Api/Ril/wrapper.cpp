@@ -1,27 +1,29 @@
-#include "rilWrapper.h"
+#include "wrapper.h"
 
 
-#undef _RILWRAPPER_H_
-#define RIL_FUNCTION_DEFINITIONS
-#include "rilWrapper.h"
-#undef RIL_FUNCTION_DEFINITIONS
+#undef __WM__API__RIL__WRAPPER__
+#define WM_API_RIL_FUNCTION_DEFINITIONS
+#include "wrapper.h"
+#undef WM_API_RIL_FUNCTION_DEFINITIONS
 
-#undef _RILWRAPPER_H_
-#define RIL_FUNCTION_LOADER
-#include "rilWrapper.h"
-#undef RIL_FUNCTION_LOADER
+#undef __WM__API__RIL__WRAPPER__
+#define WM_API_RIL_FUNCTION_LOADER
+#include "wrapper.h"
+#undef WM_API_RIL_FUNCTION_LOADER
 
-#undef _RILWRAPPER_H_
-#define RIL_FUNCTION_UNLOADER
-#include "rilWrapper.h"
-#undef RIL_FUNCTION_UNLOADER
+#undef __WM__API__RIL__WRAPPER__
+#define WM_API_RIL_FUNCTION_UNLOADER
+#include "wrapper.h"
+#undef WM_API_RIL_FUNCTION_UNLOADER
 
 
 static HINSTANCE _library = NULL;
 
 
 namespace WM {
-    bool RIL_Load() {
+namespace Api {
+namespace Ril {
+    bool Load() {
         if (_library == NULL) {
             _library = LoadLibrary(TEXT("ril"));
             
@@ -34,7 +36,7 @@ namespace WM {
     }
 
 
-    bool RIL_Unload() {
+    bool Unload() {
         if (_library != NULL) {
             if (FreeLibrary(_library) == 0) {
                 return false;
@@ -46,4 +48,4 @@ namespace WM {
 
         return true;
     }
-}
+}}}

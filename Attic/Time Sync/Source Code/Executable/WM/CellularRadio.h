@@ -60,13 +60,13 @@ namespace WM {
 
     public:
         CellularRadio(): _handle(NULL), _radioPresent(false) {
-            if ((_references == 0) && !RIL_Load()) {
+            if ((_references == 0) && !Api::Ril::Load()) {
                 throw Exception(S("RIL_Load"));
             }
             
             ++_references;
 
-            HRESULT result = RIL_Initialize(_PORT,
+            HRESULT result = Api::Ril::Initialize(_PORT,
                 genericResultHandler, genericNotifyHandler,
                 RIL_NCLASS_ALL, (DWORD) this, &_handle);
 
@@ -79,9 +79,9 @@ namespace WM {
 
 
         virtual ~CellularRadio() {
-            HRESULT result = RIL_Deinitialize(_handle);
+            HRESULT result = Api::Ril::Deinitialize(_handle);
 
-            if ((--_references == 0) && !RIL_Unload()) {
+            if ((--_references == 0) && !Api::Ril::Unload()) {
                 throw Exception(S("RIL_Unload"));
             }
 
@@ -101,7 +101,7 @@ namespace WM {
                 RIL_CAPS_NITZ_DISABLED,
                 RIL_CAPS_NITZ_ENABLED);
 
-            HRESULT id = RIL_GetDevCaps(getHandle(),
+            HRESULT id = Api::Ril::GetDevCaps(getHandle(),
                 RIL_CAPSTYPE_NITZNOTIFICATION);
 
             _results[id] = result;
