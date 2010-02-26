@@ -8,16 +8,11 @@
 namespace WM {
     class Application: public Object {
     public:
-        static void error(Exception exception) {
+        static void exit(Exception exception) {
             UINT type = MB_OK + MB_ICONERROR;
             const TCHAR* message = exception.getMessage().c_str();
 
             MessageBox(GetForegroundWindow(), message, NULL, type);
-        }
-
-
-        static void exit(Exception exception) {
-            error(exception);
             ExitProcess(EXIT_FAILURE);
         }
 
