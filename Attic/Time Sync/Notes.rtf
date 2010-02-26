@@ -1,58 +1,32 @@
 {\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fswiss\fcharset0 Arial;}{\f1\fnil\fcharset2 Symbol;}}
 {\colortbl ;\red0\green0\blue255;}
 {\*\generator Msftedit 5.41.21.2509;}\viewkind4\uc1\pard\lang2070\b\f0\fs20 To Do:\b0  \par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Add license.\par
-{\pntext\f1\'B7\tab}To get system time from RIL first check device capabilities {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/aa917950.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/aa917950.aspx}}}\f0\fs20 , then ask for the time {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/aa921517.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/aa921517.aspx}}}\f0\fs20  \par
-{\pntext\f1\'B7\tab}Send AT command manually to enable NITZ support? {\field{\*\fldinst{HYPERLINK "http://stackoverflow.com/questions/262219/windows-mobile-6-at-commands"}}{\fldrslt{\ul\cf1 http://stackoverflow.com/questions/262219/windows-mobile-6-at-commands}}}\f0\fs20  \par
-{\pntext\f1\'B7\tab}Enumerate RIL devices to remove hard-coded port?\par
-\lang1033{\pntext\f1\'B7\tab}Convert RIL error codes to strings (use "FormatMessage" with the library handle). Use better error messages for thrown exceptions.\par
-{\pntext\f1\'B7\tab}Create a mock RIL to use for testing under the debugger/emulator?\par
-{\pntext\f1\'B7\tab}Create a TimeSource class.\par
-\lang2070{\pntext\f1\'B7\tab}Move WM code to a separate project as a library.\lang1033\par
-\lang2070{\pntext\f1\'B7\tab}Add documentation when the interface is final.\par
-{\pntext\f1\'B7\tab}Read Windows Mobile documentation on MSDN.\par
-{\pntext\f1\'B7\tab}Find out why the SIP icon appears after screen rotation, in my Sony Ericsson X1.\par
-\pard\par
-\b Ideas:\b0  \par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284\lang1033 Projects: \lang2070 "Executable", "Applet", "Service".\lang1033\par
-{\pntext\f1\'B7\tab}Add accelerators for the graphical interface?\par
-{\pntext\f1\'B7\tab}Use an icon based on official Windows Mobile icons?\par
-\lang2070{\pntext\f1\'B7\tab}Correct the time using Daylight saving time?\par
-{\pntext\f1\'B7\tab}Coding style doc? {\field{\*\fldinst{HYPERLINK "http://code.google.com/webtoolkit/makinggwtbetter.html#codestyle"}}{\fldrslt{\ul\cf1 http://code.google.com/webtoolkit/makinggwtbetter.html#codestyle}}}\f0\fs20  \par
-\lang1033{\pntext\f1\'B7\tab}Time sources (as DLL plug-ins to make the application extensible):\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 FM radio RDS time.\par
-{\pntext\f1\'B7\tab}GPS time (from time to time, when GPS is on and fixed, when the current phone tower cell changes).\par
-{\pntext\f1\'B7\tab}Internet time (from time to time, when on-line).\par
-{\pntext\f1\'B7\tab}Cellular Radio / Cellular Network / Network Operator / Cell tower / Cell site\par
-\pard\par
-\b WM Library:\b0  \par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284\lang2070 Remove or clean up "stdafx.h".\par
-{\pntext\f1\'B7\tab}WM::Application\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 Create a MessageBox class to use within exit.\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 WM::String\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 Create a function to convert from "char" to "wchar_t", and vice-versa.\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 WM::Label\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 Remove the spacing variable when calculating the text size.\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 WM::Menu\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 Distinguish between MenuBar and PopupMenu?\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 WM::Window / WM::Widget\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 Prevent adding a widget to multiple windows, and multiple times to the same window.\par
-{\pntext\f1\'B7\tab}Implement padding.\par
-{\pntext\f1\'B7\tab}Implement removal of child widgets.\par
-{\pntext\f1\'B7\tab}Implement removal of the menu bar, and check if one has been added already.\par
-{\pntext\f1\'B7\tab}Implement changing of window position, size and margin.\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284\lang1033 WM::Length\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644\lang2070 Implement math operators so that lengths with different units can be added, subtracted, etc?\lang1033\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 WM::TextBox\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 Implement Label's fit-to-width?\par
-\lang2070{\pntext\f1\'B7\tab}Preserve cursor position and selection if the text is changed.\lang1033\par
-{\pntext\f1\'B7\tab}Align text horizontally and vertically.\par
-{\pntext\f1\'B7\tab}Change horizontal alignment regardless of single or multi-line.\par
-{\pntext\f1\'B7\tab}Change horizontal alignment regardless of widget creation time.\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 "ril.h":\par
-\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 Taken as "ril-2009.h" from: {\field{\*\fldinst{HYPERLINK "http://nah6.com/~itsme/cvs-xdadevtools/itsutils/libril/"}}{\fldrslt{\ul\cf1 http://nah6.com/~itsme/cvs-xdadevtools/itsutils/libril/}}}\f0\fs20  \par
-{\pntext\f1\'B7\tab}Old version? {\field{\*\fldinst{HYPERLINK "http://www.xs4all.nl/~itsme/projects/xda/ril/"}}{\fldrslt{\ul\cf1 http://www.xs4all.nl/~itsme/projects/xda/ril/}}}\f0\fs20  \par
-{\pntext\f1\'B7\tab}Add remaining functions to "rilWrapper"\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 (Apply To Do items in the Etc section from the WM library.)\par
+{\pntext\f1\'B7\tab}CellularRadio:\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 Etc:\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li1004 Enumerate RIL devices to remove hard-coded port.\par
+\lang1033{\pntext\f1\'B7\tab}Convert RIL error codes to strings (use "FormatMessage" with the library handle), and use better error messages for thrown exceptions.\lang2070\par
+\lang1033{\pntext\f1\'B7\tab}Create a mock RIL to use for testing purposes under the debugger/emulator?\lang2070\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 getSystemTime\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li1004 Check device capabilities: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/aa917950.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/aa917950.aspx}}}\f0\fs20  \par
+{\pntext\f1\'B7\tab}Ask for the time: {\field{\*\fldinst{HYPERLINK "http://msdn.microsoft.com/en-us/library/aa921517.aspx"}}{\fldrslt{\ul\cf1 http://msdn.microsoft.com/en-us/library/aa921517.aspx}}}\f0\fs20  \par
+{\pntext\f1\'B7\tab}Send AT commands manually to enable NITZ support? {\field{\*\fldinst{HYPERLINK "http://stackoverflow.com/questions/262219/windows-mobile-6-at-commands"}}{\fldrslt{\ul\cf1 http://stackoverflow.com/questions/262219/windows-mobile-6-at-commands}}}\f0\fs20  \par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Time sources (\lang1033 as DLL plug-ins):\lang2070\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 Cellular Radio: Obtains the time from the current c\lang1033 ellular network.\lang2070\par
+\lang1033{\pntext\f1\'B7\tab}FM Radio: Obtains the time from RDS data sent by radio stations.\lang2070\par
+\lang1033{\pntext\f1\'B7\tab}GPS: Obtains the time from GPS satellites.\lang2070\par
+{\pntext\f1\'B7\tab}Internet: Obtains the time from an NTP server.\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Time adjustments (as DLL plug-ins):\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 DST: Adjusts the time based on DST rules.\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Time multiplexers (as DLL plug-ins):\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 Mean: Does a simple arithmetic mean over a list of time values.\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Update settings:\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li644 At regular intervals (e.g. to save power for time sources that aren't always-on).\par
+{\pntext\f1\'B7\tab}When active (e.g. for GPS means when turned on and with satellite fix, for Internet means when on-line).\par
+{\pntext\f1\'B7\tab}When notified (e.g. for Cellular Radio means when the current phone tower cell changes).\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Create a project named "Applet" to have a control panel applet.\par
+{\pntext\f1\'B7\tab}Create a project named "Service" to have a system service.\par
+\lang1033{\pntext\f1\'B7\tab}Use an icon based on official icons?\par
 \pard\par
 \b Links:\b0  \par
 \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-284\li284 Location aware:\par
