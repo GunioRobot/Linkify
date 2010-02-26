@@ -230,6 +230,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\WM\BoolResult.h"
+				>
+			</File>
+			<File
 				RelativePath=".\WM\CellularRadio.h"
 				>
 			</File>
@@ -283,6 +287,10 @@
 			</File>
 			<File
 				RelativePath=".\WM\Core\ref.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WM\Result.h"
 				>
 			</File>
 			<File

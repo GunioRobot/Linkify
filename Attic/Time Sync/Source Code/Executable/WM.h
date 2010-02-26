@@ -2,6 +2,7 @@
 
 
 #include "WM/Application.h"
+#include "WM/BoolResult.h"
 #include "WM/CellularRadio.h"
 #include "WM/Control.h"
 #include "WM/DynamicLabel.h"
@@ -14,6 +15,7 @@
 #include "WM/MenuItem.h"
 #include "WM/Object.h"
 #include "WM/Position.h"
+#include "WM/Result.h"
 #include "WM/Size.h"
 #include "WM/String.h"
 #include "WM/StringBuffer.h"
