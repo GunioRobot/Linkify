@@ -1,5 +1,5 @@
 #include "Executable.h"
-#include "WM.h"
+#include "Wm.h"
 
 
 int WINAPI WinMain(
@@ -9,16 +9,16 @@ int WINAPI WinMain(
     int windowShowMode)
 {
     try {
-        WM::Window::createClass(WINDOW_CLASS);
+        Wm::Window::createClass(WINDOW_CLASS);
 
-        if (WM::Window::exists(WINDOW_CLASS, TITLE)) {
+        if (Wm::Window::exists(WINDOW_CLASS, TITLE)) {
             return EXIT_SUCCESS;
         }
         
         return Executable(instance).start(windowShowMode);
     }
-    catch (WM::Exception exception) {
-        WM::Application::exit(exception);
+    catch (Wm::Exception exception) {
+        Wm::Application::exit(exception);
         return EXIT_FAILURE;
     }
 }

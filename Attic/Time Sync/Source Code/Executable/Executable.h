@@ -1,5 +1,5 @@
 #include "TimeTextBox.h"
-#include "WM.h"
+#include "Wm.h"
 
 
 #define LABEL_LANDSCAPE S(" time")
@@ -21,49 +21,49 @@
 #define WINDOW_CLASS S("TIMESYNC")
 
 
-class Executable: public WM::Application, WM::Window {
+class Executable: public Wm::Application, Wm::Window {
 private:
-    ref<WM::MenuItem> _exitOption;
-    ref<WM::MenuItem> _updateOption;
+    ref<Wm::MenuItem> _exitOption;
+    ref<Wm::MenuItem> _updateOption;
 
-    ref<WM::Label> _deviceLabel;
-    ref<WM::Label> _gpsLabel;
+    ref<Wm::Label> _deviceLabel;
+    ref<Wm::Label> _gpsLabel;
     
-    ref<WM::TextBox> _deviceBox;
-    ref<WM::TextBox> _gpsBox;
+    ref<Wm::TextBox> _deviceBox;
+    ref<Wm::TextBox> _gpsBox;
 
-    ref<WM::CellularRadio> _cellularRadio;
+    ref<Wm::CellularRadio> _cellularRadio;
 
 
 public:
     Executable(HINSTANCE handle):
-        WM::Application(handle),
-        WM::Window(WINDOW_CLASS, TITLE),
-        _exitOption(new WM::MenuItem(OPTION_EXIT)),
-        _updateOption(new WM::MenuItem(OPTION_UPDATE)),
-        _deviceLabel(new WM::DynamicLabel(LABEL_DEVICE_SHORT, LABEL_DEVICE_LONG)),
-        _gpsLabel(new WM::DynamicLabel(LABEL_GPS_SHORT, LABEL_GPS_LONG)),
+        Wm::Application(handle),
+        Wm::Window(WINDOW_CLASS, TITLE),
+        _exitOption(new Wm::MenuItem(OPTION_EXIT)),
+        _updateOption(new Wm::MenuItem(OPTION_UPDATE)),
+        _deviceLabel(new Wm::DynamicLabel(LABEL_DEVICE_SHORT, LABEL_DEVICE_LONG)),
+        _gpsLabel(new Wm::DynamicLabel(LABEL_GPS_SHORT, LABEL_GPS_LONG)),
         _deviceBox(new TimeTextBox(GetLocalTime)),
-        _gpsBox(new WM::TextBox()),
-        _cellularRadio(new WM::CellularRadio())
+        _gpsBox(new Wm::TextBox()),
+        _cellularRadio(new Wm::CellularRadio())
     {
-        ref<WM::Menu> menuBar = new WM::Menu(MENU_BAR);
+        ref<Wm::Menu> menuBar = new Wm::Menu(MENU_BAR);
 
         long margin = 8;
         long padding = 3;
         
-        WM::Margin labelMargin(margin, margin + padding, 0, margin + padding);
-        WM::Margin boxMargin(margin + margin, margin, margin, margin);
+        Wm::Margin labelMargin(margin, margin + padding, 0, margin + padding);
+        Wm::Margin boxMargin(margin + margin, margin, margin, margin);
         
-        WM::Size labelSize(0, 20 + margin);
-        WM::Size boxSize(WM::Length(100, WM::Percent), labelSize.height());
+        Wm::Size labelSize(0, 20 + margin);
+        Wm::Size boxSize(Wm::Length(100, Wm::Percent), labelSize.height());
 
         _deviceLabel->setSize(labelSize);
         _deviceLabel->setMargin(labelMargin);
         _deviceLabel->setFitToWidth(true);
 
         _gpsLabel->setSize(labelSize);
-        _gpsLabel->setPosition(WM::Position(_deviceLabel->getPosition().left(),
+        _gpsLabel->setPosition(Wm::Position(_deviceLabel->getPosition().left(),
             _deviceLabel->getSize().height()));
         _gpsLabel->setMargin(labelMargin);
         _gpsLabel->setFitToWidth(true);
@@ -87,7 +87,7 @@ public:
     }
 
 
-    virtual void onChoose(ref<WM::MenuItem> item) {
+    virtual void onChoose(ref<Wm::MenuItem> item) {
         if (item == _exitOption) {
             close();
         }
@@ -95,16 +95,16 @@ public:
 
 
     virtual void onResize() {
-        _deviceBox->setPosition(WM::Position(_deviceLabel->getSize().width(),
+        _deviceBox->setPosition(Wm::Position(_deviceLabel->getSize().width(),
             _deviceLabel->getPosition().top()));
         
-        _gpsBox->setPosition(WM::Position(_deviceLabel->getSize().width(),
+        _gpsBox->setPosition(Wm::Position(_deviceLabel->getSize().width(),
             _gpsLabel->getPosition().top()));
     }
 
 
     virtual int start(int windowShowMode) {
         open(windowShowMode);
-        return WM::Application::start(windowShowMode);
+        return Wm::Application::start(windowShowMode);
     }
 };

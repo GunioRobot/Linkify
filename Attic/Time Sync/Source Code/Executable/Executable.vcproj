@@ -192,11 +192,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\WM\CellularRadio.cpp"
+				RelativePath=".\Wm\CellularRadio.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Log.cpp"
+				RelativePath=".\Wm\Log.cpp"
 				>
 			</File>
 			<File
@@ -204,19 +204,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Timer.cpp"
+				RelativePath=".\Wm\Timer.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Unit.cpp"
+				RelativePath=".\Wm\Unit.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Window.cpp"
+				RelativePath=".\Wm\Window.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Api\Ril\wrapper.cpp"
+				RelativePath=".\Wm\Api\Ril\wrapper.cpp"
 				>
 			</File>
 		</Filter>
@@ -226,35 +226,35 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\WM\Api.h"
+				RelativePath=".\Wm\Api.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Application.h"
+				RelativePath=".\Wm\Application.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\BoolResult.h"
+				RelativePath=".\Wm\BoolResult.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\CellularRadio.h"
+				RelativePath=".\Wm\CellularRadio.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Control.h"
+				RelativePath=".\Wm\Control.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Core.h"
+				RelativePath=".\Wm\Core.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\DynamicLabel.h"
+				RelativePath=".\Wm\DynamicLabel.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Exception.h"
+				RelativePath=".\Wm\Exception.h"
 				>
 			</File>
 			<File
@@ -262,71 +262,71 @@
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Label.h"
+				RelativePath=".\Wm\Label.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Length.h"
+				RelativePath=".\Wm\Length.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Log.h"
+				RelativePath=".\Wm\Log.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Margin.h"
+				RelativePath=".\Wm\Margin.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Menu.h"
+				RelativePath=".\Wm\Menu.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\MenuItem.h"
+				RelativePath=".\Wm\MenuItem.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Object.h"
+				RelativePath=".\Wm\Object.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Position.h"
+				RelativePath=".\Wm\Position.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Core\ref.h"
+				RelativePath=".\Wm\Core\ref.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Result.h"
+				RelativePath=".\Wm\Result.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Api\Ril\ril.h"
+				RelativePath=".\Wm\Api\Ril\ril.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Size.h"
+				RelativePath=".\Wm\Size.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Core\stdafx.h"
+				RelativePath=".\Wm\Core\stdafx.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\String.h"
+				RelativePath=".\Wm\String.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\StringBuffer.h"
+				RelativePath=".\Wm\StringBuffer.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\TextBox.h"
+				RelativePath=".\Wm\TextBox.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Timer.h"
+				RelativePath=".\Wm\Timer.h"
 				>
 			</File>
 			<File
@@ -334,23 +334,23 @@
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Unit.h"
+				RelativePath=".\Wm\Unit.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Widget.h"
+				RelativePath=".\Wm\Widget.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Window.h"
+				RelativePath=".\Wm\Window.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM.h"
+				RelativePath=".\Wm.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WM\Api\Ril\wrapper.h"
+				RelativePath=".\Wm\Api\Ril\wrapper.h"
 				>
 			</File>
 		</Filter>

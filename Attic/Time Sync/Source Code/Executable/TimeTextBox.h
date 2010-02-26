@@ -1,8 +1,8 @@
 #include <cstdlib>
-#include "WM.h"
+#include "Wm.h"
 
 
-class TimeTextBox: public WM::TextBox, public WM::Timer {
+class TimeTextBox: public Wm::TextBox, public Wm::Timer {
 private:
     // Store the time in the following format: "YYYY-MM-DD HH:MM:SS".
     static const size_t _LENGTH = 4 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2 + 1;
@@ -15,7 +15,7 @@ private:
 
 public:
     TimeTextBox(void (*getTime)(SYSTEMTIME*)):
-        WM::TextBox(), _getTime(getTime)
+        Wm::TextBox(), _getTime(getTime)
     {
         onTimeout();
         start(1);
