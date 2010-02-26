@@ -254,6 +254,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\WM\Logger.h"
+				>
+			</File>
+			<File
 				RelativePath=".\WM\Margin.h"
 				>
 			</File>

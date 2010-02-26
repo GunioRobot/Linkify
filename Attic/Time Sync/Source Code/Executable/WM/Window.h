@@ -34,7 +34,7 @@ namespace WM {
 
             ZeroMemory(&windowClass, sizeof(WNDCLASS));
             windowClass.style = CS_HREDRAW | CS_VREDRAW;
-            windowClass.lpfnWndProc = handler;
+            windowClass.lpfnWndProc = genericHandler;
             windowClass.hInstance = NULL;
             windowClass.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
             windowClass.lpszClassName = className.c_str();
@@ -58,7 +58,7 @@ namespace WM {
 
 
     private:
-        static LRESULT CALLBACK handler(
+        static LRESULT CALLBACK genericHandler(
             HWND handle,
             UINT message,
             WPARAM wParam,

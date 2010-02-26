@@ -14,7 +14,7 @@ namespace WM {
         static std::map<UINT, Timer*> _timers;
 
 
-        static void CALLBACK handler(
+        static void CALLBACK genericHandler(
             HWND window,
             UINT message,
             UINT id,
@@ -53,12 +53,12 @@ namespace WM {
         virtual void onTimeout() = 0;
 
 
-        virtual void start(long seconds) {
+        virtual void start(long sec) {
             if (_id != _INVALID_ID) {
                 throw Exception(S("Timer already started."));
             }
 
-            _timers[_id = SetTimer(NULL, 0, seconds * 1000, handler)] = this;
+            _timers[_id = SetTimer(NULL, 0, sec * 1000, genericHandler)] = this;
 
             if (_id == _INVALID_ID) {
                 _timers.erase(_id);

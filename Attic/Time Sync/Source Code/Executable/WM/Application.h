@@ -19,7 +19,6 @@ namespace WM {
         static void exit(Exception exception) {
             error(exception);
             ExitProcess(EXIT_FAILURE);
-            while (true);
         }
 
 
