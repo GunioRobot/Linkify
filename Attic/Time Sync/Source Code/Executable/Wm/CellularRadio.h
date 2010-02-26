@@ -13,8 +13,30 @@
 namespace Wm {
     class CellularRadio: public Object {
     private:
-        static const DWORD _PORT = 1;
         static size_t _references;
+
+
+        static size_t countDevices() {
+            size_t devices = 0;
+            DEVMGR_DEVICE_INFORMATION device;
+            
+            HANDLE search = FindFirstDevice(DeviceSearchByLegacyName,
+                TEXT("RIL*"), &device);
+
+            if (search == INVALID_HANDLE_VALUE) {
+                Exception::throwLastError();
+            }
+            
+            do {
+                ++devices;
+            }
+            while (FindNextDevice(search, &device));
+
+            // Don't check for success or failure, doesn't seem to work.
+            FindClose(search);
+
+            return devices;
+        }
 
 
         static void CALLBACK genericNotifyHandler(
@@ -65,16 +87,20 @@ namespace Wm {
             }
             
             ++_references;
+            size_t devices = countDevices();
 
-            HRESULT result = Api::Ril::Initialize(_PORT,
-                genericResultHandler, genericNotifyHandler,
-                RIL_NCLASS_ALL, (DWORD) this, &_handle);
+            for (size_t i = 1; i <= devices; ++i) {
+                HRESULT result = Api::Ril::Initialize(i,
+                    genericResultHandler, genericNotifyHandler,
+                    RIL_NCLASS_ALL, (DWORD) this, &_handle);
 
-            if (FAILED(result)) {
-                throw Exception(S("RIL_Initialize"));
+                if (SUCCEEDED(result)) {
+                    _radioPresent = (result == S_OK);
+                    return;
+                }
             }
             
-            _radioPresent = (result == S_OK);
+            throw Exception(S("RIL_Initialize"));
         }
 
 
@@ -129,9 +155,6 @@ namespace Wm {
                     break;
                 case RIL_RADIOPRESENCE_PRESENT:
                     _radioPresent = true;
-                    break;
-                default:
-                    Log::error(TEXT("Invalid radio presence state: 0x%X\n"), data);
                     break;
                 }
             }
