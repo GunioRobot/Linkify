@@ -9,19 +9,19 @@
 #if defined(WM_API_RIL_FUNCTION_DEFINITIONS)
 #   undef WM_API_RIL_FUNCTION
 #   define WM_API_RIL_FUNCTION(name, arguments) \
-        name##_t name = NULL
+        name##Function name = NULL
 #elif defined(WM_API_RIL_FUNCTION_LOADER)
 #   undef WM_API_RIL_FUNCTION
 #   define WM_API_RIL_FUNCTION(name, arguments) \
-        (name = reinterpret_cast<name##_t>(GetProcAddress(library, TEXT("RIL_") TEXT(#name))))
+        (name = (name##Function) GetProcAddress(library, TEXT("RIL_") TEXT(#name)))
 #elif defined(WM_API_RIL_FUNCTION_UNLOADER)
 #   undef WM_API_RIL_FUNCTION
 #   define WM_API_RIL_FUNCTION(name, arguments) \
         (name = NULL)
 #else
 #   define WM_API_RIL_FUNCTION(name, arguments) \
-        typedef HRESULT (*name##_t) arguments; \
-        extern name##_t name
+        typedef HRESULT (*name##Function) arguments; \
+        extern name##Function name
 #endif
 
 
