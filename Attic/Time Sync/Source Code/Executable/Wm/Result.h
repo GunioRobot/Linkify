@@ -29,13 +29,19 @@ namespace Wm {
             }
         }
 
-        
+
         virtual const void* getRawValue() {
             waitReady();
             return _value;
         }
 
 
+        template<typename T>
+        T getValue() {
+            return *(T*) getRawValue();
+        }
+
+        
         virtual size_t getSize() {
             waitReady();
             return _size;

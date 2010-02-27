@@ -2,7 +2,6 @@
 
 
 #include "Wm/Application.h"
-#include "Wm/BoolResult.h"
 #include "Wm/CellularRadio.h"
 #include "Wm/Control.h"
 #include "Wm/DynamicLabel.h"
@@ -19,7 +18,6 @@
 #include "Wm/Size.h"
 #include "Wm/String.h"
 #include "Wm/StringBuffer.h"
-#include "Wm/SystemTimeResult.h"
 #include "Wm/TextBox.h"
 #include "Wm/Timer.h"
 #include "Wm/Unit.h"

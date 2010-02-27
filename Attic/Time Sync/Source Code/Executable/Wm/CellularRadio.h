@@ -3,11 +3,9 @@
 
 #include <map>
 #include "Application.h"
-#include "BoolResult.h"
 #include "Exception.h"
 #include "Object.h"
 #include "Result.h"
-#include "SystemTimeResult.h"
 
 
 namespace Wm {
@@ -122,34 +120,28 @@ namespace Wm {
         }
 
 
-        virtual ref<SystemTimeResult> getSystemTime() {
-            ref<SystemTimeResult> result = new SystemTimeResult();
+        virtual ref<Result> getNitzSupport() {
+            ref<Result> result = new Result();
+            HRESULT id = Api::Ril::GetDevCaps(getHandle(),
+                RIL_CAPSTYPE_NITZNOTIFICATION);
+
+            if (FAILED(id)) {
+                throw Exception(S("RIL_GetDevCaps"));
+            }
+
+            _results[id] = result;
+            return result;
+        }
+
+
+        virtual ref<Result> getSystemTime() {
+            ref<Result> result = new Result();
             HRESULT id = Api::Ril::GetSystemTime(getHandle());
 
             if (FAILED(id)) {
                 throw Exception(S("RIL_GetSystemTime"));
             }
             
-            _results[id] = result;
-            return result;
-        }
-
-
-        virtual ref<BoolResult> isNitzSupported() {
-            ref<BoolResult> result = new BoolResult(
-                RIL_CAPS_NITZ_DISABLED,
-                RIL_CAPS_NITZ_ENABLED);
-
-            HRESULT id = Api::Ril::GetDevCaps(getHandle(),
-                RIL_CAPSTYPE_NITZNOTIFICATION);
-
-            if (HRESULT_CODE(id) == ERROR_INVALID_PARAMETER) {
-                return false;
-            }
-            if (FAILED(id)) {
-                throw Exception(S("RIL_GetDevCaps"));
-            }
-
             _results[id] = result;
             return result;
         }

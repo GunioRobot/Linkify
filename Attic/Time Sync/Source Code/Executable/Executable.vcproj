@@ -234,10 +234,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\BoolResult.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Wm\CellularRadio.h"
 				>
 			</File>
@@ -319,10 +315,6 @@
 			</File>
 			<File
 				RelativePath=".\Wm\StringBuffer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\SystemTimeResult.h"
 				>
 			</File>
 			<File
