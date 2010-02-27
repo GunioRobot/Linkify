@@ -42,7 +42,7 @@ namespace Wm {
         }
         
         
-        virtual void setRawValue(const void* value, DWORD size) {
+        virtual void setRawValue(const void* value, size_t size) {
             _value = value;
             _size = size;
             
