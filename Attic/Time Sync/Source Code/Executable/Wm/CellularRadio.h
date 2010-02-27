@@ -11,30 +11,8 @@
 namespace Wm {
     class CellularRadio: public Object {
     private:
+        static const DWORD _PORT = 1;
         static size_t _references;
-
-
-        static size_t countDevices() {
-            size_t devices = 0;
-            DEVMGR_DEVICE_INFORMATION device;
-            
-            HANDLE search = FindFirstDevice(DeviceSearchByLegacyName,
-                TEXT("RIL*"), &device);
-
-            if (search == INVALID_HANDLE_VALUE) {
-                Exception::throwLastError();
-            }
-            
-            do {
-                ++devices;
-            }
-            while (FindNextDevice(search, &device));
-
-            // Don't check for success or failure, doesn't seem to work.
-            FindClose(search);
-
-            return devices;
-        }
 
 
         static void CALLBACK genericNotifyHandler(
@@ -85,20 +63,16 @@ namespace Wm {
             }
             
             ++_references;
-            size_t devices = countDevices();
 
-            for (size_t i = 1; i <= devices; ++i) {
-                HRESULT result = Api::Ril::Initialize(i,
-                    genericResultHandler, genericNotifyHandler,
-                    RIL_NCLASS_ALL, (DWORD) this, &_handle);
+            HRESULT result = Api::Ril::Initialize(_PORT,
+                genericResultHandler, genericNotifyHandler,
+                RIL_NCLASS_ALL, (DWORD) this, &_handle);
 
-                if (SUCCEEDED(result)) {
-                    _radioPresent = (result == S_OK);
-                    return;
-                }
+            if (FAILED(result)) {
+                throw Exception(S("RIL_Initialize"));
             }
-            
-            throw Exception(S("RIL_Initialize"));
+
+            _radioPresent = (result == S_OK);
         }
 
 
@@ -127,6 +101,19 @@ namespace Wm {
 
             if (FAILED(id)) {
                 throw Exception(S("RIL_GetDevCaps"));
+            }
+
+            _results[id] = result;
+            return result;
+        }
+
+
+        virtual ref<Result> getPhoneLockedState() {
+            ref<Result> result = new Result();
+            HRESULT id = Api::Ril::GetPhoneLockedState(getHandle());
+
+            if (FAILED(id)) {
+                throw Exception(S("RIL_GetPhoneLockedState"));
             }
 
             _results[id] = result;

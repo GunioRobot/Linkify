@@ -76,7 +76,7 @@ namespace Wm {
         
         
         virtual void onResize() {
-            if (getParent() == NULL) {
+            if (getParent().null()) {
                 return;
             }
 

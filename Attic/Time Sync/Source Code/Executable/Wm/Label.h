@@ -52,7 +52,7 @@ namespace Wm {
 
     private:
         Size getTextSize() {
-            HWND window = (getParent() == NULL) ? NULL : getParent()->getHandle();
+            HWND window = getParent().null() ? NULL : getParent()->getHandle();
             HDC display = GetDC(window);
             SIZE text;
 

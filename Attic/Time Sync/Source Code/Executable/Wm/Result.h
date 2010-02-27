@@ -9,7 +9,7 @@ namespace Wm {
     class Result: public Object {
     private:
         HANDLE _ready;
-        const void* _value;
+        BYTE* _value;
         size_t _size;
 
 
@@ -24,13 +24,16 @@ namespace Wm {
 
 
         virtual ~Result() {
+            if (_value != NULL) {
+                delete[] _value;
+            }
             if (!CloseHandle(_ready)) {
                 Exception::throwLastError();
             }
         }
 
 
-        virtual const void* getRawValue() {
+        virtual void* getRawValue() {
             waitReady();
             return _value;
         }
@@ -38,6 +41,10 @@ namespace Wm {
 
         template<typename T>
         T getValue() {
+            if (sizeof(T) != getSize()) {
+                throw Exception(S("Result type size mismatch."));
+            }
+
             return *(T*) getRawValue();
         }
 
@@ -49,8 +56,10 @@ namespace Wm {
         
         
         virtual void setRawValue(const void* value, size_t size) {
-            _value = value;
+            _value = new BYTE[size];
             _size = size;
+
+            memcpy(_value, value, _size);
             
             if (!SetEvent(_ready)) {
                 Exception::throwLastError();
