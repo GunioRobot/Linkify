@@ -39,6 +39,7 @@ static void unloadFunctions() {
 
     WM_API_RIL_FUNCTION(Deinitialize, (HRIL));
     WM_API_RIL_FUNCTION(GetDevCaps, (HRIL, DWORD));
+    WM_API_RIL_FUNCTION(GetLockingStatus, (HRIL, DWORD, LPCSTR));
     WM_API_RIL_FUNCTION(GetPhoneLockedState, (HRIL));
     WM_API_RIL_FUNCTION(GetSystemTime, (HRIL));
     WM_API_RIL_FUNCTION(Initialize, (DWORD, RILRESULTCALLBACK, RILNOTIFYCALLBACK, DWORD, DWORD, HRIL*));

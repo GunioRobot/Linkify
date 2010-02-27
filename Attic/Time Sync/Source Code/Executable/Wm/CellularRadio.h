@@ -94,13 +94,26 @@ namespace Wm {
         }
 
 
-        virtual ref<Result> getNitzSupport() {
+        virtual ref<Result> getDeviceCapabilities(DWORD type) {
             ref<Result> result = new Result();
-            HRESULT id = Api::Ril::GetDevCaps(getHandle(),
-                RIL_CAPSTYPE_NITZNOTIFICATION);
+            HRESULT id = Api::Ril::GetDevCaps(getHandle(), type);
 
             if (FAILED(id)) {
                 throw Exception(S("RIL_GetDevCaps"));
+            }
+
+            _results[id] = result;
+            return result;
+        }
+
+
+        virtual ref<Result> getLockingStatus(DWORD facility, CHAR* password) {
+            ref<Result> result = new Result();
+            HRESULT id = Api::Ril::GetLockingStatus(getHandle(),
+                facility, password);
+
+            if (FAILED(id)) {
+                throw Exception(S("RIL_GetLockingStatus"));
             }
 
             _results[id] = result;

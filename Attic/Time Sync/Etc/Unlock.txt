@@ -1,0 +1,16 @@
+radio: 1
+phone lock: 1
+
+RIL_LOCKINGSTATUS_DISABLED                  (0x00000001)
+define RIL_LOCKINGSTATUS_ENABLED                   (0x00000002)
+
+cntrl: 80004005         E_FAIL
+phone sim: 80004005     E_FAIL
+phone 1st sim: 1
+sim: 2
+sim pin2: 80004005      E_FAIL
+sim fixed dial: 1
+network pers: 2
+network sub pers: 1
+service prov pers: 1
+corporate pers: 1
