@@ -314,11 +314,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\StringBuffer.h"
+				RelativePath=".\Wm\StringStream.h"
 				>
 			</File>
 			<File
 				RelativePath=".\Wm\TextBox.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Wm\Thread.h"
 				>
 			</File>
 			<File

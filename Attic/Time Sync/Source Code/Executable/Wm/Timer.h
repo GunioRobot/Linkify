@@ -53,12 +53,12 @@ namespace Wm {
         virtual void onTimeout() = 0;
 
 
-        virtual void start(long sec) {
+        virtual void start(long ms) {
             if (_id != _INVALID_ID) {
                 throw Exception(S("Timer already started."));
             }
 
-            _timers[_id = SetTimer(NULL, 0, sec * 1000, genericHandler)] = this;
+            _timers[_id = SetTimer(NULL, 0, ms, genericHandler)] = this;
 
             if (_id == _INVALID_ID) {
                 _timers.erase(_id);

@@ -89,11 +89,6 @@ namespace Wm {
         }
 
 
-        virtual HRIL getHandle() {
-            return _handle;
-        }
-
-
         virtual ref<Result> getDeviceCapabilities(DWORD type) {
             ref<Result> result = new Result();
             HRESULT id = Api::Ril::GetDevCaps(getHandle(), type);
@@ -107,7 +102,12 @@ namespace Wm {
         }
 
 
-        virtual ref<Result> getLockingStatus(DWORD facility, CHAR* password) {
+        virtual HRIL getHandle() {
+            return _handle;
+        }
+
+
+        virtual ref<Result> getLockingStatus(DWORD facility, char* password) {
             ref<Result> result = new Result();
             HRESULT id = Api::Ril::GetLockingStatus(getHandle(),
                 facility, password);

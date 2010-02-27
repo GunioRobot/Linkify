@@ -21,7 +21,7 @@
 #define WINDOW_CLASS S("TIMESYNC")
 
 
-class Executable: public Wm::Application, Wm::Window {
+class Executable: public Wm::Application, public Wm::Window {
 private:
     ref<Wm::MenuItem> _exitOption;
     ref<Wm::MenuItem> _updateOption;

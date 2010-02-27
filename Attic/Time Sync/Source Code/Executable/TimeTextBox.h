@@ -18,7 +18,7 @@ public:
         Wm::TextBox(), _getTime(getTime)
     {
         onTimeout();
-        start(1);
+        start(1 * 1000);
     }
 
 

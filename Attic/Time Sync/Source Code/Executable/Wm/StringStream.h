@@ -6,5 +6,5 @@
 
 
 namespace Wm {
-    typedef std::basic_stringstream<TCHAR> StringBuffer;
+    typedef std::basic_stringstream<TCHAR> StringStream;
 }

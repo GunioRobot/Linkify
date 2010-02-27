@@ -4,7 +4,7 @@
 #include <exception>
 #include "Object.h"
 #include "String.h"
-#include "StringBuffer.h"
+#include "StringStream.h"
 
 
 namespace Wm {
@@ -24,7 +24,7 @@ namespace Wm {
                 NULL);
             
             if (length == 0) {
-                StringBuffer message;
+                StringStream message;
                 
                 message << TEXT("Code ") << code << TEXT(".");
                 throw Exception(message.str());

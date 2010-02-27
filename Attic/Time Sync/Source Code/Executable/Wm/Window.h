@@ -176,7 +176,10 @@ namespace Wm {
 
 
         virtual void setMenuBar(ref<Menu> menu) {
-            if (menu->getItemCount() > 2) {
+            if (menu->getItemCount() == 0) {
+                throw Exception(S("Too few items for a menu bar."));
+            }
+            else if (menu->getItemCount() > 2) {
                 throw Exception(S("Too many items for a menu bar."));
             }
             
