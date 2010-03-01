@@ -22,7 +22,7 @@ namespace Wm {
         }
 
 
-        virtual String& getCaption() {
+        virtual String getCaption() {
             return _caption;
         }
 

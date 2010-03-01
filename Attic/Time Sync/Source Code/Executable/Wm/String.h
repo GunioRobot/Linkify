@@ -6,7 +6,7 @@
 
 
 #define S(string) \
-    Wm::String(TEXT(string))
+    (::Wm::String(TEXT(string)))
 
 
 namespace Wm {
@@ -26,5 +26,13 @@ namespace Wm {
             std::basic_string<TCHAR>(string)
         {
         }
+
+
+#ifdef UNICODE
+        String(const char* string);
+#endif
+        
+        
+        virtual char* toCharArray();
     };
 }

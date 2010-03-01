@@ -94,10 +94,14 @@ namespace Wm {
         }
 
 
-        virtual ref<Result> getLockingStatus(DWORD facility, char* password) {
+        virtual ref<Result> getLockingStatus(DWORD facility, String password) {
+            char* pass = password.toCharArray();
             ref<Result> result = new Result();
+            
             HRESULT id = Api::Ril::GetLockingStatus(getHandle(),
-                facility, password);
+                facility, pass);
+
+            delete[] pass;
 
             if (FAILED(id)) {
                 throw Exception(S("RIL_GetLockingStatus"));

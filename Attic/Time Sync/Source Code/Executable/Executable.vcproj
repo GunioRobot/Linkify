@@ -204,6 +204,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Wm\String.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Wm\Timer.cpp"
 				>
 			</File>

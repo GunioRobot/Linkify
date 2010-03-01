@@ -70,7 +70,7 @@ namespace Wm {
         }
 
 
-        virtual String& getText() {
+        virtual String getText() {
             return _text;
         }
         

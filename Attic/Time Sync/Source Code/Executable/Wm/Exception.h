@@ -47,7 +47,7 @@ namespace Wm {
         }
 
 
-        virtual String& getMessage() {
+        virtual String getMessage() {
             return _message;
         }
     };
