@@ -250,6 +250,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Wm\Event.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Wm\Exception.h"
 				>
 			</File>

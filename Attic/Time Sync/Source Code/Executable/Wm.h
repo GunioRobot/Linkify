@@ -5,6 +5,7 @@
 #include "Wm/CellularRadio.h"
 #include "Wm/Control.h"
 #include "Wm/DynamicLabel.h"
+#include "Wm/Event.h"
 #include "Wm/Exception.h"
 #include "Wm/Label.h"
 #include "Wm/Length.h"

@@ -89,19 +89,6 @@ namespace Wm {
         }
 
 
-        virtual ref<Result> getDeviceCapabilities(DWORD type) {
-            ref<Result> result = new Result();
-            HRESULT id = Api::Ril::GetDevCaps(getHandle(), type);
-
-            if (FAILED(id)) {
-                throw Exception(S("RIL_GetDevCaps"));
-            }
-
-            _results[id] = result;
-            return result;
-        }
-
-
         virtual HRIL getHandle() {
             return _handle;
         }
@@ -149,6 +136,19 @@ namespace Wm {
 
         virtual bool isRadioPresent() {
             return _radioPresent;
+        }
+
+
+        virtual ref<Result> queryFeatures(DWORD type) {
+            ref<Result> result = new Result();
+            HRESULT id = Api::Ril::GetDevCaps(getHandle(), type);
+
+            if (FAILED(id)) {
+                throw Exception(S("RIL_GetDevCaps"));
+            }
+
+            _results[id] = result;
+            return result;
         }
 
 

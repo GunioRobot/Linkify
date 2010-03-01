@@ -1,25 +1,19 @@
 #pragma once
 
 
+#include "Event.h"
 #include "Exception.h"
-#include "Object.h"
 
 
 namespace Wm {
-    class Result: public Object {
+    class Result: public Event {
     private:
-        HANDLE _ready;
         BYTE* _value;
         size_t _size;
 
 
     public:
         Result(): _value(NULL), _size(0) {
-            _ready = CreateEvent(NULL, true, false, NULL);
-
-            if (_ready == NULL) {
-                Exception::throwLastError();
-            }
         }
 
 
@@ -27,14 +21,11 @@ namespace Wm {
             if (_value != NULL) {
                 delete[] _value;
             }
-            if (!CloseHandle(_ready)) {
-                Exception::throwLastError();
-            }
         }
 
 
         virtual void* getRawValue() {
-            waitReady();
+            wait();
             return _value;
         }
 
@@ -50,7 +41,7 @@ namespace Wm {
 
         
         virtual size_t getSize() {
-            waitReady();
+            wait();
             return _size;
         }
         
@@ -60,20 +51,7 @@ namespace Wm {
             _size = size;
 
             memcpy(_value, value, _size);
-            
-            if (!SetEvent(_ready)) {
-                Exception::throwLastError();
-            }
-        }
-
-
-    private:
-        void waitReady() {
-            DWORD result = WaitForSingleObject(_ready, INFINITE);
-
-            if (result == WAIT_FAILED) {
-                Exception::throwLastError();
-            }
+            set();
         }
     };
 }
