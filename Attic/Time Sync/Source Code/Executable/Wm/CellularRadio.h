@@ -167,7 +167,7 @@ namespace Wm {
                     _radioPresent = true;
                     break;
                 default:
-                    throw Exception(S("RIL_NOTIFY_RADIOPRESENCECHANGED"));
+                    throw Exception(S("Unknown RIL radio presence state."));
                 }
             }
         }
@@ -182,7 +182,7 @@ namespace Wm {
             std::map<HRESULT, ref<Result>>::iterator it = _results.find(id);
             
             if (it == _results.end()) {
-                throw Exception(S("RILRESULTCALLBACK"));
+                throw Exception(S("Unexpected asynchronous RIL response."));
             }
             
             ref<Result> result = (*it).second;

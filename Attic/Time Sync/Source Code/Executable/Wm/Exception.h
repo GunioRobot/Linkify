@@ -43,7 +43,7 @@ namespace Wm {
 
 
     public:
-        Exception(String message): _message(message) {
+        Exception(String message = S("")): _message(message) {
         }
 
 

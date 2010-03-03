@@ -22,7 +22,9 @@ namespace Wm {
         }
 
 
-        virtual String getCaption() {
+        // Must be a reference for the API functions to work, otherwise the
+        // internal string data can become invalid since it's stack allocated.
+        virtual String& getCaption() {
             return _caption;
         }
 

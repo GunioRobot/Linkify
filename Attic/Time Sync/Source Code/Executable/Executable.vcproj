@@ -196,6 +196,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Executable.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Wm\Log.cpp"
 				>
 			</File>
@@ -242,11 +246,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CellularRadioTimeSource.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Wm\Control.h"
 				>
 			</File>
 			<File
 				RelativePath=".\Wm\Core.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DeviceTimeSource.h"
 				>
 			</File>
 			<File
@@ -334,11 +346,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TimeInformation.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Wm\Timer.h"
 				>
 			</File>
 			<File
-				RelativePath=".\TimeTextBox.h"
+				RelativePath=".\TimeSource.h"
 				>
 			</File>
 			<File

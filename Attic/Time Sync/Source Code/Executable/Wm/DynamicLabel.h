@@ -13,8 +13,9 @@ namespace Wm {
 
     public:
         DynamicLabel(String shortText, String longText):
-            Label(S("-")), _shortText(shortText), _longText(longText)
+            Label(), _shortText(shortText), _longText(longText)
         {
+            setText(getIntendedText());
         }
 
 

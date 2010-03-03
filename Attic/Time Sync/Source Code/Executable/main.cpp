@@ -9,9 +9,9 @@ int WINAPI WinMain(
     int windowShowMode)
 {
     try {
-        Wm::Window::createClass(WINDOW_CLASS);
+        Wm::Window::createClass(Executable::WINDOW_CLASS);
 
-        if (Wm::Window::exists(WINDOW_CLASS, TITLE)) {
+        if (Wm::Window::exists(Executable::WINDOW_CLASS, Executable::TITLE)) {
             return EXIT_SUCCESS;
         }
         

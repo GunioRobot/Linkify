@@ -122,6 +122,7 @@ namespace Wm {
             
             ShowWindow(getHandle(), SW_SHOWNORMAL);
             _parent = parent;
+            onResize();
         }
 
 

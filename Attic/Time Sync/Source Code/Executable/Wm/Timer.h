@@ -53,7 +53,7 @@ namespace Wm {
         virtual void onTimeout() = 0;
 
 
-        virtual void start(long ms) {
+        virtual void start(size_t ms) {
             if (_id != _INVALID_ID) {
                 throw Exception(S("Timer already started."));
             }
