@@ -302,6 +302,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Wm\Api\Ril\messages.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Wm\Object.h"
 				>
 			</File>

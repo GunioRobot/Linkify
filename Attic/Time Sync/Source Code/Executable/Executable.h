@@ -14,9 +14,7 @@ public:
 private:
     ref<Wm::MenuItem> _exitOption;
     ref<Wm::MenuItem> _updateOption;
-
     std::vector<ref<TimeInformation>> _timeItems;
-    ref<TimeInformation> _largestTimeItem;
 
 
 public:
@@ -43,30 +41,6 @@ public:
     }
 
 
-    virtual void onResize() {
-        ref<TimeInformation> previous;
-
-        for (size_t i = 0; i < _timeItems.size(); ++i) {
-            ref<TimeInformation> current = _timeItems[i];
-            ref<Wm::Label> label = current->getLabel();
-            ref<Wm::TextBox> box = current->getTextBox();
-
-            if (!previous.null()) {
-                Wm::Position position = previous->getLabel()->getPosition();
-                Wm::Size size = previous->getLabel()->getSize();
-
-                label->setPosition(Wm::Position(position.left(), size.height()));
-            }
-
-            box->setPosition(Wm::Position(
-                _largestTimeItem->getLabel()->getSize().width(),
-                label->getPosition().top()));
-
-            previous = current;
-        }
-    }
-
-
     virtual int start(int windowShowMode) {
         open(windowShowMode);
         return Wm::Application::start(windowShowMode);
@@ -76,7 +50,7 @@ public:
 private:
     void setupTimeItems() {
         size_t margin = 8, padding = 3;
-        Wm::Length largestLabel;
+        Wm::Length largestLabel = 0;
         
         Wm::Margin labelMargin(margin, margin + padding, 0, margin + padding);
         Wm::Margin boxMargin(margin + margin, margin, margin, margin);
@@ -101,13 +75,34 @@ private:
 
             add(label);
             add(box);
-            timeItem->start();
 
             Wm::Length width = label->getSize().width();
 
             if (width > largestLabel) {
-                _largestTimeItem = timeItem;
+                largestLabel = width;
             }
+        }
+        
+        ref<TimeInformation> previous;
+
+        for (size_t i = 0; i < _timeItems.size(); ++i) {
+            ref<TimeInformation> current = _timeItems[i];
+            ref<Wm::Label> label = current->getLabel();
+            ref<Wm::TextBox> box = current->getTextBox();
+
+            if (!previous.null()) {
+                Wm::Position position = previous->getLabel()->getPosition();
+                Wm::Size size = previous->getLabel()->getSize();
+
+                label->setPosition(Wm::Position(position.left(),
+                    position.top() + size.height()));
+            }
+
+            box->setPosition(Wm::Position(largestLabel,
+                label->getPosition().top()));
+
+            current->start();
+            previous = current;
         }
     }
 };

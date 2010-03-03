@@ -50,6 +50,18 @@ namespace Wm {
         }
 
 
+        static void throwError(HRESULT result) {
+            const TCHAR* message = Api::Ril::LoadErrorMessage(result);
+
+            if (message != NULL) {
+                throw Exception(message);
+            }
+
+            SetLastError(HRESULT_CODE(result));
+            Exception::throwLastError();
+        }
+
+
     private:
         HRIL _handle;
         bool _radioPresent;
@@ -58,8 +70,8 @@ namespace Wm {
 
     public:
         CellularRadio(): _handle(NULL), _radioPresent(false) {
-            if ((_references == 0) && !Api::Ril::Load()) {
-                throw Exception(S("RIL_Load"));
+            if ((_references == 0) && (Api::Ril::Load() == NULL)) {
+                Exception::throwLastError();
             }
             
             ++_references;
@@ -69,7 +81,7 @@ namespace Wm {
                 RIL_NCLASS_ALL, (DWORD) this, &_handle);
 
             if (FAILED(result)) {
-                throw Exception(S("RIL_Initialize"));
+                throwError(result);
             }
 
             _radioPresent = (result == S_OK);
@@ -80,11 +92,11 @@ namespace Wm {
             HRESULT result = Api::Ril::Deinitialize(_handle);
 
             if ((--_references == 0) && !Api::Ril::Unload()) {
-                throw Exception(S("RIL_Unload"));
+                Exception::throwLastError();
             }
 
             if (FAILED(result)) {
-                throw Exception(S("RIL_Deinitialize"));
+                throwError(result);
             }
         }
 
@@ -104,7 +116,7 @@ namespace Wm {
             delete[] pass;
 
             if (FAILED(id)) {
-                throw Exception(S("RIL_GetLockingStatus"));
+                throwError(id);
             }
 
             _results[id] = result;
@@ -117,7 +129,7 @@ namespace Wm {
             HRESULT id = Api::Ril::GetPhoneLockedState(getHandle());
 
             if (FAILED(id)) {
-                throw Exception(S("RIL_GetPhoneLockedState"));
+                throwError(id);
             }
 
             _results[id] = result;
@@ -130,7 +142,7 @@ namespace Wm {
             HRESULT id = Api::Ril::GetSystemTime(getHandle());
 
             if (FAILED(id)) {
-                throw Exception(S("RIL_GetSystemTime"));
+                throwError(id);
             }
             
             _results[id] = result;
@@ -148,7 +160,7 @@ namespace Wm {
             HRESULT id = Api::Ril::GetDevCaps(getHandle(), type);
 
             if (FAILED(id)) {
-                throw Exception(S("RIL_GetDevCaps"));
+                throwError(id);
             }
 
             _results[id] = result;

@@ -28,7 +28,8 @@
 namespace Wm {
 namespace Api {
 namespace Ril {
-    bool Load();
+    HINSTANCE Load();
+    const TCHAR* LoadErrorMessage(HRESULT result);
     bool Unload();
     
 #if defined(WM_API_RIL_FUNCTION_LOADER)

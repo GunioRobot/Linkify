@@ -28,6 +28,16 @@ namespace Wm {
         }
 
 
+        virtual Length operator +(Length length) {
+            if (_unit != length._unit) {
+                throw Wm::Exception(
+                    S("Can't add lengths with different units."));
+            }
+
+            return Length(_value + length._value, _unit);
+        }
+
+
         virtual size_t value() {
             return _value;
         }

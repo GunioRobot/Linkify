@@ -8,7 +8,7 @@
 class CellularRadioTimeSource: public TimeSource {
 private:
     ref<Wm::CellularRadio> _cellularRadio;
-    Wm::Exception _error;
+    Wm::String _error;
     bool _nitzSupported;
 
 
@@ -16,6 +16,13 @@ public:
     CellularRadioTimeSource() {
         try {
             _cellularRadio = new Wm::CellularRadio();
+        }
+        catch (Wm::Exception exception) {
+            _error = S("Phone not available: ") + exception.getMessage();
+            return;
+        }
+
+        try {
             ref<Wm::Result> nitzSupport =
                 _cellularRadio->queryFeatures(RIL_CAPSTYPE_NITZNOTIFICATION);
 
@@ -27,13 +34,13 @@ public:
                 _nitzSupported = false;
                 break;
             default:
-                throw Wm::Exception("Unknown NITZ support.");
+                throw Wm::Exception("Invalid RIL feature response.");
                 break;
             }
         }
         catch (Wm::Exception exception) {
             _cellularRadio = NULL;
-            _error = exception;
+            _error = S("Unknown NITZ support: ") + exception.getMessage();
         }
     }
 
@@ -50,10 +57,10 @@ public:
 
     virtual Wm::String getStatus() {
         if (_cellularRadio.null()) {
-            return _error.getMessage();
+            return _error;
         }
         else if (!_cellularRadio->isRadioPresent()) {
-            return S("No radio module detected.");
+            return S("Radio module not detected.");
         }
         else if (!_nitzSupported) {
             return S("NITZ not supported.");
