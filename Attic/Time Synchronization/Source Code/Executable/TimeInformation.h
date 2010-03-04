@@ -21,7 +21,7 @@ private:
 public:
     TimeInformation(ref<TimeSource> timeSource): _timeSource(timeSource) {
         _label = new Wm::Label(_timeSource->getName() + S(":"));
-        _textBox = new Wm::TextBox(S("Starting..."));
+        _textBox = new Wm::TextBox(S("Initializing..."));
 
         timeSource->setListener(noref this);
     }
@@ -34,6 +34,11 @@ public:
 
     virtual ref<Wm::TextBox> getTextBox() {
         return _textBox;
+    }
+
+
+    virtual ref<TimeSource> getSource() {
+        return _timeSource;
     }
 
 

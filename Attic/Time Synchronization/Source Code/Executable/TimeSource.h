@@ -27,8 +27,8 @@ public:
     
     
     virtual Wm::String getName() = 0;
-    
-    
+
+
     virtual void setListener(ref<TimeSource::Listener> listener) {
         _listener = listener;
     }

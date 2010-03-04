@@ -12,8 +12,8 @@ namespace Wm {
 
 
     public:
-        Event() {
-            _handle = CreateEvent(NULL, true, false, NULL);
+        Event(bool automatic = false) {
+            _handle = CreateEvent(NULL, !automatic, false, NULL);
 
             if (_handle == NULL) {
                 Exception::throwLastError();
