@@ -5,7 +5,7 @@
 #include "Wm.h"
 
 
-class CellularRadioTimeSource: public TimeSource {
+class CellularRadioTimeSource: public TimeSource, public Wm::Timer {
 private:
     ref<Wm::CellularRadio> _cellularRadio;
     Wm::String _error;
@@ -40,7 +40,7 @@ public:
         }
         catch (Wm::Exception exception) {
             _cellularRadio = NULL;
-            _error = S("Unknown NITZ support: ") + exception.getMessage();
+            _error = S("Unable to query NITZ support: ") + exception.getMessage();
         }
     }
 
@@ -55,7 +55,40 @@ public:
     }
 
 
-    virtual Wm::String getStatus() {
+    virtual void onTimeout() {
+        ref<Wm::Result> time;
+        
+        try {
+            time = _cellularRadio->getSystemTime();
+        }
+        catch (Wm::Exception exception) {
+            getListener()->onStatusChange(S("Unable to query time: ")
+                + exception.getMessage());
+            return;
+        }
+
+        getListener()->onTimeChange(time->getValue<SYSTEMTIME>());
+    }
+
+
+    virtual void setListener(ref<TimeSource::Listener> listener) {
+        TimeSource::setListener(listener);
+        
+        if (getListener().null()) {
+            stop();
+        }
+        else if (isReady()) {
+            onTimeout();
+            start(1 * 1000);
+        }
+        else {
+            getListener()->onStatusChange(getStatus());
+        }
+    }
+    
+    
+private:
+    Wm::String getStatus() {
         if (_cellularRadio.null()) {
             return _error;
         }
@@ -69,14 +102,9 @@ public:
             return S("Ready.");
         }
     }
-
-
-    virtual SYSTEMTIME getTime() {
-        return _cellularRadio->getSystemTime()->getValue<SYSTEMTIME>();
-    }
-
-
-    virtual bool isReady() {
+    
+    
+    bool isReady() {
         return !_cellularRadio.null()
             && _cellularRadio->isRadioPresent()
             && _nitzSupported;

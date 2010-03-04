@@ -101,7 +101,6 @@ private:
             box->setPosition(Wm::Position(largestLabel,
                 label->getPosition().top()));
 
-            current->start();
             previous = current;
         }
     }

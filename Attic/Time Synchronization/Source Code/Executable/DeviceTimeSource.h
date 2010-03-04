@@ -5,7 +5,7 @@
 #include "Wm.h"
 
 
-class DeviceTimeSource: public TimeSource {
+class DeviceTimeSource: public TimeSource, public Wm::Timer {
 public:
     virtual Wm::String getDescription() {
         return S("Uses the local time from the internal clock.");
@@ -17,20 +17,23 @@ public:
     }
 
 
-    virtual Wm::String getStatus() {
-        return S("Ready.");
-    }
-
-
-    virtual SYSTEMTIME getTime() {
+    virtual void onTimeout() {
         SYSTEMTIME time;
         
         GetLocalTime(&time);
-        return time;
+        getListener()->onTimeChange(time);
     }
 
-
-    virtual bool isReady() {
-        return true;
+    
+    virtual void setListener(ref<TimeSource::Listener> listener) {
+        TimeSource::setListener(listener);
+        
+        if (getListener().null()) {
+            stop();
+        }
+        else {
+            onTimeout();
+            start(1 * 1000);
+        }
     }
 };

@@ -5,7 +5,7 @@
 #include "Wm.h"
 
 
-class TimeInformation: public Wm::Timer {
+class TimeInformation: public TimeSource::Listener {
 private:
     // Store the time in the following format: "YYYY-MM-DD HH:MM:SS".
     static const size_t _LENGTH = 4 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2 + 1;
@@ -22,6 +22,8 @@ public:
     TimeInformation(ref<TimeSource> timeSource): _timeSource(timeSource) {
         _label = new Wm::Label(_timeSource->getName() + S(":"));
         _textBox = new Wm::TextBox(S("Starting..."));
+
+        timeSource->setListener(noref this);
     }
 
 
@@ -35,24 +37,16 @@ public:
     }
 
 
-    virtual void onTimeout() {
-        if (_timeSource->isReady()) {
-            SYSTEMTIME time = _timeSource->getTime();
-            
-            _sntprintf(_buffer, _LENGTH, TEXT("%d-%02d-%02d %02d:%02d:%02d"),
-                time.wYear, time.wMonth, time.wDay,
-                time.wHour, time.wMinute, time.wSecond);
-
-            getTextBox()->setText(_buffer);
-        }
-        else {
-            getTextBox()->setText(_timeSource->getStatus());
-        }
+    virtual void onStatusChange(Wm::String status) {
+        getTextBox()->setText(status);
     }
 
 
-    virtual void start() {
-        onTimeout();
-        Wm::Timer::start(1 * 1000);
+    virtual void onTimeChange(SYSTEMTIME time) {
+        _sntprintf(_buffer, _LENGTH, TEXT("%d-%02d-%02d %02d:%02d:%02d"),
+            time.wYear, time.wMonth, time.wDay,
+            time.wHour, time.wMinute, time.wSecond);
+
+        getTextBox()->setText(_buffer);
     }
 };
