@@ -7,6 +7,7 @@
 #include "Wm/DynamicLabel.h"
 #include "Wm/Event.h"
 #include "Wm/Exception.h"
+#include "Wm/Gps.h"
 #include "Wm/Label.h"
 #include "Wm/Length.h"
 #include "Wm/Log.h"

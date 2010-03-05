@@ -278,6 +278,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Wm\Gps.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Wm\Api\Gps\gpsapi.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Wm\Label.h"
 				>
 			</File>

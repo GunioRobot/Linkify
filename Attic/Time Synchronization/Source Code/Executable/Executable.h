@@ -30,7 +30,7 @@ public:
         menuBar->add(_exitOption);
 
         setMenuBar(menuBar);
-        setupTimeItems();
+        setupTimeSources();
     }
 
 
@@ -57,7 +57,7 @@ public:
 
 
 private:
-    void setupTimeItems() {
+    void setupTimeSources() {
         size_t margin = 8, padding = 3;
         Wm::Length largestLabel = 0;
         
