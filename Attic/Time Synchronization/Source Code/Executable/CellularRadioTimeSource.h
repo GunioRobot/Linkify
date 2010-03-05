@@ -32,54 +32,19 @@ public:
 
 
     virtual void run() {
-        bool nitzEnabled;
-        
-        try {
-            getListener()->onStatusChange(S("Starting..."));
-            _cellularRadio = new Wm::CellularRadio();
-        }
-        catch (Wm::Exception exception) {
-            getListener()->onStatusChange(S("Phone unavailable: ")
-                + exception.getMessage());
+        if (!initialize()) {
             return;
         }
 
-        if (!_cellularRadio->isRadioPresent()) {
-            getListener()->onStatusChange(S("Phone is off, waiting..."));
-            
-            do {
-                sleep(1 * 1000);
-                if (_cellularRadio.null()) {
-                    return;
-                }
-            }
-            while (!_cellularRadio->isRadioPresent());
-        }
-
         try {
-            ref<Wm::Result> nitzSupport =
-                _cellularRadio->queryFeatures(RIL_CAPSTYPE_NITZNOTIFICATION);
-
-            switch (nitzSupport->getValue<DWORD>()) {
-            case RIL_CAPS_NITZ_ENABLED:
-                nitzEnabled = true;
-                break;
-            case RIL_CAPS_NITZ_DISABLED:
-                nitzEnabled = false;
-                break;
-            default:
-                throw Wm::Exception("Invalid feature query response.");
-                break;
+            if (!isNitzEnabled()) {
+                getListener()->onStatusChange(S("NITZ disabled."));
+                return;
             }
         }
         catch (Wm::Exception exception) {
             getListener()->onStatusChange(S("NITZ unsupported: ")
                 + exception.getMessage());
-            return;
-        }
-
-        if (!nitzEnabled) {
-            getListener()->onStatusChange(S("NITZ disabled."));
             return;
         }
         
@@ -92,6 +57,49 @@ public:
                 getListener()->onStatusChange(S("Time query error: ")
                     + exception.getMessage());
             }
+        }
+    }
+
+
+private:
+    bool initialize() {
+        try {
+            getListener()->onStatusChange(S("Starting..."));
+            _cellularRadio = new Wm::CellularRadio();
+        }
+        catch (Wm::Exception exception) {
+            getListener()->onStatusChange(S("Phone unavailable: ")
+                + exception.getMessage());
+            return false;
+        }
+
+        if (!_cellularRadio->isRadioPresent()) {
+            getListener()->onStatusChange(S("Phone is off, waiting..."));
+            
+            do {
+                sleep(1 * 1000);
+                if (_cellularRadio.null()) {
+                    return false;
+                }
+            }
+            while (!_cellularRadio->isRadioPresent());
+        }
+
+        return true;
+    }
+
+
+    bool isNitzEnabled() {
+        ref<Wm::Result> nitzSupport =
+            _cellularRadio->queryFeatures(RIL_CAPSTYPE_NITZNOTIFICATION);
+
+        switch (nitzSupport->getValue<DWORD>()) {
+        case RIL_CAPS_NITZ_ENABLED:
+            return true;
+        case RIL_CAPS_NITZ_DISABLED:
+            return false;
+        default:
+            throw Wm::Exception("Invalid feature query response.");
         }
     }
 };

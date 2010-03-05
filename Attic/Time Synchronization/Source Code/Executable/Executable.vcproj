@@ -200,6 +200,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Wm\Gps.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Wm\Log.cpp"
 				>
 			</File>
@@ -228,12 +232,28 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Api\Gps\wrapper.cpp"
+				RelativePath=".\Wm\Api\Ril\wrapper.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Api\Ril\wrapper.cpp"
+				RelativePath=".\Wm\Api\Gps\wrapper.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -394,11 +414,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Api\Ril\wrapper.h"
+				RelativePath=".\Wm\Api\Gps\wrapper.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Api\Gps\wrapper.h"
+				RelativePath=".\Wm\Api\Ril\wrapper.h"
 				>
 			</File>
 		</Filter>

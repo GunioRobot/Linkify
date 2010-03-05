@@ -11,8 +11,7 @@
 namespace Wm {
     class Exception: public Object, public std::exception {
     public:
-        static void throwLastError(HINSTANCE module = NULL) {
-            DWORD code = GetLastError();
+        static void throwError(DWORD code, HINSTANCE module = NULL) {
             DWORD flags = FORMAT_MESSAGE_ALLOCATE_BUFFER + FORMAT_MESSAGE_FROM_SYSTEM;
             TCHAR* buffer;
 
@@ -38,6 +37,11 @@ namespace Wm {
                 LocalFree(buffer);
                 throw Exception(message);
             }
+        }
+
+
+        static void throwLastError(HINSTANCE module = NULL) {
+            throwError(GetLastError(), module);
         }
 
 
