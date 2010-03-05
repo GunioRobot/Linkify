@@ -149,11 +149,10 @@ namespace Wm {
 
     protected:
         virtual void changeStyle(DWORD style) {
-            // Distinguish between a previous value of zero and zero as an
-            // indicator of an error.
             SetLastError(ERROR_SUCCESS);
+            LONG value = SetWindowLong(getHandle(), GWL_STYLE, style);
 
-            if (SetWindowLong(getHandle(), GWL_STYLE, style) == 0) {
+            if ((value == 0) && (GetLastError() != ERROR_SUCCESS)) {
                 Exception::throwLastError();
             }
 
