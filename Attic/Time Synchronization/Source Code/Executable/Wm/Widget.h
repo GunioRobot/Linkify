@@ -151,7 +151,7 @@ namespace Wm {
         virtual void changeStyle(DWORD style) {
             // Distinguish between a previous value of zero and zero as an
             // indicator of an error.
-            SetLastError(0);
+            SetLastError(ERROR_SUCCESS);
 
             if (SetWindowLong(getHandle(), GWL_STYLE, style) == 0) {
                 Exception::throwLastError();
