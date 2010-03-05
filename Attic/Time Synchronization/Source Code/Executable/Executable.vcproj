@@ -232,10 +232,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Api\Ril\wrapper.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Wm\Api\Gps\wrapper.cpp"
 				>
 				<FileConfiguration
@@ -255,6 +251,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\Wm\Api\Ril\wrapper.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -267,6 +267,10 @@
 			</File>
 			<File
 				RelativePath=".\Wm\Application.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Wm\AsynchronousResult.h"
 				>
 			</File>
 			<File
@@ -354,10 +358,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Result.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Wm\Api\Ril\ril.h"
 				>
 			</File>
@@ -414,11 +414,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Api\Gps\wrapper.h"
+				RelativePath=".\Wm\Api\Ril\wrapper.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Api\Ril\wrapper.h"
+				RelativePath=".\Wm\Api\Gps\wrapper.h"
 				>
 			</File>
 		</Filter>

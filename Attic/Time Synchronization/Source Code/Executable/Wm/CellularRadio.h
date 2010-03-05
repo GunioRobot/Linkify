@@ -3,9 +3,9 @@
 
 #include <map>
 #include "Application.h"
+#include "AsynchronousResult.h"
 #include "Exception.h"
 #include "Object.h"
-#include "Result.h"
 
 
 namespace Wm {
@@ -65,7 +65,7 @@ namespace Wm {
     private:
         HRIL _handle;
         bool _radioPresent;
-        std::map<HRESULT, ref<Result>> _results;
+        std::map<HRESULT, ref<AsynchronousResult>> _results;
 
 
     public:
@@ -106,9 +106,12 @@ namespace Wm {
         }
 
 
-        virtual ref<Result> getLockingStatus(DWORD facility, String password) {
+        virtual ref<AsynchronousResult> getLockingStatus(
+            DWORD facility,
+            String password)
+        {
             char* pass = password.toCharArray();
-            ref<Result> result = new Result();
+            ref<AsynchronousResult> result = new AsynchronousResult();
             
             HRESULT id = Api::Ril::RIL_GetLockingStatus(getHandle(),
                 facility, pass);
@@ -124,8 +127,8 @@ namespace Wm {
         }
 
 
-        virtual ref<Result> getPhoneLockedState() {
-            ref<Result> result = new Result();
+        virtual ref<AsynchronousResult> getPhoneLockedState() {
+            ref<AsynchronousResult> result = new AsynchronousResult();
             HRESULT id = Api::Ril::RIL_GetPhoneLockedState(getHandle());
 
             if (FAILED(id)) {
@@ -137,8 +140,8 @@ namespace Wm {
         }
 
 
-        virtual ref<Result> getSystemTime() {
-            ref<Result> result = new Result();
+        virtual ref<AsynchronousResult> getSystemTime() {
+            ref<AsynchronousResult> result = new AsynchronousResult();
             HRESULT id = Api::Ril::RIL_GetSystemTime(getHandle());
 
             if (FAILED(id)) {
@@ -155,8 +158,8 @@ namespace Wm {
         }
 
 
-        virtual ref<Result> queryFeatures(DWORD type) {
-            ref<Result> result = new Result();
+        virtual ref<AsynchronousResult> queryFeatures(DWORD type) {
+            ref<AsynchronousResult> result = new AsynchronousResult();
             HRESULT id = Api::Ril::RIL_GetDevCaps(getHandle(), type);
 
             if (FAILED(id)) {
@@ -191,13 +194,14 @@ namespace Wm {
             const void* data,
             DWORD size)
         {
-            std::map<HRESULT, ref<Result>>::iterator it = _results.find(id);
+            std::map<HRESULT, ref<AsynchronousResult>>::iterator it =
+                _results.find(id);
             
             if (it == _results.end()) {
                 throw Exception(S("Unexpected asynchronous RIL response."));
             }
             
-            ref<Result> result = (*it).second;
+            ref<AsynchronousResult> result = (*it).second;
             _results.erase(id);
             result->setRawValue(data, size);
         }

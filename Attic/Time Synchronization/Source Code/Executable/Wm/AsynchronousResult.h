@@ -6,18 +6,18 @@
 
 
 namespace Wm {
-    class Result: public Event {
+    class AsynchronousResult: public Event {
     private:
         BYTE* _value;
         size_t _size;
 
 
     public:
-        Result(): _value(NULL), _size(0) {
+        AsynchronousResult(): _value(NULL), _size(0) {
         }
 
 
-        virtual ~Result() {
+        virtual ~AsynchronousResult() {
             if (_value != NULL) {
                 delete[] _value;
             }
@@ -33,7 +33,7 @@ namespace Wm {
         template<typename T>
         T getValue() {
             if (sizeof(T) != getSize()) {
-                throw Exception(S("Result type size mismatch."));
+                throw Exception(S("Asynchronous result type size mismatch."));
             }
 
             return *(T*) getRawValue();

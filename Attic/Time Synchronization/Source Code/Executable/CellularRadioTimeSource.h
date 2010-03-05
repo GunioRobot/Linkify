@@ -7,7 +7,7 @@
 
 class CellularRadioTimeSource: public TimeSource, public Wm::Thread {
 private:
-    ref<Wm::CellularRadio> _cellularRadio;
+    ref<Wm::CellularRadio> _radio;
 
 
 public:
@@ -22,7 +22,7 @@ public:
 
 
     virtual void onFinalize() {
-        _cellularRadio = NULL;
+        _radio = NULL;
     }
 
 
@@ -48,9 +48,9 @@ public:
             return;
         }
         
-        for (; !_cellularRadio.null(); sleep(1 * 1000)) {
+        for (; !_radio.null(); sleep(1 * 1000)) {
             try {
-                ref<Wm::Result> time = _cellularRadio->getSystemTime();
+                ref<Wm::AsynchronousResult> time = _radio->getSystemTime();
                 getListener()->onTimeChange(time->getValue<SYSTEMTIME>());
             }
             catch (Wm::Exception exception) {
@@ -65,7 +65,7 @@ private:
     bool initialize() {
         try {
             getListener()->onStatusChange(S("Starting..."));
-            _cellularRadio = new Wm::CellularRadio();
+            _radio = new Wm::CellularRadio();
         }
         catch (Wm::Exception exception) {
             getListener()->onStatusChange(S("Phone unavailable: ")
@@ -73,16 +73,16 @@ private:
             return false;
         }
 
-        if (!_cellularRadio->isRadioPresent()) {
+        if (!_radio->isRadioPresent()) {
             getListener()->onStatusChange(S("Phone is off, waiting..."));
             
             do {
                 sleep(1 * 1000);
-                if (_cellularRadio.null()) {
+                if (_radio.null()) {
                     return false;
                 }
             }
-            while (!_cellularRadio->isRadioPresent());
+            while (!_radio->isRadioPresent());
         }
 
         return true;
@@ -90,8 +90,8 @@ private:
 
 
     bool isNitzEnabled() {
-        ref<Wm::Result> nitzSupport =
-            _cellularRadio->queryFeatures(RIL_CAPSTYPE_NITZNOTIFICATION);
+        ref<Wm::AsynchronousResult> nitzSupport =
+            _radio->queryFeatures(RIL_CAPSTYPE_NITZNOTIFICATION);
 
         switch (nitzSupport->getValue<DWORD>()) {
         case RIL_CAPS_NITZ_ENABLED:

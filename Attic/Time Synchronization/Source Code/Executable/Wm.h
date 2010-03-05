@@ -2,6 +2,7 @@
 
 
 #include "Wm/Application.h"
+#include "Wm/AsynchronousResult.h"
 #include "Wm/CellularRadio.h"
 #include "Wm/Control.h"
 #include "Wm/DynamicLabel.h"
@@ -16,7 +17,6 @@
 #include "Wm/MenuItem.h"
 #include "Wm/Object.h"
 #include "Wm/Position.h"
-#include "Wm/Result.h"
 #include "Wm/Size.h"
 #include "Wm/String.h"
 #include "Wm/StringStream.h"
