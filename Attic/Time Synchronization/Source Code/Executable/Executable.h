@@ -37,12 +37,21 @@ public:
     virtual void onChoose(ref<Wm::MenuItem> item) {
         if (item == _exitOption) {
             close();
+            
+            for (size_t i = 0; i < _timeItems.size(); ++i) {
+                _timeItems[i]->getSource()->onFinalize();
+            }
         }
     }
 
 
     virtual int start(int windowShowMode) {
         open(windowShowMode);
+        
+        for (size_t i = 0; i < _timeItems.size(); ++i) {
+            _timeItems[i]->getSource()->onInitialize();
+        }
+        
         return Wm::Application::start(windowShowMode);
     }
 

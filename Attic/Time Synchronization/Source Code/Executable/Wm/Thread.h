@@ -54,6 +54,11 @@ namespace Wm {
         }
 
 
+        virtual void sleep(size_t ms) {
+            Sleep(ms);
+        }
+
+
         virtual void start() {
             if (ResumeThread(getHandle()) == 0xFFFFFFFF) {
                 Exception::throwLastError();

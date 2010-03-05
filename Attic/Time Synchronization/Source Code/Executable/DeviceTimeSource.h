@@ -17,23 +17,21 @@ public:
     }
 
 
+    virtual void onFinalize() {
+        stop();
+    }
+
+
+    virtual void onInitialize() {
+        onTimeout();
+        start(1 * 1000);
+    }
+
+
     virtual void onTimeout() {
         SYSTEMTIME time;
         
         GetLocalTime(&time);
         getListener()->onTimeChange(time);
-    }
-
-    
-    virtual void setListener(ref<TimeSource::Listener> listener) {
-        TimeSource::setListener(listener);
-        
-        if (getListener().null()) {
-            stop();
-        }
-        else {
-            onTimeout();
-            start(1 * 1000);
-        }
     }
 };

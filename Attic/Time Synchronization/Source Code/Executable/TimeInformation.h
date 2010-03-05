@@ -22,8 +22,13 @@ public:
     TimeInformation(ref<TimeSource> timeSource): _timeSource(timeSource) {
         _label = new Wm::Label(_timeSource->getName() + S(":"));
         _textBox = new Wm::TextBox(S("Initializing..."));
+        _timeSource->setListener(noref this);
+    }
 
-        timeSource->setListener(noref this);
+
+    virtual ~TimeInformation() {
+        // Break reference cycle.
+        _timeSource->setListener(NULL);
     }
 
 

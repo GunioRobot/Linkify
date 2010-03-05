@@ -5,46 +5,12 @@
 #include "Wm.h"
 
 
-class CellularRadioTimeSource: public TimeSource, public Wm::Timer {
+class CellularRadioTimeSource: public TimeSource, public Wm::Thread {
 private:
     ref<Wm::CellularRadio> _cellularRadio;
-    Wm::String _error;
-    bool _nitzSupported;
 
 
 public:
-    CellularRadioTimeSource() {
-        try {
-            _cellularRadio = new Wm::CellularRadio();
-        }
-        catch (Wm::Exception exception) {
-            _error = S("Phone not available: ") + exception.getMessage();
-            return;
-        }
-
-        try {
-            ref<Wm::Result> nitzSupport =
-                _cellularRadio->queryFeatures(RIL_CAPSTYPE_NITZNOTIFICATION);
-
-            switch (nitzSupport->getValue<DWORD>()) {
-            case RIL_CAPS_NITZ_ENABLED:
-                _nitzSupported = true;
-                break;
-            case RIL_CAPS_NITZ_DISABLED:
-                _nitzSupported = false;
-                break;
-            default:
-                throw Wm::Exception("Invalid RIL feature response.");
-                break;
-            }
-        }
-        catch (Wm::Exception exception) {
-            _cellularRadio = NULL;
-            _error = S("Unable to query NITZ support: ") + exception.getMessage();
-        }
-    }
-
-
     virtual Wm::String getDescription() {
         return S("Uses NITZ data sent by the cellular network.");
     }
@@ -55,58 +21,77 @@ public:
     }
 
 
-    virtual void onTimeout() {
-        ref<Wm::Result> time;
+    virtual void onFinalize() {
+        _cellularRadio = NULL;
+    }
+
+
+    virtual void onInitialize() {
+        start();
+    }
+
+
+    virtual void run() {
+        bool nitzEnabled;
         
         try {
-            time = _cellularRadio->getSystemTime();
+            getListener()->onStatusChange(S("Starting..."));
+            _cellularRadio = new Wm::CellularRadio();
         }
         catch (Wm::Exception exception) {
-            getListener()->onStatusChange(S("Unable to query time: ")
+            getListener()->onStatusChange(S("Phone unavailable: ")
                 + exception.getMessage());
             return;
         }
 
-        getListener()->onTimeChange(time->getValue<SYSTEMTIME>());
-    }
+        if (!_cellularRadio->isRadioPresent()) {
+            getListener()->onStatusChange(S("Phone is off, waiting..."));
+            
+            do {
+                sleep(1 * 1000);
+                if (_cellularRadio.null()) {
+                    return;
+                }
+            }
+            while (!_cellularRadio->isRadioPresent());
+        }
 
+        try {
+            ref<Wm::Result> nitzSupport =
+                _cellularRadio->queryFeatures(RIL_CAPSTYPE_NITZNOTIFICATION);
 
-    virtual void setListener(ref<TimeSource::Listener> listener) {
-        TimeSource::setListener(listener);
+            switch (nitzSupport->getValue<DWORD>()) {
+            case RIL_CAPS_NITZ_ENABLED:
+                nitzEnabled = true;
+                break;
+            case RIL_CAPS_NITZ_DISABLED:
+                nitzEnabled = false;
+                break;
+            default:
+                throw Wm::Exception("Invalid feature query response.");
+                break;
+            }
+        }
+        catch (Wm::Exception exception) {
+            getListener()->onStatusChange(S("NITZ unsupported: ")
+                + exception.getMessage());
+            return;
+        }
+
+        if (!nitzEnabled) {
+            getListener()->onStatusChange(S("NITZ disabled."));
+            return;
+        }
         
-        if (getListener().null()) {
-            stop();
+        for (; !_cellularRadio.null(); sleep(1 * 1000)) {
+            try {
+                ref<Wm::Result> time = _cellularRadio->getSystemTime();
+                getListener()->onTimeChange(time->getValue<SYSTEMTIME>());
+            }
+            catch (Wm::Exception exception) {
+                getListener()->onStatusChange(S("Time query error: ")
+                    + exception.getMessage());
+            }
         }
-        else if (isReady()) {
-            onTimeout();
-            start(1 * 1000);
-        }
-        else {
-            getListener()->onStatusChange(getStatus());
-        }
-    }
-    
-    
-private:
-    Wm::String getStatus() {
-        if (_cellularRadio.null()) {
-            return _error;
-        }
-        else if (!_cellularRadio->isRadioPresent()) {
-            return S("Radio module not detected.");
-        }
-        else if (!_nitzSupported) {
-            return S("NITZ not supported.");
-        }
-        else {
-            return S("Ready.");
-        }
-    }
-    
-    
-    bool isReady() {
-        return !_cellularRadio.null()
-            && _cellularRadio->isRadioPresent()
-            && _nitzSupported;
     }
 };
