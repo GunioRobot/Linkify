@@ -3,17 +3,27 @@
 
 #include "Event.h"
 #include "Exception.h"
+#include "Object.h"
 
 
 namespace Wm {
-    class AsynchronousResult: public Event {
+    class AsynchronousResult: public Object {
     private:
-        BYTE* _value;
-        size_t _size;
+        ref<Event> _event;
+        bool _ownEvent;
+        void* _value;
 
 
     public:
-        AsynchronousResult(): _value(NULL), _size(0) {
+        AsynchronousResult():
+            _event(new Event()), _ownEvent(true), _value(NULL)
+        {
+        }
+
+
+        AsynchronousResult(ref<Event> event):
+            _event(event), _ownEvent(false), _value(NULL)
+        {
         }
 
 
@@ -25,33 +35,32 @@ namespace Wm {
 
 
         virtual void* getRawValue() {
-            wait();
+            if (!_event.null()) {
+                _event->wait();
+                _event = NULL;
+            }
+
             return _value;
         }
 
 
         template<typename T>
         T getValue() {
-            if (sizeof(T) != getSize()) {
-                throw Exception(S("Asynchronous result type size mismatch."));
-            }
-
             return *(T*) getRawValue();
         }
 
         
-        virtual size_t getSize() {
-            wait();
-            return _size;
-        }
-        
-        
-        virtual void setRawValue(const void* value, size_t size) {
-            _value = new BYTE[size];
-            _size = size;
+        virtual void* setRawValue(void* value, size_t size = 0) {
+            _value = (size > 0) ? new BYTE[size] : value;
 
-            memcpy(_value, value, _size);
-            set();
+            if (size > 0) {
+                memcpy(_value, value, size);
+            }
+            if (_ownEvent && !_event.null()) {
+                _event->set();
+            }
+
+            return _value;
         }
     };
 }

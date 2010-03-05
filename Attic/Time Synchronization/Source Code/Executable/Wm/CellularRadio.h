@@ -201,9 +201,8 @@ namespace Wm {
                 throw Exception(S("Unexpected asynchronous RIL response."));
             }
             
-            ref<AsynchronousResult> result = (*it).second;
+            (*it).second->setRawValue((void*) data, size);
             _results.erase(id);
-            result->setRawValue(data, size);
         }
     };
 }
