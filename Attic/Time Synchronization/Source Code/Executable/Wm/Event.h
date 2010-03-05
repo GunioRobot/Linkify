@@ -33,6 +33,18 @@ namespace Wm {
         }
 
 
+        virtual DWORD getValue() {
+            SetLastError(ERROR_SUCCESS);
+            DWORD value = GetEventData(getHandle());
+
+            if ((value == 0) && (GetLastError() != ERROR_SUCCESS)) {
+                Exception::throwLastError();
+            }
+
+            return value;
+        }
+
+
         virtual void reset() {
             if (!ResetEvent(getHandle())) {
                 Exception::throwLastError();
@@ -42,6 +54,13 @@ namespace Wm {
 
         virtual void set() {
             if (!SetEvent(getHandle())) {
+                Exception::throwLastError();
+            }
+        }
+
+
+        virtual void setValue(DWORD value) {
+            if (!SetEventData(getHandle(), value)) {
                 Exception::throwLastError();
             }
         }
