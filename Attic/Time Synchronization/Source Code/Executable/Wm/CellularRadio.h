@@ -76,7 +76,7 @@ namespace Wm {
             
             ++_references;
 
-            HRESULT result = Api::Ril::Initialize(_PORT,
+            HRESULT result = Api::Ril::RIL_Initialize(_PORT,
                 genericResultHandler, genericNotifyHandler,
                 RIL_NCLASS_ALL, (DWORD) this, &_handle);
 
@@ -89,7 +89,7 @@ namespace Wm {
 
 
         virtual ~CellularRadio() {
-            HRESULT result = Api::Ril::Deinitialize(_handle);
+            HRESULT result = Api::Ril::RIL_Deinitialize(_handle);
 
             if ((--_references == 0) && !Api::Ril::Unload()) {
                 Exception::throwLastError();
@@ -110,7 +110,7 @@ namespace Wm {
             char* pass = password.toCharArray();
             ref<Result> result = new Result();
             
-            HRESULT id = Api::Ril::GetLockingStatus(getHandle(),
+            HRESULT id = Api::Ril::RIL_GetLockingStatus(getHandle(),
                 facility, pass);
 
             delete[] pass;
@@ -126,7 +126,7 @@ namespace Wm {
 
         virtual ref<Result> getPhoneLockedState() {
             ref<Result> result = new Result();
-            HRESULT id = Api::Ril::GetPhoneLockedState(getHandle());
+            HRESULT id = Api::Ril::RIL_GetPhoneLockedState(getHandle());
 
             if (FAILED(id)) {
                 throwError(id);
@@ -139,7 +139,7 @@ namespace Wm {
 
         virtual ref<Result> getSystemTime() {
             ref<Result> result = new Result();
-            HRESULT id = Api::Ril::GetSystemTime(getHandle());
+            HRESULT id = Api::Ril::RIL_GetSystemTime(getHandle());
 
             if (FAILED(id)) {
                 throwError(id);
@@ -157,7 +157,7 @@ namespace Wm {
 
         virtual ref<Result> queryFeatures(DWORD type) {
             ref<Result> result = new Result();
-            HRESULT id = Api::Ril::GetDevCaps(getHandle(), type);
+            HRESULT id = Api::Ril::RIL_GetDevCaps(getHandle(), type);
 
             if (FAILED(id)) {
                 throwError(id);

@@ -208,6 +208,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Wm\Api\Ril\messages.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Wm\String.cpp"
 				>
 			</File>
@@ -221,6 +225,10 @@
 			</File>
 			<File
 				RelativePath=".\Wm\Window.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Wm\Api\Gps\wrapper.cpp"
 				>
 			</File>
 			<File
@@ -387,6 +395,10 @@
 			</File>
 			<File
 				RelativePath=".\Wm\Api\Ril\wrapper.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Wm\Api\Gps\wrapper.h"
 				>
 			</File>
 		</Filter>

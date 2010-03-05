@@ -1,17 +1,17 @@
 #include "wrapper.h"
 
 
-#undef __WM__API__RIL__WRAPPER__
+#undef __WM__API__GPS__WRAPPER__
 #define API_FUNCTION_DEFINITION
 #include "wrapper.h"
 #undef API_FUNCTION_DEFINITION
 
-#undef __WM__API__RIL__WRAPPER__
+#undef __WM__API__GPS__WRAPPER__
 #define API_FUNCTION_LOADER
 #include "wrapper.h"
 #undef API_FUNCTION_LOADER
 
-#undef __WM__API__RIL__WRAPPER__
+#undef __WM__API__GPS__WRAPPER__
 #define API_FUNCTION_UNLOADER
 #include "wrapper.h"
 #undef API_FUNCTION_UNLOADER
@@ -22,10 +22,10 @@ static HINSTANCE _library = NULL;
 
 namespace Wm {
 namespace Api {
-namespace Ril {
+namespace Gps {
     HINSTANCE Load() {
         if (_library == NULL) {
-            _library = LoadLibrary(TEXT("ril"));
+            _library = LoadLibrary(TEXT("gpsapi"));
             
             if (_library != NULL) {
                 LoadFunctions(_library);
