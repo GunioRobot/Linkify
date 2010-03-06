@@ -64,7 +64,6 @@ public:
 private:
     bool initialize() {
         try {
-            getListener()->onStatusChange(S("Starting..."));
             _radio = new Wm::CellularRadio();
         }
         catch (Wm::Exception exception) {

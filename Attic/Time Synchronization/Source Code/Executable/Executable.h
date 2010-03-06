@@ -1,6 +1,7 @@
 #include <vector>
 #include "CellularRadioTimeSource.h"
 #include "DeviceTimeSource.h"
+#include "GpsTimeSource.h"
 #include "TimeInformation.h"
 #include "Wm.h"
 
@@ -68,6 +69,7 @@ private:
         
         _timeItems.push_back(new TimeInformation(new DeviceTimeSource()));
         _timeItems.push_back(new TimeInformation(new CellularRadioTimeSource()));
+        _timeItems.push_back(new TimeInformation(new GpsTimeSource()));
 
         for (size_t i = 0; i < _timeItems.size(); ++i) {
             ref<TimeInformation> timeItem = _timeItems[i];
