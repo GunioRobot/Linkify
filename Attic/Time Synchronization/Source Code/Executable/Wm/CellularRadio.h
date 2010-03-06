@@ -112,7 +112,6 @@ namespace Wm {
         {
             char* pass = password.toCharArray();
             ref<Event> event = new Event();
-            ref<Asynchronous<DWORD>> result = new Asynchronous<DWORD>(event);
             
             HRESULT id = Api::Ril::RIL_GetLockingStatus(getHandle(),
                 facility, pass);
@@ -124,13 +123,12 @@ namespace Wm {
             }
 
             _results[id] = event;
-            return result;
+            return new Asynchronous<DWORD>(event);
         }
 
 
         virtual ref<Asynchronous<DWORD>> getPhoneLockedState() {
             ref<Event> event = new Event();
-            ref<Asynchronous<DWORD>> result = new Asynchronous<DWORD>(event);
             HRESULT id = Api::Ril::RIL_GetPhoneLockedState(getHandle());
 
             if (FAILED(id)) {
@@ -138,21 +136,20 @@ namespace Wm {
             }
 
             _results[id] = event;
-            return result;
+            return new Asynchronous<DWORD>(event);
         }
 
 
         virtual ref<Asynchronous<SYSTEMTIME>> getSystemTime() {
-            ref<Event> e = new Event();
-            ref<Asynchronous<SYSTEMTIME>> res = new Asynchronous<SYSTEMTIME>(e);
+            ref<Event> event = new Event();
             HRESULT id = Api::Ril::RIL_GetSystemTime(getHandle());
 
             if (FAILED(id)) {
                 throwError(id);
             }
             
-            _results[id] = e;
-            return res;
+            _results[id] = event;
+            return new Asynchronous<SYSTEMTIME>(event);
         }
 
 
@@ -163,7 +160,6 @@ namespace Wm {
 
         virtual ref<AsynchronousResult> queryFeatures(DWORD type) {
             ref<Event> event = new Event();
-            ref<AsynchronousResult> result = new AsynchronousResult(event);
             HRESULT id = Api::Ril::RIL_GetDevCaps(getHandle(), type);
 
             if (FAILED(id)) {
@@ -171,7 +167,7 @@ namespace Wm {
             }
 
             _results[id] = event;
-            return result;
+            return new AsynchronousResult(event);
         }
 
 
