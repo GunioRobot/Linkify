@@ -50,8 +50,8 @@ public:
         
         for (; !_radio.null(); sleep(1 * 1000)) {
             try {
-                ref<Wm::AsynchronousResult> time = _radio->getSystemTime();
-                getListener()->onTimeChange(time->getValue<SYSTEMTIME>());
+                SYSTEMTIME time = _radio->getSystemTime()->getValue();
+                getListener()->onTimeChange(time);
             }
             catch (Wm::Exception exception) {
                 getListener()->onStatusChange(S("Time query error: ")
@@ -93,7 +93,7 @@ private:
         ref<Wm::AsynchronousResult> nitzSupport =
             _radio->queryFeatures(RIL_CAPSTYPE_NITZNOTIFICATION);
 
-        switch (nitzSupport->getValue<DWORD>()) {
+        switch (nitzSupport->getValueAs<DWORD>()) {
         case RIL_CAPS_NITZ_ENABLED:
             return true;
         case RIL_CAPS_NITZ_DISABLED:

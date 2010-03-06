@@ -2,6 +2,7 @@
 
 
 #include "Wm/Application.h"
+#include "Wm/Asynchronous.h"
 #include "Wm/AsynchronousResult.h"
 #include "Wm/CellularRadio.h"
 #include "Wm/Control.h"

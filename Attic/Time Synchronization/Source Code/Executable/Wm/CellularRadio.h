@@ -3,6 +3,7 @@
 
 #include <map>
 #include "Application.h"
+#include "Asynchronous.h"
 #include "AsynchronousResult.h"
 #include "Exception.h"
 #include "Object.h"
@@ -57,15 +58,14 @@ namespace Wm {
                 throw Exception(message);
             }
 
-            SetLastError(HRESULT_CODE(result));
-            Exception::throwLastError();
+            Exception::throwError(HRESULT_CODE(result));
         }
 
 
     private:
         HRIL _handle;
         bool _radioPresent;
-        std::map<HRESULT, ref<AsynchronousResult>> _results;
+        std::map<HRESULT, ref<Event>> _results;
 
 
     public:
@@ -106,12 +106,13 @@ namespace Wm {
         }
 
 
-        virtual ref<AsynchronousResult> getLockingStatus(
+        virtual ref<Asynchronous<DWORD>> getLockingStatus(
             DWORD facility,
             String password)
         {
             char* pass = password.toCharArray();
-            ref<AsynchronousResult> result = new AsynchronousResult();
+            ref<Event> event = new Event();
+            ref<Asynchronous<DWORD>> result = new Asynchronous<DWORD>(event);
             
             HRESULT id = Api::Ril::RIL_GetLockingStatus(getHandle(),
                 facility, pass);
@@ -122,34 +123,36 @@ namespace Wm {
                 throwError(id);
             }
 
-            _results[id] = result;
+            _results[id] = event;
             return result;
         }
 
 
-        virtual ref<AsynchronousResult> getPhoneLockedState() {
-            ref<AsynchronousResult> result = new AsynchronousResult();
+        virtual ref<Asynchronous<DWORD>> getPhoneLockedState() {
+            ref<Event> event = new Event();
+            ref<Asynchronous<DWORD>> result = new Asynchronous<DWORD>(event);
             HRESULT id = Api::Ril::RIL_GetPhoneLockedState(getHandle());
 
             if (FAILED(id)) {
                 throwError(id);
             }
 
-            _results[id] = result;
+            _results[id] = event;
             return result;
         }
 
 
-        virtual ref<AsynchronousResult> getSystemTime() {
-            ref<AsynchronousResult> result = new AsynchronousResult();
+        virtual ref<Asynchronous<SYSTEMTIME>> getSystemTime() {
+            ref<Event> e = new Event();
+            ref<Asynchronous<SYSTEMTIME>> res = new Asynchronous<SYSTEMTIME>(e);
             HRESULT id = Api::Ril::RIL_GetSystemTime(getHandle());
 
             if (FAILED(id)) {
                 throwError(id);
             }
             
-            _results[id] = result;
-            return result;
+            _results[id] = e;
+            return res;
         }
 
 
@@ -159,14 +162,15 @@ namespace Wm {
 
 
         virtual ref<AsynchronousResult> queryFeatures(DWORD type) {
-            ref<AsynchronousResult> result = new AsynchronousResult();
+            ref<Event> event = new Event();
+            ref<AsynchronousResult> result = new AsynchronousResult(event);
             HRESULT id = Api::Ril::RIL_GetDevCaps(getHandle(), type);
 
             if (FAILED(id)) {
                 throwError(id);
             }
 
-            _results[id] = result;
+            _results[id] = event;
             return result;
         }
 
@@ -194,15 +198,17 @@ namespace Wm {
             const void* data,
             DWORD size)
         {
-            std::map<HRESULT, ref<AsynchronousResult>>::iterator it =
-                _results.find(id);
+            std::map<HRESULT, ref<Event>>::iterator it = _results.find(id);
             
             if (it == _results.end()) {
                 throw Exception(S("Unexpected asynchronous RIL response."));
             }
             
-            (*it).second->setRawValue((void*) data, size);
+            ref<Event> event = (*it).second;
+            
             _results.erase(id);
+            event->setValue((void*) data, size);
+            event->set();
         }
     };
 }

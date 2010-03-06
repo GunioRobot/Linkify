@@ -9,10 +9,11 @@ namespace Wm {
     class Event: public Object {
     private:
         HANDLE _handle;
+        bool _valueCopy;
 
 
     public:
-        Event(bool automatic = false) {
+        Event(bool automatic = false): _valueCopy(false) {
             _handle = CreateEvent(NULL, !automatic, false, NULL);
 
             if (_handle == NULL) {
@@ -22,6 +23,10 @@ namespace Wm {
         
         
         virtual ~Event() {
+            if (_valueCopy) {
+                delete getValue();
+            }
+
             if (!CloseHandle(_handle)) {
                 Exception::throwLastError();
             }
@@ -33,7 +38,7 @@ namespace Wm {
         }
 
 
-        virtual DWORD getValue() {
+        virtual void* getValue() {
             SetLastError(ERROR_SUCCESS);
             DWORD value = GetEventData(getHandle());
 
@@ -41,7 +46,7 @@ namespace Wm {
                 Exception::throwLastError();
             }
 
-            return value;
+            return (void*) value;
         }
 
 
@@ -59,9 +64,31 @@ namespace Wm {
         }
 
 
-        virtual void setValue(DWORD value) {
-            if (!SetEventData(getHandle(), value)) {
+        virtual void setValue(void* value) {
+            void* previous = _valueCopy ? getValue() : NULL;
+
+            if (!SetEventData(getHandle(), (DWORD) value)) {
                 Exception::throwLastError();
+            }
+            
+            if (_valueCopy) {
+                delete previous;
+                _valueCopy = false;
+            }
+        }
+
+
+        virtual void setValue(void* value, size_t size) {
+            void* copy = new BYTE[size];
+            memcpy(copy, value, size);
+
+            try {
+                setValue(copy);
+                _valueCopy = true;
+            }
+            catch (Exception) {
+                delete copy;
+                throw;
             }
         }
 

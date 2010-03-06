@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "AsynchronousResult.h"
+#include "Asynchronous.h"
 #include "Event.h"
 #include "Exception.h"
 #include "Object.h"
@@ -10,38 +10,27 @@
 namespace Wm {
     class Gps: public Object {
     private:
-        class PositionResult: public AsynchronousResult {
+        class AsynchronousPosition: public Asynchronous<GPS_POSITION> {
         private:
             ref<Gps> _gps;
+            GPS_POSITION _position;
 
 
         public:
-            PositionResult(ref<Gps> gps):
-                AsynchronousResult(gps->_locationChanged), _gps(gps)
+            AsynchronousPosition(ref<Gps> gps):
+                Asynchronous(gps->_locationChanged), _gps(gps)
             {
+                _position.dwSize = 0;
             }
 
 
-            virtual void* getRawValue() {
-                void* value = AsynchronousResult::getRawValue();
-
-                if (value == NULL) {
-                    GPS_POSITION position;
-
-                    position.dwVersion = GPS_VERSION_1;
-                    position.dwSize = sizeof(GPS_POSITION);
-                    
-                    DWORD result = Api::Gps::GPSGetPosition(_gps->getHandle(),
-                        &position, 1 * 1000, 0);
-
-                    if (result != ERROR_SUCCESS) {
-                        Exception::throwError(result);
-                    }
-
-                    return setRawValue(&position, sizeof(GPS_POSITION));
+            virtual GPS_POSITION getValue() {
+                if (_position.dwSize == 0) {
+                    getEvent()->wait();
+                    _gps->getPosition(_position);
                 }
 
-                return value;
+                return _position;
             }
         };
 
@@ -89,8 +78,22 @@ namespace Wm {
         }
 
 
-        virtual ref<AsynchronousResult> getPosition() {
-            return new PositionResult(noref this);
+        virtual ref<Asynchronous<GPS_POSITION>> getPosition() {
+            return new AsynchronousPosition(noref this);
+        }
+
+
+    protected:
+        void getPosition(GPS_POSITION& position) {
+            position.dwVersion = GPS_VERSION_1;
+            position.dwSize = sizeof(GPS_POSITION);
+
+            DWORD result = Api::Gps::GPSGetPosition(getHandle(),
+                &position, 1 * 1000, 0);
+
+            if (result != ERROR_SUCCESS) {
+                Exception::throwError(result);
+            }
         }
     };
 }
