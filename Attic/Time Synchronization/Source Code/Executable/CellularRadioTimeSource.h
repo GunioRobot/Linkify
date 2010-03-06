@@ -68,13 +68,14 @@ private:
             _radio = new Wm::CellularRadio();
         }
         catch (Wm::Exception exception) {
-            getListener()->onStatusChange(S("Phone unavailable: ")
+            getListener()->onStatusChange(S("Not available: ")
                 + exception.getMessage());
             return false;
         }
 
         if (!_radio->isRadioPresent()) {
-            getListener()->onStatusChange(S("Phone is off, waiting..."));
+            getListener()->onStatusChange(
+                S("No radio module present, waiting..."));
             
             do {
                 sleep(1 * 1000);
