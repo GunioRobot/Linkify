@@ -40,7 +40,7 @@ public:
             close();
             
             for (size_t i = 0; i < _timeItems.size(); ++i) {
-                _timeItems[i]->getSource()->onFinalize();
+                _timeItems[i]->getSource()->finalize();
             }
         }
     }
@@ -50,7 +50,7 @@ public:
         open(windowShowMode);
         
         for (size_t i = 0; i < _timeItems.size(); ++i) {
-            _timeItems[i]->getSource()->onInitialize();
+            _timeItems[i]->getSource()->initialize();
         }
         
         return Wm::Application::start(windowShowMode);

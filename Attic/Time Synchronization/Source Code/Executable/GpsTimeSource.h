@@ -11,6 +11,11 @@ private:
 
 
 public:
+    virtual void finalize() {
+        _gps = NULL;
+    }
+
+
     virtual Wm::String getDescription() {
         return S("Uses the time provided by GPS satellites.");
     }
@@ -21,12 +26,7 @@ public:
     }
 
 
-    virtual void onFinalize() {
-        _gps = NULL;
-    }
-
-
-    virtual void onInitialize() {
+    virtual void initialize() {
         start();
     }
 

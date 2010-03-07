@@ -7,6 +7,11 @@
 
 class DeviceTimeSource: public TimeSource, public Wm::Timer {
 public:
+    virtual void finalize() {
+        stop();
+    }
+
+
     virtual Wm::String getDescription() {
         return S("Uses the local time from the internal clock.");
     }
@@ -17,12 +22,7 @@ public:
     }
 
 
-    virtual void onFinalize() {
-        stop();
-    }
-
-
-    virtual void onInitialize() {
+    virtual void initialize() {
         onTimeout();
         start(1 * 1000);
     }

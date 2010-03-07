@@ -11,6 +11,11 @@ private:
 
 
 public:
+    virtual void finalize() {
+        _radio = NULL;
+    }
+
+
     virtual Wm::String getDescription() {
         return S("Uses NITZ data sent by the cellular network.");
     }
@@ -21,18 +26,13 @@ public:
     }
 
 
-    virtual void onFinalize() {
-        _radio = NULL;
-    }
-
-
-    virtual void onInitialize() {
+    virtual void initialize() {
         start();
     }
 
 
     virtual void run() {
-        if (!initialize()) {
+        if (!initializeRadio()) {
             return;
         }
 
@@ -62,7 +62,7 @@ public:
 
 
 private:
-    bool initialize() {
+    bool initializeRadio() {
         try {
             _radio = new Wm::CellularRadio();
         }

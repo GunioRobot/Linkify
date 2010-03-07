@@ -18,6 +18,7 @@ private:
 
 
 public:
+    virtual void finalize() = 0;
     virtual Wm::String getDescription() = 0;
     
     
@@ -27,8 +28,7 @@ public:
     
     
     virtual Wm::String getName() = 0;
-    virtual void onFinalize() = 0;
-    virtual void onInitialize() = 0;
+    virtual void initialize() = 0;
 
 
     virtual void setListener(ref<TimeSource::Listener> listener) {
