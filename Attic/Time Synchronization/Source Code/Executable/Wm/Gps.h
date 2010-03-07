@@ -13,12 +13,15 @@ namespace Wm {
         class AsynchronousPosition: public Asynchronous<GPS_POSITION> {
         private:
             ref<Gps> _gps;
+            size_t _maxAgeMs;
             GPS_POSITION _position;
 
 
         public:
-            AsynchronousPosition(ref<Gps> gps):
-                Asynchronous(gps->_locationChanged), _gps(gps)
+            AsynchronousPosition(ref<Gps> gps, size_t maxAgeMs):
+                Asynchronous(gps->_locationChanged),
+                _gps(gps),
+                _maxAgeMs(maxAgeMs)
             {
                 _position.dwSize = 0;
             }
@@ -27,7 +30,7 @@ namespace Wm {
             virtual GPS_POSITION getValue() {
                 if (_position.dwSize == 0) {
                     getEvent()->wait();
-                    _gps->getPosition(_position);
+                    _gps->getPosition(_position, _maxAgeMs);
                 }
 
                 return _position;
@@ -78,18 +81,18 @@ namespace Wm {
         }
 
 
-        virtual ref<Asynchronous<GPS_POSITION>> getPosition() {
-            return new AsynchronousPosition(noref this);
+        virtual ref<Asynchronous<GPS_POSITION>> getPosition(size_t maxAgeMs) {
+            return new AsynchronousPosition(noref this, maxAgeMs);
         }
 
 
-    protected:
-        void getPosition(GPS_POSITION& position) {
+    private:
+        void getPosition(GPS_POSITION& position, size_t maxAgeMs) {
             position.dwVersion = GPS_VERSION_1;
             position.dwSize = sizeof(GPS_POSITION);
 
             DWORD result = Api::Gps::GPSGetPosition(getHandle(),
-                &position, 1 * 1000, 0);
+                &position, maxAgeMs, 0);
 
             if (result != ERROR_SUCCESS) {
                 Exception::throwError(result);

@@ -42,7 +42,7 @@ public:
         }
 
         for (; !_gps.null(); sleep(1 * 1000)) {
-            GPS_POSITION position = _gps->getPosition()->getValue();
+            GPS_POSITION position = _gps->getPosition(1 * 1000)->getValue();
 
             if ((position.dwValidFields & GPS_VALID_UTC_TIME) != 0) {
                 getListener()->onTimeChange(position.stUTCTime);
