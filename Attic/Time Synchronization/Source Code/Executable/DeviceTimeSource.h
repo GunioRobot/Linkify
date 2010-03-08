@@ -7,7 +7,7 @@
 
 class DeviceTimeSource: public TimeSource, public Wm::Timer {
 public:
-    virtual void finalize() {
+    virtual void finalize(DWORD waitMs = INFINITE) {
         stop();
     }
 

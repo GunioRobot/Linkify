@@ -18,7 +18,7 @@ private:
 
 
 public:
-    virtual void finalize() = 0;
+    virtual void finalize(DWORD waitMs = INFINITE) = 0;
     virtual Wm::String getDescription() = 0;
     
     

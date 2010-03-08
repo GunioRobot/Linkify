@@ -7,10 +7,6 @@
 
 class CellularRadioTimeSource: public TimeSource, public Wm::Thread {
 private:
-    static const size_t _WAIT_MS = 1 * 1000;
-
-
-private:
     ref<Wm::CellularRadio> _device;
     ref<Wm::Event> _finalize;
 
@@ -20,10 +16,10 @@ public:
     }
 
 
-    virtual void finalize() {
+    virtual void finalize(DWORD waitMs = INFINITE) {
         _device = NULL;
         _finalize->set();
-        wait(_WAIT_MS);
+        wait(waitMs);
     }
 
 
@@ -60,7 +56,7 @@ public:
             return;
         }
         
-        for (SYSTEMTIME time; !_device.null(); _finalize->wait(_WAIT_MS)) {
+        for (SYSTEMTIME time; !_device.null(); _finalize->wait(1 * 1000)) {
             try {
                 time = _device->getSystemTime()->getValue();
                 getListener()->onTimeChange(time);
@@ -89,7 +85,7 @@ private:
                 S("No radio module present, waiting..."));
             
             do {
-                _finalize->wait(_WAIT_MS);
+                _finalize->wait(1 * 1000);
                 if (_device.null()) {
                     return false;
                 }

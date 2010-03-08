@@ -38,7 +38,7 @@ public:
     virtual void onChoose(ref<Wm::MenuItem> item) {
         if (item == _exitOption) {
             for (size_t i = 0; i < _timeItems.size(); ++i) {
-                _timeItems[i]->getSource()->finalize();
+                _timeItems[i]->getSource()->finalize(0);
             }
             
             close();

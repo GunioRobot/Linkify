@@ -7,10 +7,6 @@
 
 class GpsTimeSource: public TimeSource, public Wm::Thread {
 private:
-    static const size_t _WAIT_MS = 1 * 1000;
-
-
-private:
     ref<Wm::Gps> _device;
     ref<Wm::Event> _finalize;
 
@@ -20,10 +16,10 @@ public:
     }
 
 
-    virtual void finalize() {
+    virtual void finalize(DWORD waitMs = INFINITE) {
         _device = NULL;
         _finalize->set();
-        wait(_WAIT_MS);
+        wait(waitMs);
     }
 
 
@@ -53,7 +49,7 @@ public:
             return;
         }
 
-        for (GPS_POSITION pos; !_device.null(); _finalize->wait(_WAIT_MS)) {
+        for (GPS_POSITION pos; !_device.null(); _finalize->wait(1 * 1000)) {
             try {
                 pos = _device->getPosition(1 * 1000)->getValue();
             }

@@ -66,7 +66,7 @@ namespace Wm {
         }
 
 
-        virtual void wait(size_t ms = SIZE_MAX) {
+        virtual void wait(DWORD ms = INFINITE) {
             if (_finished.null()) {
                 _finished = new Event();
             }
