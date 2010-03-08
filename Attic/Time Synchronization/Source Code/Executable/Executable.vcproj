@@ -232,6 +232,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Wm\Api\Ril\wrapper.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Wm\Api\Gps\wrapper.cpp"
 				>
 				<FileConfiguration
@@ -250,10 +254,6 @@
 						ObjectFile="$(IntDir)/$(InputName)1.obj"
 					/>
 				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\Wm\Api\Ril\wrapper.cpp"
-				>
 			</File>
 		</Filter>
 		<Filter
@@ -398,6 +398,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TimeListener.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Wm\Timer.h"
 				>
 			</File>
@@ -422,11 +426,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Api\Ril\wrapper.h"
+				RelativePath=".\Wm\Api\Gps\wrapper.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Api\Gps\wrapper.h"
+				RelativePath=".\Wm\Api\Ril\wrapper.h"
 				>
 			</File>
 		</Filter>

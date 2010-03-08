@@ -5,7 +5,7 @@
 #include "Wm.h"
 
 
-class TimeInformation: public TimeSource::Listener {
+class TimeInformation: public TimeListener {
 private:
     // Store the time in the following format: "YYYY-MM-DD HH:MM:SS".
     static const size_t _LENGTH = 4 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2 + 1;
@@ -13,21 +13,20 @@ private:
 
 private:
     TCHAR _buffer[_LENGTH];
-    ref<TimeSource> _timeSource;
+    ref<TimeSource> _source;
     ref<Wm::Label> _label;
     ref<Wm::TextBox> _textBox;
 
 
 public:
-    TimeInformation(ref<TimeSource> timeSource): _timeSource(timeSource) {
-        _label = new Wm::Label(_timeSource->getName() + S(":"));
+    TimeInformation(ref<TimeSource> source): _source(source) {
+        _label = new Wm::Label(source->getName() + S(":"));
         _textBox = new Wm::TextBox(S("Initializing..."));
-        _timeSource->setListener(noref this);
     }
 
 
-    virtual ~TimeInformation() {
-        _timeSource->setListener(NULL);
+    virtual void finalize(DWORD waitMs = INFINITE) {
+        _source->finalize(waitMs);
     }
 
 
@@ -41,11 +40,11 @@ public:
     }
 
 
-    virtual ref<TimeSource> getSource() {
-        return _timeSource;
+    virtual void initialize() {
+        _source->initialize(noref this);
     }
-
-
+    
+    
     virtual void onStatusChange(Wm::String status) {
         getTextBox()->setText(status);
     }

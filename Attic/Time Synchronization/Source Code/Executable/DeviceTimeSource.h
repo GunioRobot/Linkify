@@ -6,9 +6,14 @@
 
 
 class DeviceTimeSource: public TimeSource, public Wm::Timer {
+private:
+    ref<TimeListener> _listener;
+
+
 public:
     virtual void finalize(DWORD waitMs = INFINITE) {
         stop();
+        _listener = NULL;
     }
 
 
@@ -22,7 +27,8 @@ public:
     }
 
 
-    virtual void initialize() {
+    virtual void initialize(ref<TimeListener> listener) {
+        _listener = listener;
         onTimeout();
         start(1 * 1000);
     }
@@ -32,6 +38,6 @@ public:
         SYSTEMTIME time;
         
         GetLocalTime(&time);
-        getListener()->onTimeChange(time);
+        _listener->onTimeChange(time);
     }
 };

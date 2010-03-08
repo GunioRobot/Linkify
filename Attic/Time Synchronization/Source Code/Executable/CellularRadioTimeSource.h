@@ -5,10 +5,13 @@
 #include "Wm.h"
 
 
-class CellularRadioTimeSource: public TimeSource, public Wm::Thread {
+class CellularRadioTimeSource:
+    public TimeSource, public TimeListener, public Wm::Thread
+{
 private:
     ref<Wm::CellularRadio> _device;
     ref<Wm::Event> _finalize;
+    ref<TimeListener> _listener;
 
 
 public:
@@ -20,6 +23,7 @@ public:
         _device = NULL;
         _finalize->set();
         wait(waitMs);
+        _listener = NULL;
     }
 
 
@@ -33,7 +37,8 @@ public:
     }
 
 
-    virtual void initialize() {
+    virtual void initialize(ref<TimeListener> listener) {
+        _listener = listener;
         _finalize->reset();
         start();
     }
@@ -46,25 +51,36 @@ public:
 
         try {
             if (!isNitzEnabled()) {
-                getListener()->onStatusChange(S("NITZ disabled."));
+                onStatusChange(S("NITZ disabled."));
                 return;
             }
         }
         catch (Wm::Exception exception) {
-            getListener()->onStatusChange(S("NITZ unsupported: ")
-                + exception.getMessage());
+            onStatusChange(S("NITZ unsupported: ") + exception.getMessage());
             return;
         }
         
-        for (SYSTEMTIME time; !_device.null(); _finalize->wait(1 * 1000)) {
+        for (; !_device.null(); _finalize->wait(1 * 1000)) {
             try {
-                time = _device->getSystemTime()->getValue();
-                getListener()->onTimeChange(time);
+                onTimeChange(_device->getSystemTime()->getValue());
             }
-            catch (Wm::Exception exception) {
-                getListener()->onStatusChange(S("Time query error: ")
-                    + exception.getMessage());
+            catch (Wm::Exception exc) {
+                onStatusChange(S("Time query error: ") + exc.getMessage());
             }
+        }
+    }
+
+
+    virtual void onStatusChange(Wm::String status) {
+        if (!_listener.null()) {
+            _listener->onStatusChange(status);
+        }
+    }
+
+
+    virtual void onTimeChange(SYSTEMTIME time) {
+        if (!_listener.null()) {
+            _listener->onTimeChange(time);
         }
     }
 
@@ -75,14 +91,12 @@ private:
             _device = new Wm::CellularRadio();
         }
         catch (Wm::Exception exception) {
-            getListener()->onStatusChange(S("Not available: ")
-                + exception.getMessage());
+            onStatusChange(S("Not available: ") + exception.getMessage());
             return false;
         }
 
         if (!_device->isRadioPresent()) {
-            getListener()->onStatusChange(
-                S("No radio module present, waiting..."));
+            onStatusChange(S("No radio module present, waiting..."));
             
             do {
                 _finalize->wait(1 * 1000);

@@ -5,10 +5,13 @@
 #include "Wm.h"
 
 
-class GpsTimeSource: public TimeSource, public Wm::Thread {
+class GpsTimeSource:
+    public TimeSource, public TimeListener, public Wm::Thread
+{
 private:
     ref<Wm::Gps> _device;
     ref<Wm::Event> _finalize;
+    ref<TimeListener> _listener;
 
 
 public:
@@ -20,6 +23,7 @@ public:
         _device = NULL;
         _finalize->set();
         wait(waitMs);
+        _listener = NULL;
     }
 
 
@@ -33,7 +37,8 @@ public:
     }
 
 
-    virtual void initialize() {
+    virtual void initialize(ref<TimeListener> listener) {
+        _listener = listener;
         _finalize->reset();
         start();
     }
@@ -44,8 +49,7 @@ public:
             _device = new Wm::Gps();
         }
         catch (Wm::Exception exception) {
-            getListener()->onStatusChange(S("Not available: ")
-                + exception.getMessage());
+            onStatusChange(S("Not available: ") + exception.getMessage());
             return;
         }
 
@@ -53,28 +57,41 @@ public:
             try {
                 pos = _device->getPosition(1 * 1000)->getValue();
             }
-            catch (Wm::Exception exception) {
-                getListener()->onStatusChange(S("Position query error: ")
-                    + exception.getMessage());
+            catch (Wm::Exception exc) {
+                onStatusChange(S("Position query error: ") + exc.getMessage());
                 continue;
             }
             
             if ((pos.dwValidFields & GPS_VALID_UTC_TIME) != 0) {
-                getListener()->onTimeChange(pos.stUTCTime);
+                onTimeChange(pos.stUTCTime);
             }
             else if (pos.FixQuality == GPS_FIX_QUALITY_UNKNOWN) {
-                getListener()->onStatusChange(S("Obtaining position fix..."));
+                onStatusChange(S("Obtaining position fix..."));
             }
             else if ((pos.dwValidFields & GPS_VALID_SATELLITE_COUNT) != 0) {
                 Wm::StringStream message;
                 message << TEXT("Locked on to ") << pos.dwSatelliteCount
                     << TEXT(" satellites.");
                 
-                getListener()->onStatusChange(message.str());
+                onStatusChange(message.str());
             }
             else {
-                getListener()->onStatusChange("No time information available.");
+                onStatusChange("No time information available.");
             }
+        }
+    }
+
+
+    virtual void onStatusChange(Wm::String status) {
+        if (!_listener.null()) {
+            _listener->onStatusChange(status);
+        }
+    }
+
+
+    virtual void onTimeChange(SYSTEMTIME time) {
+        if (!_listener.null()) {
+            _listener->onTimeChange(time);
         }
     }
 };
