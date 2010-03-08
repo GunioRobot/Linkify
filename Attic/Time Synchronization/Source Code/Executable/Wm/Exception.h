@@ -23,20 +23,15 @@ namespace Wm {
                 (LPTSTR) &buffer, 0, NULL);
             
             if (length == 0) {
-                StringStream message;
-                
-                message << TEXT("Error code ") << std::hex << code << TEXT("h.");
-                throw Exception(message.str());
+                throw Exception(String::format(TEXT("Error code %Xh."), code));
             }
-            else {
-                for (size_t i = length - 1; (i > 0) && isspace(buffer[i]); --i) {
-                    buffer[i] = '\0';
-                }
+            for (size_t i = length - 1; (i > 0) && isspace(buffer[i]); --i) {
+                buffer[i] = '\0';
+            }
 
-                String message(buffer);
-                LocalFree(buffer);
-                throw Exception(message);
-            }
+            String message(buffer);
+            LocalFree(buffer);
+            throw Exception(message);
         }
 
 

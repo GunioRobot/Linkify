@@ -60,7 +60,7 @@ public:
             return;
         }
         
-        for (; !_device.null(); _finalize->wait(1 * 1000)) {
+        for (; !_device.null(); _finalize->wait(500)) {
             try {
                 onTimeChange(_device->getSystemTime()->getValue());
             }

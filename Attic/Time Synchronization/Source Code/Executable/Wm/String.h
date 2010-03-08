@@ -12,6 +12,10 @@
 namespace Wm {
     class String: public std::basic_string<TCHAR> {
     public:
+        static String format(const TCHAR* spec, ...);
+
+
+    public:
         String(): std::basic_string<TCHAR>(TEXT("")) {
         }
 
@@ -31,8 +35,6 @@ namespace Wm {
 #ifdef UNICODE
         String(const char* string);
 #endif
-        
-        
         virtual char* toCharArray();
     };
 }

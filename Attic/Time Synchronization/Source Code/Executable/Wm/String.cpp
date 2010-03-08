@@ -1,8 +1,39 @@
+#include <cstdarg>
+#include <new>
 #include "Exception.h"
 #include "String.h"
 
 
 namespace Wm {
+    String String::format(const TCHAR* spec, ...) {
+        size_t length = BUFSIZ;
+        TCHAR* buffer = NULL;
+        int count = -1;
+
+        for (; count < 0; length *= 2) {
+            TCHAR* tmp = (TCHAR*) realloc(buffer, (length + 1) * sizeof(TCHAR));
+
+            if (tmp == NULL) {
+                free(buffer);
+                throw std::bad_alloc("Out of memory.");
+            }
+
+            buffer = tmp;
+            va_list args;
+            
+            va_start(args, spec);
+            count = _vsntprintf(buffer, length, spec, args);
+            va_end(args);
+        }
+
+        buffer[count] = '\0';
+        String string(buffer);
+        free(buffer);
+
+        return string;
+    }
+
+
 #ifdef UNICODE
     String::String(const char* string) {
         size_t length = strlen(string);

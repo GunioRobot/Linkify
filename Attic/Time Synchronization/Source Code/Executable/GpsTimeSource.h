@@ -53,7 +53,7 @@ public:
             return;
         }
 
-        for (GPS_POSITION pos; !_device.null(); _finalize->wait(1 * 1000)) {
+        for (GPS_POSITION pos; !_device.null(); _finalize->wait(500)) {
             try {
                 pos = _device->getPosition(1 * 1000)->getValue();
             }
@@ -69,11 +69,8 @@ public:
                 onStatusChange(S("Obtaining position fix..."));
             }
             else if ((pos.dwValidFields & GPS_VALID_SATELLITE_COUNT) != 0) {
-                Wm::StringStream message;
-                message << TEXT("Locked on to ") << pos.dwSatelliteCount
-                    << TEXT(" satellites.");
-                
-                onStatusChange(message.str());
+                const TCHAR* msg = TEXT("Locked on to %u satellites.");
+                onStatusChange(Wm::String::format(msg, pos.dwSatelliteCount));
             }
             else {
                 onStatusChange("No time information available.");
