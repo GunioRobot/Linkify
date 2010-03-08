@@ -7,12 +7,6 @@
 
 class TimeInformation: public TimeListener {
 private:
-    // Store the time in the following format: "YYYY-MM-DD HH:MM:SS".
-    static const size_t _LENGTH = 4 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2 + 1;
-
-
-private:
-    TCHAR _buffer[_LENGTH];
     ref<TimeSource> _source;
     ref<Wm::Label> _label;
     ref<Wm::TextBox> _textBox;
@@ -51,10 +45,10 @@ public:
 
 
     virtual void onTimeChange(SYSTEMTIME time) {
-        _sntprintf(_buffer, _LENGTH, TEXT("%d-%02d-%02d %02d:%02d:%02d"),
-            time.wYear, time.wMonth, time.wDay,
-            time.wHour, time.wMinute, time.wSecond);
+        const TCHAR* spec = TEXT("%d-%02d-%02d %02d:%02d:%02d");
 
-        getTextBox()->setText(_buffer);
+        getTextBox()->setText(Wm::String::format(spec,
+            time.wYear, time.wMonth, time.wDay,
+            time.wHour, time.wMinute, time.wSecond));
     }
 };
