@@ -27,7 +27,6 @@ public:
 
 
     virtual ~TimeInformation() {
-        // Break reference cycle.
         _timeSource->setListener(NULL);
     }
 

@@ -93,8 +93,9 @@ namespace Wm {
         }
 
 
-        virtual bool wait(DWORD ms = INFINITE) {
-            DWORD result = WaitForSingleObject(getHandle(), ms);
+        virtual bool wait(size_t ms = SIZE_MAX) {
+            DWORD timeout = (ms == SIZE_MAX) ? INFINITE : ms;
+            DWORD result = WaitForSingleObject(getHandle(), timeout);
 
             if (result == WAIT_FAILED) {
                 Exception::throwLastError();

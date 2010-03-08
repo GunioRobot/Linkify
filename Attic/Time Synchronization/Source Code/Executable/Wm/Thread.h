@@ -2,6 +2,7 @@
 
 
 #include "Application.h"
+#include "Event.h"
 #include "Exception.h"
 #include "Object.h"
 
@@ -10,22 +11,13 @@ namespace Wm {
     class Thread: public Object {
     private:
         static DWORD WINAPI genericRun(LPVOID userData) {
-            Thread* self = (Thread*) userData;
-
-            try {
-                self->run();
-                CloseHandle(self->getHandle());
-                return EXIT_SUCCESS;
-            }
-            catch (Exception exception) {
-                Application::exit(exception);
-                return EXIT_FAILURE;
-            }
+            return ((Thread*) userData)->run();
         }
 
 
     private:
         HANDLE _handle;
+        ref<Event> _finished;
 
 
     public:
@@ -39,12 +31,17 @@ namespace Wm {
         }
 
 
+        virtual ~Thread() {
+            CloseHandle(_handle);
+        }
+
+
         virtual HANDLE getHandle() {
             return _handle;
         }
 
         
-        virtual void run() = 0;
+        virtual void onRun() = 0;
 
 
         virtual void setPriority(int priority) {
@@ -60,9 +57,47 @@ namespace Wm {
 
 
         virtual void start() {
+            if (!_finished.null()) {
+                _finished->reset();
+            }
             if (ResumeThread(getHandle()) == 0xFFFFFFFF) {
                 Exception::throwLastError();
             }
+        }
+
+
+        virtual void wait(size_t ms = SIZE_MAX) {
+            if (_finished.null()) {
+                _finished = new Event();
+            }
+
+            _finished->wait(ms);
+        }
+
+
+    private:
+        int run() {
+            bool success = true;
+
+            try {
+                onRun();
+            }
+            catch (Exception exception) {
+                Application::exit(exception);
+                success = false;
+            }
+
+            if (!_finished.null()) {
+                try {
+                    _finished->set();
+                }
+                catch (Exception exception) {
+                    Application::exit(exception);
+                    success = false;
+                }
+            }
+
+            return success ? EXIT_SUCCESS : EXIT_FAILURE;
         }
     };
 }

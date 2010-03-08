@@ -7,12 +7,23 @@
 
 class CellularRadioTimeSource: public TimeSource, public Wm::Thread {
 private:
-    ref<Wm::CellularRadio> _radio;
+    static const size_t _WAIT_MS = 1 * 1000;
+
+
+private:
+    ref<Wm::CellularRadio> _device;
+    ref<Wm::Event> _finalize;
 
 
 public:
+    CellularRadioTimeSource(): _finalize(new Wm::Event()) {
+    }
+
+
     virtual void finalize() {
-        _radio = NULL;
+        _device = NULL;
+        _finalize->set();
+        wait(_WAIT_MS);
     }
 
 
@@ -27,12 +38,13 @@ public:
 
 
     virtual void initialize() {
+        _finalize->reset();
         start();
     }
 
 
-    virtual void run() {
-        if (!initializeRadio()) {
+    virtual void onRun() {
+        if (!initializeDevice()) {
             return;
         }
 
@@ -48,9 +60,9 @@ public:
             return;
         }
         
-        for (; !_radio.null(); sleep(1 * 1000)) {
+        for (SYSTEMTIME time; !_device.null(); _finalize->wait(_WAIT_MS)) {
             try {
-                SYSTEMTIME time = _radio->getSystemTime()->getValue();
+                time = _device->getSystemTime()->getValue();
                 getListener()->onTimeChange(time);
             }
             catch (Wm::Exception exception) {
@@ -62,9 +74,9 @@ public:
 
 
 private:
-    bool initializeRadio() {
+    bool initializeDevice() {
         try {
-            _radio = new Wm::CellularRadio();
+            _device = new Wm::CellularRadio();
         }
         catch (Wm::Exception exception) {
             getListener()->onStatusChange(S("Not available: ")
@@ -72,17 +84,17 @@ private:
             return false;
         }
 
-        if (!_radio->isRadioPresent()) {
+        if (!_device->isRadioPresent()) {
             getListener()->onStatusChange(
                 S("No radio module present, waiting..."));
             
             do {
-                sleep(1 * 1000);
-                if (_radio.null()) {
+                _finalize->wait(_WAIT_MS);
+                if (_device.null()) {
                     return false;
                 }
             }
-            while (!_radio->isRadioPresent());
+            while (!_device->isRadioPresent());
         }
 
         return true;
@@ -91,7 +103,7 @@ private:
 
     bool isNitzEnabled() {
         ref<Wm::AsynchronousResult> nitzSupport =
-            _radio->queryFeatures(RIL_CAPSTYPE_NITZNOTIFICATION);
+            _device->queryFeatures(RIL_CAPSTYPE_NITZNOTIFICATION);
 
         switch (nitzSupport->getValueAs<DWORD>()) {
         case RIL_CAPS_NITZ_ENABLED:
