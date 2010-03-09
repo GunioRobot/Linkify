@@ -19,8 +19,8 @@ public:
     }
 
 
-    virtual void finalize(DWORD waitMs = INFINITE) {
-        _source->finalize(waitMs);
+    virtual void finalize() {
+        _source->finalize();
     }
 
 

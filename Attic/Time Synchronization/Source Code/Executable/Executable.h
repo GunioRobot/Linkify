@@ -6,7 +6,7 @@
 #include "Wm.h"
 
 
-class Executable: public Wm::Application, public Wm::Window {
+class Executable: public Wm::Application, public Wm::Thread, public Wm::Window {
 public:
     static const Wm::String TITLE;
     static const Wm::String WINDOW_CLASS;
@@ -37,12 +37,17 @@ public:
 
     virtual void onChoose(ref<Wm::MenuItem> item) {
         if (item == _exitOption) {
-            for (size_t i = 0; i < _timeItems.size(); ++i) {
-                _timeItems[i]->finalize(0);
-            }
-            
-            close();
+            Wm::Thread::start();
         }
+    }
+
+
+    virtual void onRun() {
+        for (size_t i = 0; i < _timeItems.size(); ++i) {
+            _timeItems[i]->finalize();
+        }
+        
+        close();
     }
 
 

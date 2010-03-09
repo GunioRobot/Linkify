@@ -6,7 +6,7 @@
 
 namespace Wm {
     template<typename T>
-    class Asynchronous: protected AsynchronousResult {
+    class Asynchronous: public AsynchronousResult {
     public:
         Asynchronous(ref<Event> event): AsynchronousResult(event) {
         }

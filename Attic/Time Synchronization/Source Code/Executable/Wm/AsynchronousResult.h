@@ -16,16 +16,15 @@ namespace Wm {
         }
 
 
+        virtual ref<Event> getEvent() {
+            return _event;
+        }
+
+
         template<typename T>
         T getValueAs() {
             getEvent()->wait();
             return *(T*) getEvent()->getValue();
-        }
-
-
-    protected:
-        virtual ref<Event> getEvent() {
-            return _event;
         }
     };
 }

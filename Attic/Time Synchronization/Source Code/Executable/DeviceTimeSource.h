@@ -11,7 +11,7 @@ private:
 
 
 public:
-    virtual void finalize(DWORD waitMs = INFINITE) {
+    virtual void finalize() {
         stop();
         _listener = NULL;
     }

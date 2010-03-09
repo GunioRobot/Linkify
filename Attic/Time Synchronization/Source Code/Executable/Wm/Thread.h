@@ -21,7 +21,7 @@ namespace Wm {
 
 
     public:
-        Thread() {
+        Thread(): _finished(new Event()) {
             _handle = CreateThread(NULL, 0, genericRun, this,
                 CREATE_SUSPENDED, NULL);
 
@@ -32,7 +32,9 @@ namespace Wm {
 
 
         virtual ~Thread() {
-            CloseHandle(_handle);
+            if (!CloseHandle(_handle)) {
+                Exception::throwLastError();
+            }
         }
 
 
@@ -57,9 +59,8 @@ namespace Wm {
 
 
         virtual void start() {
-            if (!_finished.null()) {
-                _finished->reset();
-            }
+            _finished->reset();
+
             if (ResumeThread(getHandle()) == 0xFFFFFFFF) {
                 Exception::throwLastError();
             }
@@ -67,37 +68,21 @@ namespace Wm {
 
 
         virtual void wait(DWORD ms = INFINITE) {
-            if (_finished.null()) {
-                _finished = new Event();
-            }
-
             _finished->wait(ms);
         }
 
 
     private:
         int run() {
-            bool success = true;
-
             try {
                 onRun();
+                _finished->set();
+                return EXIT_SUCCESS;
             }
             catch (Exception exception) {
                 Application::exit(exception);
-                success = false;
+                return EXIT_FAILURE;
             }
-
-            if (!_finished.null()) {
-                try {
-                    _finished->set();
-                }
-                catch (Exception exception) {
-                    Application::exit(exception);
-                    success = false;
-                }
-            }
-
-            return success ? EXIT_SUCCESS : EXIT_FAILURE;
         }
     };
 }

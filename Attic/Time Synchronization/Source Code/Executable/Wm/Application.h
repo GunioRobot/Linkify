@@ -26,6 +26,11 @@ namespace Wm {
         }
 
 
+        virtual HINSTANCE getHandle() {
+            return _handle;
+        }
+
+
         virtual int start(int windowShowMode) {
             MSG message;
             
@@ -40,11 +45,6 @@ namespace Wm {
             }
             
             return (int) message.wParam;
-        }
-
-
-        virtual HINSTANCE getHandle() {
-            return _handle;
         }
     };
 }

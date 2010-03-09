@@ -1,7 +1,6 @@
 #pragma once
 
 
-#include "Asynchronous.h"
 #include "Event.h"
 #include "Exception.h"
 #include "Object.h"
@@ -10,34 +9,6 @@
 namespace Wm {
     class Gps: public Object {
     private:
-        class AsynchronousPosition: public Asynchronous<GPS_POSITION> {
-        private:
-            ref<Gps> _gps;
-            size_t _maxAgeMs;
-            GPS_POSITION _position;
-
-
-        public:
-            AsynchronousPosition(ref<Gps> gps, size_t maxAgeMs):
-                Asynchronous(gps->_locationChanged),
-                _gps(gps),
-                _maxAgeMs(maxAgeMs)
-            {
-                _position.dwSize = 0;
-            }
-
-
-            virtual GPS_POSITION getValue() {
-                if (_position.dwSize == 0) {
-                    getEvent()->wait();
-                    _gps->getPosition(_position, _maxAgeMs);
-                }
-
-                return _position;
-            }
-        };
-
-
         static size_t _references;
 
 
@@ -81,13 +52,9 @@ namespace Wm {
         }
 
 
-        virtual ref<Asynchronous<GPS_POSITION>> getPosition(size_t maxAgeMs) {
-            return new AsynchronousPosition(noref this, maxAgeMs);
-        }
+        virtual GPS_POSITION getPosition(size_t maxAgeMs) {
+            GPS_POSITION position;
 
-
-    private:
-        void getPosition(GPS_POSITION& position, size_t maxAgeMs) {
             position.dwVersion = GPS_VERSION_1;
             position.dwSize = sizeof(GPS_POSITION);
 
@@ -97,6 +64,13 @@ namespace Wm {
             if (result != ERROR_SUCCESS) {
                 Exception::throwError(result);
             }
+
+            return position;
+        }
+
+
+        virtual ref<Event> getPositionEvent() {
+            return _locationChanged;
         }
     };
 }

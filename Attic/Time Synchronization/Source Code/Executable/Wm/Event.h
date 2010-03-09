@@ -20,8 +20,8 @@ namespace Wm {
                 Exception::throwLastError();
             }
         }
-        
-        
+
+
         virtual ~Event() {
             if (_valueCopy) {
                 delete getValue();
