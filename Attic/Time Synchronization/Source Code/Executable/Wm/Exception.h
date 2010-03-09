@@ -5,7 +5,6 @@
 #include <exception>
 #include "Object.h"
 #include "String.h"
-#include "StringStream.h"
 
 
 namespace Wm {

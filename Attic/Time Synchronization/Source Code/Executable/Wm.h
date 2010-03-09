@@ -21,7 +21,6 @@
 #include "Wm/Ril.h"
 #include "Wm/Size.h"
 #include "Wm/String.h"
-#include "Wm/StringStream.h"
 #include "Wm/TextBox.h"
 #include "Wm/Thread.h"
 #include "Wm/Timer.h"
