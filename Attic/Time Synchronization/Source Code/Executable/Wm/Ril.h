@@ -110,46 +110,46 @@ namespace Wm {
             DWORD facility,
             String password)
         {
-            char* pass = password.toCharArray();
-            ref<Event> event = new Event();
+            char* passwordArray = password.toCharArray();
+            ref<Asynchronous<DWORD>> result = new Asynchronous<DWORD>();
             
             HRESULT id = Api::Ril::RIL_GetLockingStatus(getHandle(),
-                facility, pass);
+                facility, passwordArray);
 
-            delete[] pass;
+            delete[] passwordArray;
 
             if (FAILED(id)) {
                 throwError(id);
             }
 
-            _results[id] = event;
-            return new Asynchronous<DWORD>(event);
+            _results[id] = result->getEvent();
+            return result;
         }
 
 
         virtual ref<Asynchronous<DWORD>> getPhoneLockedState() {
-            ref<Event> event = new Event();
+            ref<Asynchronous<DWORD>> result = new Asynchronous<DWORD>();
             HRESULT id = Api::Ril::RIL_GetPhoneLockedState(getHandle());
 
             if (FAILED(id)) {
                 throwError(id);
             }
 
-            _results[id] = event;
-            return new Asynchronous<DWORD>(event);
+            _results[id] = result->getEvent();
+            return result;
         }
 
 
         virtual ref<Asynchronous<SYSTEMTIME>> getSystemTime() {
-            ref<Event> event = new Event();
+            ref<Asynchronous<SYSTEMTIME>> r = new Asynchronous<SYSTEMTIME>();
             HRESULT id = Api::Ril::RIL_GetSystemTime(getHandle());
 
             if (FAILED(id)) {
                 throwError(id);
             }
             
-            _results[id] = event;
-            return new Asynchronous<SYSTEMTIME>(event);
+            _results[id] = r->getEvent();
+            return r;
         }
 
 
@@ -159,15 +159,15 @@ namespace Wm {
 
 
         virtual ref<AsynchronousResult> queryFeatures(DWORD type) {
-            ref<Event> event = new Event();
+            ref<AsynchronousResult> result = new AsynchronousResult();
             HRESULT id = Api::Ril::RIL_GetDevCaps(getHandle(), type);
 
             if (FAILED(id)) {
                 throwError(id);
             }
 
-            _results[id] = event;
-            return new AsynchronousResult(event);
+            _results[id] = result->getEvent();
+            return result;
         }
 
 

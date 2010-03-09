@@ -12,7 +12,7 @@ namespace Wm {
 
 
     public:
-        AsynchronousResult(ref<Event> event): _event(event) {
+        AsynchronousResult(ref<Event> event = new Event()): _event(event) {
         }
 
 

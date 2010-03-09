@@ -8,7 +8,7 @@ namespace Wm {
     template<typename T>
     class Asynchronous: public AsynchronousResult {
     public:
-        Asynchronous(ref<Event> event): AsynchronousResult(event) {
+        Asynchronous(ref<Event> event = new Event()): AsynchronousResult(event) {
         }
 
 
