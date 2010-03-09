@@ -5,17 +5,17 @@
 #include "Wm.h"
 
 
-class CellularRadioTimeSource:
+class PhoneTimeSource:
     public TimeSource, public TimeListener, public Wm::Thread
 {
 private:
-    ref<Wm::CellularRadio> _device;
+    ref<Wm::Ril> _device;
     ref<Wm::Event> _finalize;
     ref<TimeListener> _listener;
 
 
 public:
-    CellularRadioTimeSource(): _finalize(new Wm::Event()) {
+    PhoneTimeSource(): _finalize(new Wm::Event()) {
     }
 
 
@@ -33,7 +33,7 @@ public:
 
 
     virtual Wm::String getName() {
-        return S("Cellular Radio");
+        return S("Phone");
     }
 
 
@@ -88,7 +88,7 @@ public:
 private:
     bool initializeDevice() {
         try {
-            _device = new Wm::CellularRadio();
+            _device = new Wm::Ril();
         }
         catch (Wm::Exception exception) {
             onStatusChange(S("Not available: ") + exception.getMessage());

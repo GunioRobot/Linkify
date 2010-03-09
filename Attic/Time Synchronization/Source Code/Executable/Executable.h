@@ -1,7 +1,7 @@
 #include <vector>
-#include "CellularRadioTimeSource.h"
 #include "DeviceTimeSource.h"
 #include "GpsTimeSource.h"
+#include "PhoneTimeSource.h"
 #include "TimeInformation.h"
 #include "Wm.h"
 
@@ -68,7 +68,7 @@ private:
         Wm::Size boxSize(Wm::Length(100, Wm::Percent), labelSize.height());
         
         _timeItems.push_back(new TimeInformation(new DeviceTimeSource()));
-        _timeItems.push_back(new TimeInformation(new CellularRadioTimeSource()));
+        _timeItems.push_back(new TimeInformation(new PhoneTimeSource()));
         _timeItems.push_back(new TimeInformation(new GpsTimeSource()));
 
         for (size_t i = 0; i < _timeItems.size(); ++i) {

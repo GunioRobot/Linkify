@@ -192,10 +192,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\Wm\CellularRadio.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Executable.cpp"
 				>
 			</File>
@@ -216,6 +212,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Wm\Ril.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Wm\String.cpp"
 				>
 			</File>
@@ -229,10 +229,6 @@
 			</File>
 			<File
 				RelativePath=".\Wm\Window.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Api\Ril\wrapper.cpp"
 				>
 			</File>
 			<File
@@ -255,6 +251,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\Wm\Api\Ril\wrapper.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -275,14 +275,6 @@
 			</File>
 			<File
 				RelativePath=".\Wm\AsynchronousResult.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\CellularRadio.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CellularRadioTimeSource.h"
 				>
 			</File>
 			<File
@@ -358,6 +350,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PhoneTimeSource.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Wm\Position.h"
 				>
 			</File>
@@ -367,6 +363,10 @@
 			</File>
 			<File
 				RelativePath=".\Wm\Api\Ril\ril.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Wm\Ril.h"
 				>
 			</File>
 			<File
@@ -426,11 +426,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Api\Gps\wrapper.h"
+				RelativePath=".\Wm\Api\Ril\wrapper.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Api\Ril\wrapper.h"
+				RelativePath=".\Wm\Api\Gps\wrapper.h"
 				>
 			</File>
 		</Filter>

@@ -10,7 +10,7 @@
 
 
 namespace Wm {
-    class CellularRadio: public Object {
+    class Ril: public Object {
     private:
         static const DWORD _PORT = 1;
         static size_t _references;
@@ -22,7 +22,7 @@ namespace Wm {
             DWORD size,
             DWORD userData)
         {
-            CellularRadio* self = ((CellularRadio*) userData);
+            Ril* self = ((Ril*) userData);
 
             try {
                 self->notifyHandler(code, data, size);
@@ -40,7 +40,7 @@ namespace Wm {
             DWORD size,
             DWORD userData)
         {
-            CellularRadio* self = ((CellularRadio*) userData);
+            Ril* self = ((Ril*) userData);
             
             try {
                 self->resultHandler(code, command, data, size);
@@ -69,7 +69,7 @@ namespace Wm {
 
 
     public:
-        CellularRadio(): _handle(NULL), _radioPresent(false) {
+        Ril(): _handle(NULL), _radioPresent(false) {
             if ((_references == 0) && (Api::Ril::Load() == NULL)) {
                 Exception::throwLastError();
             }
@@ -88,7 +88,7 @@ namespace Wm {
         }
 
 
-        virtual ~CellularRadio() {
+        virtual ~Ril() {
             HRESULT result = Api::Ril::RIL_Deinitialize(_handle);
 
             if ((--_references == 0) && !Api::Ril::Unload()) {
