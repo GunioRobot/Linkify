@@ -18,7 +18,7 @@ namespace Wm {
             SHACTIVATEINFO sip;
             bool exceptionCaught;
 
-            State() : instance(NULL), exceptionCaught(false) {
+            State(): instance(NULL), exceptionCaught(false) {
                 ZeroMemory(&sip, sizeof(sip));
                 sip.cbSize = sizeof(sip);
             }

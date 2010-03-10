@@ -69,12 +69,13 @@ private:
         Wm::Size labelSize(0, 20 + margin);
         Wm::Size boxSize(Wm::Length(100, Wm::Percent), labelSize.height());
         
-        ref<TimeMultiplexer> multiplexer = new TimeMultiplexer();
+        ref<TimeMultiplexer> multiplexer = new TimeMultiplexer(5);
         ref<DeviceTime> deviceTime = new DeviceTime();
         ref<PhoneTime> phoneTime = new PhoneTime();
         ref<GpsTime> gpsTime = new GpsTime();
 
         multiplexer->addListener(deviceTime);
+        phoneTime->addListener(multiplexer);
         gpsTime->addListener(multiplexer);
 
         _timeItems.push_back(new TimeStatus(deviceTime));
