@@ -232,10 +232,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Api\Ril\wrapper.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Wm\Api\Gps\wrapper.cpp"
 				>
 				<FileConfiguration
@@ -254,6 +250,10 @@
 						ObjectFile="$(IntDir)/$(InputName)1.obj"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\Wm\Api\Ril\wrapper.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
@@ -286,7 +286,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\DeviceTimeSource.h"
+				RelativePath=".\DeviceTime.h"
 				>
 			</File>
 			<File
@@ -318,7 +318,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\GpsTimeSource.h"
+				RelativePath=".\GpsTime.h"
 				>
 			</File>
 			<File
@@ -350,11 +350,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Wm\Mutex.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Wm\Object.h"
 				>
 			</File>
 			<File
-				RelativePath=".\PhoneTimeSource.h"
+				RelativePath=".\PhoneTime.h"
 				>
 			</File>
 			<File
@@ -366,11 +370,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Ril.h"
+				RelativePath=".\Wm\Api\Ril\ril.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Api\Ril\ril.h"
+				RelativePath=".\Wm\Ril.h"
 				>
 			</File>
 			<File
@@ -402,11 +406,31 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TimeListeners.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TimeMultiplexer.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Wm\Timer.h"
 				>
 			</File>
 			<File
+				RelativePath=".\TimeReceiver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TimeSender.h"
+				>
+			</File>
+			<File
 				RelativePath=".\TimeSource.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TimeStatus.h"
 				>
 			</File>
 			<File

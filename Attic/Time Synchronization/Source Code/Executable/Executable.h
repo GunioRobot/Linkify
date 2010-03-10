@@ -1,8 +1,9 @@
 #include <vector>
-#include "DeviceTimeSource.h"
-#include "GpsTimeSource.h"
-#include "PhoneTimeSource.h"
-#include "TimeInformation.h"
+#include "DeviceTime.h"
+#include "GpsTime.h"
+#include "PhoneTime.h"
+#include "TimeMultiplexer.h"
+#include "TimeStatus.h"
 #include "Wm.h"
 
 
@@ -14,22 +15,18 @@ public:
 
 private:
     ref<Wm::MenuItem> _exitOption;
-    ref<Wm::MenuItem> _updateOption;
-    std::vector<ref<TimeInformation>> _timeItems;
+    std::vector<ref<TimeStatus>> _timeItems;
 
 
 public:
     Executable(HINSTANCE handle):
         Wm::Application(handle),
         Wm::Window(WINDOW_CLASS, TITLE),
-        _exitOption(new Wm::MenuItem(S("Exit"))),
-        _updateOption(new Wm::MenuItem(S("Update")))
+        _exitOption(new Wm::MenuItem(S("Exit")))
     {
         ref<Wm::Menu> menuBar = new Wm::Menu(S("Menu"));
-
-        menuBar->add(_updateOption);
+        
         menuBar->add(_exitOption);
-
         setMenuBar(menuBar);
         setupTimeSources();
     }
@@ -44,7 +41,7 @@ public:
 
     virtual void onRun() {
         for (size_t i = 0; i < _timeItems.size(); ++i) {
-            _timeItems[i]->finalize();
+            _timeItems[i]->stop();
         }
         
         close();
@@ -55,7 +52,7 @@ public:
         open(windowShowMode);
         
         for (size_t i = 0; i < _timeItems.size(); ++i) {
-            _timeItems[i]->initialize();
+            _timeItems[i]->start();
         }
         
         return Wm::Application::start(windowShowMode);
@@ -72,12 +69,20 @@ private:
         Wm::Size labelSize(0, 20 + margin);
         Wm::Size boxSize(Wm::Length(100, Wm::Percent), labelSize.height());
         
-        _timeItems.push_back(new TimeInformation(new DeviceTimeSource()));
-        _timeItems.push_back(new TimeInformation(new PhoneTimeSource()));
-        _timeItems.push_back(new TimeInformation(new GpsTimeSource()));
+        ref<TimeMultiplexer> multiplexer = new TimeMultiplexer();
+        ref<DeviceTime> deviceTime = new DeviceTime();
+        ref<PhoneTime> phoneTime = new PhoneTime();
+        ref<GpsTime> gpsTime = new GpsTime();
+
+        multiplexer->addListener(deviceTime);
+        gpsTime->addListener(multiplexer);
+
+        _timeItems.push_back(new TimeStatus(deviceTime));
+        _timeItems.push_back(new TimeStatus(phoneTime));
+        _timeItems.push_back(new TimeStatus(gpsTime));
 
         for (size_t i = 0; i < _timeItems.size(); ++i) {
-            ref<TimeInformation> timeItem = _timeItems[i];
+            ref<TimeStatus> timeItem = _timeItems[i];
             ref<Wm::Label> label = timeItem->getLabel();
             ref<Wm::TextBox> box = timeItem->getTextBox();
 
@@ -99,10 +104,10 @@ private:
             }
         }
         
-        ref<TimeInformation> previous;
+        ref<TimeStatus> previous;
 
         for (size_t i = 0; i < _timeItems.size(); ++i) {
-            ref<TimeInformation> current = _timeItems[i];
+            ref<TimeStatus> current = _timeItems[i];
             ref<Wm::Label> label = current->getLabel();
             ref<Wm::TextBox> box = current->getTextBox();
 

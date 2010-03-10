@@ -16,6 +16,7 @@
 #include "Wm/Margin.h"
 #include "Wm/Menu.h"
 #include "Wm/MenuItem.h"
+#include "Wm/Mutex.h"
 #include "Wm/Object.h"
 #include "Wm/Position.h"
 #include "Wm/Ril.h"

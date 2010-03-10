@@ -1,26 +1,18 @@
 #pragma once
 
 
-#include "TimeSource.h"
+#include "TimeSender.h"
 #include "Wm.h"
 
 
-class PhoneTimeSource: public TimeSource, public Wm::Thread {
+class PhoneTime: public TimeSender, public Wm::Thread {
 private:
     ref<Wm::Ril> _device;
-    ref<Wm::Event> _finalize;
-    ref<TimeListener> _listener;
+    ref<Wm::Event> _stop;
 
 
 public:
-    PhoneTimeSource(): _finalize(new Wm::Event()) {
-    }
-
-
-    virtual void finalize() {
-        _finalize->set();
-        _listener = NULL;
-        wait();
+    PhoneTime(): _stop(new Wm::Event()) {
     }
 
 
@@ -34,13 +26,6 @@ public:
     }
 
 
-    virtual void initialize(ref<TimeListener> listener) {
-        _finalize->reset();
-        _listener = listener;
-        start();
-    }
-
-
     virtual void onRun() {
         if (!initializeDevice()) {
             return;
@@ -48,13 +33,13 @@ public:
 
         try {
             if (!isNitzEnabled()) {
-                _listener->onStatusChange(S("NITZ disabled."));
+                getListeners()->onStatusChange(S("NITZ disabled."));
                 _device = NULL;
                 return;
             }
         }
         catch (Wm::Exception exception) {
-            _listener->onStatusChange(S("NITZ unsupported: ")
+            getListeners()->onStatusChange(S("NITZ unsupported: ")
                 + exception.getMessage());
             _device = NULL;
             return;
@@ -65,8 +50,15 @@ public:
     }
 
 
-    virtual void onTimeChange(SYSTEMTIME time) {
-        _listener->onTimeChange(time);
+    virtual void start() {
+        _stop->reset();
+        Wm::Thread::start();
+    }
+
+
+    virtual void stop() {
+        _stop->set();
+        wait();
     }
 
 
@@ -76,16 +68,17 @@ private:
             _device = new Wm::Ril();
         }
         catch (Wm::Exception exception) {
-            _listener->onStatusChange(S("Not available: ")
+            getListeners()->onStatusChange(S("Not available: ")
                 + exception.getMessage());
             return false;
         }
 
         if (!_device->isRadioPresent()) {
-            _listener->onStatusChange(S("No radio module present, waiting..."));
+            getListeners()->onStatusChange(
+                S("No radio module present, waiting..."));
             
             do {
-                if (_finalize->wait(1 * 1000)) {
+                if (_stop->wait(1 * 1000)) {
                     _device = NULL;
                     return false;
                 }
@@ -116,11 +109,11 @@ private:
         ref<Wm::EventManager> events = new Wm::EventManager();
         ref<Wm::Asynchronous<SYSTEMTIME>> time = NULL;
         
-        events->add(_finalize);
+        events->add(_stop);
         
         do {
             if (!time.null()) {
-                _listener->onTimeChange(time->getValue());
+                getListeners()->onTimeChange(time->getValue());
                 events->remove(time->getEvent());
                 time = NULL;
             }
@@ -130,10 +123,10 @@ private:
                 events->add(time->getEvent());
             }
             catch (Wm::Exception exception) {
-                _listener->onStatusChange(S("Time query error: ")
+                getListeners()->onStatusChange(S("Time query error: ")
                     + exception.getMessage());
             }
         }
-        while (events->wait(time.null() ? 1 * 1000 : INFINITE) != _finalize);
+        while (events->wait(time.null() ? 1 * 1000 : INFINITE) != _stop);
     }
 };

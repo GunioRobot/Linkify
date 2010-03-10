@@ -7,8 +7,6 @@
 
 class TimeSource: public Wm::Object {
 public:
-    virtual void finalize() = 0;
-    virtual Wm::String getDescription() = 0;
-    virtual Wm::String getName() = 0;
-    virtual void initialize(ref<TimeListener> listener) = 0;
+    virtual void addListener(ref<TimeListener> listener) = 0;
+    virtual void removeListener(ref<TimeListener> listener) = 0;
 };

@@ -1,26 +1,22 @@
 #pragma once
 
 
-#include "TimeSource.h"
+#include "TimeListener.h"
+#include "TimeSender.h"
 #include "Wm.h"
 
 
-class TimeInformation: public TimeListener {
+class TimeStatus: public TimeListener {
 private:
-    ref<TimeSource> _source;
+    ref<TimeSender> _time;
     ref<Wm::Label> _label;
     ref<Wm::TextBox> _textBox;
 
 
 public:
-    TimeInformation(ref<TimeSource> source): _source(source) {
-        _label = new Wm::Label(source->getName() + S(":"));
+    TimeStatus(ref<TimeSender> time): _time(time) {
+        _label = new Wm::Label(_time->getName() + S(":"));
         _textBox = new Wm::TextBox(S("Initializing..."));
-    }
-
-
-    virtual void finalize() {
-        _source->finalize();
     }
 
 
@@ -34,11 +30,18 @@ public:
     }
 
 
-    virtual void initialize() {
-        _source->initialize(noref this);
+    virtual void start() {
+        _time->addListener(noref this);
+        _time->start();
     }
     
     
+    virtual void stop() {
+        _time->stop();
+        _time->removeListener(noref this);
+    }
+
+
     virtual void onStatusChange(Wm::String status) {
         getTextBox()->setText(status);
     }

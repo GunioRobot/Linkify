@@ -1,26 +1,18 @@
 #pragma once
 
 
-#include "TimeSource.h"
+#include "TimeSender.h"
 #include "Wm.h"
 
 
-class GpsTimeSource: public TimeSource, public Wm::Thread {
+class GpsTime: public TimeSender, public Wm::Thread {
 private:
     ref<Wm::Gps> _device;
-    ref<Wm::Event> _finalize;
-    ref<TimeListener> _listener;
+    ref<Wm::Event> _stop;
 
 
 public:
-    GpsTimeSource(): _finalize(new Wm::Event()) {
-    }
-
-
-    virtual void finalize() {
-        _finalize->set();
-        _listener = NULL;
-        wait();
+    GpsTime(): _stop(new Wm::Event()) {
     }
 
 
@@ -34,19 +26,12 @@ public:
     }
 
 
-    virtual void initialize(ref<TimeListener> listener) {
-        _finalize->reset();
-        _listener = listener;
-        start();
-    }
-
-
     virtual void onRun() {
         try {
             _device = new Wm::Gps();
         }
         catch (Wm::Exception exception) {
-            _listener->onStatusChange(S("Not available: ")
+            getListeners()->onStatusChange(S("Not available: ")
                 + exception.getMessage());
             return;
         }
@@ -56,35 +41,47 @@ public:
     }
 
 
+    virtual void start() {
+        _stop->reset();
+        Wm::Thread::start();
+    }
+
+
+    virtual void stop() {
+        _stop->set();
+        wait();
+    }
+
+
 private:
     void updateLoop() {
         ref<Wm::EventManager> events = new Wm::EventManager();
 
-        events->add(_finalize);
+        events->add(_stop);
         events->add(_device->getPositionEvent());
 
-        for (GPS_POSITION pos; events->wait() != _finalize;) {
+        for (GPS_POSITION pos; events->wait() != _stop;) {
             try {
                 pos = _device->getPosition(1 * 1000);
             }
             catch (Wm::Exception exception) {
-                _listener->onStatusChange(S("Position query error: ")
+                getListeners()->onStatusChange(S("Position query error: ")
                     + exception.getMessage());
                 continue;
             }
             
             if ((pos.dwValidFields & GPS_VALID_UTC_TIME) != 0) {
-                _listener->onTimeChange(pos.stUTCTime);
+                getListeners()->onTimeChange(pos.stUTCTime);
             }
             else if (pos.FixQuality == GPS_FIX_QUALITY_UNKNOWN) {
-                _listener->onStatusChange(S("Obtaining position fix..."));
+                getListeners()->onStatusChange(S("Obtaining position fix..."));
             }
             else if ((pos.dwValidFields & GPS_VALID_SATELLITE_COUNT) != 0) {
-                _listener->onStatusChange(Wm::String::format(
+                getListeners()->onStatusChange(Wm::String::format(
                     TEXT("Locked on to %u satellites."), pos.dwSatelliteCount));
             }
             else {
-                _listener->onStatusChange("No time information available.");
+                getListeners()->onStatusChange("No time information available.");
             }
         }
     }
