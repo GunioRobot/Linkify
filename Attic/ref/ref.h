@@ -44,7 +44,7 @@ public:
     /**
      * Creates a null reference.
      */
-    ref(): _obj(NULL), _count(NULL), _type(&typeid(NULL)) {
+    ref(): _object(NULL), _count(NULL) {
     }
     
     
@@ -53,7 +53,7 @@ public:
      *
      * @param [in] r reference to copy
      */
-    ref(const ref<T>& r): _obj(r._obj), _count(r._count), _type(r._type) {
+    ref(const ref<T>& r): _object(r._object), _count(r._count) {
         _increment();
     }
     
@@ -64,7 +64,7 @@ public:
      * @param [in] r reference to copy
      */
     template<typename U>
-    ref(const ref<U>& r): _obj(r._obj), _count(r._count), _type(r._type) {
+    ref(const ref<U>& r): _object(r._object), _count(r._count) {
         _increment();
     }
     
@@ -74,7 +74,7 @@ public:
      *
      * @param [in] object object pointer
      */
-    ref(T* object): _obj(object), _count(new size_t(0)), _type(&typeid(T)) {
+    ref(T* object): _object(object), _count(new size_t(0)) {
         _increment();
     }
     
@@ -85,7 +85,7 @@ public:
      * @param [in] object object pointer
      */
     template<typename U>
-    ref(U* object): _obj(object), _count(new size_t(0)), _type(&typeid(U)) {
+    ref(U* object): _object(object), _count(new size_t(0)) {
         _increment();
     }
     
@@ -95,13 +95,12 @@ public:
     }
     
     
-    ref<T>& operator =(const ref<T>& copy) {
-        if (this != &copy) {
+    ref<T>& operator =(const ref<T>& r) {
+        if (this != &r) {
             _decrement();
             
-            _obj = copy._obj;
-            _count = copy._count;
-            _type = copy._type;
+            _object = r._object;
+            _count = r._count;
             
             _increment();
         }
@@ -110,23 +109,23 @@ public:
     }
     
     
-    bool operator ==(const ref<T>& other) {
-        return _obj == other._obj;
+    bool operator ==(const ref<T>& r) {
+        return _object == r._object;
     }
     
     
-    bool operator !=(const ref<T>& other) {
-        return _obj != other._obj;
+    bool operator !=(const ref<T>& r) {
+        return _object != r._object;
     }
     
     
     T* operator ->() {
-        return _obj;
+        return _object;
     }
     
     
     const T& operator *() {
-        return *_obj;
+        return *_object;
     }
     
     
@@ -139,12 +138,11 @@ public:
     template<typename U>
     ref<U> cast() {
         ref<U> r = NULL;
-        U* object = dynamic_cast<U*>(_obj);
+        U* object = dynamic_cast<U*>(_object);
         
         if (object != NULL) {
-            r._obj = object;
+            r._object = object;
             r._count = _count;
-            r._type = &typeid(U);
             r._increment();
         }
         
@@ -158,7 +156,7 @@ public:
      * @return @c true if the object points to @c NULL, or @c false otherwise
      */
     bool null() {
-        return _obj == NULL;
+        return _object == NULL;
     }
     
     
@@ -168,34 +166,31 @@ public:
      * @return value of @c typeid applied to the managed object
      */
     const std::type_info& type() {
-        return *_type;
+        return typeid(*_object);
     }
     
     
 //private:
     void _decrement() {
-        if ((_obj != NULL) && (_count != NULL) && (--*_count == 0)) {
-            delete _obj;
+        if ((_object != NULL) && (_count != NULL) && (--*_count == 0)) {
+            delete _object;
             delete _count;
         }
     }
     
     
     void _increment() {
-        if ((_obj != NULL) && (_count != NULL)) {
+        if ((_object != NULL) && (_count != NULL)) {
             ++*_count;
         }
     }
     
     
     /** Pointer to the object being managed. */
-    T* _obj;
+    T* _object;
     
     /** Number of references to the object, or @c NULL if it's not managed. */
     size_t* _count;
-    
-    /** Type information about the object. */
-    const std::type_info* _type;
 };
 
 
@@ -206,9 +201,8 @@ public:
     ref<T> operator <<(T* object) {
         ref<T> r = NULL;
         
-        r._obj = object;
+        r._object = object;
         r._count = NULL;
-        r._type = &typeid(T);
         
         return r;
     }
