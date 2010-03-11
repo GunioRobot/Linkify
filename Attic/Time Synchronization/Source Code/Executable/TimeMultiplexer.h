@@ -88,18 +88,18 @@ public:
 
 private:
     SYSTEMTIME multiplex(std::vector<Sample> samples) {
+        DWORD tickCount = samples.back().tickCount;
+        
         if (samples.size() == 1) {
             return samples.front().time;
         }
 
-        DWORD tickCount = GetTickCount();
         std::vector<ULARGE_INTEGER> timeSamples;
-        
         timeSamples.reserve(samples.size());
 
         for (size_t i = 0; i < samples.size(); ++i) {
             Sample& sample = samples[i];
-            DWORD delayMs = (tickCount - sample.tickCount) / 2;
+            DWORD delayMs = tickCount - sample.tickCount;
             
             FILETIME fileTime;
             ULARGE_INTEGER time;
@@ -122,10 +122,12 @@ private:
         for (size_t i = 0; i < timeSamples.size(); ++i) {
             time.QuadPart += timeSamples[i].QuadPart / samples.size();
         }
-        
+
         FILETIME fileTime;
         SYSTEMTIME systemTime;
-
+        DWORD processingDelayMs = GetTickCount() - tickCount;
+        
+        time.QuadPart += processingDelayMs * (10 * 1000);
         fileTime.dwLowDateTime = time.LowPart;
         fileTime.dwHighDateTime = time.HighPart;
 
