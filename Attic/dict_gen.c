@@ -1,45 +1,69 @@
+#include <errno.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 
+#define MAX_VALUE CHAR_MAX
+#define MIN_VALUE CHAR_MIN
+
 #define NUMBER_ARGUMENT "n"
 #define WORD_ARGUMENT "w"
 
 
-static void usage(void) {
+static size_t parse(char* string) {
+    char* invalid = NULL;
+    unsigned long int number = strtoul(string, &invalid, 10);
+    
+    errno = ((*string != '\0') && (*invalid == '\0')) ? 0 : EINVAL;
+    return number;
+}
+
+
+static int usage(void) {
     puts("Usage:");
     printf("  %s <minimum length> <maximum length>\n", NUMBER_ARGUMENT);
     printf("  %s <initial word> <maximum length>\n", WORD_ARGUMENT);
+    return EXIT_FAILURE;
 }
 
 
 int main(int argc, char** argv) {
-    size_t length = SIZE_MAX;
+    size_t length = ((size_t) ~0);
     size_t max_length = 0;
     char* initial;
     char* word;
     
     if (argc != 4) {
-        usage();
-        return EXIT_FAILURE;
+        return usage();
     }
     
     if (strcmp(argv[1], NUMBER_ARGUMENT) == 0) {
-        length = strtoul(argv[2], NULL, 10);
-        max_length = strtoul(argv[3], NULL, 10);
+        length = parse(argv[2]);
+        if (errno == EINVAL) {
+            return usage();
+        }
+        
+        max_length = parse(argv[3]);
+        if (errno == EINVAL) {
+            return usage();
+        }
+        
         initial = NULL;
     }
     else if (strcmp(argv[1], WORD_ARGUMENT) == 0) {
         length = strlen(argv[2]);
-        max_length = strtoul(argv[3], NULL, 10);
+        max_length = parse(argv[3]);
         initial = argv[2];
+        
+        if (errno == EINVAL) {
+            return usage();
+        }
     }
     
     if (length > max_length) {
-        usage();
-        return EXIT_FAILURE;
+        return usage();
     }
     
     word = malloc((max_length + 1) * sizeof(char));
@@ -50,12 +74,10 @@ int main(int argc, char** argv) {
     }
     
     if (initial == NULL) {
-        for (initial = word + max_length; initial != word; --initial) {
-            *initial = CHAR_MIN;
-        }
+        memset(word, MIN_VALUE, (max_length + 1) * sizeof(char));
     }
     else {
-        strcpy(word, argv[2]);
+        strcpy(word, initial);
     }
     
     while (length <= max_length) {
@@ -67,15 +89,15 @@ int main(int argc, char** argv) {
         putchar('\n');
         
         for (i = 0; i < length; ++i) {
-            if (word[i]++ < CHAR_MAX) {
+            if (word[i]++ < MAX_VALUE) {
                 goto NEXT_WORD;
             }
-            if (word[i] > CHAR_MAX) {
-                word[i] = CHAR_MIN;
+            if (word[i] > MAX_VALUE) {
+                word[i] = MIN_VALUE;
             }
         }
         
-        word[length++] = CHAR_MIN;
+        word[length++] = MIN_VALUE;
     }
     
     free(word);
