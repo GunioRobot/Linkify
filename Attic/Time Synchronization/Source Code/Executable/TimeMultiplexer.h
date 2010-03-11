@@ -19,6 +19,7 @@ private:
 
 
 private:
+    bool _active;
     size_t _samplingInterval;
     ref<TimeListeners> _listeners;
     ref<Wm::Mutex> _modifications;
@@ -27,6 +28,7 @@ private:
 
 public:
     TimeMultiplexer(size_t samplingInterval):
+        _active(false),
         _samplingInterval(samplingInterval),
         _listeners(new TimeListeners()),
         _modifications(new Wm::Mutex())
@@ -40,29 +42,47 @@ public:
 
 
     virtual void onStatusChange(Wm::String status) {
-        _listeners->onStatusChange(status);
+        if (_active) {
+            _listeners->onStatusChange(status);
+        }
     }
 
 
     virtual void onTimeChange(SYSTEMTIME time) {
-        _modifications->lock();
-        _samples.push_back(Sample(time));
+        if (_active) {
+            _modifications->lock();
+            _samples.push_back(Sample(time));
 
-        if (_samples.size() >= _samplingInterval) {
-            std::vector<Sample> samples(_samples);
-            _samples.clear();
-            _modifications->unlock();
+            if (_samples.size() >= _samplingInterval) {
+                std::vector<Sample> samples(_samples);
+                _samples.clear();
+                _modifications->unlock();
 
-            _listeners->onTimeChange(multiplex(samples));
-        }
-        else {
-            _modifications->unlock();
+                _listeners->onTimeChange(multiplex(samples));
+            }
+            else {
+                _modifications->unlock();
+            }
         }
     }
 
 
     virtual void removeListener(ref<TimeListener> listener) {
         _listeners->removeListener(listener);
+    }
+
+
+    virtual void start() {
+        _active = true;
+    }
+
+
+    virtual void stop() {
+        _modifications->lock();
+        _samples.clear();
+        _modifications->unlock();
+
+        _active = false;
     }
 
 

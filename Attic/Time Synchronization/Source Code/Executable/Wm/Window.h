@@ -117,7 +117,7 @@ namespace Wm {
         }
 
 
-        ~Window() {
+        virtual ~Window() {
             _windows.erase(getHandle());
         }
 
@@ -198,6 +198,7 @@ namespace Wm {
 
             _menuBar = menu;
             _menuBarWindowHandle = info.hwndMB;
+            menu->setOwner(_menuBarWindowHandle);
         }
 
 

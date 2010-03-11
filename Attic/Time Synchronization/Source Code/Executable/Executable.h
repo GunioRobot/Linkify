@@ -14,7 +14,11 @@ public:
 
 
 private:
+    Wm::String _startCaption;
+    Wm::String _stopCaption;
+    ref<Wm::MenuItem> _pauseOption;
     ref<Wm::MenuItem> _exitOption;
+    ref<TimeMultiplexer> _timeMultiplexer;
     std::vector<ref<TimeStatus>> _timeItems;
 
 
@@ -22,10 +26,15 @@ public:
     Executable(HINSTANCE handle):
         Wm::Application(handle),
         Wm::Window(WINDOW_CLASS, TITLE),
-        _exitOption(new Wm::MenuItem(S("Exit")))
+        _startCaption(S("Start")),
+        _stopCaption(S("Stop")),
+        _pauseOption(new Wm::MenuItem(_startCaption)),
+        _exitOption(new Wm::MenuItem(S("Exit"))),
+        _timeMultiplexer(new TimeMultiplexer(5))
     {
         ref<Wm::Menu> menuBar = new Wm::Menu(S("Menu"));
         
+        menuBar->add(_pauseOption);
         menuBar->add(_exitOption);
         setMenuBar(menuBar);
         setupTimeSources();
@@ -33,7 +42,17 @@ public:
 
 
     virtual void onChoose(ref<Wm::MenuItem> item) {
-        if (item == _exitOption) {
+        if (item == _pauseOption) {
+            if (_pauseOption->getCaption() == _startCaption) {
+                _timeMultiplexer->start();
+                _pauseOption->setCaption(_stopCaption);
+            }
+            else {
+                _timeMultiplexer->stop();
+                _pauseOption->setCaption(_startCaption);
+            }
+        }
+        else if (item == _exitOption) {
             Wm::Thread::start();
         }
     }
@@ -69,14 +88,13 @@ private:
         Wm::Size labelSize(0, 20 + margin);
         Wm::Size boxSize(Wm::Length(100, Wm::Percent), labelSize.height());
         
-        ref<TimeMultiplexer> multiplexer = new TimeMultiplexer(5);
         ref<DeviceTime> deviceTime = new DeviceTime();
         ref<PhoneTime> phoneTime = new PhoneTime();
         ref<GpsTime> gpsTime = new GpsTime();
 
-        multiplexer->addListener(deviceTime);
-        phoneTime->addListener(multiplexer);
-        gpsTime->addListener(multiplexer);
+        _timeMultiplexer->addListener(deviceTime);
+        phoneTime->addListener(_timeMultiplexer);
+        gpsTime->addListener(_timeMultiplexer);
 
         _timeItems.push_back(new TimeStatus(deviceTime));
         _timeItems.push_back(new TimeStatus(phoneTime));

@@ -74,5 +74,14 @@ namespace Wm {
         virtual UINT getType() {
             return MF_POPUP;
         }
+
+
+        virtual void setOwner(HWND owner) {
+            MenuItem::setOwner(owner);
+
+            for (size_t i = 0; i < getItemCount(); ++i) {
+                _items[i]->setOwner(owner);
+            }
+        }
     };
 }
