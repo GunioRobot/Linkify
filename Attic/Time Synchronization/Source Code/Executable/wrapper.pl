@@ -5,7 +5,7 @@
 # External modules:
 use File::Basename;
 use File::Slurp;
-use File::Spec;
+use File::Spec::Functions;
 use Regexp::Common;
 
 # Internal modules:
@@ -13,24 +13,33 @@ use strict;
 use warnings;
 
 
+my %include_dirs;
+
+foreach my $vcproj (glob '*.vcproj') {
+    my $text = read_file($vcproj);
+    @include_dirs{$text =~ m/AdditionalIncludeDirectories\s*=\s*"([^"]*)"/g} = 1;
+}
+
+my ($directory, $include) = @ARGV;
+my ($include_dir) = grep {-e catfile($_, $include)} keys %include_dirs;
+my $include_file = catfile($include_dir, $include);
+
 my $wrapper = 'wrapper';
-my $main = shift @ARGV;
-
-my ($library, $path, $suffix) = fileparse($main, '.h');
-my @namespace = File::Spec->splitdir(File::Spec->canonpath($path));
+my @namespace = File::Spec->splitdir(canonpath($directory));
 my $header = sprintf '__%s__', uc join '__', @namespace, $wrapper;
+my ($library) = fileparse($include_file, '.h');
 
-open my $impl, '>', File::Spec->catfile(@namespace, "$wrapper.cpp") or die $!;
+open my $impl, '>', catfile(@namespace, "$wrapper.cpp") or die $!;
 implementation($impl);
 close $impl;
 
-open my $interface, '>', File::Spec->catfile(@namespace, "$wrapper.h") or die $!;
+open my $interface, '>', catfile(@namespace, "$wrapper.h") or die $!;
 interface($interface);
 close $interface;
 
 
 sub functions {
-    my $text = read_file($main);
+    my $text = read_file($include_file);
     my @functions;
     
     $text =~ s/$RE{comment}{'C++'}//g;
@@ -121,7 +130,7 @@ sub interface {
 
 
 #include "../../Core.h"
-#include "$library.h"
+#include "$include"
 
 
 #if defined(API_FUNCTION_DEFINITION)
