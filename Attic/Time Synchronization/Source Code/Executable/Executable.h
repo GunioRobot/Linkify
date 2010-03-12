@@ -60,7 +60,11 @@ public:
 
     virtual void onRun() {
         for (size_t i = 0; i < _timeItems.size(); ++i) {
-            _timeItems[i]->stop();
+            ref<TimeStatus> status = _timeItems[i];
+            ref<TimeSender> source = status->getSource();
+
+            source->finalize();
+            source->removeListener(status);
         }
         
         close();
@@ -71,7 +75,11 @@ public:
         open(windowShowMode);
         
         for (size_t i = 0; i < _timeItems.size(); ++i) {
-            _timeItems[i]->start();
+            ref<TimeStatus> status = _timeItems[i];
+            ref<TimeSender> source = status->getSource();
+
+            source->addListener(status);
+            source->initialize(true);
         }
         
         return Wm::Application::start(windowShowMode);
@@ -101,9 +109,9 @@ private:
         _timeItems.push_back(new TimeStatus(gpsTime));
 
         for (size_t i = 0; i < _timeItems.size(); ++i) {
-            ref<TimeStatus> timeItem = _timeItems[i];
-            ref<Wm::Label> label = timeItem->getLabel();
-            ref<Wm::TextBox> box = timeItem->getTextBox();
+            ref<TimeStatus> status = _timeItems[i];
+            ref<Wm::Label> label = status->getLabel();
+            ref<Wm::TextBox> box = status->getTextBox();
 
             label->setFitToWidth(true);
             label->setMargin(labelMargin);

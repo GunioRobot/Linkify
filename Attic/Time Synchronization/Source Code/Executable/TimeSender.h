@@ -19,10 +19,10 @@ public:
     virtual void addListener(ref<TimeListener> listener) {
         _listeners->addListener(listener);
     }
-
-
-    virtual void start() = 0;
-    virtual void stop() = 0;
+    
+    
+    virtual void finalize() = 0;
+    virtual void initialize(bool automatic) = 0;
     
     
     virtual void removeListener(ref<TimeListener> listener) {

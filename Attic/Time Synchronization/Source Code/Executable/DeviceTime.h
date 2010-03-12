@@ -8,6 +8,11 @@
 
 class DeviceTime: public TimeReceiver, public TimeSender, public Wm::Timer {
 public:
+    virtual void finalize() {
+        Wm::Timer::stop();
+    }
+    
+    
     virtual Wm::String getDescription() {
         return S("Uses the local time from the internal clock.");
     }
@@ -15,6 +20,12 @@ public:
 
     virtual Wm::String getName() {
         return S("Device");
+    }
+    
+    
+    virtual void initialize(bool automatic) {
+        onTimeout();
+        Wm::Timer::start(1 * 1000);
     }
 
 
@@ -34,16 +45,5 @@ public:
         
         GetLocalTime(&time);
         getListeners()->onTimeChange(time);
-    }
-    
-    
-    virtual void start() {
-        onTimeout();
-        Wm::Timer::start(1 * 1000);
-    }
-
-
-    virtual void stop() {
-        Wm::Timer::stop();
     }
 };

@@ -18,31 +18,20 @@ namespace Wm {
 
 
     public:
-        Gps(): _locationChanged(new Event(true)) {
+        Gps(): _handle(NULL), _locationChanged(new Event(true)) {
             if ((_references == 0) && (Api::Gps::Load() == NULL)) {
                 Exception::throwLastError();
             }
-            
-            ++_references;
-            
-            _handle = Api::Gps::GPSOpenDevice(_locationChanged->getHandle(),
-                NULL, NULL, 0);
 
-            if (_handle == NULL) {
-                throw Exception(S("Failed to open GPS device."));
-            }
+            ++_references;
         }
 
 
         virtual ~Gps() {
-            DWORD result = Api::Gps::GPSCloseDevice(_handle);
+            stop();
 
             if ((--_references == 0) && !Api::Gps::Unload()) {
                 Exception::throwLastError();
-            }
-
-            if (result != ERROR_SUCCESS) {
-                Exception::throwError(result);
             }
         }
         
@@ -71,6 +60,47 @@ namespace Wm {
 
         virtual ref<Event> getPositionEvent() {
             return _locationChanged;
+        }
+
+
+        virtual GPS_DEVICE getState() {
+            GPS_DEVICE state;
+
+            state.dwVersion = GPS_VERSION_1;
+            state.dwSize = sizeof(GPS_DEVICE);
+
+            DWORD result = Api::Gps::GPSGetDeviceState(&state);
+
+            if (result != ERROR_SUCCESS) {
+                Wm::Exception::throwError(result);
+            }
+
+            return state;
+        }
+
+
+        virtual void start() {
+            if (_handle == NULL) {
+                _handle = Api::Gps::GPSOpenDevice(_locationChanged->getHandle(),
+                    NULL, NULL, 0);
+
+                if (_handle == NULL) {
+                    throw Exception(S("Failed to open GPS device."));
+                }
+            }
+        }
+
+
+        virtual void stop() {
+            if (_handle != NULL) {
+                DWORD result = Api::Gps::GPSCloseDevice(_handle);
+                
+                if (result != ERROR_SUCCESS) {
+                    Exception::throwError(result);
+                }
+
+                _handle = NULL;
+            }
         }
     };
 }

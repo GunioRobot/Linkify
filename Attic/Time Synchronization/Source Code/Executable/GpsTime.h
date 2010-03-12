@@ -9,10 +9,17 @@ class GpsTime: public TimeSender, public Wm::Thread {
 private:
     ref<Wm::Gps> _device;
     ref<Wm::Event> _stop;
+    bool _automatic;
 
 
 public:
     GpsTime(): _stop(new Wm::Event()) {
+    }
+
+
+    virtual void finalize() {
+        _stop->set();
+        wait();
     }
 
 
@@ -26,30 +33,36 @@ public:
     }
 
 
-    virtual void onRun() {
-        try {
-            _device = new Wm::Gps();
-        }
-        catch (Wm::Exception exception) {
-            getListeners()->onStatusChange(S("Not available: ")
-                + exception.getMessage());
-            return;
-        }
-
-        updateLoop();
-        _device = NULL;
-    }
-
-
-    virtual void start() {
+    virtual void initialize(bool automatic) {
+        _automatic = automatic;
         _stop->reset();
         Wm::Thread::start();
     }
 
 
-    virtual void stop() {
-        _stop->set();
-        wait();
+    virtual void onRun() {
+        try {
+            _device = new Wm::Gps();
+            bool isOn = (_device->getState().dwDeviceState == SERVICE_STATE_ON);
+
+            if (!_automatic && !isOn) {
+                throw Wm::Exception("Device is off.");
+            }
+
+            _device->start();
+        }
+        catch (Wm::Exception exception) {
+            _device = NULL;
+            getListeners()->onStatusChange(S("Not available: ")
+                + exception.getMessage());
+            return;
+        }
+
+        getListeners()->onStatusChange(S("Starting..."));
+        updateLoop();
+
+        _device->stop();
+        _device = NULL;
     }
 
 

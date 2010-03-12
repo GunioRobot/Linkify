@@ -16,6 +16,12 @@ public:
     }
 
 
+    virtual void finalize() {
+        _stop->set();
+        wait();
+    }
+
+
     virtual Wm::String getDescription() {
         return S("Uses NITZ data sent by the cellular network.");
     }
@@ -23,6 +29,12 @@ public:
 
     virtual Wm::String getName() {
         return S("Phone");
+    }
+
+
+    virtual void initialize(bool automatic) {
+        _stop->reset();
+        Wm::Thread::start();
     }
 
 
@@ -47,18 +59,6 @@ public:
         
         updateLoop();
         _device = NULL;
-    }
-
-
-    virtual void start() {
-        _stop->reset();
-        Wm::Thread::start();
-    }
-
-
-    virtual void stop() {
-        _stop->set();
-        wait();
     }
 
 

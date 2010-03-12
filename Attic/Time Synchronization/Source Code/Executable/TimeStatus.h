@@ -25,20 +25,13 @@ public:
     }
 
 
+    virtual ref<TimeSender> getSource() {
+        return _time;
+    }
+
+
     virtual ref<Wm::TextBox> getTextBox() {
         return _textBox;
-    }
-
-
-    virtual void start() {
-        _time->addListener(noref this);
-        _time->start();
-    }
-    
-    
-    virtual void stop() {
-        _time->stop();
-        _time->removeListener(noref this);
     }
 
 
