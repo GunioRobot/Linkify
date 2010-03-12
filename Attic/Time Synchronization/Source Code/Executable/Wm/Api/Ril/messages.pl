@@ -3,12 +3,11 @@
 # Extracts errors messages.
 
 use strict;
+use utf8;
 use warnings;
 
 
 my $messages = 'messages';
-
-open my $ril, '<', 'ril.h' or die $!;
 open my $impl, '>', "$messages.cpp" or die $!;
 open my $interface, '>', "$messages.h" or die $!;
 
@@ -20,7 +19,7 @@ static const TCHAR* _messages[] = {
     NULL,
 EOT
 
-while (my $line = <$ril>) {
+while (my $line = <STDIN>) {
     if ($line =~ m/(RIL_E_\w+)[^\@]+\@constdefine\s+(.+)$/) {
         my $constant = $1;
         my $text = ucfirst($2).($2 =~ m/\.$/ ? '' : '.');
@@ -64,6 +63,5 @@ namespace Ril {
 }}}
 EOT
 
-close $ril;
 close $impl;
 close $interface;
