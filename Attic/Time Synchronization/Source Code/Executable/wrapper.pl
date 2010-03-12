@@ -3,48 +3,65 @@
 # Creates a wrapper to dynamically load/unload a library.
 
 # External modules:
-use File::Basename;
-use File::Slurp;
-use File::Spec::Functions;
-use Regexp::Common;
+use Class::Struct ();
+use File::Basename ();
+use File::Slurp ();
+use File::Spec ();
+use Regexp::Common qw(balanced comment);
 
 # Internal modules:
 use strict;
+use utf8;
 use warnings;
 
 
 my %include_dirs;
 
 foreach my $vcproj (glob '*.vcproj') {
-    my $text = read_file($vcproj);
+    my $text = File::Slurp::read_file($vcproj);
     @include_dirs{$text =~ m/AdditionalIncludeDirectories\s*=\s*"([^"]*)"/g} = 1;
 }
 
 my ($directory, $include) = @ARGV;
-my ($include_dir) = grep {-e catfile($_, $include)} keys %include_dirs;
-my $include_file = catfile($include_dir, $include);
+my ($include_dir) = grep {-e File::Spec->catfile($_, $include)} keys %include_dirs;
+my $include_file = File::Spec->catfile($include_dir, $include);
 
-my $wrapper = 'wrapper';
-my @namespace = File::Spec->splitdir(canonpath($directory));
-my $header = sprintf '__%s__', uc join '__', @namespace, $wrapper;
-my ($library) = fileparse($include_file, '.h');
+my $name = 'wrapper';
+my @namespace = File::Spec->splitdir(File::Spec->canonpath($directory));
+my ($library) = File::Basename::fileparse($include_file, '.h');
 
-open my $impl, '>', catfile(@namespace, "$wrapper.cpp") or die $!;
-implementation($impl);
-close $impl;
+Class::Struct::struct Wrapper => {
+    header => '$',
+    include => '$',
+    include_file => '$',
+    library => '$',
+    name => '$',
+    namespace => '@',
+};
 
-open my $interface, '>', catfile(@namespace, "$wrapper.h") or die $!;
-interface($interface);
-close $interface;
+my $wrapper = Wrapper->new(
+    header => sprintf('__%s__', uc join '__', @namespace, $name),
+    include => $include,
+    include_file => $include_file,
+    library => $library,
+    name => $name,
+    namespace => \@namespace,
+);
+
+implementation($wrapper);
+interface($wrapper);
 
 
 sub functions {
-    my $text = read_file($include_file);
+    my ($file) = @_;
+    my $text = File::Slurp::read_file($file);
+    my $comments = $Regexp::Common::RE{comment}{'C++'};
+    my $parenthesis = $Regexp::Common::RE{balanced}{-parens => '()'};
     my @functions;
     
-    $text =~ s/$RE{comment}{'C++'}//g;
+    $text =~ s/$comments//g;
     
-    while ($text =~ /(\w+)\s+(\w+)\s*($RE{balanced}{-parens => '()'})\s*;/cg) {
+    while ($text =~ m/(\w+)\s+(\w+)\s*($parenthesis)\s*;/cg) {
         my ($return, $name, $args) = ($1, $2, $3);
         
         $args =~ s/\s{2,}/ /g;
@@ -58,25 +75,29 @@ sub functions {
 
 
 sub implementation {
-    my ($output) = @_;
+    my ($wrapper) = @_;
+    my @namespace = @{$wrapper->namespace()};
+    my ($header, $name) = ($wrapper->header(), $wrapper->name());
+    my $library = $wrapper->library();
     
+    open my $output, '>', File::Spec->catfile(@namespace, "$name.cpp") or die $!;
     print $output (<< "EOT");
-#include "$wrapper.h"
+#include "$name.h"
 
 
 #undef $header
 #define API_FUNCTION_DEFINITION
-#include "wrapper.h"
+#include "$name.h"
 #undef API_FUNCTION_DEFINITION
 
 #undef $header
 #define API_FUNCTION_LOADER
-#include "wrapper.h"
+#include "$name.h"
 #undef API_FUNCTION_LOADER
 
 #undef $header
 #define API_FUNCTION_UNLOADER
-#include "wrapper.h"
+#include "$name.h"
 #undef API_FUNCTION_UNLOADER
 
 
@@ -85,8 +106,8 @@ static HINSTANCE _library = NULL;
 
 EOT
     
-    foreach my $name (@namespace) {
-        print $output "namespace $name {\n";
+    foreach my $part (@namespace) {
+        print $output "namespace $part {\n";
     }
     
     print $output (<< "EOT");
@@ -118,12 +139,17 @@ EOT
 EOT
     
     print $output '}' x @namespace, "\n";
+    close $output;
 }
 
 
 sub interface {
-    my ($output) = @_;
+    my ($wrapper) = @_;
+    my @namespace = @{$wrapper->namespace()};
+    my ($header, $name) = ($wrapper->header(), $wrapper->name());
+    my $include = $wrapper->include();
     
+    open my $output, '>', File::Spec->catfile(@namespace, "$name.h") or die $!;
     print $output (<< "EOT");
 #ifndef $header
 #define $header
@@ -154,8 +180,8 @@ sub interface {
 
 EOT
     
-    foreach my $name (@namespace) {
-        print $output "namespace $name {\n";
+    foreach my $part (@namespace) {
+        print $output "namespace $part {\n";
     }
     
     print $output (<< 'EOT');
@@ -170,7 +196,7 @@ static void UnloadFunctions() {
     
 EOT
     
-    foreach my $function (functions()) {
+    foreach my $function (functions($wrapper->include_file())) {
         my ($return, $name, $args) = @$function{qw(return name args)};
         print $output (<< "EOT");
     API_FUNCTION($return, $name, $args);
@@ -193,4 +219,5 @@ EOT
 
 #endif
 EOT
+    close $output;
 }
