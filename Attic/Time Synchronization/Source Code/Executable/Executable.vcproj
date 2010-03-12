@@ -41,6 +41,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
+				AdditionalIncludeDirectories="C:\WINCE600\PUBLIC"
 				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_WINDOWS;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
@@ -124,6 +125,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="2"
+				AdditionalIncludeDirectories="C:\WINCE600\PUBLIC"
 				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_WINDOWS;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL"
 				RuntimeLibrary="0"
 				BufferSecurityCheck="false"
@@ -314,10 +316,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Api\Gps\gpsapi.h"
-				>
-			</File>
-			<File
 				RelativePath=".\GpsTime.h"
 				>
 			</File>
@@ -371,14 +369,6 @@
 			</File>
 			<File
 				RelativePath=".\Wm\Ril.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Api\Ril\ril.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Api\service.h"
 				>
 			</File>
 			<File

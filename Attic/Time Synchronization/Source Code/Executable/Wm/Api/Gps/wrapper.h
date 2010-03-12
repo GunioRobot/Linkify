@@ -3,7 +3,7 @@
 
 
 #include "../../Core.h"
-#include "gpsapi.h"
+#include <COMMON/SDK/INC/gpsapi.h>
 
 
 #if defined(API_FUNCTION_DEFINITION)

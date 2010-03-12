@@ -3,7 +3,7 @@
 
 
 #include "../../Core.h"
-#include "ril.h"
+#include <CELLCORE/OAK/INC/ril.h>
 
 
 #if defined(API_FUNCTION_DEFINITION)
