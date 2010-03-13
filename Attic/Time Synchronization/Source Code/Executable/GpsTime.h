@@ -49,6 +49,7 @@ public:
                 throw Wm::Exception("Device is off.");
             }
 
+            getListeners()->onStatusChange(S("Starting..."));
             _device->start();
         }
         catch (Wm::Exception exception) {
@@ -58,9 +59,7 @@ public:
             return;
         }
 
-        getListeners()->onStatusChange(S("Starting..."));
         updateLoop();
-
         _device->stop();
         _device = NULL;
     }

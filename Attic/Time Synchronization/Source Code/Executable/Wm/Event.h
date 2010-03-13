@@ -79,15 +79,22 @@ namespace Wm {
 
 
         virtual void setValue(void* value, size_t size) {
-            void* copy = new BYTE[size];
-            memcpy(copy, value, size);
+            bool doCopy = (value != NULL) && (size > 0);
+            void* copy = NULL;
+            
+            if (doCopy) {
+                copy = new BYTE[size];
+                memcpy(copy, value, size);
+            }
 
             try {
                 setValue(copy);
-                _valueCopy = true;
+                _valueCopy = doCopy;
             }
             catch (Exception) {
-                delete copy;
+                if (doCopy) {
+                    delete copy;
+                }
                 throw;
             }
         }

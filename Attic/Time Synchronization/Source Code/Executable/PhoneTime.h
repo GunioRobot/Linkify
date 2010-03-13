@@ -9,10 +9,15 @@ class PhoneTime: public TimeSender, public Wm::Thread {
 private:
     ref<Wm::Ril> _device;
     ref<Wm::Event> _stop;
+    ref<Wm::EventManager> _events;
+    bool _automatic;
+    bool _isOn;
+    DWORD _originalEquipmentState;
 
 
 public:
-    PhoneTime(): _stop(new Wm::Event()) {
+    PhoneTime(): _stop(new Wm::Event()), _events(new Wm::EventManager()) {
+        _events->add(_stop);
     }
 
 
@@ -33,100 +38,127 @@ public:
 
 
     virtual void initialize(bool automatic) {
+        _automatic = automatic;
         _stop->reset();
         Wm::Thread::start();
     }
 
 
     virtual void onRun() {
-        if (!initializeDevice()) {
-            return;
+        if (initializeDevice()) {
+            updateLoop();
+            finalizeDevice();
         }
-
-        try {
-            if (!isNitzEnabled()) {
-                getListeners()->onStatusChange(S("NITZ disabled."));
-                _device = NULL;
-                return;
-            }
-        }
-        catch (Wm::Exception exception) {
-            getListeners()->onStatusChange(S("NITZ unsupported: ")
-                + exception.getMessage());
-            _device = NULL;
-            return;
-        }
-        
-        updateLoop();
-        _device = NULL;
     }
 
 
 private:
-    bool initializeDevice() {
-        try {
-            _device = new Wm::Ril();
-        }
-        catch (Wm::Exception exception) {
-            getListeners()->onStatusChange(S("Not available: ")
-                + exception.getMessage());
+    bool checkEquipmentState() {
+        ref<Wm::Asynchronous<RILEQUIPMENTSTATE>> state
+            = _device->getEquipmentState();
+        _events->add(state->getEvent());
+
+        if (_events->wait() == _stop) {
+            _events->remove(state->getEvent());
             return false;
         }
 
-        if (!_device->isRadioPresent()) {
-            getListeners()->onStatusChange(
-                S("No radio module present, waiting..."));
-            
-            do {
-                if (_stop->wait(1 * 1000)) {
-                    _device = NULL;
-                    return false;
-                }
+        _events->remove(state->getEvent());
+        _isOn = (state->getValue().dwRadioSupport == RIL_RADIOSUPPORT_ON);
+
+        if (!_isOn) {
+            if (!_automatic) {
+                throw Wm::Exception("Device is off.");
             }
-            while (!_device->isRadioPresent());
+
+            _originalEquipmentState = state->getValue().dwEqState;
+            _device->setEquipmentState(RIL_EQSTATE_FULL)->wait();
         }
 
         return true;
     }
 
 
-    bool isNitzEnabled() {
-        ref<Wm::AsynchronousResult> nitzSupport =
-            _device->queryFeatures(RIL_CAPSTYPE_NITZNOTIFICATION);
+    bool checkNitzSupport() {
+        try {
+            ref<Wm::AsynchronousResult> support =
+                _device->queryFeatures(RIL_CAPSTYPE_NITZNOTIFICATION);
+            _events->add(support->getEvent());
 
-        switch (nitzSupport->getValueAs<DWORD>()) {
-        case RIL_CAPS_NITZ_ENABLED:
-            return true;
-        case RIL_CAPS_NITZ_DISABLED:
+            if (_events->wait() == _stop) {
+                _events->remove(support->getEvent());
+                return false;
+            }
+            
+            _events->remove(support->getEvent());
+
+            switch (support->getValueAs<DWORD>()) {
+            case RIL_CAPS_NITZ_ENABLED:
+                return true;
+            case RIL_CAPS_NITZ_DISABLED:
+                getListeners()->onStatusChange(S("NITZ disabled."));
+                return false;
+            default:
+                throw Wm::Exception(S("Invalid feature query response."));
+            }
+        }
+        catch (Wm::Exception exception) {
+            getListeners()->onStatusChange(S("Unknown NITZ support: ")
+                + exception.getMessage());
             return false;
-        default:
-            throw Wm::Exception("Invalid feature query response.");
         }
     }
 
 
+    void finalizeDevice() {
+        if (!_isOn && _automatic) {
+            _device->setEquipmentState(_originalEquipmentState);
+        }
+
+        _device = NULL;
+    }
+
+
+    bool initializeDevice() {
+        try {
+            _device = new Wm::Ril();
+            getListeners()->onStatusChange(S("Starting..."));
+
+            if (!checkNitzSupport() || !checkEquipmentState()) {
+                _device = NULL;
+                return false;
+            }
+        }
+        catch (Wm::Exception exception) {
+            _device = NULL;
+            getListeners()->onStatusChange(S("Not available: ")
+                + exception.getMessage());
+            return false;
+        }
+
+        return true;
+    }
+
+
     void updateLoop() {
-        ref<Wm::EventManager> events = new Wm::EventManager();
         ref<Wm::Asynchronous<SYSTEMTIME>> time = NULL;
-        
-        events->add(_stop);
         
         do {
             if (!time.null()) {
                 getListeners()->onTimeChange(time->getValue());
-                events->remove(time->getEvent());
+                _events->remove(time->getEvent());
                 time = NULL;
             }
 
             try {
                 time = _device->getSystemTime();
-                events->add(time->getEvent());
+                _events->add(time->getEvent());
             }
             catch (Wm::Exception exception) {
                 getListeners()->onStatusChange(S("Time query error: ")
                     + exception.getMessage());
             }
         }
-        while (events->wait(time.null() ? 1 * 1000 : INFINITE) != _stop);
+        while (_events->wait(time.null() ? 1 * 1000 : INFINITE) != _stop);
     }
 };

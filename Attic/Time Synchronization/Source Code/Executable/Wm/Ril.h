@@ -101,6 +101,21 @@ namespace Wm {
         }
 
 
+        virtual ref<Asynchronous<RILEQUIPMENTSTATE>> getEquipmentState() {
+            ref<Asynchronous<RILEQUIPMENTSTATE>> result
+                = new Asynchronous<RILEQUIPMENTSTATE>();
+            
+            HRESULT id = Api::Ril::RIL_GetEquipmentState(getHandle(), NULL);
+
+            if (FAILED(id)) {
+                throwError(id);
+            }
+
+            _results[id] = result->getEvent();
+            return result;
+        }
+
+
         virtual HRIL getHandle() {
             return _handle;
         }
@@ -168,6 +183,19 @@ namespace Wm {
 
             _results[id] = result->getEvent();
             return result;
+        }
+
+
+        virtual ref<Event> setEquipmentState(DWORD state) {
+            ref<Event> event = new Event();
+            HRESULT id = Api::Ril::RIL_SetEquipmentState(getHandle(), state);
+
+            if (FAILED(id)) {
+                throwError(id);
+            }
+
+            _results[id] = event;
+            return event;
         }
 
 
