@@ -13,9 +13,10 @@ namespace Wm {
 
 
     public:
-        Event(bool automatic = false): _valueCopy(false) {
-            _handle = CreateEvent(NULL, !automatic, false, NULL);
-
+        Event(bool automatic = false):
+            _handle(CreateEvent(NULL, !automatic, false, NULL)),
+            _valueCopy(false)
+        {
             if (_handle == NULL) {
                 Exception::throwLastError();
             }
