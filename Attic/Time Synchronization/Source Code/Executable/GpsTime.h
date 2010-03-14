@@ -42,7 +42,7 @@ public:
             getListeners()->onStatusChange(S("Starting..."));
             _device->start();
         }
-        catch (Wm::Exception exception) {
+        catch (Wm::Exception& exception) {
             _device = NULL;
             getListeners()->onStatusChange(S("Not available: ")
                 + exception.getMessage());

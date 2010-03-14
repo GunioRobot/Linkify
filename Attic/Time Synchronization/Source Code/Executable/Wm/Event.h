@@ -87,7 +87,7 @@ namespace Wm {
                 setValue(copy);
                 _valueCopy = doCopy;
             }
-            catch (Exception) {
+            catch (Exception&) {
                 if (doCopy) {
                     delete copy;
                 }

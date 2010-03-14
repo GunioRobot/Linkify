@@ -84,7 +84,7 @@ namespace Wm {
                     try {
                         return state.instance->handler(message, wParam, lParam);
                     }
-                    catch (Exception exception) {
+                    catch (Exception& exception) {
                         state.exceptionCaught = true;
                         Application::exit(exception);
                     }

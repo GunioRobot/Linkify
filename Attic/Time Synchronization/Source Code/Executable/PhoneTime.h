@@ -101,7 +101,7 @@ private:
                 throw Wm::Exception(S("Invalid feature query response."));
             }
         }
-        catch (Wm::Exception exception) {
+        catch (Wm::Exception& exception) {
             getListeners()->onStatusChange(S("Unknown NITZ support: ")
                 + exception.getMessage());
             return false;
@@ -128,7 +128,7 @@ private:
                 return false;
             }
         }
-        catch (Wm::Exception exception) {
+        catch (Wm::Exception& exception) {
             _device = NULL;
             getListeners()->onStatusChange(S("Not available: ")
                 + exception.getMessage());
@@ -153,7 +153,7 @@ private:
                 time = _device->getSystemTime();
                 _events->add(time);
             }
-            catch (Wm::Exception exception) {
+            catch (Wm::Exception& exception) {
                 getListeners()->onStatusChange(S("Time query error: ")
                     + exception.getMessage());
             }

@@ -17,7 +17,7 @@ int WINAPI WinMain(
         
         return Executable(instance).start(windowShowMode);
     }
-    catch (Wm::Exception exception) {
+    catch (Wm::Exception& exception) {
         Wm::Application::exit(exception);
         return EXIT_FAILURE;
     }

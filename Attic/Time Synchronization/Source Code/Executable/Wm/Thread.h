@@ -79,7 +79,7 @@ namespace Wm {
                 _finished->notify();
                 return EXIT_SUCCESS;
             }
-            catch (Exception exception) {
+            catch (Exception& exception) {
                 Application::exit(exception);
                 return EXIT_FAILURE;
             }

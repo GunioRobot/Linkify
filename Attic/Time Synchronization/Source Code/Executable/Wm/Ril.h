@@ -25,7 +25,7 @@ namespace Wm {
             try {
                 ((Ril*) userData)->notifyHandler(code, data, size);
             }
-            catch (Exception exception) {
+            catch (Exception& exception) {
                 Application::exit(exception);
             }
         }
@@ -41,7 +41,7 @@ namespace Wm {
             try {
                 ((Ril*) userData)->resultHandler(code, command, data, size);
             }
-            catch (Exception exception) {
+            catch (Exception& exception) {
                 Application::exit(exception);
             }
         }

@@ -28,7 +28,7 @@ namespace Wm {
                 try {
                     timer->onTimeout();
                 }
-                catch (Exception exception) {
+                catch (Exception& exception) {
                     timer->stop();
                     Application::exit(exception);
                 }
