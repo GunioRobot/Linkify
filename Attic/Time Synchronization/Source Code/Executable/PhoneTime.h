@@ -9,20 +9,20 @@ class PhoneTime: public TimeSender, public Wm::Thread {
 private:
     ref<Wm::Ril> _device;
     ref<Wm::Event> _stop;
-    ref<Wm::EventManager> _events;
+    ref<Wm::WaitableManager> _events;
     bool _automatic;
     bool _isOn;
     DWORD _originalEquipmentState;
 
 
 public:
-    PhoneTime(): _stop(new Wm::Event()), _events(new Wm::EventManager()) {
+    PhoneTime(): _stop(new Wm::Event()), _events(new Wm::WaitableManager()) {
         _events->add(_stop);
     }
 
 
     virtual void finalize() {
-        _stop->set();
+        _stop->notify();
         wait();
     }
 
@@ -54,16 +54,15 @@ public:
 
 private:
     bool checkEquipmentState() {
-        ref<Wm::Asynchronous<RILEQUIPMENTSTATE>> state
-            = _device->getEquipmentState();
-        _events->add(state->getEvent());
+        ref<Wm::Result<RILEQUIPMENTSTATE>> state = _device->getEquipmentState();
+        _events->add(state);
 
         if (_events->wait() == _stop) {
-            _events->remove(state->getEvent());
+            _events->remove(state);
             return false;
         }
 
-        _events->remove(state->getEvent());
+        _events->remove(state);
         _isOn = (state->getValue().dwRadioSupport == RIL_RADIOSUPPORT_ON);
 
         if (!_isOn) {
@@ -81,18 +80,18 @@ private:
 
     bool checkNitzSupport() {
         try {
-            ref<Wm::AsynchronousResult> support =
-                _device->queryFeatures(RIL_CAPSTYPE_NITZNOTIFICATION);
-            _events->add(support->getEvent());
+            ref<Wm::Result<DWORD>> support
+                = _device->getCapabilities<DWORD>(RIL_CAPSTYPE_NITZNOTIFICATION);
+            _events->add(support);
 
             if (_events->wait() == _stop) {
-                _events->remove(support->getEvent());
+                _events->remove(support);
                 return false;
             }
             
-            _events->remove(support->getEvent());
+            _events->remove(support);
 
-            switch (support->getValueAs<DWORD>()) {
+            switch (support->getValue()) {
             case RIL_CAPS_NITZ_ENABLED:
                 return true;
             case RIL_CAPS_NITZ_DISABLED:
@@ -141,18 +140,18 @@ private:
 
 
     void updateLoop() {
-        ref<Wm::Asynchronous<SYSTEMTIME>> time = NULL;
+        ref<Wm::Result<SYSTEMTIME>> time = NULL;
         
         do {
             if (!time.null()) {
                 getListeners()->onTimeChange(time->getValue());
-                _events->remove(time->getEvent());
+                _events->remove(time);
                 time = NULL;
             }
 
             try {
                 time = _device->getSystemTime();
-                _events->add(time->getEvent());
+                _events->add(time);
             }
             catch (Wm::Exception exception) {
                 getListeners()->onStatusChange(S("Time query error: ")

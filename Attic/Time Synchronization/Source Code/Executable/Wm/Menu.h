@@ -76,11 +76,11 @@ namespace Wm {
         }
 
 
-        virtual void setOwner(HWND owner) {
-            MenuItem::setOwner(owner);
+        virtual void setOwnerHandle(HWND owner) {
+            MenuItem::setOwnerHandle(owner);
 
             for (size_t i = 0; i < getItemCount(); ++i) {
-                _items[i]->setOwner(owner);
+                _items[i]->setOwnerHandle(owner);
             }
         }
     };

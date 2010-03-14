@@ -2,41 +2,26 @@
 
 
 #include "Exception.h"
-#include "Object.h"
+#include "Waitable.h"
 
 
 namespace Wm {
-    class Mutex: public Object {
-    private:
-        HANDLE _handle;
-
-
+    class Mutex: public Waitable {
     public:
-        Mutex(): _handle(CreateMutex(NULL, false, NULL)) {
-            if (_handle == NULL) {
+        Mutex(): Waitable(CreateMutex(NULL, false, NULL)) {
+            if (getHandle() == NULL) {
                 Exception::throwLastError();
             }
         }
 
 
-        virtual ~Mutex() {
-            if (!CloseHandle(_handle)) {
-                Exception::throwLastError();
-            }
-        }
-        
-        
         virtual HANDLE getHandle() {
-            return _handle;
+            return getWaitableHandle();
         }
 
 
         virtual void lock() {
-            DWORD result = WaitForSingleObject(getHandle(), INFINITE);
-
-            if ((result == WAIT_FAILED) || (result == INFINITE)) {
-                Exception::throwLastError();
-            }
+            wait(INFINITE);
         }
 
 

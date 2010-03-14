@@ -2,22 +2,21 @@
 
 
 #include "Exception.h"
-#include "Object.h"
+#include "Waitable.h"
 
 
 namespace Wm {
-    class Event: public Object {
+    class Event: public Waitable {
     private:
-        HANDLE _handle;
         bool _valueCopy;
 
 
     public:
         Event(bool automatic = false):
-            _handle(CreateEvent(NULL, !automatic, false, NULL)),
+            Waitable(CreateEvent(NULL, !automatic, false, NULL)),
             _valueCopy(false)
         {
-            if (_handle == NULL) {
+            if (getHandle() == NULL) {
                 Exception::throwLastError();
             }
         }
@@ -27,15 +26,11 @@ namespace Wm {
             if (_valueCopy) {
                 delete getValue();
             }
-
-            if (!CloseHandle(_handle)) {
-                Exception::throwLastError();
-            }
         }
 
 
         virtual HANDLE getHandle() {
-            return _handle;
+            return getWaitableHandle();
         }
 
 
@@ -51,15 +46,15 @@ namespace Wm {
         }
 
 
-        virtual void reset() {
-            if (!ResetEvent(getHandle())) {
+        virtual void notify() {
+            if (!SetEvent(getHandle())) {
                 Exception::throwLastError();
             }
         }
 
 
-        virtual void set() {
-            if (!SetEvent(getHandle())) {
+        virtual void reset() {
+            if (!ResetEvent(getHandle())) {
                 Exception::throwLastError();
             }
         }
@@ -98,17 +93,6 @@ namespace Wm {
                 }
                 throw;
             }
-        }
-
-
-        virtual bool wait(DWORD ms = INFINITE) {
-            DWORD result = WaitForSingleObject(getHandle(), ms);
-
-            if (result == WAIT_FAILED) {
-                Exception::throwLastError();
-            }
-
-            return result != WAIT_TIMEOUT;
         }
     };
 }

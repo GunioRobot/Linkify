@@ -76,7 +76,7 @@ namespace Wm {
         int run() {
             try {
                 onRun();
-                _finished->set();
+                _finished->notify();
                 return EXIT_SUCCESS;
             }
             catch (Exception exception) {

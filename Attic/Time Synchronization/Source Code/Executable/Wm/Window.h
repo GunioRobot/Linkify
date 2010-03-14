@@ -198,7 +198,7 @@ namespace Wm {
 
             _menuBar = menu;
             _menuBarWindowHandle = info.hwndMB;
-            menu->setOwner(_menuBarWindowHandle);
+            menu->setOwnerHandle(_menuBarWindowHandle);
         }
 
 

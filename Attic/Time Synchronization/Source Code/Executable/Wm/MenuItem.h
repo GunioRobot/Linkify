@@ -44,7 +44,7 @@ namespace Wm {
         }
 
 
-        virtual HWND getOwner() {
+        virtual HWND getOwnerHandle() {
             return _owner;
         }
 
@@ -55,15 +55,15 @@ namespace Wm {
 
 
         virtual void setCaption(String caption) {
-            if (getOwner() != NULL) {
+            if (getOwnerHandle() != NULL) {
                 TBBUTTONINFO info;
 
                 info.cbSize = sizeof(TBBUTTONINFO);
                 info.dwMask = TBIF_TEXT;
                 info.pszText = (LPWSTR) caption.c_str();
 
-                BOOL success = SendMessage(getOwner(), TB_SETBUTTONINFO,
-                    getId(), (LPARAM) &info);
+                BOOL success = SendMessage(getOwnerHandle(),
+                    TB_SETBUTTONINFO, getId(), (LPARAM) &info);
 
                 if (!success) {
                     Exception::throwLastError();
@@ -74,7 +74,7 @@ namespace Wm {
         }
 
 
-        virtual void setOwner(HWND owner) {
+        virtual void setOwnerHandle(HWND owner) {
             _owner = owner;
         }
     };

@@ -3,10 +3,10 @@
 
 #include <map>
 #include "Application.h"
-#include "Asynchronous.h"
-#include "AsynchronousResult.h"
+#include "Event.h"
 #include "Exception.h"
 #include "Object.h"
+#include "Result.h"
 
 
 namespace Wm {
@@ -101,18 +101,30 @@ namespace Wm {
         }
 
 
-        virtual ref<Asynchronous<RILEQUIPMENTSTATE>> getEquipmentState() {
-            ref<Asynchronous<RILEQUIPMENTSTATE>> result
-                = new Asynchronous<RILEQUIPMENTSTATE>();
-            
+        template<typename T>
+        ref<Result<T>> getCapabilities(DWORD type) {
+            ref<Event> event = new Event();
+            HRESULT id = Api::Ril::RIL_GetDevCaps(getHandle(), type);
+
+            if (FAILED(id)) {
+                throwError(id);
+            }
+
+            _results[id] = event;
+            return new Result<T>(event);
+        }
+
+
+        virtual ref<Result<RILEQUIPMENTSTATE>> getEquipmentState() {
+            ref<Event> event = new Event();
             HRESULT id = Api::Ril::RIL_GetEquipmentState(getHandle(), NULL);
 
             if (FAILED(id)) {
                 throwError(id);
             }
 
-            _results[id] = result->getEvent();
-            return result;
+            _results[id] = event;
+            return new Result<RILEQUIPMENTSTATE>(event);
         }
 
 
@@ -121,12 +133,12 @@ namespace Wm {
         }
 
 
-        virtual ref<Asynchronous<DWORD>> getLockingStatus(
+        virtual ref<Result<DWORD>> getLockingStatus(
             DWORD facility,
             String password)
         {
+            ref<Event> event = new Event();
             char* passwordArray = password.toCharArray();
-            ref<Asynchronous<DWORD>> result = new Asynchronous<DWORD>();
             
             HRESULT id = Api::Ril::RIL_GetLockingStatus(getHandle(),
                 facility, passwordArray);
@@ -137,34 +149,34 @@ namespace Wm {
                 throwError(id);
             }
 
-            _results[id] = result->getEvent();
-            return result;
+            _results[id] = event;
+            return new Result<DWORD>(event);
         }
 
 
-        virtual ref<Asynchronous<DWORD>> getPhoneLockedState() {
-            ref<Asynchronous<DWORD>> result = new Asynchronous<DWORD>();
+        virtual ref<Result<DWORD>> getPhoneLockedState() {
+            ref<Event> event = new Event();
             HRESULT id = Api::Ril::RIL_GetPhoneLockedState(getHandle());
 
             if (FAILED(id)) {
                 throwError(id);
             }
 
-            _results[id] = result->getEvent();
-            return result;
+            _results[id] = event;
+            return new Result<DWORD>(event);
         }
 
 
-        virtual ref<Asynchronous<SYSTEMTIME>> getSystemTime() {
-            ref<Asynchronous<SYSTEMTIME>> r = new Asynchronous<SYSTEMTIME>();
+        virtual ref<Result<SYSTEMTIME>> getSystemTime() {
+            ref<Event> event = new Event();
             HRESULT id = Api::Ril::RIL_GetSystemTime(getHandle());
 
             if (FAILED(id)) {
                 throwError(id);
             }
             
-            _results[id] = r->getEvent();
-            return r;
+            _results[id] = event;
+            return new Result<SYSTEMTIME>(event);
         }
 
 
@@ -173,20 +185,7 @@ namespace Wm {
         }
 
 
-        virtual ref<AsynchronousResult> queryFeatures(DWORD type) {
-            ref<AsynchronousResult> result = new AsynchronousResult();
-            HRESULT id = Api::Ril::RIL_GetDevCaps(getHandle(), type);
-
-            if (FAILED(id)) {
-                throwError(id);
-            }
-
-            _results[id] = result->getEvent();
-            return result;
-        }
-
-
-        virtual ref<Event> setEquipmentState(DWORD state) {
+        virtual ref<Waitable> setEquipmentState(DWORD state) {
             ref<Event> event = new Event();
             HRESULT id = Api::Ril::RIL_SetEquipmentState(getHandle(), state);
 
@@ -232,7 +231,7 @@ namespace Wm {
             
             _results.erase(id);
             event->setValue((void*) data, size);
-            event->set();
+            event->notify();
         }
     };
 }

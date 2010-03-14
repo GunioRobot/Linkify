@@ -18,7 +18,7 @@ public:
 
 
     virtual void finalize() {
-        _stop->set();
+        _stop->notify();
         wait();
     }
 
@@ -67,7 +67,7 @@ public:
 
 private:
     void updateLoop() {
-        ref<Wm::EventManager> events = new Wm::EventManager();
+        ref<Wm::WaitableManager> events = new Wm::WaitableManager();
 
         events->add(_stop);
         events->add(_device->getPositionEvent());
