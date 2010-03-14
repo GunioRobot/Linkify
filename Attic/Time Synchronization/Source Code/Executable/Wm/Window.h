@@ -113,12 +113,12 @@ namespace Wm {
                 Exception::throwLastError();
             }
 
-            _windows[getHandle()].instance = this;
+            _windows[getWidgetHandle()].instance = this;
         }
 
 
         virtual ~Window() {
-            _windows.erase(getHandle());
+            _windows.erase(getWidgetHandle());
         }
 
 
@@ -129,7 +129,7 @@ namespace Wm {
 
 
         virtual void close() {
-            SendMessage(getHandle(), WM_CLOSE, 0, 0);
+            SendMessage(getWidgetHandle(), WM_CLOSE, 0, 0);
         }
 
 
@@ -137,7 +137,7 @@ namespace Wm {
             RECT area;
             size_t menuBarHeight = 0;
             
-            if (!GetWindowRect(getHandle(), &area)) {
+            if (!GetWindowRect(getWidgetHandle(), &area)) {
                 Exception::throwLastError();
             }
 
@@ -167,9 +167,9 @@ namespace Wm {
 
 
         virtual void open(int mode) {
-            ShowWindow(getHandle(), mode);
+            ShowWindow(getWidgetHandle(), mode);
 
-            if (UpdateWindow(getHandle()) == 0) {
+            if (UpdateWindow(getWidgetHandle()) == 0) {
                 Exception::throwLastError();
             }
         }
@@ -187,9 +187,9 @@ namespace Wm {
 
             ZeroMemory(&info, sizeof(SHMENUBARINFO));
             info.cbSize = sizeof(SHMENUBARINFO);
-            info.hwndParent = getHandle();
+            info.hwndParent = getWidgetHandle();
             info.dwFlags = SHCMBF_HMENU | SHCMBF_HIDESIPBUTTON;
-            info.nToolBarId = (UINT) menu->getHandle();
+            info.nToolBarId = (UINT) menu->getMenuHandle();
             info.hInstRes = GetModuleHandle(NULL);
             
             if (!SHCreateMenuBar(&info)) {
@@ -234,7 +234,8 @@ namespace Wm {
                 handleResize(wParam, lParam);
                 break;
             default:
-                return DefWindowProc(getHandle(), message, wParam, lParam);
+                return DefWindowProc(getWidgetHandle(), message,
+                    wParam, lParam);
             }
             
             return 0;

@@ -15,7 +15,7 @@ namespace Wm {
 
 
         virtual bool isReadOnly() {
-            LONG style = GetWindowLong(getHandle(), GWL_STYLE);
+            LONG style = GetWindowLong(getWidgetHandle(), GWL_STYLE);
 
             if (style == 0) {
                 Exception::throwLastError();
@@ -26,7 +26,7 @@ namespace Wm {
 
 
         virtual void setReadOnly(bool readOnly) {
-            if (!SendMessage(getHandle(), EM_SETREADONLY, readOnly, 0)) {
+            if (!SendMessage(getWidgetHandle(), EM_SETREADONLY, readOnly, 0)) {
                 Exception::throwLastError();
             }
         }

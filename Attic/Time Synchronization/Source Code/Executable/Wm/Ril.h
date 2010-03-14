@@ -104,7 +104,7 @@ namespace Wm {
         template<typename T>
         ref<Result<T>> getCapabilities(DWORD type) {
             ref<Event> event = new Event();
-            HRESULT id = Api::Ril::RIL_GetDevCaps(getHandle(), type);
+            HRESULT id = Api::Ril::RIL_GetDevCaps(getRilHandle(), type);
 
             if (FAILED(id)) {
                 throwError(id);
@@ -117,7 +117,7 @@ namespace Wm {
 
         virtual ref<Result<RILEQUIPMENTSTATE>> getEquipmentState() {
             ref<Event> event = new Event();
-            HRESULT id = Api::Ril::RIL_GetEquipmentState(getHandle(), NULL);
+            HRESULT id = Api::Ril::RIL_GetEquipmentState(getRilHandle(), NULL);
 
             if (FAILED(id)) {
                 throwError(id);
@@ -128,7 +128,7 @@ namespace Wm {
         }
 
 
-        virtual HRIL getHandle() {
+        virtual HRIL getRilHandle() {
             return _handle;
         }
 
@@ -140,7 +140,7 @@ namespace Wm {
             ref<Event> event = new Event();
             char* passwordArray = password.toCharArray();
             
-            HRESULT id = Api::Ril::RIL_GetLockingStatus(getHandle(),
+            HRESULT id = Api::Ril::RIL_GetLockingStatus(getRilHandle(),
                 facility, passwordArray);
 
             delete[] passwordArray;
@@ -156,7 +156,7 @@ namespace Wm {
 
         virtual ref<Result<DWORD>> getPhoneLockedState() {
             ref<Event> event = new Event();
-            HRESULT id = Api::Ril::RIL_GetPhoneLockedState(getHandle());
+            HRESULT id = Api::Ril::RIL_GetPhoneLockedState(getRilHandle());
 
             if (FAILED(id)) {
                 throwError(id);
@@ -169,7 +169,7 @@ namespace Wm {
 
         virtual ref<Result<SYSTEMTIME>> getSystemTime() {
             ref<Event> event = new Event();
-            HRESULT id = Api::Ril::RIL_GetSystemTime(getHandle());
+            HRESULT id = Api::Ril::RIL_GetSystemTime(getRilHandle());
 
             if (FAILED(id)) {
                 throwError(id);
@@ -187,7 +187,7 @@ namespace Wm {
 
         virtual ref<Waitable> setEquipmentState(DWORD state) {
             ref<Event> event = new Event();
-            HRESULT id = Api::Ril::RIL_SetEquipmentState(getHandle(), state);
+            HRESULT id = Api::Ril::RIL_SetEquipmentState(getRilHandle(), state);
 
             if (FAILED(id)) {
                 throwError(id);

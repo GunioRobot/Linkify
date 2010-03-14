@@ -38,7 +38,7 @@ namespace Wm {
         }
 
 
-        virtual HANDLE getHandle() {
+        virtual HANDLE getThreadHandle() {
             return _handle;
         }
 
@@ -52,16 +52,21 @@ namespace Wm {
 
 
         virtual void setPriority(int priority) {
-            if (!SetThreadPriority(getHandle(), priority)) {
+            if (!SetThreadPriority(getThreadHandle(), priority)) {
                 Exception::throwLastError();
             }
+        }
+
+
+        virtual void sleep(size_t ms) {
+            Sleep(ms);
         }
 
 
         virtual void start() {
             _finished->reset();
 
-            if (ResumeThread(getHandle()) == 0xFFFFFFFF) {
+            if (ResumeThread(getThreadHandle()) == 0xFFFFFFFF) {
                 Exception::throwLastError();
             }
         }

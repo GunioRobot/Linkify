@@ -45,11 +45,6 @@ namespace Wm {
         }
 
 
-        virtual HWND getHandle() {
-            return _handle;
-        }
-        
-            
         virtual Margin getMargin() {
             return _margin;
         }
@@ -72,6 +67,11 @@ namespace Wm {
 
         virtual String getText() {
             return _text;
+        }
+        
+        
+        virtual HWND getWidgetHandle() {
+            return _handle;
         }
         
         
@@ -98,7 +98,7 @@ namespace Wm {
             size_t height = size.height().value(areaHeight - top)
                 - margin.bottom().value(areaHeight);
 
-            BOOL success = SetWindowPos(getHandle(), NULL,
+            BOOL success = SetWindowPos(getWidgetHandle(), NULL,
                 DRA::SCALEX(left), DRA::SCALEY(top),
                 DRA::SCALEX(width), DRA::SCALEY(height),
                 SWP_NOZORDER);
@@ -115,13 +115,13 @@ namespace Wm {
         }
 
 
-        virtual void setParent(ref<Widget> parent) {
-            if (SetParent(getHandle(), parent->getHandle()) == NULL) {
+        virtual void setParent(ref<Widget> p) {
+            if (SetParent(getWidgetHandle(), p->getWidgetHandle()) == NULL) {
                 Exception::throwLastError();
             }
             
-            ShowWindow(getHandle(), SW_SHOWNORMAL);
-            _parent = parent;
+            ShowWindow(getWidgetHandle(), SW_SHOWNORMAL);
+            _parent = p;
             onResize();
         }
 
@@ -139,7 +139,7 @@ namespace Wm {
 
 
         virtual void setText(String text) {
-            if (!SetWindowText(getHandle(), text.c_str())) {
+            if (!SetWindowText(getWidgetHandle(), text.c_str())) {
                 Exception::throwLastError();
             }
             
@@ -150,14 +150,14 @@ namespace Wm {
     protected:
         virtual void changeStyle(DWORD style) {
             SetLastError(ERROR_SUCCESS);
-            LONG value = SetWindowLong(getHandle(), GWL_STYLE, style);
+            LONG value = SetWindowLong(getWidgetHandle(), GWL_STYLE, style);
 
             if ((value == 0) && (GetLastError() != ERROR_SUCCESS)) {
                 Exception::throwLastError();
             }
 
             // Update cached data.
-            BOOL success = SetWindowPos(getHandle(), NULL, 0, 0, 0, 0,
+            BOOL success = SetWindowPos(getWidgetHandle(), NULL, 0, 0, 0, 0,
                 SWP_NOMOVE + SWP_NOSIZE + SWP_NOZORDER + SWP_FRAMECHANGED);
             
             if (!success) {

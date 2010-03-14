@@ -26,7 +26,7 @@ namespace Wm {
         }
 
 
-        virtual HINSTANCE getHandle() {
+        virtual HINSTANCE getApplicationHandle() {
             return _handle;
         }
 

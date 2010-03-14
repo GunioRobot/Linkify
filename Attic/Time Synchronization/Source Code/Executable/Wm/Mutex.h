@@ -9,13 +9,13 @@ namespace Wm {
     class Mutex: public Waitable {
     public:
         Mutex(): Waitable(CreateMutex(NULL, false, NULL)) {
-            if (getHandle() == NULL) {
+            if (getMutexHandle() == NULL) {
                 Exception::throwLastError();
             }
         }
 
 
-        virtual HANDLE getHandle() {
+        virtual HANDLE getMutexHandle() {
             return getWaitableHandle();
         }
 
@@ -26,7 +26,7 @@ namespace Wm {
 
 
         virtual void unlock() {
-            if (!ReleaseMutex(getHandle())) {
+            if (!ReleaseMutex(getMutexHandle())) {
                 Exception::throwLastError();
             }
         }

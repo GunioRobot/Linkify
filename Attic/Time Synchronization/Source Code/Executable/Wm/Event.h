@@ -16,7 +16,7 @@ namespace Wm {
             Waitable(CreateEvent(NULL, !automatic, false, NULL)),
             _valueCopy(false)
         {
-            if (getHandle() == NULL) {
+            if (getEventHandle() == NULL) {
                 Exception::throwLastError();
             }
         }
@@ -29,14 +29,14 @@ namespace Wm {
         }
 
 
-        virtual HANDLE getHandle() {
+        virtual HANDLE getEventHandle() {
             return getWaitableHandle();
         }
 
 
         virtual void* getValue() {
             SetLastError(ERROR_SUCCESS);
-            DWORD value = GetEventData(getHandle());
+            DWORD value = GetEventData(getEventHandle());
 
             if ((value == 0) && (GetLastError() != ERROR_SUCCESS)) {
                 Exception::throwLastError();
@@ -47,14 +47,14 @@ namespace Wm {
 
 
         virtual void notify() {
-            if (!SetEvent(getHandle())) {
+            if (!SetEvent(getEventHandle())) {
                 Exception::throwLastError();
             }
         }
 
 
         virtual void reset() {
-            if (!ResetEvent(getHandle())) {
+            if (!ResetEvent(getEventHandle())) {
                 Exception::throwLastError();
             }
         }
@@ -63,7 +63,7 @@ namespace Wm {
         virtual void setValue(void* value) {
             void* previous = _valueCopy ? getValue() : NULL;
 
-            if (!SetEventData(getHandle(), (DWORD) value)) {
+            if (!SetEventData(getEventHandle(), (DWORD) value)) {
                 Exception::throwLastError();
             }
             

@@ -304,6 +304,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Wm\GpsListener.h"
+				>
+			</File>
+			<File
 				RelativePath=".\GpsTime.h"
 				>
 			</File>

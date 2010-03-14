@@ -28,7 +28,7 @@ namespace Wm {
             UINT_PTR id = item->getId();
             LPCTSTR caption = item->getCaption().c_str();
 
-            if (!AppendMenu(getHandle(), flags, id, caption)) {
+            if (!AppendMenu(getMenuHandle(), flags, id, caption)) {
                 Exception::throwLastError();
             }
 
@@ -36,13 +36,13 @@ namespace Wm {
         }
 
 
-        virtual HMENU getHandle() {
+        virtual HMENU getMenuHandle() {
             return _handle;
         }
 
 
         virtual UINT_PTR getId() {
-            return (UINT_PTR) getHandle();
+            return (UINT_PTR) getMenuHandle();
         }
 
 
