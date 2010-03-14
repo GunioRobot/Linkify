@@ -13,7 +13,7 @@ namespace Wm {
 
 
     public:
-        Result(ref<Event> event): _event(event) {
+        Result(ref<Event> event): Waitable(NULL), _event(event) {
         }
 
 

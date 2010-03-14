@@ -12,7 +12,7 @@ namespace Wm {
 
 
     public:
-        Waitable(HANDLE handle = NULL): _handle(handle) {
+        Waitable(HANDLE handle): _handle(handle) {
         }
 
 
@@ -29,10 +29,6 @@ namespace Wm {
 
 
         virtual bool wait(DWORD ms = INFINITE) {
-            if (getWaitableHandle() == NULL) {
-                throw Exception(S("Waitable handle is null."));
-            }
-
             DWORD result = WaitForSingleObject(getWaitableHandle(), ms);
 
             if (result == WAIT_FAILED) {
