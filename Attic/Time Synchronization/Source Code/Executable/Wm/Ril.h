@@ -22,10 +22,8 @@ namespace Wm {
             DWORD size,
             DWORD userData)
         {
-            Ril* self = ((Ril*) userData);
-
             try {
-                self->notifyHandler(code, data, size);
+                ((Ril*) userData)->notifyHandler(code, data, size);
             }
             catch (Exception exception) {
                 Application::exit(exception);
@@ -40,10 +38,8 @@ namespace Wm {
             DWORD size,
             DWORD userData)
         {
-            Ril* self = ((Ril*) userData);
-            
             try {
-                self->resultHandler(code, command, data, size);
+                ((Ril*) userData)->resultHandler(code, command, data, size);
             }
             catch (Exception exception) {
                 Application::exit(exception);
