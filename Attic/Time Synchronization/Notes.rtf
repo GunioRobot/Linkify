@@ -2,7 +2,6 @@
 {\colortbl ;\red0\green0\blue255;}
 {\*\generator Msftedit 5.41.21.2509;}\viewkind4\uc1\pard\lang2070\b\f0\fs20 To Do:\b0  \par
 \pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-284\li284 (Apply To Do items in the Etc section from the WM library.)\par
-{\pntext\f2\'B7\tab}Use SetPowerRequirement for the devices? Set it to low when running on batteries and to high when otherwise (see GetSystemPowerStatusEx2, RequestPowerNotifications)?\par
 {\pntext\f2\'B7\tab}Create a wrapper class for a menu bar?\par
 {\pntext\f2\'B7\tab}Implement detection of radio state changes (module presence and device on/off) for the phone time source.\par
 {\pntext\f2\'B7\tab}Create a wrapper class for SYSTEMTIME that allows arithmetic operations?\par
@@ -26,7 +25,7 @@
 \pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-284\li644 Number of samples to take per synchronization.\par
 {\pntext\f2\'B7\tab}How long should each synchronization last, at max.\par
 {\pntext\f2\'B7\tab}Synchronization function. Defaults to median average.\par
-{\pntext\f2\'B7\tab}Update frequency. Defaults to every 6h when the power level is above 50%, every 12h when between 20% and 50%, and stops when below 20%. The threshold limits as well as the intervals are customizable.\par
+{\pntext\f2\'B7\tab}Update frequency. Defaults to every 6h when the power level is above 50%, every 12h when between 20% and 50%, and stops when below 20%. The threshold limits as well as the intervals are customizable. (See \f1 GetSystemPowerStatusEx\f0 , \f1 RequestPowerNotifications\f0 .)\par
 {\pntext\f2\'B7\tab}Update mode to determine how to handle turning on/off a time source.\par
 \pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-284\li1004 On manual doesn't change a time source's state, e.g. if GPS is off doesn't turn it on.\par
 {\pntext\f2\'B7\tab}On automatic, if a time source is initally:\par
