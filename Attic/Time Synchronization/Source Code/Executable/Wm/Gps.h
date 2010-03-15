@@ -55,6 +55,23 @@ namespace Wm {
         }
 
 
+        virtual GPS_POSITION getPosition(size_t maxAgeMs = 1000) {
+            GPS_POSITION position;
+
+            position.dwVersion = GPS_VERSION_1;
+            position.dwSize = sizeof(GPS_POSITION);
+
+            DWORD result = Api::Gps::GPSGetPosition(getGpsHandle(),
+                &position, maxAgeMs, 0);
+
+            if (result != ERROR_SUCCESS) {
+                Exception::throwError(result);
+            }
+
+            return position;
+        }
+        
+        
         virtual GPS_DEVICE getState() {
             GPS_DEVICE state;
 
@@ -115,24 +132,6 @@ namespace Wm {
                     (*it)->onPositionChange(position);
                 }
             }
-        }
-
-
-    private:
-        GPS_POSITION getPosition(size_t maxAgeMs = 1000) {
-            GPS_POSITION position;
-
-            position.dwVersion = GPS_VERSION_1;
-            position.dwSize = sizeof(GPS_POSITION);
-
-            DWORD result = Api::Gps::GPSGetPosition(getGpsHandle(),
-                &position, maxAgeMs, 0);
-
-            if (result != ERROR_SUCCESS) {
-                Exception::throwError(result);
-            }
-
-            return position;
         }
     };
 }
