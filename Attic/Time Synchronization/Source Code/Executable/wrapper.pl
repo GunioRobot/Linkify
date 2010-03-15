@@ -4,6 +4,7 @@
 
 # External modules:
 use Class::Struct ();
+use Env::Path ();
 use File::Basename ();
 use File::Slurp ();
 use File::Spec ();
@@ -15,15 +16,8 @@ use utf8;
 use warnings;
 
 
-my %include_dirs;
-
-foreach my $vcproj (glob '*.vcproj') {
-    my $text = File::Slurp::read_file($vcproj);
-    @include_dirs{$text =~ m/AdditionalIncludeDirectories\s*=\s*"([^"]*)"/g} = 1;
-}
-
 my ($directory, $include) = @ARGV;
-my ($include_dir) = grep {-e File::Spec->catfile($_, $include)} keys %include_dirs;
+my ($include_dir) = grep {-e File::Spec->catfile($_, $include)} include_dirs();
 my $include_file = File::Spec->catfile($include_dir, $include);
 
 my $name = 'wrapper';
@@ -143,6 +137,30 @@ EOT
 }
 
 
+sub include_dirs {
+    my %path_lists;
+    my %paths;
+    
+    foreach my $vcproj (glob '*.vcproj') {
+        my $text = File::Slurp::read_file($vcproj);
+        @path_lists{$text =~ m/AdditionalIncludeDirectories\s*=\s*"([^"]*)"/g} = 1;
+    }
+    
+    foreach my $path_list (keys %path_lists) {
+        $path_list =~ s/&quot;//g;
+        
+        foreach my $path (split Env::Path::PathSeparator(), $path_list) {
+            eval {
+                $path =~ s/\$\(([^)]+)\)/$ENV{$1} || die/eg;
+                $paths{$path} = 1;
+            };
+        }
+    }
+    
+    return keys %paths;
+}
+
+
 sub interface {
     my ($wrapper) = @_;
     my @namespace = @{$wrapper->namespace()};
@@ -156,7 +174,7 @@ sub interface {
 
 
 #include "../../Core.h"
-#include "$include"
+#include <$include>
 
 
 #if defined(API_FUNCTION_DEFINITION)
