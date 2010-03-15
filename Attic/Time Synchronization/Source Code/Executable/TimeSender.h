@@ -21,8 +21,12 @@ public:
     }
     
     
-    virtual void finalize() = 0;
-    virtual void initialize(bool automatic) = 0;
+    virtual void onFinalize() {
+    }
+
+
+    virtual void onInitialize(bool automatic) {
+    }
     
     
     virtual void removeListener(ref<TimeListener> listener) {

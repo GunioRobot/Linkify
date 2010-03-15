@@ -11,15 +11,6 @@ private:
 
 
 public:
-    virtual void finalize() {
-        if (!_device.null()) {
-            _device->removeListener(noref this);
-            _device->stop();
-            _device = NULL;
-        }
-    }
-
-
     virtual Wm::String getDescription() {
         return S("Uses the time provided by GPS satellites.");
     }
@@ -30,7 +21,16 @@ public:
     }
 
 
-    virtual void initialize(bool automatic) {
+    virtual void onFinalize() {
+        if (!_device.null()) {
+            _device->removeListener(noref this);
+            _device->stop();
+            _device = NULL;
+        }
+    }
+
+
+    virtual void onInitialize(bool automatic) {
         try {
             _device = new Wm::Gps();
             bool isOn = (_device->getState().dwDeviceState == SERVICE_STATE_ON);

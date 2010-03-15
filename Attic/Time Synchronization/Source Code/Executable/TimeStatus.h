@@ -20,18 +20,25 @@ public:
     }
 
 
+    virtual void finalize() {
+        _time->onFinalize();
+        _time->removeListener(noref this);
+    }
+
+
     virtual ref<Wm::Label> getLabel() {
         return _label;
     }
 
 
-    virtual ref<TimeSender> getSource() {
-        return _time;
+    virtual ref<Wm::TextBox> getTextBox() {
+        return _textBox;
     }
 
 
-    virtual ref<Wm::TextBox> getTextBox() {
-        return _textBox;
+    virtual void initialize(bool automatic) {
+        _time->addListener(noref this);
+        _time->onInitialize(true);
     }
 
 

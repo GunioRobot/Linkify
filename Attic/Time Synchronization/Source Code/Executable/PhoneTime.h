@@ -5,7 +5,7 @@
 #include "Wm.h"
 
 
-class PhoneTime: public TimeSender, public Wm::Thread {
+class PhoneTime: public TimeSender, protected Wm::Thread {
 private:
     ref<Wm::Ril> _device;
     ref<Wm::Event> _stop;
@@ -21,12 +21,6 @@ public:
     }
 
 
-    virtual void finalize() {
-        _stop->notify();
-        wait();
-    }
-
-
     virtual Wm::String getDescription() {
         return S("Uses NITZ data sent by the cellular network.");
     }
@@ -37,13 +31,20 @@ public:
     }
 
 
-    virtual void initialize(bool automatic) {
-        _automatic = automatic;
-        _stop->reset();
-        Wm::Thread::start();
+    virtual void onFinalize() {
+        _stop->notify();
+        wait();
     }
 
 
+    virtual void onInitialize(bool automatic) {
+        _automatic = automatic;
+        _stop->reset();
+        start();
+    }
+
+
+protected:
     virtual void onRun() {
         if (initializeDevice()) {
             updateLoop();

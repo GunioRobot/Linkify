@@ -60,11 +60,7 @@ public:
 
     virtual void onRun() {
         for (size_t i = 0; i < _timeItems.size(); ++i) {
-            ref<TimeStatus> status = _timeItems[i];
-            ref<TimeSender> source = status->getSource();
-
-            source->finalize();
-            source->removeListener(status);
+            _timeItems[i]->finalize();
         }
         
         close();
@@ -75,11 +71,7 @@ public:
         open(windowShowMode);
         
         for (size_t i = 0; i < _timeItems.size(); ++i) {
-            ref<TimeStatus> status = _timeItems[i];
-            ref<TimeSender> source = status->getSource();
-
-            source->addListener(status);
-            source->initialize(true);
+            _timeItems[i]->initialize(true);
         }
         
         return Wm::Application::start(windowShowMode);

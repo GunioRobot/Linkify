@@ -6,13 +6,8 @@
 #include "Wm.h"
 
 
-class DeviceTime: public TimeReceiver, public TimeSender, public Wm::Timer {
+class DeviceTime: public TimeReceiver, public TimeSender, protected Wm::Timer {
 public:
-    virtual void finalize() {
-        Wm::Timer::stop();
-    }
-    
-    
     virtual Wm::String getDescription() {
         return S("Uses the local time from the internal clock.");
     }
@@ -23,9 +18,14 @@ public:
     }
     
     
-    virtual void initialize(bool automatic) {
+    virtual void onFinalize() {
+        stop();
+    }
+    
+    
+    virtual void onInitialize(bool automatic) {
         onTimeout();
-        Wm::Timer::start(1 * 1000);
+        start(1 * 1000);
     }
 
 
@@ -40,6 +40,7 @@ public:
     }
 
 
+protected:
     virtual void onTimeout() {
         SYSTEMTIME time;
         
