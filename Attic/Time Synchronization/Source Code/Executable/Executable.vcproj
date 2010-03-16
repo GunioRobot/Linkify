@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SystemDrive)\WINCE600\PUBLIC&quot;"
+				AdditionalIncludeDirectories="&quot;$(SystemDrive)\WINCE600\PUBLIC&quot;;&quot;$(ProgramFiles)\simpleini&quot;"
 				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_WINDOWS;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
@@ -125,7 +125,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="2"
-				AdditionalIncludeDirectories="&quot;$(SystemDrive)\WINCE600\PUBLIC&quot;"
+				AdditionalIncludeDirectories="&quot;$(SystemDrive)\WINCE600\PUBLIC&quot;;&quot;$(ProgramFiles)\simpleini&quot;"
 				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_WINDOWS;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL"
 				RuntimeLibrary="0"
 				BufferSecurityCheck="false"
@@ -234,6 +234,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Wm\Api\Ril\wrapper.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Wm\Api\Gps\wrapper.cpp"
 				>
 				<FileConfiguration
@@ -252,10 +256,6 @@
 						ObjectFile="$(IntDir)/$(InputName)1.obj"
 					/>
 				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\Wm\Api\Ril\wrapper.cpp"
-				>
 			</File>
 		</Filter>
 		<Filter
@@ -448,11 +448,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Api\Gps\wrapper.h"
+				RelativePath=".\Wm\Api\Ril\wrapper.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Api\Ril\wrapper.h"
+				RelativePath=".\Wm\Api\Gps\wrapper.h"
 				>
 			</File>
 		</Filter>
