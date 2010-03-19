@@ -165,7 +165,7 @@ sub main {
     
     if (@ARG != 1) {
         print "Compiles documents in DocBook format to HTML.\n";
-        print "Usage: <document file>\n";
+        print "Usage: [document file]\n";
         return 1;
     }
     
