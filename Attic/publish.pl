@@ -138,13 +138,13 @@ sub get_xsl {
 
 sub is_docbook {
     my ($file) = @ARG;
-    my $document = XML::DOM::Parser->new()->parsefile($file);
-    my $namespace = $document->getDocumentElement()->getAttribute('xmlns');
+    my $doc = eval {XML::DOM::Parser->new()->parsefile($file)} or return $false;
+    my $namespace = $doc->getDocumentElement()->getAttribute('xmlns');
     
     if ($namespace eq 'http://docbook.org/ns/docbook') {
         return $true;
     }
-    if (my $doctype = $document->getDoctype()) {
+    if (my $doctype = $doc->getDoctype()) {
         return $doctype->getPubId() =~ m|^-//OASIS//DTD DocBook XML|;
     }
     
