@@ -90,7 +90,8 @@ tie our $false, __PACKAGE__.'::Scalar::Constant',
 tie our $true, __PACKAGE__.'::Scalar::Constant',
     Pearl::Scalar::Overloaded->new(1, 1, 'true');
 
-binmode STDERR, ':utf8';
+binmode STDERR;
+binmode STDIN;
 binmode STDOUT;
 
 autoflush STDERR;
