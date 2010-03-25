@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 # To Do:
+# - Use the "Owner" field to automatically detect and warn of pending payments.
 # - Generate graphics.
 # - Handle different currencies.
 # - Handle external modifications on the database, e.g. OpenOffice, Gnumeric.
