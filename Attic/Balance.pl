@@ -63,10 +63,11 @@ sub import_cgd_csv {
 
 
 sub main {
-    my ($help, $import, $path) = ($false, $false);
+    my ($help, $pause, $import, $path) = ($false, $false);
     
     return unless Getopt::Long::GetOptions(
         'help' => \$help,
+        'pause' => \$pause,
         'import' => \$import,
         'database=s' => \$path);
     
@@ -74,6 +75,7 @@ sub main {
         print <<'USAGE' and return;
 Options:
   --help
+  --pause
   --import CSV
   --database path
 USAGE
@@ -92,6 +94,10 @@ USAGE
     }
     else {
         statistics($database, \*STDOUT);
+    }
+    
+    if ($pause) {
+        <STDIN>;
     }
 }
 
