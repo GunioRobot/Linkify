@@ -1,5 +1,11 @@
 #!/usr/bin/perl
 
+# To Do:
+# - Generate graphics.
+# - Handle different currencies.
+# - Handle external modifications on the database, e.g. OpenOffice, Gnumeric.
+# - Add graphical interface to edit the database.
+
 # External modules:
 use autodie;
 use Class::Struct ();
