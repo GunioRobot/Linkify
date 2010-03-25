@@ -91,7 +91,7 @@ USAGE
         save_database($database);
     }
     else {
-        print_statistics($database);
+        statistics($database, \*STDOUT);
     }
 }
 
@@ -112,7 +112,7 @@ sub open_database {
         close $file;
         
         my $records = Text::CSV::Slurp->load(string => Encode::decode_utf8($data));
-        $database->records({map {($_->{ID} => $_)} @$records});
+        $database->records({map {($ARG->{ID} => $ARG)} @$records});
     }
     
     return $database;
@@ -131,63 +131,9 @@ sub parse_cgd_csv {
 }
 
 
-sub print_statistics {
-    my ($database) = @ARG;
-    my $spendings = Statistics::Descriptive::Sparse->new();
-    
-    my $daily_spendings = Statistics::Descriptive::Sparse->new();
-    my $monthly_spendings = Statistics::Descriptive::Sparse->new();
-    my $yearly_spendings = Statistics::Descriptive::Sparse->new();
-    
-    my %daily_spendings;
-    my %monthly_spendings;
-    my %yearly_spendings;
-    
-    foreach my $record (values %{$database->records()}) {
-        my ($amount) = ($record->{Amount} =~ m/^([^€]+)/);
-        my $date = $record->{Date};
-        my ($year, $month) = ($date =~ m/^(\d{4})-(\d\d)/);
-        
-        if ($amount < 0) {
-            $spendings->add_data(abs $amount);
-            $daily_spendings{$date} += abs $amount;
-            $monthly_spendings{$month} += abs $amount;
-            $yearly_spendings{$year} += abs $amount;
-        }
-    }
-    
-    if ($spendings->count() == 0) {
-        print "No data.\n";
-        return;
-    }
-    
-    $daily_spendings->add_data(values %daily_spendings);
-    $monthly_spendings->add_data(values %monthly_spendings);
-    $yearly_spendings->add_data(values %yearly_spendings);
-    
-    my $statistics = <<"EOT";
-Spendings:
-  Mean: %.2f
-  Daily: %.2f
-  Monthly: %.2f
-  Yearly: %.2f
-  Lowest: %.2f
-  Highest: %.2f
-EOT
-    
-    printf $statistics,
-        $spendings->mean(),
-        $daily_spendings->mean(),
-        $monthly_spendings->mean(),
-        $yearly_spendings->mean(),
-        $spendings->max(),
-        $spendings->min();
-}
-
-
 sub save_database {
     my ($database) = @ARG;
-    my @records = sort {$a->{Date} cmp $b->{Date}} values %{$database->records()};
+    my @records = sorted_records($database);
     
     if (@records > 0) {
         my ($file, $path) = File::Temp::tempfile(SUFFIX => '.csv.bz2');
@@ -202,6 +148,86 @@ sub save_database {
         
         File::Copy::move($path, $database->path());
     }
+}
+
+
+sub sorted_records {
+    my ($database) = @ARG;
+    return sort {$a->{Date} cmp $b->{Date}} values %{$database->records()};
+}
+
+
+sub statistics {
+    my ($database, $output) = @ARG;
+    my @records = grep {$ARG->{Amount} =~ m/^-/} sorted_records($database);
+    
+    if (@records == 0) {
+        print "No data.\n";
+        return;
+    }
+    
+    my $spendings = Statistics::Descriptive::Sparse->new();
+    my $daily_spendings = Statistics::Descriptive::Sparse->new();
+    my $monthly_spendings = Statistics::Descriptive::Sparse->new();
+    my $yearly_spendings = Statistics::Descriptive::Sparse->new();
+    
+    my %daily_spendings;
+    my %monthly_spendings;
+    my %yearly_spendings;
+    
+    foreach my $record (@records) {
+        my ($amount) = ($record->{Amount} =~ m/(.+)€$/);
+        my $date = $record->{Date};
+        my ($year, $month) = ($date =~ m/^(\d{4})-(\d\d)/);
+        
+        $spendings->add_data($amount);
+        $daily_spendings{$date} += $amount;
+        $monthly_spendings{$month} += $amount;
+        $yearly_spendings{$year} += $amount;
+    }
+    
+    my ($last_year, $last_month, $last_day) = split '-', $records[-1]->{Date};
+    my @last_year = grep {$ARG->{Date} =~ m/^$last_year/} @records;
+    my @last_month = grep {$ARG->{Date} =~ m/-$last_month-/} @last_year;
+    my @last_day = grep {$ARG->{Date} =~ m/$last_day$/} @last_month;
+    
+    $last_year = Statistics::Descriptive::Sparse->new();
+    $last_month = Statistics::Descriptive::Sparse->new();
+    $last_day = Statistics::Descriptive::Sparse->new();
+    
+    $last_year->add_data(map {$ARG->{Amount} =~ m/(.+)€$/} @last_year);
+    $last_month->add_data(map {$ARG->{Amount} =~ m/(.+)€$/} @last_month);
+    $last_day->add_data(map {$ARG->{Amount} =~ m/(.+)€$/} @last_day);
+    
+    $daily_spendings->add_data(values %daily_spendings);
+    $monthly_spendings->add_data(values %monthly_spendings);
+    $yearly_spendings->add_data(values %yearly_spendings);
+    
+    my $statistics = <<'EOT';
+Spendings:
+  Average:
+    Mean: %.2f
+    Daily: %.2f
+    Monthly: %.2f
+    Yearly: %.2f
+  Milestone:
+    Day: %.2f
+    Month: %.2f
+    Year: %.2f
+    Lowest: %.2f
+    Highest: %.2f
+EOT
+    
+    printf $output $statistics,
+        $spendings->mean(),
+        $daily_spendings->mean(),
+        $monthly_spendings->mean(),
+        $yearly_spendings->mean(),
+        $last_day->sum(),
+        $last_month->sum(),
+        $last_year->sum(),
+        $spendings->max(),
+        $spendings->min();
 }
 
 
