@@ -1,11 +1,15 @@
 #!/usr/bin/perl
 
 # To Do:
-# - Connect to account and download updates.
 # - Handle external modifications on the database, e.g. OpenOffice, Gnumeric.
-# - Use the "Owner" field to automatically detect and warn of pending payments.
+# - Handle different currencies and don't hardcode the parsing step.
+# - Connect to account and download updates automatically.
+# - Use the "Owner" field to detect and warn of pending payments.
 # - Generate graphics.
-# - Handle different currencies.
+# - Create one or more classes that:
+#   - Handles parsing of CSV files in different styles, e.g. CGD.
+#   - Encodes text in UTF-8.
+#   - Serializes arbitrary objects.
 
 # External modules:
 use autodie;
@@ -38,10 +42,10 @@ sub default_path {
     my $cwd = Cwd::getcwd();
     my $suffix = '.csv.bz2';
     my ($name, $dir) = File::Basename::fileparse($PROGRAM_NAME, '.pl');
-    my $path = File::Spec->catpath('', $cwd, $name.$suffix);
+    my $path = File::Spec->catpath('', $dir, $name.$suffix);
     
     unless (-e $path) {
-        $path = File::Spec->catpath('', $dir, $name.$suffix);
+        $path = File::Spec->catpath('', $cwd, $name.$suffix);
     }
     
     return $path;
@@ -77,7 +81,6 @@ sub import_cgd_csv {
                 Owner => '',
                 BIC => 'CGDIPTPL',
                 ID => $id,
-                Extra => '',
             }
         }
     }
@@ -98,8 +101,8 @@ sub main {
 Options:
   --help
   --pause
-  --import CSV
-  --database path
+  --import CSV ...
+  --database=path
 USAGE
     }
     
@@ -113,15 +116,13 @@ USAGE
         statistics($database, \*STDOUT);
     }
     
-    if ($pause) {
-        <STDIN>;
-    }
+    <STDIN> if $pause;
 }
 
 
 sub open_database {
     my ($path) = @ARG;
-    my @fields = qw(Date Amount Name Description Owner BIC ID Extra);
+    my @fields = qw(Date Amount Name Description Owner BIC ID);
     my $database = Database->new(path => $path, fields => \@fields);
     my $file;
     
@@ -159,11 +160,11 @@ sub save_database {
     my @records = sorted_records($database);
     
     if (@records > 0) {
-        my ($file, $path) = File::Temp::tempfile(SUFFIX => '.csv.bz2');
+        my ($file, $path) = File::Temp::tempfile();
         my $records = Encode::encode_utf8(
             Text::CSV::Slurp->create(
                 input => \@records,
-                field_order => $database->fields()));
+                field_order => $database->fields())."\n");
         
         binmode $file;
         IO::Compress::Bzip2::bzip2(\$records, $file);
