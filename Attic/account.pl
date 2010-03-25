@@ -7,6 +7,7 @@ use Digest ();
 use Encode ();
 use File::Basename ();
 use File::Copy ();
+use File::Spec ();
 use File::Temp ();
 use Getopt::Long ();
 use IO::Compress::Bzip2 ();
@@ -62,22 +63,30 @@ sub import_cgd_csv {
 
 
 sub main {
-    my $path = File::Basename::fileparse($PROGRAM_NAME, '.pl').'.csv.bz2';
-    my $database = open_database($path);
-    my ($help, $import) = ($false, $false);
+    my ($help, $import, $path) = ($false, $false);
     
     return unless Getopt::Long::GetOptions(
         'help' => \$help,
-        'import' => \$import);
+        'import' => \$import,
+        'database=s' => \$path);
     
     if ($help) {
-        print <<'USAGE';
+        print <<'USAGE' and return;
 Options:
   --help
   --import CSV
+  --database path
 USAGE
     }
-    elsif ($import) {
+    
+    unless (defined $path) {
+        my ($name, $dir) = File::Basename::fileparse($PROGRAM_NAME, '.pl');
+        $path = File::Spec->catpath('', $dir, "$name.csv.bz2");
+    }
+    
+    my $database = open_database($path);
+    
+    if ($import) {
         import_cgd_csv($database, $ARG) foreach @ARGV;
         save_database($database);
     }
