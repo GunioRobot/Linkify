@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 
 # To Do:
+# - Connect to account and download updates.
+# - Handle external modifications on the database, e.g. OpenOffice, Gnumeric.
 # - Use the "Owner" field to automatically detect and warn of pending payments.
 # - Generate graphics.
 # - Handle different currencies.
-# - Handle external modifications on the database, e.g. OpenOffice, Gnumeric.
-# - Add graphical interface to edit the database.
 
 # External modules:
 use autodie;
@@ -146,7 +146,7 @@ sub parse_cgd_csv {
     my ($file_name) = @ARG;
     open my $file, '<:encoding(iso-8859-1)', $file_name;
     
-    <$file> =~ m/^"Data";"(\d\d-){2}\d{4}"$/ or die 'Not a CGD style CSV.';
+    <$file> =~ m/^"Data";"(\d\d-){2}\d{4}"$/ or die "Not a CGD style CSV.\n";
     my $contents = join '', grep !m/^\s+$/, <$file>;
     close $file;
     
@@ -227,6 +227,7 @@ sub statistics {
     $yearly_spendings->add_data(values %yearly_spendings);
     
     my $statistics = <<'EOT';
+Database: %s
 Spendings:
   Average:
     Mean: %.2f
@@ -242,6 +243,7 @@ Spendings:
 EOT
     
     printf $output $statistics,
+        $database->path(),
         $spendings->mean(),
         $daily_spendings->mean(),
         $monthly_spendings->mean(),
