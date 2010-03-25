@@ -3,6 +3,7 @@
 # External modules:
 use autodie;
 use Class::Struct ();
+use Cwd ();
 use Digest ();
 use Encode ();
 use File::Basename ();
@@ -24,6 +25,20 @@ Class::Struct::struct Database => {
     fields => '@',
     records => '%',
 };
+
+
+sub default_path {
+    my $cwd = Cwd::getcwd();
+    my $suffix = '.csv.bz2';
+    my ($name, $dir) = File::Basename::fileparse($PROGRAM_NAME, '.pl');
+    my $path = File::Spec->catpath('', $cwd, $name.$suffix);
+    
+    unless (-e $path) {
+        $path = File::Spec->catpath('', $dir, $name.$suffix);
+    }
+    
+    return $path;
+}
 
 
 sub import_cgd_csv {
@@ -81,12 +96,7 @@ Options:
 USAGE
     }
     
-    unless (defined $path) {
-        my ($name, $dir) = File::Basename::fileparse($PROGRAM_NAME, '.pl');
-        $path = File::Spec->catpath('', $dir, "$name.csv.bz2");
-    }
-    
-    my $database = open_database($path);
+    my $database = open_database(defined $path ? $path : default_path());
     
     if ($import) {
         import_cgd_csv($database, $ARG) foreach @ARGV;
