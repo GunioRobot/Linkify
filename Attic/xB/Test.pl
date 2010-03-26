@@ -85,7 +85,7 @@ sub module {
     my $contents = File::Slurp::read_file($path,
         binmode => ':raw', scalar_ref => $true);
     
-    $response->header('Content-Type' => 'text/javascript; charset=UTF-16BE');
+    $response->header('Content-Type' => 'text/javascript; charset=UTF-8');
     $response->content_ref($contents);
     
     return $response;
@@ -96,7 +96,7 @@ sub modules {
     my %depends;
     
     foreach my $path (glob '*'.$module_suffix) {
-        open my $file, '<:encoding(UTF-16)', $path;
+        open my $file, '<:utf8', $path;
         my @requires = join('', <$file>) =~ m/\@requires\s+([^\s]+)/g;
         close $file;
         
