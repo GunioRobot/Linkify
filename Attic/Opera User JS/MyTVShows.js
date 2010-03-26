@@ -4,4 +4,5 @@
 
 
 var showName = location.href.match(/seen\/([^\/]+)/).pop();
+window.stop();
 location = 'http://www.mytvshows.org/show/' + showName + '/';
