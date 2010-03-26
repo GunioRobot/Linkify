@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+# TODO: Clean up (e.g. remove implicit imports, use "autodie", etc).
+
 use CGI ':standard';
 use File::Basename;
 use File::Spec::Functions;
