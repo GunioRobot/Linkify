@@ -4,7 +4,7 @@
 
 
 function addParentsGuideWindow() {
-    var movie = location.href.match(/title\/([^/]+)/).pop();
+    var movie = location.href.match(/title\/([^\/]+)/).pop();
     var container = document.createElement('div');
     var title = document.createElement('span');
     var contents = document.createElement('iframe');
