@@ -1,9 +1,8 @@
 #!/usr/bin/perl
 
 # To Do:
-# - Print CSV line-by-line instead of everything at once.
+# - Print human readable names for shows, seasons and episodes.
 # - Use as CGI script.
-# - Get the human readable name for shows, seasons and episodes.
 # - Compress backup.
 # - Import backup.
 
@@ -14,13 +13,13 @@
 # External modules:
 use autodie;
 use LWP::UserAgent ();
-use Text::CSV::Slurp ();
+use Text::xSV ();
 
 # Internal modules:
 use Pearl;
 
 
-sub alphanumeric {
+sub alphanumerically {
     return (($a =~ m/^\d+$/) && ($b =~ m/^\d+$/)) ? $a <=> $b : $a cmp $b;
 }
 
@@ -43,31 +42,33 @@ sub download {
 
 sub get_status {
     my ($api_key, $show, $season, $episode) = @ARG;
-    return download("api/get_status/$api_key/$show/$season/$episode");
+    my $status = download("api/get_status/$api_key/$show/$season/$episode");
+    
+    return ($status =~ m/not\s+found/i) ? undef : $status;
 }
 
 
 sub list_episodes {
     my ($show, $season) = @ARG;
-    my @l = download("show/$show/$season") =~ m{<span class="nr">([^<]+)}g;
     
-    return sort alphanumeric @l;
+    return sort alphanumerically
+        download("show/$show/$season") =~ m{<span class="nr">([^<]+)}g;
 }
 
 
 sub list_seasons {
     my ($show) = @ARG;
-    my @l = download("show/$show") =~ m{<li><a href="/show/\Q$show\E/([^/"]+)}g;
     
-    return sort alphanumeric @l;
+    return sort alphanumerically
+        download("show/$show") =~ m{<li><a href="/show/\Q$show\E/([^/"]+)}g;
 }
 
 
 sub list_shows {
     my ($user_name) = @ARG;
-    my @l = download("user/$user_name") =~ m{<a href="/show/([^/"]+)}g;
     
-    return sort alphanumeric @l;
+    return sort alphanumerically
+        download("user/$user_name") =~ m{<a href="/show/([^/"]+)}g;
 }
 
 
@@ -79,36 +80,32 @@ USAGE
     }
     
     my ($user_name, $api_key) = @ARGV;
-    my @shows = list_shows($user_name);
-    my @csv_fields = qw(Name);
-    my @csv;
+    my $csv = Text::xSV->new();
+    my @header = qw(Name);
     
     if (defined $api_key) {
-        push @csv_fields, qw(Season Episode Status);
-        
-        foreach my $show (@shows) {
-            print STDERR "Listing seasons for show: $show\n";
-            
+        push @header, qw(Season Episode Status);
+    }
+    
+    $csv->set_header(@header);
+    $csv->print_header();
+    
+    if (defined $api_key) {
+        foreach my $show (list_shows($user_name)) {
             foreach my $season (list_seasons($show)) {
-                print STDERR "  Listing episodes for season: $season\n";
-                
-                foreach my $ep (list_episodes($show, $season)) {
-                    push @csv, {
-                        Name => $show,
-                        Season => $season,
-                        Episode => $ep,
-                        Status => get_status($api_key, $show, $season, $ep),
-                    };
+                foreach my $episode (list_episodes($show, $season)) {
+                    my $status = get_status($api_key, $show, $season, $episode);
+                    
+                    if (defined $status) {
+                        $csv->print_row($show, $season, $episode, $status);
+                    }
                 }
             }
         }
     }
     else {
-        @csv = map {{Name => $ARG}} @shows;
+        $csv->print_row($ARG) foreach list_shows($user_name);
     }
-    
-    print Text::CSV::Slurp->create(input => \@csv, field_order => \@csv_fields);
-    print "\n";
 }
 
 
