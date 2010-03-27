@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 
 # To Do:
-# - Print human readable names for shows, seasons and episodes.
 # - Use as CGI script.
 
 # See:
@@ -21,7 +20,7 @@ sub alphanumerically {
 }
 
 
-sub download {
+sub get {
     my ($url) = @ARG;
     my $browser = LWP::UserAgent->new();
     my $response = $browser->get("http://www.mytvshows.org/$url",
@@ -39,7 +38,7 @@ sub download {
 
 sub get_status {
     my ($api_key, $show, $season, $episode) = @ARG;
-    my $status = download("api/get_status/$api_key/$show/$season/$episode");
+    my $status = get("api/get_status/$api_key/$show/$season/$episode");
     
     return ($status =~ m/not\s+found/i) ? undef : $status;
 }
@@ -47,25 +46,25 @@ sub get_status {
 
 sub list_episodes {
     my ($show, $season) = @ARG;
+    my $episodes = get("show/$show/$season");
+    my @numbers = ($episodes =~ m{span\s+class="nr">([^<]+)}gi);
+    my @names = ($episodes =~ m{span\s+class="title">([^<]+)}gi);
     
-    return sort alphanumerically
-        download("show/$show/$season") =~ m{<span class="nr">([^<]+)}g;
+    return map {($numbers[$ARG], $names[$ARG])} 0..$#numbers;
 }
 
 
 sub list_seasons {
     my ($show) = @ARG;
+    my ($seasons) = (get("show/$show") =~ m{"seasons_list">.+?</ul}gis);
     
-    return sort alphanumerically
-        download("show/$show") =~ m{<li><a href="/show/\Q$show\E/([^/"]+)}g;
+    return $seasons =~ m{href="/show/\Q$show\E/([^/"]+)[^>]+>([^<]+)}gi;
 }
 
 
 sub list_shows {
     my ($user_name) = @ARG;
-    
-    return sort alphanumerically
-        download("user/$user_name") =~ m{<a href="/show/([^/"]+)}g;
+    return get("user/$user_name") =~ m{href="/show/([^/"]+)[^>]+>([^<]+)}gi;
 }
 
 
@@ -77,31 +76,40 @@ USAGE
     }
     
     my ($user_name, $api_key) = @ARGV;
+    my %shows = list_shows($user_name);
     my $csv = Text::xSV->new();
-    my @header = qw(Name);
+    my @header = ('Name ID', 'Name');
     
     if (defined $api_key) {
-        push @header, qw(Season Episode Status);
+        push @header, split '/', 'Season ID/Season/Episode ID/Episode/Status';
     }
     
     $csv->set_header(@header);
     $csv->print_header();
     
     if (defined $api_key) {
-        foreach my $show (list_shows($user_name)) {
-            foreach my $season (list_seasons($show)) {
-                foreach my $episode (list_episodes($show, $season)) {
+        foreach my $show (sort keys %shows) {
+            my %seasons = list_seasons($show);
+            
+            foreach my $season (sort alphanumerically keys %seasons) {
+                my %episodes = list_episodes($show, $season);
+                
+                foreach my $episode (sort alphanumerically keys %episodes) {
                     my $status = get_status($api_key, $show, $season, $episode);
                     
                     if (defined $status) {
-                        $csv->print_row($show, $season, $episode, $status);
+                        $csv->print_row(
+                            $show => $shows{$show},
+                            $season => $seasons{$season},
+                            $episode => $episodes{$episode},
+                            $status);
                     }
                 }
             }
         }
     }
     else {
-        $csv->print_row($ARG) foreach list_shows($user_name);
+        $csv->print_row($ARG => $shows{$ARG}) foreach sort keys %shows;
     }
 }
 
