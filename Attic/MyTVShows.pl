@@ -3,7 +3,6 @@
 # To Do:
 # - Print human readable names for shows, seasons and episodes.
 # - Use as CGI script.
-# - Compress backup.
 
 # See:
 #   http://blog.mytvshows.org/kind-of-an-api/
