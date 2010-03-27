@@ -4,14 +4,12 @@
 # - Print human readable names for shows, seasons and episodes.
 # - Use as CGI script.
 # - Compress backup.
-# - Import backup.
 
 # See:
 #   http://blog.mytvshows.org/kind-of-an-api/
 
 
 # External modules:
-use autodie;
 use LWP::UserAgent ();
 use Text::xSV ();
 
