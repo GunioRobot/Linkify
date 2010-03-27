@@ -4,8 +4,9 @@
 # - Print CSV line-by-line instead of everything at once.
 # - Use as CGI script.
 # - Get the human readable name for shows, seasons and episodes.
-# - Implement import of backups.
-#
+# - Compress backup.
+# - Import backup.
+
 # See:
 #   http://blog.mytvshows.org/kind-of-an-api/
 
