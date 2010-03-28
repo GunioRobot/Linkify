@@ -69,8 +69,8 @@ sub export_episode_list {
     async {
         while (my $item = $work->dequeue()) {
             my ($show, $season_id, $season, $ep_id, $ep) = @$item;
-            my $status = eval {get_status($api_key, $show, $season_id, $ep_id)}
-                or exit;
+            my $status = eval {get_status($api_key, $show, $season_id, $ep_id)};
+            exit if $EVAL_ERROR;
             
             print $csv->format_row(
                 $show, $shows->{$show},
