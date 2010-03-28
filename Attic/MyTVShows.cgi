@@ -149,9 +149,10 @@ sub main {
     my ($user_name, $api_key) = (CGI::url_param('user'), CGI::url_param('key'));
     my $jobs = 5;
     
+    $OUTPUT_AUTOFLUSH = 1;
+    binmode STDOUT, ':utf8';
+    
     if (defined $user_name) {
-        $OUTPUT_AUTOFLUSH = 1;
-        binmode STDOUT, ':utf8';
         print "Content-type: text/plain; charset=UTF-8\n\n";
     }
     else {
