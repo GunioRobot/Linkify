@@ -10,6 +10,7 @@
 
 use strict;
 use threads;
+use threads::shared;
 use utf8;
 use warnings;
 
@@ -40,9 +41,9 @@ sub download {
 }
 
 
-sub generate {
+sub export_list {
     my ($user_name, $api_key) = @ARG;
-    my %shows = list_shows($user_name);
+    my %shows :shared = list_shows($user_name);
     my $csv = Text::xSV->new();
     my @header = ('Name ID', 'Name');
     
@@ -54,7 +55,7 @@ sub generate {
     $csv->print_header();
     
     if (defined $api_key) {
-        generate_episode_list($user_name, $api_key, $csv, %shows);
+        export_episode_list($user_name, $api_key, $csv, \%shows);
     }
     else {
         foreach my $show (sort alphanumerically keys %shows) {
@@ -64,33 +65,36 @@ sub generate {
 }
 
 
-sub generate_episode_list {
-    my ($user_name, $api_key, $csv, %shows) = @ARG;
+sub export_episode_list {
+    my ($user_name, $api_key, $csv, $shows) = @ARG;
     my $work = Thread::Queue->new();
+    my $remaining :shared = 0;
     my $jobs = 5;
     
-    for (1 .. $jobs) {
-        threads->create(sub {
-            while (my $item = $work->dequeue()) {
-                my ($show, $season_id, $season, $ep_id, $ep) = @$item;
-                my $status = get_status($api_key, $show, $season_id, $ep_id);
-                
-                print $csv->format_row(
-                    $show, $shows{$show},
-                    $season_id, $season,
-                    $ep_id, $ep,
-                    $status) if defined $status;
-            }
-        })->detach();
-    }
+    async {
+        while (my $item = $work->dequeue()) {
+            my ($show, $season_id, $season, $ep_id, $ep) = @$item;
+            my $status = get_status($api_key, $show, $season_id, $ep_id);
+            
+            print $csv->format_row(
+                $show, $shows->{$show},
+                $season_id, $season,
+                $ep_id, $ep,
+                $status) if defined $status;
+            
+            --$remaining;
+        }
+    }->detach() for (1 .. $jobs);
     
-    foreach my $show (sort alphanumerically keys %shows) {
+    foreach my $show (sort alphanumerically keys %$shows) {
         my %seasons = list_seasons($show);
         
         foreach my $season (sort alphanumerically keys %seasons) {
             my %episodes = list_episodes($show, $season);
             
             foreach my $episode (sort alphanumerically keys %episodes) {
+                ++$remaining;
+                
                 $work->enqueue([$show,
                     $season, $seasons{$season},
                     $episode, $episodes{$episode}]);
@@ -98,7 +102,7 @@ sub generate_episode_list {
         }
     }
     
-    sleep 1 while $work->pending();
+    sleep 1 while $remaining > 0;
 }
 
 
@@ -151,7 +155,7 @@ sub main {
         ($user_name, $api_key) = @ARGV;
     }
     
-    generate($user_name, $api_key);
+    export_list($user_name, $api_key);
 }
 
 
