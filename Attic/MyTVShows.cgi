@@ -2,11 +2,6 @@
 
 # See: http://blog.mytvshows.org/kind-of-an-api/
 
-# To Do:
-# - Detect invalid user name and API key.
-# - Backup list to compressed file.
-# - Add option to specify how many parallel jobs.
-
 
 use strict;
 use threads;
@@ -16,6 +11,7 @@ use warnings;
 
 use CGI ();
 use English qw(-no_match_vars);
+use Getopt::Long ();
 use LWP::UserAgent ();
 use Text::xSV ();
 use Thread::Queue ();
@@ -42,7 +38,7 @@ sub download {
 
 
 sub export_list {
-    my ($user_name, $api_key) = @ARG;
+    my ($jobs, $user_name, $api_key) = @ARG;
     my %shows :shared = list_shows($user_name);
     my $csv = Text::xSV->new();
     my @header = ('Name ID', 'Name');
@@ -55,7 +51,7 @@ sub export_list {
     $csv->print_header();
     
     if (defined $api_key) {
-        export_episode_list($user_name, $api_key, $csv, \%shows);
+        export_episode_list($jobs, $user_name, $api_key, $csv, \%shows);
     }
     else {
         foreach my $show (sort alphanumerically keys %shows) {
@@ -66,15 +62,15 @@ sub export_list {
 
 
 sub export_episode_list {
-    my ($user_name, $api_key, $csv, $shows) = @ARG;
+    my ($jobs, $user_name, $api_key, $csv, $shows) = @ARG;
     my $work = Thread::Queue->new();
     my $remaining :shared = 0;
-    my $jobs = 5;
     
     async {
         while (my $item = $work->dequeue()) {
             my ($show, $season_id, $season, $ep_id, $ep) = @$item;
-            my $status = get_status($api_key, $show, $season_id, $ep_id);
+            my $status = eval {get_status($api_key, $show, $season_id, $ep_id)}
+                or exit;
             
             print $csv->format_row(
                 $show, $shows->{$show},
@@ -110,7 +106,15 @@ sub get_status {
     my ($api_key, $show, $season, $episode) = @ARG;
     my $status = download("api/get_status/$api_key/$show/$season/$episode");
     
-    return ($status =~ m/not\s+found/i) ? undef : $status;
+    if ($status =~ m/wrong.+?key/i) {
+        die "Invalid API key.\n";
+    }
+    elsif ($status =~ m/not\s+found/i) {
+        return undef;
+    }
+    else {
+        return $status;
+    }
 }
 
 
@@ -134,12 +138,16 @@ sub list_seasons {
 
 sub list_shows {
     my ($name) = @ARG;
-    return download("user/$name") =~ m{href="/show/([^/"]+)[^>]+>([^<]+)}gi;
+    my $shows = download("user/$name");
+    
+    die "Invalid user name.\n" if $shows =~ m/page\s+not\s+found/i;
+    return $shows =~ m{href="/show/([^/"]+)[^>]+>([^<]+)}gi;
 }
 
 
 sub main {
     my ($user_name, $api_key) = (CGI::url_param('user'), CGI::url_param('key'));
+    my $jobs = 5;
     
     if (defined $user_name) {
         $OUTPUT_AUTOFLUSH = 1;
@@ -147,15 +155,20 @@ sub main {
         print "Content-type: text/plain; charset=UTF-8\n\n";
     }
     else {
-        unless ((@ARGV > 0) && (@ARGV < 3)) {
-            print "Usage: <user name> [API key]\n";
-            return;
+        return unless Getopt::Long::GetOptions('jobs=i' => \$jobs);
+    
+        unless ((@ARGV > 0) && (@ARGV < 3) && ($jobs > 0)) {
+            print <<'USAGE' and return;
+Usage: [options] <user name> [API key]
+Options:
+  --jobs #
+USAGE
         }
         
         ($user_name, $api_key) = @ARGV;
     }
     
-    export_list($user_name, $api_key);
+    export_list($jobs, $user_name, $api_key);
 }
 
 
