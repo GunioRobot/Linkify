@@ -58,7 +58,7 @@ sub generate {
     }
     else {
         foreach my $show (sort alphanumerically keys %shows) {
-            $csv->print_row($show => $shows{$show});
+            $csv->print_row($show, $shows{$show});
         }
     }
 }
@@ -74,13 +74,12 @@ sub generate_episode_list {
             while (my $item = $work->dequeue()) {
                 my ($show, $season_id, $season, $ep_id, $ep) = @$item;
                 my $status = get_status($api_key, $show, $season_id, $ep_id);
-                next unless defined $status;
                 
-                $csv->print_row(
-                    $show => $shows{$show},
-                    $season_id => $season,
-                    $ep_id => $ep,
-                    $status);
+                print $csv->format_row(
+                    $show, $shows{$show},
+                    $season_id, $season,
+                    $ep_id, $ep,
+                    $status) if defined $status;
             }
         })->detach();
     }
