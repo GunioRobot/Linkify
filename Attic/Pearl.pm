@@ -94,8 +94,8 @@ binmode STDERR;
 binmode STDIN;
 binmode STDOUT;
 
-autoflush STDERR;
-autoflush STDOUT;
+STDERR->autoflush($true);
+STDOUT->autoflush($true);
 
 $LIST_SEPARATOR = ', ';
 $WARNING = $true;
