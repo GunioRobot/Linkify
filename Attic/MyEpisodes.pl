@@ -100,6 +100,8 @@ sub log_in {
 
 sub main {
     my $jobs = 5;
+    
+    binmode STDOUT, ':utf8';
     return unless Getopt::Long::GetOptions('jobs=i' => \$jobs);
     
     if ((@ARGV != 2) || ($jobs <= 0)) {
