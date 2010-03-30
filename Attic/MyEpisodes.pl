@@ -1,10 +1,12 @@
 #!/usr/bin/perl
 
 # To Do:
+# - Use WWW::Mechanize.
 # - Check for invalid user name and password.
 # - Check for invalid HTTP responses.
 # - Merge with the MyTVShows exporter script.
-# - Have option to save cookies locally.
+# - Have an option to save cookies locally.
+# - Have an option to save and compress the exported list to a file.
 # - Print episode number in format "S-E-".
 
 
@@ -34,16 +36,16 @@ sub download {
 
 sub export_episode_list {
     my ($csv, $cookies, $show_id, $show) = @ARG;
-    my $content = download($cookies, "views.php?type=epsbyshow&showid=$show_id");
+    my $list = download($cookies, "views.php?type=epsbyshow&showid=$show_id");
     
-    my @season_names = ($content =~ m/class="season">([^<]+)/gi);
-    my @season_ids = ($content =~ m/id="epscnt([^"]+)/gi);
+    my @season_names = ($list =~ m/class="season">([^<]+)/gi);
+    my @season_ids = ($list =~ m/id="epscnt([^"]+)/gi);
     
-    my @episode_names = ($content =~ m|target="_blank">([^<]+)</a></td>|gi);
-    my @episode_ids = ($content =~ m/id="A([^"]+)/gi);
+    my @episode_names = ($list =~ m|target="_blank">([^<]+)</a></td>|gi);
+    my @episode_ids = ($list =~ m/id="A([^"]+)/gi);
     
-    my %acquired = ($content =~ m|name="A([^"]+)"((?:\s+checked)?)></td>|gi);
-    my %viewed = ($content =~ m|name="V([^"]+)"((?:\s+checked)?)></td>|gi);
+    my %acquired = ($list =~ m|name="A([^"]+)"((?:\s+checked)?)></td>|gi);
+    my %viewed = ($list =~ m|name="V([^"]+)"((?:\s+checked)?)></td>|gi);
     
     my %seasons = List::MoreUtils::mesh(@season_ids, @season_names);
     my %episodes = List::MoreUtils::mesh(@episode_ids, @episode_names);
