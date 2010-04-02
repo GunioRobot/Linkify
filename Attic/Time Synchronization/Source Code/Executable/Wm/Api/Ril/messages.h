@@ -7,5 +7,5 @@
 namespace Wm {
 namespace Api {
 namespace Ril {
-    const TCHAR* LoadErrorMessage(HRESULT result);
+    const TCHAR* GetErrorMessage(HRESULT result);
 }}}

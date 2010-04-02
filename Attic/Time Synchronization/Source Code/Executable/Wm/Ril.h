@@ -48,7 +48,7 @@ namespace Wm {
 
 
         static void throwError(HRESULT result) {
-            const TCHAR* message = Api::Ril::LoadErrorMessage(result);
+            const TCHAR* message = Api::Ril::GetErrorMessage(result);
 
             if (message != NULL) {
                 throw Exception(message);

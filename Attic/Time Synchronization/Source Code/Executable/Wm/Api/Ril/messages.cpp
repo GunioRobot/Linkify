@@ -123,7 +123,7 @@ static const TCHAR* _messages[] = {
 namespace Wm {
 namespace Api {
 namespace Ril {
-    const TCHAR* LoadErrorMessage(HRESULT result) {
+    const TCHAR* GetErrorMessage(HRESULT result) {
         if (HRESULT_FACILITY(result) == FACILITY_RIL) {
             return _messages[HRESULT_CODE(result) & 0xFF];
         }
