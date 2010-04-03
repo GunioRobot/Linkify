@@ -1,9 +1,9 @@
 #pragma once
 
 
+#include "Library/Wm.h"
 #include "TimeReceiver.h"
 #include "TimeSender.h"
-#include "Wm.h"
 
 
 class DeviceTime: public TimeReceiver, public TimeSender, protected Wm::Timer {

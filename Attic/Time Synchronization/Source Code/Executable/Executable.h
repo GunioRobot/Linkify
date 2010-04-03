@@ -1,10 +1,10 @@
 #include <vector>
 #include "DeviceTime.h"
 #include "GpsTime.h"
+#include "Library/Wm.h"
 #include "PhoneTime.h"
 #include "TimeMultiplexer.h"
 #include "TimeStatus.h"
-#include "Wm.h"
 
 
 class Executable: public Wm::Application, public Wm::Thread, public Wm::Window {

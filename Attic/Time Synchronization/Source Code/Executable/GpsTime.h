@@ -1,8 +1,8 @@
 #pragma once
 
 
+#include "Library/Wm.h"
 #include "TimeSender.h"
-#include "Wm.h"
 
 
 class GpsTime: public TimeSender, public Wm::GpsListener {

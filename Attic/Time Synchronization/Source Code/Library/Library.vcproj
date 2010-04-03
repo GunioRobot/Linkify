@@ -19,7 +19,7 @@
 			Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
 			OutputDirectory="..\..\Binaries\$(ProjectName)\$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="..\..\Binaries\$(ProjectName)\$(PlatformName)\$(ConfigurationName)"
-			ConfigurationType="2"
+			ConfigurationType="4"
 			CharacterSet="1"
 			>
 			<Tool
@@ -41,9 +41,11 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
+				AdditionalIncludeDirectories="$(SystemDrive)\WINCE600\PUBLIC"
 				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_WINDOWS;_USRDLL;LIBRARY_EXPORTS;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
+				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
@@ -61,17 +63,8 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLinkerTool"
-				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/Library.dll"
-				LinkIncremental="2"
-				DelayLoadDLLs="$(NOINHERIT)"
-				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/Library.pdb"
-				SubSystem="0"
-				StackReserveSize="65536"
-				StackCommitSize="4096"
-				ImportLibrary="$(OutDir)/Library.lib"
+				Name="VCLibrarianTool"
+				AdditionalOptions=" /SUBSYSTEM:WINDOWSCE,5.02"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -101,7 +94,7 @@
 			Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 			OutputDirectory="..\..\Binaries\$(ProjectName)\$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="..\..\Binaries\$(ProjectName)\$(PlatformName)\$(ConfigurationName)"
-			ConfigurationType="2"
+			ConfigurationType="4"
 			CharacterSet="1"
 			>
 			<Tool
@@ -123,8 +116,10 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="2"
+				AdditionalIncludeDirectories="$(SystemDrive)\WINCE600\PUBLIC"
 				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_WINDOWS;_USRDLL;LIBRARY_EXPORTS;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				RuntimeLibrary="0"
+				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
@@ -142,19 +137,8 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLinkerTool"
-				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/Library.dll"
-				LinkIncremental="1"
-				DelayLoadDLLs="$(NOINHERIT)"
-				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/Library.pdb"
-				SubSystem="0"
-				StackReserveSize="65536"
-				StackCommitSize="4096"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/Library.lib"
+				Name="VCLibrarianTool"
+				AdditionalOptions=" /SUBSYSTEM:WINDOWSCE,5.02"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -190,18 +174,50 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\Library.cpp"
+				RelativePath=".\Gps.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\stdafx.cpp"
+				RelativePath=".\Log.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Api\Ril\messages.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Ril.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\String.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Timer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Unit.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Window.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Api\Gps\wrapper.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Api\Ril\wrapper.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -209,7 +225,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"
 					/>
 				</FileConfiguration>
 			</File>
@@ -220,11 +236,147 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\Library.h"
+				RelativePath=".\Api.h"
 				>
 			</File>
 			<File
-				RelativePath=".\stdafx.h"
+				RelativePath=".\Application.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Control.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Core.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DynamicLabel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Event.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Exception.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Gps.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GpsListener.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Label.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Length.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Log.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Margin.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Menu.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MenuItem.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Api\Ril\messages.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Mutex.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Object.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Position.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Core\ref.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Result.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Ril.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Size.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Core\stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\String.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TextBox.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Thread.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Timer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Unit.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Waitable.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WaitableManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Widget.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Window.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Wm.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Api\Gps\wrapper.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Api\Ril\wrapper.h"
 				>
 			</File>
 		</Filter>

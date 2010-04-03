@@ -125,7 +125,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="2"
-				AdditionalIncludeDirectories="&quot;$(SystemDrive)\WINCE600\PUBLIC&quot;;&quot;$(ProgramFiles)\simpleini&quot;"
+				AdditionalIncludeDirectories="&quot;$(SystemDrive)\WINCE600\PUBLIC&quot;;&quot;$(ProgramFiles)\simpleini&quot;;&quot;$(SolutionDir)&quot;"
 				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_WINDOWS;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL"
 				RuntimeLibrary="0"
 				BufferSecurityCheck="false"
@@ -202,63 +202,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Gps.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Log.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\main.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Api\Ril\messages.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Ril.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\String.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Timer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Unit.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Window.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Api\Gps\wrapper.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)/$(InputName)1.obj"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)/$(InputName)1.obj"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\Wm\Api\Ril\wrapper.cpp"
 				>
 			</File>
 		</Filter>
@@ -268,35 +212,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\Wm\Api.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Application.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Control.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Core.h"
-				>
-			</File>
-			<File
 				RelativePath=".\DeviceTime.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\DynamicLabel.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Event.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Exception.h"
 				>
 			</File>
 			<File
@@ -304,91 +220,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Gps.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\GpsListener.h"
-				>
-			</File>
-			<File
 				RelativePath=".\GpsTime.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Label.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Length.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Log.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Margin.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Menu.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\MenuItem.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Api\Ril\messages.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Mutex.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Object.h"
-				>
-			</File>
-			<File
 				RelativePath=".\PhoneTime.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Position.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Core\ref.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Result.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Ril.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Size.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Core\stdafx.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\String.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\TextBox.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Thread.h"
 				>
 			</File>
 			<File
@@ -408,10 +244,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Wm\Timer.h"
-				>
-			</File>
-			<File
 				RelativePath=".\TimeReceiver.h"
 				>
 			</File>
@@ -425,38 +257,6 @@
 			</File>
 			<File
 				RelativePath=".\TimeStatus.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Unit.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Waitable.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\WaitableManager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Widget.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Window.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Api\Gps\wrapper.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Wm\Api\Ril\wrapper.h"
 				>
 			</File>
 		</Filter>
