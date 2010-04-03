@@ -30,7 +30,7 @@ namespace Wm {
             _vsntprintf(message, _MAXIMUM_LENGTH, format, arguments);
             va_end(arguments);
 
-            message[_MAXIMUM_LENGTH] = '\0';
+            message[_MAXIMUM_LENGTH - 1] = '\0';
             DEBUGMSG(true, (TEXT("%s"), message));
         }
 
