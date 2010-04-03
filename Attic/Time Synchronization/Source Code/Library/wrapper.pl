@@ -2,18 +2,17 @@
 
 # Creates a wrapper to dynamically load/unload a library.
 
-# External modules:
+use autodie;
+use strict;
+use utf8;
+use warnings;
+
 use Class::Struct ();
 use Env::Path ();
 use File::Basename ();
 use File::Slurp ();
 use File::Spec ();
 use Regexp::Common qw(balanced comment);
-
-# Internal modules:
-use strict;
-use utf8;
-use warnings;
 
 
 my ($proj, $dir, $include) = @ARGV;
@@ -77,7 +76,7 @@ sub implementation {
     my $library = $wrapper->library();
     my $file = File::Spec->catfile($wrapper->directory(), "$name.cpp");
     
-    open my $output, '>', $file or die $!;
+    open my $output, '>', $file;
     print $output (<< "EOT");
 #include "$name.h"
 
@@ -171,7 +170,7 @@ sub interface {
     my $include = $wrapper->include();
     my $file = File::Spec->catfile($wrapper->directory(), "$name.h");
     
-    open my $output, '>', $file or die $!;
+    open my $output, '>', $file;
     print $output (<< "EOT");
 #ifndef $header
 #define $header
