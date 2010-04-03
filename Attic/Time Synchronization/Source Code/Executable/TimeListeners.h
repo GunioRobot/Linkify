@@ -2,7 +2,7 @@
 
 
 #include <list>
-#include "Library/Wm.h"
+#include "Library/all.h"
 #include "TimeListener.h"
 #include "TimeSource.h"
 

@@ -1,5 +1,5 @@
 #include "Executable.h"
-#include "Library/Wm.h"
+#include "Library/all.h"
 
 
 int WINAPI WinMain(

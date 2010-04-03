@@ -16,15 +16,16 @@ use utf8;
 use warnings;
 
 
-my ($directory, $include) = @ARGV;
+my ($proj, $dir, $include) = @ARGV;
 my ($include_dir) = grep {-e File::Spec->catfile($_, $include)} include_dirs();
 my $include_file = File::Spec->catfile($include_dir, $include);
 
 my $name = 'wrapper';
-my @namespace = File::Spec->splitdir(File::Spec->canonpath($directory));
+my @namespace = ($proj, File::Spec->splitdir(File::Spec->canonpath($dir)));
 my ($library) = File::Basename::fileparse($include_file, '.h');
 
 Class::Struct::struct Wrapper => {
+    directory => '$',
     header => '$',
     include => '$',
     include_file => '$',
@@ -34,6 +35,7 @@ Class::Struct::struct Wrapper => {
 };
 
 my $wrapper = Wrapper->new(
+    directory => $dir,
     header => sprintf('__%s__', uc join '__', @namespace, $name),
     include => $include,
     include_file => $include_file,
@@ -73,8 +75,9 @@ sub implementation {
     my @namespace = @{$wrapper->namespace()};
     my ($header, $name) = ($wrapper->header(), $wrapper->name());
     my $library = $wrapper->library();
+    my $file = File::Spec->catfile($wrapper->directory(), "$name.cpp");
     
-    open my $output, '>', File::Spec->catfile(@namespace, "$name.cpp") or die $!;
+    open my $output, '>', $file or die $!;
     print $output (<< "EOT");
 #include "$name.h"
 
@@ -166,8 +169,9 @@ sub interface {
     my @namespace = @{$wrapper->namespace()};
     my ($header, $name) = ($wrapper->header(), $wrapper->name());
     my $include = $wrapper->include();
+    my $file = File::Spec->catfile($wrapper->directory(), "$name.h");
     
-    open my $output, '>', File::Spec->catfile(@namespace, "$name.h") or die $!;
+    open my $output, '>', $file or die $!;
     print $output (<< "EOT");
 #ifndef $header
 #define $header

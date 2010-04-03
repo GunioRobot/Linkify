@@ -1,7 +1,7 @@
 #include <vector>
 #include "DeviceTime.h"
 #include "GpsTime.h"
-#include "Library/Wm.h"
+#include "Library/all.h"
 #include "PhoneTime.h"
 #include "TimeMultiplexer.h"
 #include "TimeStatus.h"

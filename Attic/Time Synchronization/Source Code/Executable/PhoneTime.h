@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "Library/Wm.h"
+#include "Library/all.h"
 #include "TimeSender.h"
 
 
