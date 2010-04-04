@@ -55,15 +55,8 @@ public:
 
     virtual void onPositionChange(GPS_POSITION pos) {
         if ((pos.dwValidFields & GPS_VALID_UTC_TIME) != 0) {
-            TIME_ZONE_INFORMATION timeZone;
-            Wm::DateTime time = pos.stUTCTime;
-            
-            if (GetTimeZoneInformation(&timeZone) == TIME_ZONE_ID_UNKNOWN) {
-                Wm::Exception::throwLastError();
-            }
-            
-            time.addMinutes(-timeZone.Bias);
-            getListeners()->onTimeChange(pos.stUTCTime);
+            getListeners()->onTimeChange(
+                Wm::DateTime::utcToLocal(pos.stUTCTime));
         }
         else if (pos.FixQuality == GPS_FIX_QUALITY_UNKNOWN) {
             getListeners()->onStatusChange(S("Obtaining position fix..."));

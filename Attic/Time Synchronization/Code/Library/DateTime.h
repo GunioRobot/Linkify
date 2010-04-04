@@ -1,11 +1,35 @@
 #pragma once
 
 
+#include "Exception.h"
 #include "Object.h"
 
 
 namespace Wm {
     class DateTime: public Object, public SYSTEMTIME {
+    public:
+        static DateTime utcToLocal(DateTime time) {
+            TIME_ZONE_INFORMATION timeZone;
+            DWORD zoneId = GetTimeZoneInformation(&timeZone);
+            long minutes = -timeZone.Bias;
+
+            if (zoneId == TIME_ZONE_ID_DAYLIGHT) {
+                WORD month = timeZone.DaylightDate.wMonth;
+                minutes -= (month == 0) ? 0 : timeZone.DaylightBias;
+            }
+            else if (zoneId == TIME_ZONE_ID_STANDARD) {
+                WORD month = timeZone.StandardDate.wMonth;
+                minutes -= (month == 0) ? 0 : timeZone.StandardBias;
+            }
+            else {
+                Wm::Exception::throwLastError();
+            }
+            
+            time.addMinutes(minutes);
+            return time;
+        }
+
+
     private:
         static void fromScalar(ULARGE_INTEGER& scalar, SYSTEMTIME& time) {
             FILETIME fileTime;
@@ -56,7 +80,7 @@ namespace Wm {
         }
 
 
-        void addMicroSeconds(LONGLONG us) {
+        virtual void addMicroSeconds(LONGLONG us) {
             ULARGE_INTEGER time;
 
             toScalar(*this, time);
@@ -65,7 +89,7 @@ namespace Wm {
         }
 
 
-        void addMilliSeconds(LONGLONG ms) {
+        virtual void addMilliSeconds(LONGLONG ms) {
             ULARGE_INTEGER time;
 
             toScalar(*this, time);
@@ -74,7 +98,7 @@ namespace Wm {
         }
 
 
-        void addMinutes(LONGLONG min) {
+        virtual void addMinutes(LONGLONG min) {
             ULARGE_INTEGER time;
 
             toScalar(*this, time);
@@ -83,7 +107,7 @@ namespace Wm {
         }
 
 
-        void addSeconds(LONGLONG s) {
+        virtual void addSeconds(LONGLONG s) {
             ULARGE_INTEGER time;
 
             toScalar(*this, time);
