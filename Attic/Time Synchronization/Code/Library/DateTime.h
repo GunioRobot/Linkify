@@ -80,6 +80,19 @@ namespace Wm {
         }
 
 
+        DateTime(ULARGE_INTEGER value) {
+            fromScalar(value, *this);
+        }
+
+
+        virtual operator ULARGE_INTEGER() {
+            ULARGE_INTEGER time;
+
+            toScalar(*this, time);
+            return time;
+        }
+
+
         virtual void addMicroSeconds(LONGLONG us) {
             ULARGE_INTEGER time;
 

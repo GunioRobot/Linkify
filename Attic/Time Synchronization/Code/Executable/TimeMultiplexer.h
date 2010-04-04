@@ -87,7 +87,7 @@ public:
 
 
 private:
-    SYSTEMTIME multiplex(std::vector<Sample> samples) {
+    Wm::DateTime multiplex(std::vector<Sample> samples) {
         DWORD tickCount = samples.back().tickCount;
         
         if (samples.size() == 1) {
@@ -100,18 +100,9 @@ private:
         for (size_t i = 0; i < samples.size(); ++i) {
             Sample& sample = samples[i];
             DWORD delayMs = tickCount - sample.tickCount;
+            ULARGE_INTEGER time = sample.time;
             
-            FILETIME fileTime;
-            ULARGE_INTEGER time;
-            
-            if (!SystemTimeToFileTime(&sample.time, &fileTime)) {
-                Wm::Exception::throwLastError();
-            }
-
-            time.LowPart = fileTime.dwLowDateTime;
-            time.HighPart = fileTime.dwHighDateTime;
             time.QuadPart += delayMs * (10 * 1000);
-
             timeSamples.push_back(time);
         }
 
@@ -123,18 +114,9 @@ private:
             time.QuadPart += timeSamples[i].QuadPart / samples.size();
         }
 
-        FILETIME fileTime;
-        SYSTEMTIME systemTime;
         DWORD processingDelayMs = GetTickCount() - tickCount;
-        
         time.QuadPart += processingDelayMs * (10 * 1000);
-        fileTime.dwLowDateTime = time.LowPart;
-        fileTime.dwHighDateTime = time.HighPart;
 
-        if (!FileTimeToSystemTime(&fileTime, &systemTime)) {
-            Wm::Exception::throwLastError();
-        }
-
-        return systemTime;
+        return time;
     }
 };
