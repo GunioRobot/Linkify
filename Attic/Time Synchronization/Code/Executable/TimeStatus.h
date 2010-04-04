@@ -47,7 +47,7 @@ public:
     }
 
 
-    virtual void onTimeChange(SYSTEMTIME time) {
+    virtual void onTimeChange(Wm::DateTime time) {
         const TCHAR* spec = TEXT("%d-%02d-%02d %02d:%02d:%02d");
 
         getTextBox()->setText(Wm::String::format(spec,

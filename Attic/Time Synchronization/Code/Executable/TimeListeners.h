@@ -42,7 +42,7 @@ public:
     }
 
 
-    virtual void onTimeChange(SYSTEMTIME time) {
+    virtual void onTimeChange(Wm::DateTime time) {
         _modifications->lock();
         std::list<ref<TimeListener>>::iterator it;
 

@@ -10,10 +10,10 @@
 class TimeMultiplexer: public TimeListener, public TimeSource {
 private:
     static struct Sample {
-        SYSTEMTIME time;
+        Wm::DateTime time;
         DWORD tickCount;
 
-        Sample(SYSTEMTIME time): time(time), tickCount(GetTickCount()) {
+        Sample(Wm::DateTime time): time(time), tickCount(GetTickCount()) {
         }
     };
 
@@ -48,7 +48,7 @@ public:
     }
 
 
-    virtual void onTimeChange(SYSTEMTIME time) {
+    virtual void onTimeChange(Wm::DateTime time) {
         if (_active) {
             _modifications->lock();
             _samples.push_back(Sample(time));

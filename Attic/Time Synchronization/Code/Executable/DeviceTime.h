@@ -33,7 +33,7 @@ public:
     }
 
 
-    virtual void onTimeChange(SYSTEMTIME time) {
+    virtual void onTimeChange(Wm::DateTime time) {
         if (!SetLocalTime(&time)) {
             Wm::Exception::throwLastError();
         }
@@ -42,7 +42,7 @@ public:
 
 protected:
     virtual void onTimeout() {
-        SYSTEMTIME time;
+        Wm::DateTime time;
         
         GetLocalTime(&time);
         getListeners()->onTimeChange(time);
