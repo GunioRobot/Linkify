@@ -46,10 +46,6 @@ public:
 
 
     virtual void onTimeChange(Wm::DateTime time) {
-        const TCHAR* spec = TEXT("%d-%02d-%02d %02d:%02d:%02d");
-
-        getTextBox()->setText(Wm::String::format(spec,
-            time.wYear, time.wMonth, time.wDay,
-            time.wHour, time.wMinute, time.wSecond));
+        getTextBox()->setText(time.formatIso(S(" ")));
     }
 };

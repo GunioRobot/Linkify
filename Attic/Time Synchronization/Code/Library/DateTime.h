@@ -3,6 +3,7 @@
 
 #include "Exception.h"
 #include "Object.h"
+#include "String.h"
 
 
 namespace Wm {
@@ -54,26 +55,26 @@ namespace Wm {
     
     public:
         DateTime() {
-            wYear = 0;
-            wMonth = 0;
-            wDayOfWeek = 0;
-            wDay = 0;
-            wHour = 0;
-            wMinute = 0;
-            wSecond = 0;
-            wMilliseconds = 0;
+            this->wYear = 0;
+            this->wMonth = 0;
+            this->wDayOfWeek = 0;
+            this->wDay = 0;
+            this->wHour = 0;
+            this->wMinute = 0;
+            this->wSecond = 0;
+            this->wMilliseconds = 0;
         }
 
 
         DateTime(SYSTEMTIME systemTime) {
-            wYear = systemTime.wYear;
-            wMonth = systemTime.wMonth;
-            wDayOfWeek = systemTime.wDayOfWeek;
-            wDay = systemTime.wDay;
-            wHour = systemTime.wHour;
-            wMinute = systemTime.wMinute;
-            wSecond = systemTime.wSecond;
-            wMilliseconds = systemTime.wMilliseconds;
+            this->wYear = systemTime.wYear;
+            this->wMonth = systemTime.wMonth;
+            this->wDayOfWeek = systemTime.wDayOfWeek;
+            this->wDay = systemTime.wDay;
+            this->wHour = systemTime.wHour;
+            this->wMinute = systemTime.wMinute;
+            this->wSecond = systemTime.wSecond;
+            this->wMilliseconds = systemTime.wMilliseconds;
         }
 
 
@@ -123,6 +124,14 @@ namespace Wm {
             toScalar(*this, time);
             time.QuadPart += s * 1000 * 1000 * 10;
             fromScalar(time, *this);
+        }
+
+
+        virtual String formatIso(String designator = S("T")) {
+            return String::format(TEXT("%d-%02d-%02d%s%02d:%02d:%02d"),
+                this->wYear, this->wMonth, this->wDay,
+                designator.c_str(),
+                this->wHour, this->wMinute, this->wSecond);
         }
     };
 }
