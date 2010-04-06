@@ -1,9 +1,5 @@
 #include <vector>
-#include "DeviceTime.h"
-#include "GpsTime.h"
 #include "Library/all.h"
-#include "PhoneTime.h"
-#include "TimeMultiplexer.h"
 #include "TimeStatus.h"
 
 
@@ -18,7 +14,7 @@ private:
     Wm::String _stopCaption;
     ref<Wm::MenuItem> _pauseOption;
     ref<Wm::MenuItem> _exitOption;
-    ref<TimeMultiplexer> _timeMultiplexer;
+    ref<Wm::Time::Multiplexer> _timeMultiplexer;
     std::vector<ref<TimeStatus>> _timeItems;
 
 
@@ -30,7 +26,7 @@ public:
         _stopCaption(S("Stop")),
         _pauseOption(new Wm::MenuItem(_startCaption)),
         _exitOption(new Wm::MenuItem(S("Exit"))),
-        _timeMultiplexer(new TimeMultiplexer(5))
+        _timeMultiplexer(new Wm::Time::Multiplexer(5))
     {
         ref<Wm::Menu> menuBar = new Wm::Menu(S("Menu"));
         
@@ -88,9 +84,9 @@ private:
         Wm::Size labelSize(0, 20 + margin);
         Wm::Size boxSize(Wm::Length(100, Wm::Percent), labelSize.height());
         
-        ref<DeviceTime> deviceTime = new DeviceTime();
-        ref<PhoneTime> phoneTime = new PhoneTime();
-        ref<GpsTime> gpsTime = new GpsTime();
+        ref<Wm::Time::Device> deviceTime = new Wm::Time::Device();
+        ref<Wm::Time::Phone> phoneTime = new Wm::Time::Phone();
+        ref<Wm::Time::Gps> gpsTime = new Wm::Time::Gps();
 
         _timeMultiplexer->addListener(deviceTime);
         phoneTime->addListener(_timeMultiplexer);

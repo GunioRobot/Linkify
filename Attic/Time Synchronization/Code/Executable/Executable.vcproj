@@ -212,47 +212,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\DeviceTime.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Executable.h"
-				>
-			</File>
-			<File
-				RelativePath=".\GpsTime.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PhoneTime.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TimeInformation.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TimeListener.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TimeListeners.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TimeMultiplexer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TimeReceiver.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TimeSender.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TimeSource.h"
 				>
 			</File>
 			<File

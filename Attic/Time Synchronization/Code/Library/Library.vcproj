@@ -206,6 +206,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Api\Gps\wrapper.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Api\Ril\wrapper.cpp"
 				>
 				<FileConfiguration
@@ -224,10 +228,6 @@
 						ObjectFile="$(IntDir)/$(InputName)1.obj"
 					/>
 				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\Api\Gps\wrapper.cpp"
-				>
 			</File>
 		</Filter>
 		<Filter
@@ -260,6 +260,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Time\Device.h"
+				>
+			</File>
+			<File
 				RelativePath=".\DynamicLabel.h"
 				>
 			</File>
@@ -276,7 +280,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Time\Gps.h"
+				>
+			</File>
+			<File
 				RelativePath=".\GpsListener.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Time\Information.h"
 				>
 			</File>
 			<File
@@ -285,6 +297,14 @@
 			</File>
 			<File
 				RelativePath=".\Length.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Time\Listener.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Time\Listeners.h"
 				>
 			</File>
 			<File
@@ -308,6 +328,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Time\Multiplexer.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Mutex.h"
 				>
 			</File>
@@ -316,7 +340,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Time\Phone.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Position.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Time\Receiver.h"
 				>
 			</File>
 			<File
@@ -332,7 +364,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Time\Sender.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Size.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Time\Source.h"
 				>
 			</File>
 			<File

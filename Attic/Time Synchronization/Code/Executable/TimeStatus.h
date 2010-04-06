@@ -2,19 +2,17 @@
 
 
 #include "Library/all.h"
-#include "TimeListener.h"
-#include "TimeSender.h"
 
 
-class TimeStatus: public TimeListener {
+class TimeStatus: public Wm::Time::Listener {
 private:
-    ref<TimeSender> _time;
+    ref<Wm::Time::Sender> _time;
     ref<Wm::Label> _label;
     ref<Wm::TextBox> _textBox;
 
 
 public:
-    TimeStatus(ref<TimeSender> time): _time(time) {
+    TimeStatus(ref<Wm::Time::Sender> time): _time(time) {
         _label = new Wm::Label(_time->getName() + S(":"));
         _textBox = new Wm::TextBox(S("Initializing..."));
     }
@@ -38,7 +36,7 @@ public:
 
     virtual void initialize(bool automatic) {
         _time->addListener(noref this);
-        _time->onInitialize(true);
+        _time->onInitialize(automatic);
     }
 
 
