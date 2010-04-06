@@ -1,17 +1,17 @@
 #include "wrapper.h"
 
 
-#undef __WM__API__GPS__WRAPPER__
+#undef __WM__GID__WRAPPER__
 #define API_FUNCTION_DEFINITION
 #include "wrapper.h"
 #undef API_FUNCTION_DEFINITION
 
-#undef __WM__API__GPS__WRAPPER__
+#undef __WM__GID__WRAPPER__
 #define API_FUNCTION_LOADER
 #include "wrapper.h"
 #undef API_FUNCTION_LOADER
 
-#undef __WM__API__GPS__WRAPPER__
+#undef __WM__GID__WRAPPER__
 #define API_FUNCTION_UNLOADER
 #include "wrapper.h"
 #undef API_FUNCTION_UNLOADER

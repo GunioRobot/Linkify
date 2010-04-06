@@ -3,16 +3,16 @@
 
 #include "../DateTime.h"
 #include "../Exception.h"
-#include "../Gps.h"
+#include "../gid/GpsReceiver.h"
 #include "../String.h"
 #include "Sender.h"
 
 
 namespace Wm {
 namespace Time {
-    class Gps: public Sender, public Wm::Gps::Listener {
+    class Gps: public Sender, public GpsReceiver::Listener {
     private:
-        ref<Wm::Gps> _device;
+        ref<GpsReceiver> _device;
 
 
     public:
@@ -37,7 +37,7 @@ namespace Time {
 
         virtual void onInitialize(bool automatic) {
             try {
-                _device = new Wm::Gps();
+                _device = new GpsReceiver();
                 bool isOn = (_device->getState().dwDeviceState == SERVICE_STATE_ON);
 
                 if (!automatic && !isOn) {

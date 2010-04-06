@@ -174,7 +174,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\wm\Gps.cpp"
+				RelativePath=".\wm\ril\CellularRadio.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\wm\gid\GpsReceiver.cpp"
 				>
 			</File>
 			<File
@@ -182,11 +186,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\wm\api\ril\messages.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\wm\Ril.cpp"
+				RelativePath=".\wm\ril\messages.cpp"
 				>
 			</File>
 			<File
@@ -206,11 +206,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\wm\api\gps\wrapper.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\wm\api\ril\wrapper.cpp"
+				RelativePath=".\wm\ril\wrapper.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -229,6 +225,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\wm\gid\wrapper.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -236,19 +236,15 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\wm\Api.h"
-				>
-			</File>
-			<File
 				RelativePath=".\wm\Application.h"
 				>
 			</File>
 			<File
-				RelativePath=".\wm\Control.h"
+				RelativePath=".\wm\ril\CellularRadio.h"
 				>
 			</File>
 			<File
-				RelativePath=".\wm\Core.h"
+				RelativePath=".\wm\Control.h"
 				>
 			</File>
 			<File
@@ -272,11 +268,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\wm\Gps.h"
+				RelativePath=".\wm\time\Gps.h"
 				>
 			</File>
 			<File
-				RelativePath=".\wm\time\Gps.h"
+				RelativePath=".\wm\gid\GpsReceiver.h"
 				>
 			</File>
 			<File
@@ -320,7 +316,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\wm\api\ril\messages.h"
+				RelativePath=".\wm\ril\messages.h"
 				>
 			</File>
 			<File
@@ -353,10 +349,6 @@
 			</File>
 			<File
 				RelativePath=".\wm\Result.h"
-				>
-			</File>
-			<File
-				RelativePath=".\wm\Ril.h"
 				>
 			</File>
 			<File
@@ -412,11 +404,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\wm\api\gps\wrapper.h"
+				RelativePath=".\wm\gid\wrapper.h"
 				>
 			</File>
 			<File
-				RelativePath=".\wm\api\ril\wrapper.h"
+				RelativePath=".\wm\ril\wrapper.h"
 				>
 			</File>
 		</Filter>

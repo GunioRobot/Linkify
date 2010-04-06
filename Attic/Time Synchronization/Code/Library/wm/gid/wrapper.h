@@ -1,8 +1,8 @@
-#ifndef __WM__API__GPS__WRAPPER__
-#define __WM__API__GPS__WRAPPER__
+#ifndef __WM__GID__WRAPPER__
+#define __WM__GID__WRAPPER__
 
 
-#include "../../Core.h"
+#include "../Object.h"
 #include <COMMON/SDK/INC/gpsapi.h>
 
 

@@ -3,7 +3,7 @@
 
 #include "../Event.h"
 #include "../Exception.h"
-#include "../Ril.h"
+#include "../ril/CellularRadio.h"
 #include "../Thread.h"
 #include "../WaitableManager.h"
 #include "Sender.h"
@@ -13,7 +13,7 @@ namespace Wm {
 namespace Time {
     class Phone: public Sender, protected Thread {
     private:
-        ref<Ril> _device;
+        ref<CellularRadio> _device;
         ref<Event> _stop;
         ref<WaitableManager> _events;
         bool _automatic;
@@ -127,7 +127,7 @@ namespace Time {
 
         bool initializeDevice() {
             try {
-                _device = new Ril();
+                _device = new CellularRadio();
                 getListeners()->onStatusChange(S("Starting..."));
 
                 if (!checkNitzSupport() || !checkEquipmentState()) {

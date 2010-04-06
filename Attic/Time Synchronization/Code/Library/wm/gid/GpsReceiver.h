@@ -2,13 +2,14 @@
 
 
 #include <list>
-#include "Event.h"
-#include "Exception.h"
-#include "Thread.h"
+#include "../Event.h"
+#include "../Exception.h"
+#include "../Thread.h"
+#include "wrapper.h"
 
 
 namespace Wm {
-    class Gps: protected Thread {
+    class GpsReceiver: protected Thread {
     public:
         class Listener: public Object {
         public:
@@ -28,7 +29,11 @@ namespace Wm {
 
 
     public:
-        Gps(): _handle(NULL), _positionChange(new Event(true)), _running(true) {
+        GpsReceiver():
+            _handle(NULL),
+            _positionChange(new Event(true)),
+            _running(true)
+        {
             if ((_references == 0) && (Api::Gps::Load() == NULL)) {
                 Exception::throwLastError();
             }
@@ -38,7 +43,7 @@ namespace Wm {
         }
 
 
-        virtual ~Gps() {
+        virtual ~GpsReceiver() {
             stop();
 
             _running = false;

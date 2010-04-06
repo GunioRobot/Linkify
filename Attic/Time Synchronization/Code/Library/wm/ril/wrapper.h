@@ -1,8 +1,8 @@
-#ifndef __WM__API__RIL__WRAPPER__
-#define __WM__API__RIL__WRAPPER__
+#ifndef __WM__RIL__WRAPPER__
+#define __WM__RIL__WRAPPER__
 
 
-#include "../../Core.h"
+#include "../Object.h"
 #include <CELLCORE/OAK/INC/ril.h>
 
 

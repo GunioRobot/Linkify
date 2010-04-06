@@ -2,15 +2,17 @@
 
 
 #include <map>
-#include "Application.h"
-#include "Event.h"
-#include "Exception.h"
-#include "Object.h"
-#include "Result.h"
+#include "../Application.h"
+#include "../Event.h"
+#include "../Exception.h"
+#include "../Object.h"
+#include "../Result.h"
+#include "messages.h"
+#include "wrapper.h"
 
 
 namespace Wm {
-    class Ril: public Object {
+    class CellularRadio: public Object {
     private:
         static const DWORD _PORT = 1;
         static size_t _references;
@@ -23,7 +25,7 @@ namespace Wm {
             DWORD userData)
         {
             try {
-                ((Ril*) userData)->notifyHandler(code, data, size);
+                ((CellularRadio*) userData)->notifyHandler(code, data, size);
             }
             catch (Exception& exception) {
                 Application::exit(exception);
@@ -39,7 +41,8 @@ namespace Wm {
             DWORD userData)
         {
             try {
-                ((Ril*) userData)->resultHandler(code, command, data, size);
+                ((CellularRadio*) userData)->resultHandler(code, command,
+                    data, size);
             }
             catch (Exception& exception) {
                 Application::exit(exception);
@@ -65,7 +68,7 @@ namespace Wm {
 
 
     public:
-        Ril(): _handle(NULL), _radioPresent(false) {
+        CellularRadio(): _handle(NULL), _radioPresent(false) {
             if ((_references == 0) && (Api::Ril::Load() == NULL)) {
                 Exception::throwLastError();
             }
@@ -84,7 +87,7 @@ namespace Wm {
         }
 
 
-        virtual ~Ril() {
+        virtual ~CellularRadio() {
             HRESULT result = Api::Ril::RIL_Deinitialize(_handle);
 
             if ((--_references == 0) && !Api::Ril::Unload()) {
