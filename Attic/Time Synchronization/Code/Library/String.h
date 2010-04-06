@@ -10,7 +10,7 @@
 
 
 namespace Wm {
-    class String: public std::basic_string<TCHAR> {
+    class String: public Object, public std::basic_string<TCHAR> {
     public:
         static String format(const TCHAR* spec, ...);
 
