@@ -8,7 +8,6 @@
 #include "Event.h"
 #include "Exception.h"
 #include "Gps.h"
-#include "GpsListener.h"
 #include "Label.h"
 #include "Length.h"
 #include "Log.h"

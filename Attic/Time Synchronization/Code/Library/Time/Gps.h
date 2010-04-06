@@ -10,7 +10,7 @@
 
 namespace Wm {
 namespace Time {
-    class Gps: public Sender, public Wm::GpsListener {
+    class Gps: public Sender, public Wm::Gps::Listener {
     private:
         ref<Wm::Gps> _device;
 

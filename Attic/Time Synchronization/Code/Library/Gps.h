@@ -4,12 +4,18 @@
 #include <list>
 #include "Event.h"
 #include "Exception.h"
-#include "GpsListener.h"
 #include "Thread.h"
 
 
 namespace Wm {
     class Gps: protected Thread {
+    public:
+        class Listener: public Object {
+        public:
+            virtual void onPositionChange(GPS_POSITION position) = 0;
+        };
+    
+    
     private:
         static size_t _references;
 
@@ -17,7 +23,7 @@ namespace Wm {
     private:
         HANDLE _handle;
         ref<Event> _positionChange;
-        std::list<ref<GpsListener>> _listeners;
+        std::list<ref<Listener>> _listeners;
         bool _running;
 
 
@@ -45,7 +51,7 @@ namespace Wm {
         }
 
 
-        virtual void addListener(ref<GpsListener> listener) {
+        virtual void addListener(ref<Listener> listener) {
             _listeners.push_back(listener);
         }
         
@@ -88,7 +94,7 @@ namespace Wm {
         }
 
 
-        virtual void removeListener(ref<GpsListener> listener) {
+        virtual void removeListener(ref<Listener> listener) {
             _listeners.remove(listener);
         }
         
@@ -125,7 +131,7 @@ namespace Wm {
                     break;
                 }
                 
-                std::list<ref<GpsListener>>::iterator it;
+                std::list<ref<Listener>>::iterator it;
                 GPS_POSITION position = getPosition();
 
                 for (it = _listeners.begin(); it != _listeners.end(); ++it) {
