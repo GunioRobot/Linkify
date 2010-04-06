@@ -9,23 +9,20 @@ namespace Wm {
     class DateTime: public Object, public SYSTEMTIME {
     public:
         static DateTime utcToLocal(DateTime time) {
-            TIME_ZONE_INFORMATION timeZone;
-            DWORD zoneId = GetTimeZoneInformation(&timeZone);
-            long minutes = -timeZone.Bias;
+            FILETIME utcTime, localTime;
 
-            if (zoneId == TIME_ZONE_ID_DAYLIGHT) {
-                WORD month = timeZone.DaylightDate.wMonth;
-                minutes -= (month == 0) ? 0 : timeZone.DaylightBias;
+            if (!SystemTimeToFileTime(&time, &utcTime)) {
+                Wm::Exception::throwLastError();
             }
-            else if (zoneId == TIME_ZONE_ID_STANDARD) {
-                WORD month = timeZone.StandardDate.wMonth;
-                minutes -= (month == 0) ? 0 : timeZone.StandardBias;
-            }
-            else {
+
+            if (!FileTimeToLocalFileTime(&utcTime, &localTime)) {
                 Wm::Exception::throwLastError();
             }
             
-            time.addMinutes(minutes);
+            if (!FileTimeToSystemTime(&localTime, &time)) {
+                Wm::Exception::throwLastError();
+            }
+
             return time;
         }
 
