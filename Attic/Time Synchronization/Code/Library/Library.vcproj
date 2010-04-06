@@ -206,6 +206,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Api\Gps\wrapper.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Api\Ril\wrapper.cpp"
 				>
 				<FileConfiguration
@@ -225,20 +229,12 @@
 					/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath=".\Api\Gps\wrapper.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\all.h"
-				>
-			</File>
 			<File
 				RelativePath=".\Api.h"
 				>
@@ -276,11 +272,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Gps.h"
+				RelativePath=".\Time\Gps.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Time\Gps.h"
+				RelativePath=".\Gps.h"
 				>
 			</File>
 			<File
@@ -416,11 +412,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Api\Gps\wrapper.h"
+				RelativePath=".\Api\Ril\wrapper.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Api\Ril\wrapper.h"
+				RelativePath=".\Api\Gps\wrapper.h"
 				>
 			</File>
 		</Filter>
