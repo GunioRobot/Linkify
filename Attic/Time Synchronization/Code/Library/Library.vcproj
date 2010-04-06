@@ -174,43 +174,43 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\Gps.cpp"
+				RelativePath=".\wm\Gps.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Log.cpp"
+				RelativePath=".\wm\Log.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Api\Ril\messages.cpp"
+				RelativePath=".\wm\api\ril\messages.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Ril.cpp"
+				RelativePath=".\wm\Ril.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\String.cpp"
+				RelativePath=".\wm\String.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Timer.cpp"
+				RelativePath=".\wm\Timer.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Unit.cpp"
+				RelativePath=".\wm\Unit.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Window.cpp"
+				RelativePath=".\wm\Window.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Api\Gps\wrapper.cpp"
+				RelativePath=".\wm\api\gps\wrapper.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Api\Ril\wrapper.cpp"
+				RelativePath=".\wm\api\ril\wrapper.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -236,187 +236,187 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\Api.h"
+				RelativePath=".\wm\Api.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Application.h"
+				RelativePath=".\wm\Application.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Control.h"
+				RelativePath=".\wm\Control.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Core.h"
+				RelativePath=".\wm\Core.h"
 				>
 			</File>
 			<File
-				RelativePath=".\DateTime.h"
+				RelativePath=".\wm\DateTime.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Time\Device.h"
+				RelativePath=".\wm\time\Device.h"
 				>
 			</File>
 			<File
-				RelativePath=".\DynamicLabel.h"
+				RelativePath=".\wm\DynamicLabel.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Event.h"
+				RelativePath=".\wm\Event.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Exception.h"
+				RelativePath=".\wm\Exception.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Time\Gps.h"
+				RelativePath=".\wm\Gps.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Gps.h"
+				RelativePath=".\wm\time\Gps.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Time\Information.h"
+				RelativePath=".\wm\time\Information.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Label.h"
+				RelativePath=".\wm\Label.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Length.h"
+				RelativePath=".\wm\Length.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Time\Listener.h"
+				RelativePath=".\wm\time\Listener.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Time\Listeners.h"
+				RelativePath=".\wm\time\Listeners.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Log.h"
+				RelativePath=".\wm\Log.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Margin.h"
+				RelativePath=".\wm\Margin.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Time\MeanMultiplexer.h"
+				RelativePath=".\wm\time\MeanMultiplexer.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Menu.h"
+				RelativePath=".\wm\Menu.h"
 				>
 			</File>
 			<File
-				RelativePath=".\MenuItem.h"
+				RelativePath=".\wm\MenuItem.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Api\Ril\messages.h"
+				RelativePath=".\wm\api\ril\messages.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Time\Multiplexer.h"
+				RelativePath=".\wm\time\Multiplexer.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Mutex.h"
+				RelativePath=".\wm\Mutex.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Object.h"
+				RelativePath=".\wm\Object.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Time\Phone.h"
+				RelativePath=".\wm\time\Phone.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Position.h"
+				RelativePath=".\wm\Position.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Time\Receiver.h"
+				RelativePath=".\wm\time\Receiver.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Core\ref.h"
+				RelativePath=".\wm\core\ref.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Result.h"
+				RelativePath=".\wm\Result.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Ril.h"
+				RelativePath=".\wm\Ril.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Time\Sender.h"
+				RelativePath=".\wm\time\Sender.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Size.h"
+				RelativePath=".\wm\Size.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Time\Source.h"
+				RelativePath=".\wm\time\Source.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Core\stdafx.h"
+				RelativePath=".\wm\core\stdafx.h"
 				>
 			</File>
 			<File
-				RelativePath=".\String.h"
+				RelativePath=".\wm\String.h"
 				>
 			</File>
 			<File
-				RelativePath=".\TextBox.h"
+				RelativePath=".\wm\TextBox.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Thread.h"
+				RelativePath=".\wm\Thread.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Timer.h"
+				RelativePath=".\wm\Timer.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Unit.h"
+				RelativePath=".\wm\Unit.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Waitable.h"
+				RelativePath=".\wm\Waitable.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WaitableManager.h"
+				RelativePath=".\wm\WaitableManager.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Widget.h"
+				RelativePath=".\wm\Widget.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Window.h"
+				RelativePath=".\wm\Window.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Api\Ril\wrapper.h"
+				RelativePath=".\wm\api\gps\wrapper.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Api\Gps\wrapper.h"
+				RelativePath=".\wm\api\ril\wrapper.h"
 				>
 			</File>
 		</Filter>

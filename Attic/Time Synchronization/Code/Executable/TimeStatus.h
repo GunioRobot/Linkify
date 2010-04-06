@@ -1,10 +1,10 @@
 #pragma once
 
 
-#include "Library/Label.h"
-#include "Library/TextBox.h"
-#include "Library/Time/Listener.h"
-#include "Library/Time/Sender.h"
+#include <wm/Label.h>
+#include <wm/TextBox.h>
+#include <wm/time/Listener.h>
+#include <wm/time/Sender.h>
 
 
 class TimeStatus: public Wm::Time::Listener {

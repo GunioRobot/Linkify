@@ -2,11 +2,11 @@
 
 
 // Order is significant:
-#include "Core/stdafx.h"
+#include "core/stdafx.h"
 #include <commctrl.h>
 
 // Order is not significant:
-#include "Core/ref.h"
+#include "core/ref.h"
 
 
 // Private kernel functions.

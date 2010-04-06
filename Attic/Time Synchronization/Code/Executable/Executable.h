@@ -1,14 +1,14 @@
 #include <vector>
-#include "Library/Application.h"
-#include "Library/Menu.h"
-#include "Library/MenuItem.h"
-#include "Library/Thread.h"
-#include "Library/Time/Device.h"
-#include "Library/Time/Gps.h"
-#include "Library/Time/MeanMultiplexer.h"
-#include "Library/Time/Multiplexer.h"
-#include "Library/Time/Phone.h"
-#include "Library/Window.h"
+#include <wm/Application.h>
+#include <wm/Menu.h>
+#include <wm/MenuItem.h>
+#include <wm/Thread.h>
+#include <wm/Time/Device.h>
+#include <wm/Time/Gps.h>
+#include <wm/Time/MeanMultiplexer.h>
+#include <wm/Time/Multiplexer.h>
+#include <wm/Time/Phone.h>
+#include <wm/Window.h>
 #include "TimeStatus.h"
 
 
