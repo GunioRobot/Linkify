@@ -28,6 +28,7 @@
 #include "Time/Information.h"
 #include "Time/Listener.h"
 #include "Time/Listeners.h"
+#include "Time/MeanMultiplexer.h"
 #include "Time/Multiplexer.h"
 #include "Time/Phone.h"
 #include "Time/Receiver.h"

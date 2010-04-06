@@ -312,6 +312,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Time\MeanMultiplexer.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Menu.h"
 				>
 			</File>

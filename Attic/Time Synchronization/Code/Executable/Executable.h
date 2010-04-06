@@ -26,7 +26,7 @@ public:
         _stopCaption(S("Stop")),
         _pauseOption(new Wm::MenuItem(_startCaption)),
         _exitOption(new Wm::MenuItem(S("Exit"))),
-        _timeMultiplexer(new Wm::Time::Multiplexer(5))
+        _timeMultiplexer(new Wm::Time::MeanMultiplexer())
     {
         ref<Wm::Menu> menuBar = new Wm::Menu(S("Menu"));
         
