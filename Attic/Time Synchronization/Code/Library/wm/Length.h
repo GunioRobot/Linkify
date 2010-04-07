@@ -6,7 +6,7 @@
 #include "Unit.h"
 
 
-namespace Wm {
+namespace wm {
     class Length: public Object {
     private:
         size_t _value;
@@ -20,7 +20,7 @@ namespace Wm {
 
         virtual int operator >(Length length) {
             if (_unit != length._unit) {
-                throw Wm::Exception(
+                throw Exception(
                     S("Can't compare lengths with different units."));
             }
 
@@ -30,8 +30,7 @@ namespace Wm {
 
         virtual Length operator +(Length length) {
             if (_unit != length._unit) {
-                throw Wm::Exception(
-                    S("Can't add lengths with different units."));
+                throw Exception(S("Can't add lengths with different units."));
             }
 
             return Length(_value + length._value, _unit);

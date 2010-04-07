@@ -17,7 +17,7 @@ extern "C" {
 }
 
 
-namespace Wm {
+namespace wm {
     class Object {
     public:
         virtual ~Object() {

@@ -1,6 +1,6 @@
 #include "Window.h"
 
 
-namespace Wm {
+namespace wm {
     std::map<HWND, Window::State> Window::_windows;
 }

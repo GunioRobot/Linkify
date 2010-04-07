@@ -6,22 +6,22 @@
 #include "String.h"
 
 
-namespace Wm {
+namespace wm {
     class DateTime: public Object, public SYSTEMTIME {
     public:
         static DateTime utcToLocal(DateTime time) {
             FILETIME utcTime, localTime;
 
             if (!SystemTimeToFileTime(&time, &utcTime)) {
-                Wm::Exception::throwLastError();
+                Exception::throwLastError();
             }
 
             if (!FileTimeToLocalFileTime(&utcTime, &localTime)) {
-                Wm::Exception::throwLastError();
+                Exception::throwLastError();
             }
             
             if (!FileTimeToSystemTime(&localTime, &time)) {
-                Wm::Exception::throwLastError();
+                Exception::throwLastError();
             }
 
             return time;
@@ -36,7 +36,7 @@ namespace Wm {
             fileTime.dwHighDateTime = scalar.HighPart;
 
             if (!FileTimeToSystemTime(&fileTime, &time)) {
-                Wm::Exception::throwLastError();
+                Exception::throwLastError();
             }
         }
         
@@ -45,7 +45,7 @@ namespace Wm {
             FILETIME fileTime;
 
             if (!SystemTimeToFileTime(&time, &fileTime)) {
-                Wm::Exception::throwLastError();
+                Exception::throwLastError();
             }
 
             scalar.LowPart = fileTime.dwLowDateTime;

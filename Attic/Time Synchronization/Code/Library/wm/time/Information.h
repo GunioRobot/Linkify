@@ -5,8 +5,8 @@
 #include "../String.h"
 
 
-namespace Wm {
-namespace Time {
+namespace wm {
+namespace time {
     class Information: public Object {
     public:
         virtual String getDescription() = 0;

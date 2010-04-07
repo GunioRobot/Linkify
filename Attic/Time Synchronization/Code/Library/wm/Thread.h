@@ -7,7 +7,7 @@
 #include "Waitable.h"
 
 
-namespace Wm {
+namespace wm {
     class Thread: public Waitable {
     private:
         static DWORD WINAPI genericRun(LPVOID userData) {

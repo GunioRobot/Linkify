@@ -5,8 +5,8 @@
 #include "Listener.h"
 
 
-namespace Wm {
-namespace Time {
+namespace wm {
+namespace time {
     class Receiver: public Information, public Listener {
     };
 }}

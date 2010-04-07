@@ -8,8 +8,8 @@
 #include "Source.h"
 
 
-namespace Wm {
-namespace Time {
+namespace wm {
+namespace time {
     class Multiplexer: public Listener, public Source {
     protected:
         static struct Sample {

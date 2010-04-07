@@ -11,7 +11,7 @@
 #include "wrapper.h"
 
 
-namespace Wm {
+namespace wm {
     class CellularRadio: public Object {
     private:
         static const DWORD _PORT = 1;

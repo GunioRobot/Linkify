@@ -7,8 +7,8 @@
 #include "Sender.h"
 
 
-namespace Wm {
-namespace Time {
+namespace wm {
+namespace time {
     class Device: public Receiver, public Sender, protected Timer {
     public:
         virtual String getDescription() {

@@ -7,7 +7,7 @@
 #include "String.h"
 
 
-namespace Wm {
+namespace wm {
     class Exception: public Object, public std::exception {
     public:
         static void throwError(DWORD code, HINSTANCE module = NULL) {

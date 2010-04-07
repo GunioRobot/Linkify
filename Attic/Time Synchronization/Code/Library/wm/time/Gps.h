@@ -8,8 +8,8 @@
 #include "Sender.h"
 
 
-namespace Wm {
-namespace Time {
+namespace wm {
+namespace time {
     class Gps: public Sender, public GpsReceiver::Listener {
     private:
         ref<GpsReceiver> _device;

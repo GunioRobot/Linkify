@@ -5,8 +5,8 @@
 #include "Listener.h"
 
 
-namespace Wm {
-namespace Time {
+namespace wm {
+namespace time {
     class Source: public Object {
     public:
         virtual void addListener(ref<Listener> listener) = 0;

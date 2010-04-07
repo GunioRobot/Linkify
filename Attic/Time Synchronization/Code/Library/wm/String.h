@@ -6,10 +6,10 @@
 
 
 #define S(string) \
-    (::Wm::String(TEXT(string)))
+    (::wm::String(TEXT(string)))
 
 
-namespace Wm {
+namespace wm {
     class String: public Object, public std::basic_string<TCHAR> {
     public:
         static String format(const TCHAR* spec, ...);

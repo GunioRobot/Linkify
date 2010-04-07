@@ -5,7 +5,7 @@
 #include "Object.h"
 
 
-namespace Wm {
+namespace wm {
     class Margin: public Object {
     private:
         Length _left;

@@ -1,5 +1,5 @@
 #include "Executable.h"
 
 
-const Wm::String Executable::TITLE(S("Time Synchronization"));
-const Wm::String Executable::WINDOW_CLASS(S("TIME_SYNCHRONIZATION"));
+const wm::String Executable::TITLE(S("Time Synchronization"));
+const wm::String Executable::WINDOW_CLASS(S("TIME_SYNCHRONIZATION"));

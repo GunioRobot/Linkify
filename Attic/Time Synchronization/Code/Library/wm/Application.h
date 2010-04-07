@@ -5,7 +5,7 @@
 #include "Object.h"
 
 
-namespace Wm {
+namespace wm {
     class Application: public Object {
     public:
         static void exit(Exception exception) {

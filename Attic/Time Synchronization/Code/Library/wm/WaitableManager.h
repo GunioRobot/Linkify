@@ -7,7 +7,7 @@
 #include "Waitable.h"
 
 
-namespace Wm {
+namespace wm {
     class WaitableManager: public Object {
     private:
         std::vector<ref<Waitable>> _waitables;

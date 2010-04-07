@@ -1,6 +1,6 @@
 #include "CellularRadio.h"
 
 
-namespace Wm {
+namespace wm {
     size_t CellularRadio::_references = 0;
 }

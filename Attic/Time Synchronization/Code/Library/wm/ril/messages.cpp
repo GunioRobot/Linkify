@@ -120,7 +120,7 @@ static const TCHAR* _messages[] = {
 };
 
 
-namespace Wm {
+namespace wm {
 namespace Api {
 namespace Ril {
     const TCHAR* GetErrorMessage(HRESULT result) {

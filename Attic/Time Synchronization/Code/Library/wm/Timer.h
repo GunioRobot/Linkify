@@ -7,7 +7,7 @@
 #include "Object.h"
 
 
-namespace Wm {
+namespace wm {
     class Timer: public Object {
     private:
         static const UINT _INVALID_ID = 0;

@@ -9,8 +9,8 @@
 #include "Sender.h"
 
 
-namespace Wm {
-namespace Time {
+namespace wm {
+namespace time {
     class Phone: public Sender, protected Thread {
     private:
         ref<CellularRadio> _device;

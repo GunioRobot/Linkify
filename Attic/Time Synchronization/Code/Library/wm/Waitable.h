@@ -5,7 +5,7 @@
 #include "Object.h"
 
 
-namespace Wm {
+namespace wm {
     class Waitable: public Object {
     private:
         HANDLE _handle;

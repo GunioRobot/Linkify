@@ -6,7 +6,7 @@
 #include "String.h"
 
 
-namespace Wm {
+namespace wm {
     class MenuItem: public Object {
     private:
         // Reserved for controls.

@@ -5,7 +5,7 @@
 #include "Waitable.h"
 
 
-namespace Wm {
+namespace wm {
     class Event: public Waitable {
     private:
         bool _valueCopy;

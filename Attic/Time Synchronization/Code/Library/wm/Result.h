@@ -5,7 +5,7 @@
 #include "Waitable.h"
 
 
-namespace Wm {
+namespace wm {
     template<typename T>
     class Result: public Waitable {
     private:

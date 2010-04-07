@@ -7,17 +7,17 @@
 #include <wm/time/Sender.h>
 
 
-class TimeStatus: public Wm::Time::Listener {
+class TimeStatus: public wm::time::Listener {
 private:
-    ref<Wm::Time::Sender> _time;
-    ref<Wm::Label> _label;
-    ref<Wm::TextBox> _textBox;
+    ref<wm::time::Sender> _time;
+    ref<wm::Label> _label;
+    ref<wm::TextBox> _textBox;
 
 
 public:
-    TimeStatus(ref<Wm::Time::Sender> time): _time(time) {
-        _label = new Wm::Label(_time->getName() + S(":"));
-        _textBox = new Wm::TextBox(S("Initializing..."));
+    TimeStatus(ref<wm::time::Sender> time): _time(time) {
+        _label = new wm::Label(_time->getName() + S(":"));
+        _textBox = new wm::TextBox(S("Initializing..."));
     }
 
 
@@ -27,12 +27,12 @@ public:
     }
 
 
-    virtual ref<Wm::Label> getLabel() {
+    virtual ref<wm::Label> getLabel() {
         return _label;
     }
 
 
-    virtual ref<Wm::TextBox> getTextBox() {
+    virtual ref<wm::TextBox> getTextBox() {
         return _textBox;
     }
 
@@ -43,12 +43,12 @@ public:
     }
 
 
-    virtual void onStatusChange(Wm::String status) {
+    virtual void onStatusChange(wm::String status) {
         getTextBox()->setText(status);
     }
 
 
-    virtual void onTimeChange(Wm::DateTime time) {
+    virtual void onTimeChange(wm::DateTime time) {
         getTextBox()->setText(time.formatIso(S(" ")));
     }
 };

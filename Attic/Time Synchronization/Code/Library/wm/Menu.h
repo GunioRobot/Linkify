@@ -6,7 +6,7 @@
 #include "MenuItem.h"
 
 
-namespace Wm {
+namespace wm {
     class Menu: public MenuItem {
     private:
         HMENU _handle;

@@ -3,41 +3,41 @@
 #include <wm/Menu.h>
 #include <wm/MenuItem.h>
 #include <wm/Thread.h>
-#include <wm/Time/Device.h>
-#include <wm/Time/Gps.h>
-#include <wm/Time/MeanMultiplexer.h>
-#include <wm/Time/Multiplexer.h>
-#include <wm/Time/Phone.h>
+#include <wm/time/Device.h>
+#include <wm/time/Gps.h>
+#include <wm/time/MeanMultiplexer.h>
+#include <wm/time/Multiplexer.h>
+#include <wm/time/Phone.h>
 #include <wm/Window.h>
 #include "TimeStatus.h"
 
 
-class Executable: public Wm::Application, public Wm::Thread, public Wm::Window {
+class Executable: public wm::Application, public wm::Thread, public wm::Window {
 public:
-    static const Wm::String TITLE;
-    static const Wm::String WINDOW_CLASS;
+    static const wm::String TITLE;
+    static const wm::String WINDOW_CLASS;
 
 
 private:
-    Wm::String _startCaption;
-    Wm::String _stopCaption;
-    ref<Wm::MenuItem> _pauseOption;
-    ref<Wm::MenuItem> _exitOption;
-    ref<Wm::Time::Multiplexer> _timeMultiplexer;
+    wm::String _startCaption;
+    wm::String _stopCaption;
+    ref<wm::MenuItem> _pauseOption;
+    ref<wm::MenuItem> _exitOption;
+    ref<wm::time::Multiplexer> _timeMultiplexer;
     std::vector<ref<TimeStatus>> _timeItems;
 
 
 public:
     Executable(HINSTANCE handle):
-        Wm::Application(handle),
-        Wm::Window(WINDOW_CLASS, TITLE),
+        wm::Application(handle),
+        wm::Window(WINDOW_CLASS, TITLE),
         _startCaption(S("Start")),
         _stopCaption(S("Stop")),
-        _pauseOption(new Wm::MenuItem(_startCaption)),
-        _exitOption(new Wm::MenuItem(S("Exit"))),
-        _timeMultiplexer(new Wm::Time::MeanMultiplexer())
+        _pauseOption(new wm::MenuItem(_startCaption)),
+        _exitOption(new wm::MenuItem(S("Exit"))),
+        _timeMultiplexer(new wm::time::MeanMultiplexer())
     {
-        ref<Wm::Menu> menuBar = new Wm::Menu(S("Menu"));
+        ref<wm::Menu> menuBar = new wm::Menu(S("Menu"));
         
         menuBar->add(_pauseOption);
         menuBar->add(_exitOption);
@@ -46,7 +46,7 @@ public:
     }
 
 
-    virtual void onChoose(ref<Wm::MenuItem> item) {
+    virtual void onChoose(ref<wm::MenuItem> item) {
         if (item == _pauseOption) {
             if (_pauseOption->getCaption() == _startCaption) {
                 _timeMultiplexer->start();
@@ -58,7 +58,7 @@ public:
             }
         }
         else if (item == _exitOption) {
-            Wm::Thread::start();
+            wm::Thread::start();
         }
     }
 
@@ -79,23 +79,23 @@ public:
             _timeItems[i]->initialize(true);
         }
         
-        return Wm::Application::start(windowShowMode);
+        return wm::Application::start(windowShowMode);
     }
 
 
 private:
     void setupTimeSources() {
         size_t margin = 8, padding = 3;
-        Wm::Length largestLabel = 0;
+        wm::Length largestLabel = 0;
         
-        Wm::Margin labelMargin(margin, margin + padding, 0, margin + padding);
-        Wm::Margin boxMargin(margin + margin, margin, margin, margin);
-        Wm::Size labelSize(0, 20 + margin);
-        Wm::Size boxSize(Wm::Length(100, Wm::Percent), labelSize.height());
+        wm::Margin labelMargin(margin, margin + padding, 0, margin + padding);
+        wm::Margin boxMargin(margin + margin, margin, margin, margin);
+        wm::Size labelSize(0, 20 + margin);
+        wm::Size boxSize(wm::Length(100, wm::Percent), labelSize.height());
         
-        ref<Wm::Time::Device> deviceTime = new Wm::Time::Device();
-        ref<Wm::Time::Phone> phoneTime = new Wm::Time::Phone();
-        ref<Wm::Time::Gps> gpsTime = new Wm::Time::Gps();
+        ref<wm::time::Device> deviceTime = new wm::time::Device();
+        ref<wm::time::Phone> phoneTime = new wm::time::Phone();
+        ref<wm::time::Gps> gpsTime = new wm::time::Gps();
 
         _timeMultiplexer->addListener(deviceTime);
         phoneTime->addListener(_timeMultiplexer);
@@ -107,8 +107,8 @@ private:
 
         for (size_t i = 0; i < _timeItems.size(); ++i) {
             ref<TimeStatus> status = _timeItems[i];
-            ref<Wm::Label> label = status->getLabel();
-            ref<Wm::TextBox> box = status->getTextBox();
+            ref<wm::Label> label = status->getLabel();
+            ref<wm::TextBox> box = status->getTextBox();
 
             label->setFitToWidth(true);
             label->setMargin(labelMargin);
@@ -121,7 +121,7 @@ private:
             add(label);
             add(box);
 
-            Wm::Length width = label->getSize().width();
+            wm::Length width = label->getSize().width();
 
             if (width > largestLabel) {
                 largestLabel = width;
@@ -132,18 +132,18 @@ private:
 
         for (size_t i = 0; i < _timeItems.size(); ++i) {
             ref<TimeStatus> current = _timeItems[i];
-            ref<Wm::Label> label = current->getLabel();
-            ref<Wm::TextBox> box = current->getTextBox();
+            ref<wm::Label> label = current->getLabel();
+            ref<wm::TextBox> box = current->getTextBox();
 
             if (!previous.null()) {
-                Wm::Position position = previous->getLabel()->getPosition();
-                Wm::Size size = previous->getLabel()->getSize();
+                wm::Position position = previous->getLabel()->getPosition();
+                wm::Size size = previous->getLabel()->getSize();
 
-                label->setPosition(Wm::Position(position.left(),
+                label->setPosition(wm::Position(position.left(),
                     position.top() + size.height()));
             }
 
-            box->setPosition(Wm::Position(largestLabel,
+            box->setPosition(wm::Position(largestLabel,
                 label->getPosition().top()));
 
             previous = current;

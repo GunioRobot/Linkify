@@ -1,6 +1,6 @@
 #include "GpsReceiver.h"
 
 
-namespace Wm {
+namespace wm {
     size_t GpsReceiver::_references = 0;
 }

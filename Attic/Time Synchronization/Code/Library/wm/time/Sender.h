@@ -6,8 +6,8 @@
 #include "Source.h"
 
 
-namespace Wm {
-namespace Time {
+namespace wm {
+namespace time {
     class Sender: public Information, public Source {
     private:
         ref<Listeners> _listeners;

@@ -4,7 +4,7 @@
 #include "String.h"
 
 
-namespace Wm {
+namespace wm {
     String String::format(const TCHAR* spec, ...) {
         size_t length = BUFSIZ;
         TCHAR* buffer = NULL;

@@ -4,8 +4,8 @@
 #include "Multiplexer.h"
 
 
-namespace Wm {
-namespace Time {
+namespace wm {
+namespace time {
     class MeanMultiplexer: public Multiplexer {
     public:
         MeanMultiplexer(size_t samplingInterval = 5):

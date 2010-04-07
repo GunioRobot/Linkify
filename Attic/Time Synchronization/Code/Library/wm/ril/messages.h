@@ -4,7 +4,7 @@
 #include "wrapper.h"
 
 
-namespace Wm {
+namespace wm {
 namespace Api {
 namespace Ril {
     const TCHAR* GetErrorMessage(HRESULT result);

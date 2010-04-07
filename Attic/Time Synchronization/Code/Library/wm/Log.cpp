@@ -1,6 +1,6 @@
 #include "Log.h"
 
 
-namespace Wm {
+namespace wm {
     Log Log::error;
 }

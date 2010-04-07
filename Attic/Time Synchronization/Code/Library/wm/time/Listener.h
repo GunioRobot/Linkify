@@ -6,8 +6,8 @@
 #include "../String.h"
 
 
-namespace Wm {
-namespace Time {
+namespace wm {
+namespace time {
     class Listener: public Object {
     public:
         virtual void onStatusChange(String status) = 0;

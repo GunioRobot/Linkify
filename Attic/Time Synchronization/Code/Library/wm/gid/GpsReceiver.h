@@ -8,7 +8,7 @@
 #include "wrapper.h"
 
 
-namespace Wm {
+namespace wm {
     class GpsReceiver: protected Thread {
     public:
         class Listener: public Object {
@@ -92,7 +92,7 @@ namespace Wm {
             DWORD result = Api::Gps::GPSGetDeviceState(&state);
 
             if (result != ERROR_SUCCESS) {
-                Wm::Exception::throwError(result);
+                Exception::throwError(result);
             }
 
             return state;

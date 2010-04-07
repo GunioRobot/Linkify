@@ -7,8 +7,8 @@
 #include "Source.h"
 
 
-namespace Wm {
-namespace Time {
+namespace wm {
+namespace time {
     class Listeners: public Listener, public Source {
     private:
         std::list<ref<Listener>> _listeners;

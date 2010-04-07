@@ -1,6 +1,6 @@
 #include "Timer.h"
 
 
-namespace Wm {
+namespace wm {
     std::map<UINT, Timer*> Timer::_timers;
 }

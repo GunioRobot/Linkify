@@ -5,7 +5,7 @@
 #include "Waitable.h"
 
 
-namespace Wm {
+namespace wm {
     class Mutex: public Waitable {
     public:
         Mutex(): Waitable(CreateMutex(NULL, false, NULL)) {
