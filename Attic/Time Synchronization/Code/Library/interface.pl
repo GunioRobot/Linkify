@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Creates a wrapper to dynamically load/unload a library.
+# Creates an interface wrapper to dynamically load/unload and use a library.
 
 use autodie;
 use strict;
@@ -15,16 +15,15 @@ use File::Spec ();
 use Regexp::Common qw(balanced comment);
 
 
-my ($proj, $dir, $include) = @ARGV;
+my ($directory, $include) = @ARGV;
 my ($include_dir) = grep {-e File::Spec->catfile($_, $include)} include_dirs();
 my $include_file = File::Spec->catfile($include_dir, $include);
 
-my $name = 'wrapper';
-my @namespace = ($proj, File::Spec->splitdir(File::Spec->canonpath($dir)));
+my $name = 'interface';
+my @namespace = File::Spec->splitdir(File::Spec->canonpath($directory));
 my ($library) = File::Basename::fileparse($include_file, '.h');
 
 Class::Struct::struct Wrapper => {
-    directory => '$',
     header => '$',
     include => '$',
     include_file => '$',
@@ -34,7 +33,6 @@ Class::Struct::struct Wrapper => {
 };
 
 my $wrapper = Wrapper->new(
-    directory => $dir,
     header => sprintf('__%s__', uc join '__', @namespace, $name),
     include => $include,
     include_file => $include_file,
@@ -74,7 +72,7 @@ sub implementation {
     my @namespace = @{$wrapper->namespace()};
     my ($header, $name) = ($wrapper->header(), $wrapper->name());
     my $library = $wrapper->library();
-    my $file = File::Spec->catfile($wrapper->directory(), "$name.cpp");
+    my $file = File::Spec->catfile(@namespace, "$name.cpp");
     
     open my $output, '>', $file;
     print $output (<< "EOT");
@@ -168,7 +166,7 @@ sub interface {
     my @namespace = @{$wrapper->namespace()};
     my ($header, $name) = ($wrapper->header(), $wrapper->name());
     my $include = $wrapper->include();
-    my $file = File::Spec->catfile($wrapper->directory(), "$name.h");
+    my $file = File::Spec->catfile(@namespace, "$name.h");
     
     open my $output, '>', $file;
     print $output (<< "EOT");
@@ -176,7 +174,7 @@ sub interface {
 #define $header
 
 
-#include "../../Core.h"
+#include "../Object.h"
 #include <$include>
 
 
