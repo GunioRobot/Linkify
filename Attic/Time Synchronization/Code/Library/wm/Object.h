@@ -7,6 +7,7 @@
 
 // Order is not significant:
 #include <COMMON/SDK/INC/service.h>
+#include <cpl.h>
 #include "core/ref.h"
 
 
