@@ -1,19 +1,19 @@
-#include "wrapper.h"
+#include "interface.h"
 
 
-#undef __WM__RIL__WRAPPER__
+#undef __WM__RIL__INTERFACE__
 #define API_FUNCTION_DEFINITION
-#include "wrapper.h"
+#include "interface.h"
 #undef API_FUNCTION_DEFINITION
 
-#undef __WM__RIL__WRAPPER__
+#undef __WM__RIL__INTERFACE__
 #define API_FUNCTION_LOADER
-#include "wrapper.h"
+#include "interface.h"
 #undef API_FUNCTION_LOADER
 
-#undef __WM__RIL__WRAPPER__
+#undef __WM__RIL__INTERFACE__
 #define API_FUNCTION_UNLOADER
-#include "wrapper.h"
+#include "interface.h"
 #undef API_FUNCTION_UNLOADER
 
 
@@ -21,8 +21,7 @@ static HINSTANCE _library = NULL;
 
 
 namespace wm {
-namespace Api {
-namespace Ril {
+namespace ril {
     HINSTANCE Load() {
         if (_library == NULL) {
             _library = LoadLibrary(TEXT("ril"));
@@ -48,4 +47,4 @@ namespace Ril {
         
         return true;
     }
-}}}
+}}

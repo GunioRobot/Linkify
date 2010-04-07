@@ -10,9 +10,9 @@
 
 namespace wm {
 namespace time {
-    class Gps: public Sender, public GpsReceiver::Listener {
+    class Gps: public Sender, public gid::GpsReceiver::Listener {
     private:
-        ref<GpsReceiver> _device;
+        ref<gid::GpsReceiver> _device;
 
 
     public:
@@ -26,7 +26,7 @@ namespace time {
         }
 
 
-        virtual void onFinalize() {
+        virtual void finalize() {
             if (!_device.null()) {
                 _device->removeListener(noref this);
                 _device->stop();
@@ -35,9 +35,9 @@ namespace time {
         }
 
 
-        virtual void onInitialize(bool automatic) {
+        virtual void initialize(bool automatic) {
             try {
-                _device = new GpsReceiver();
+                _device = new gid::GpsReceiver();
                 bool isOn = (_device->getState().dwDeviceState == SERVICE_STATE_ON);
 
                 if (!automatic && !isOn) {

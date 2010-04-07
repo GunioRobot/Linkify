@@ -7,11 +7,12 @@
 #include "../Exception.h"
 #include "../Object.h"
 #include "../Result.h"
+#include "interface.h"
 #include "messages.h"
-#include "wrapper.h"
 
 
 namespace wm {
+namespace ril {
     class CellularRadio: public Object {
     private:
         static const DWORD _PORT = 1;
@@ -51,7 +52,7 @@ namespace wm {
 
 
         static void throwError(HRESULT result) {
-            const TCHAR* message = Api::Ril::GetErrorMessage(result);
+            const TCHAR* message = GetErrorMessage(result);
 
             if (message != NULL) {
                 throw Exception(message);
@@ -69,13 +70,13 @@ namespace wm {
 
     public:
         CellularRadio(): _handle(NULL), _radioPresent(false) {
-            if ((_references == 0) && (Api::Ril::Load() == NULL)) {
+            if ((_references == 0) && (Load() == NULL)) {
                 Exception::throwLastError();
             }
             
             ++_references;
 
-            HRESULT result = Api::Ril::RIL_Initialize(_PORT,
+            HRESULT result = RIL_Initialize(_PORT,
                 genericResultHandler, genericNotifyHandler,
                 RIL_NCLASS_ALL, (DWORD) this, &_handle);
 
@@ -88,9 +89,9 @@ namespace wm {
 
 
         virtual ~CellularRadio() {
-            HRESULT result = Api::Ril::RIL_Deinitialize(_handle);
+            HRESULT result = RIL_Deinitialize(_handle);
 
-            if ((--_references == 0) && !Api::Ril::Unload()) {
+            if ((--_references == 0) && !Unload()) {
                 Exception::throwLastError();
             }
 
@@ -103,7 +104,7 @@ namespace wm {
         template<typename T>
         ref<Result<T>> getCapabilities(DWORD type) {
             ref<Event> event = new Event();
-            HRESULT id = Api::Ril::RIL_GetDevCaps(getRilHandle(), type);
+            HRESULT id = RIL_GetDevCaps(getRilHandle(), type);
 
             if (FAILED(id)) {
                 throwError(id);
@@ -116,7 +117,7 @@ namespace wm {
 
         virtual ref<Result<RILEQUIPMENTSTATE>> getEquipmentState() {
             ref<Event> event = new Event();
-            HRESULT id = Api::Ril::RIL_GetEquipmentState(getRilHandle(), NULL);
+            HRESULT id = RIL_GetEquipmentState(getRilHandle(), NULL);
 
             if (FAILED(id)) {
                 throwError(id);
@@ -139,7 +140,7 @@ namespace wm {
             ref<Event> event = new Event();
             char* passwordArray = password.toCharArray();
             
-            HRESULT id = Api::Ril::RIL_GetLockingStatus(getRilHandle(),
+            HRESULT id = RIL_GetLockingStatus(getRilHandle(),
                 facility, passwordArray);
 
             delete[] passwordArray;
@@ -155,7 +156,7 @@ namespace wm {
 
         virtual ref<Result<DWORD>> getPhoneLockedState() {
             ref<Event> event = new Event();
-            HRESULT id = Api::Ril::RIL_GetPhoneLockedState(getRilHandle());
+            HRESULT id = RIL_GetPhoneLockedState(getRilHandle());
 
             if (FAILED(id)) {
                 throwError(id);
@@ -168,7 +169,7 @@ namespace wm {
 
         virtual ref<Result<SYSTEMTIME>> getSystemTime() {
             ref<Event> event = new Event();
-            HRESULT id = Api::Ril::RIL_GetSystemTime(getRilHandle());
+            HRESULT id = RIL_GetSystemTime(getRilHandle());
 
             if (FAILED(id)) {
                 throwError(id);
@@ -186,7 +187,7 @@ namespace wm {
 
         virtual ref<Waitable> setEquipmentState(DWORD state) {
             ref<Event> event = new Event();
-            HRESULT id = Api::Ril::RIL_SetEquipmentState(getRilHandle(), state);
+            HRESULT id = RIL_SetEquipmentState(getRilHandle(), state);
 
             if (FAILED(id)) {
                 throwError(id);
@@ -233,4 +234,4 @@ namespace wm {
             event->notify();
         }
     };
-}
+}}

@@ -23,11 +23,11 @@ namespace time {
         }
         
         
-        virtual void onFinalize() {
+        virtual void finalize() {
         }
 
 
-        virtual void onInitialize(bool automatic) {
+        virtual void initialize(bool automatic) {
         }
         
         

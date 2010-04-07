@@ -3,11 +3,11 @@
 #include <wm/Menu.h>
 #include <wm/MenuItem.h>
 #include <wm/Thread.h>
-#include <wm/time/Device.h>
 #include <wm/time/Gps.h>
 #include <wm/time/MeanMultiplexer.h>
 #include <wm/time/Multiplexer.h>
 #include <wm/time/Phone.h>
+#include <wm/time/System.h>
 #include <wm/Window.h>
 #include "TimeStatus.h"
 
@@ -93,15 +93,15 @@ private:
         wm::Size labelSize(0, 20 + margin);
         wm::Size boxSize(wm::Length(100, wm::Percent), labelSize.height());
         
-        ref<wm::time::Device> deviceTime = new wm::time::Device();
+        ref<wm::time::System> systemTime = new wm::time::System();
         ref<wm::time::Phone> phoneTime = new wm::time::Phone();
         ref<wm::time::Gps> gpsTime = new wm::time::Gps();
 
-        _timeMultiplexer->addListener(deviceTime);
+        _timeMultiplexer->addListener(systemTime);
         phoneTime->addListener(_timeMultiplexer);
         gpsTime->addListener(_timeMultiplexer);
 
-        _timeItems.push_back(new TimeStatus(deviceTime));
+        _timeItems.push_back(new TimeStatus(systemTime));
         _timeItems.push_back(new TimeStatus(phoneTime));
         _timeItems.push_back(new TimeStatus(gpsTime));
 

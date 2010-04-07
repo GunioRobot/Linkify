@@ -13,7 +13,7 @@ namespace wm {
 namespace time {
     class Phone: public Sender, protected Thread {
     private:
-        ref<CellularRadio> _device;
+        ref<ril::CellularRadio> _device;
         ref<Event> _stop;
         ref<WaitableManager> _events;
         bool _automatic;
@@ -37,13 +37,13 @@ namespace time {
         }
 
 
-        virtual void onFinalize() {
+        virtual void finalize() {
             _stop->notify();
             wait();
         }
 
 
-        virtual void onInitialize(bool automatic) {
+        virtual void initialize(bool automatic) {
             _automatic = automatic;
             _stop->reset();
             start();
@@ -127,7 +127,7 @@ namespace time {
 
         bool initializeDevice() {
             try {
-                _device = new CellularRadio();
+                _device = new ril::CellularRadio();
                 getListeners()->onStatusChange(S("Starting..."));
 
                 if (!checkNitzSupport() || !checkEquipmentState()) {

@@ -1,5 +1,5 @@
-#ifndef __WM__GID__WRAPPER__
-#define __WM__GID__WRAPPER__
+#ifndef __WM__GID__INTERFACE__
+#define __WM__GID__INTERFACE__
 
 
 #include "../Object.h"
@@ -26,8 +26,7 @@
 
 
 namespace wm {
-namespace Api {
-namespace Gps {
+namespace gid {
     HINSTANCE Load();
     bool Unload();
     
@@ -45,7 +44,7 @@ static void UnloadFunctions() {
 #if defined(API_FUNCTION_LOADER) || defined(API_FUNCTION_UNLOADER)
 }
 #endif
-}}}
+}}
 
 
 #undef API_FUNCTION

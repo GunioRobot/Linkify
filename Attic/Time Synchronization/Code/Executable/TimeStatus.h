@@ -22,7 +22,7 @@ public:
 
 
     virtual void finalize() {
-        _time->onFinalize();
+        _time->finalize();
         _time->removeListener(noref this);
     }
 
@@ -39,7 +39,7 @@ public:
 
     virtual void initialize(bool automatic) {
         _time->addListener(noref this);
-        _time->onInitialize(automatic);
+        _time->initialize(automatic);
     }
 
 

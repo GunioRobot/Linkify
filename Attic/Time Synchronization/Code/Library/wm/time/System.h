@@ -9,24 +9,24 @@
 
 namespace wm {
 namespace time {
-    class Device: public Receiver, public Sender, protected Timer {
+    class System: public Receiver, public Sender, protected Timer {
     public:
         virtual String getDescription() {
-            return S("Uses the local time from the internal clock.");
+            return S("Uses the time from the internal system clock.");
         }
 
 
         virtual String getName() {
-            return S("Device");
+            return S("System");
         }
         
         
-        virtual void onFinalize() {
+        virtual void finalize() {
             stop();
         }
         
         
-        virtual void onInitialize(bool automatic) {
+        virtual void initialize(bool automatic) {
             onTimeout();
             start(1 * 1000);
         }

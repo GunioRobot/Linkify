@@ -1,11 +1,10 @@
 #pragma once
 
 
-#include "wrapper.h"
+#include "interface.h"
 
 
 namespace wm {
-namespace Api {
-namespace Ril {
+namespace ril {
     const TCHAR* GetErrorMessage(HRESULT result);
-}}}
+}}

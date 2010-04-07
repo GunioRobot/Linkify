@@ -5,10 +5,11 @@
 #include "../Event.h"
 #include "../Exception.h"
 #include "../Thread.h"
-#include "wrapper.h"
+#include "interface.h"
 
 
 namespace wm {
+namespace gid {
     class GpsReceiver: protected Thread {
     public:
         class Listener: public Object {
@@ -34,7 +35,7 @@ namespace wm {
             _positionChange(new Event(true)),
             _running(true)
         {
-            if ((_references == 0) && (Api::Gps::Load() == NULL)) {
+            if ((_references == 0) && (Load() == NULL)) {
                 Exception::throwLastError();
             }
 
@@ -50,7 +51,7 @@ namespace wm {
             _positionChange->notify();
             wait();
 
-            if ((--_references == 0) && !Api::Gps::Unload()) {
+            if ((--_references == 0) && !Unload()) {
                 Exception::throwLastError();
             }
         }
@@ -72,7 +73,7 @@ namespace wm {
             position.dwVersion = GPS_VERSION_1;
             position.dwSize = sizeof(GPS_POSITION);
 
-            DWORD result = Api::Gps::GPSGetPosition(getGpsHandle(),
+            DWORD result = GPSGetPosition(getGpsHandle(),
                 &position, maxAgeMs, 0);
 
             if (result != ERROR_SUCCESS) {
@@ -89,7 +90,7 @@ namespace wm {
             state.dwVersion = GPS_VERSION_1;
             state.dwSize = sizeof(GPS_DEVICE);
 
-            DWORD result = Api::Gps::GPSGetDeviceState(&state);
+            DWORD result = GPSGetDeviceState(&state);
 
             if (result != ERROR_SUCCESS) {
                 Exception::throwError(result);
@@ -106,8 +107,8 @@ namespace wm {
         
         virtual void start() {
             if (_handle == NULL) {
-                _handle = Api::Gps::GPSOpenDevice(
-                    _positionChange->getEventHandle(), NULL, NULL, 0);
+                _handle = GPSOpenDevice(_positionChange->getEventHandle(),
+                    NULL, NULL, 0);
 
                 if (_handle == NULL) {
                     throw Exception(S("Failed to open GPS device."));
@@ -118,7 +119,7 @@ namespace wm {
 
         virtual void stop() {
             if (_handle != NULL) {
-                DWORD result = Api::Gps::GPSCloseDevice(_handle);
+                DWORD result = GPSCloseDevice(_handle);
                 
                 if (result != ERROR_SUCCESS) {
                     Exception::throwError(result);
@@ -145,4 +146,4 @@ namespace wm {
             }
         }
     };
-}
+}}

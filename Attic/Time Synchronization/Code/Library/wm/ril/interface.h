@@ -1,5 +1,5 @@
-#ifndef __WM__RIL__WRAPPER__
-#define __WM__RIL__WRAPPER__
+#ifndef __WM__RIL__INTERFACE__
+#define __WM__RIL__INTERFACE__
 
 
 #include "../Object.h"
@@ -26,8 +26,7 @@
 
 
 namespace wm {
-namespace Api {
-namespace Ril {
+namespace ril {
     HINSTANCE Load();
     bool Unload();
     
@@ -194,7 +193,7 @@ static void UnloadFunctions() {
 #if defined(API_FUNCTION_LOADER) || defined(API_FUNCTION_UNLOADER)
 }
 #endif
-}}}
+}}
 
 
 #undef API_FUNCTION
