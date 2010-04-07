@@ -1,9 +1,9 @@
 #pragma once
 
 
-#include "Exception.h"
-#include "Object.h"
-#include "String.h"
+#include "../Exception.h"
+#include "../Object.h"
+#include "../String.h"
 
 
 namespace wm {

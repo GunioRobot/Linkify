@@ -182,6 +182,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\wm\gid\interface.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\wm\ril\interface.cpp"
 				>
 				<FileConfiguration
@@ -200,10 +204,6 @@
 						ObjectFile="$(IntDir)/$(InputName)1.obj"
 					/>
 				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\wm\gid\interface.cpp"
-				>
 			</File>
 			<File
 				RelativePath=".\wm\Log.cpp"
@@ -248,7 +248,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\wm\DateTime.h"
+				RelativePath=".\wm\time\DateTime.h"
 				>
 			</File>
 			<File

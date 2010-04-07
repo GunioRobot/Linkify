@@ -30,7 +30,7 @@ namespace time {
                 DWORD delayMs = tickCount - sample.tickCount;
                 ULARGE_INTEGER time = sample.time;
                 
-                time.QuadPart += delayMs * (10 * 1000);
+                time.QuadPart += delayMs * 1000 * 10;
                 timeSamples.push_back(time);
             }
 
@@ -43,7 +43,7 @@ namespace time {
             }
 
             DWORD processingDelayMs = GetTickCount() - tickCount;
-            time.QuadPart += processingDelayMs * (10 * 1000);
+            time.QuadPart += processingDelayMs * 1000 * 10;
 
             return time;
         }
