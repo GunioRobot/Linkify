@@ -132,11 +132,7 @@ namespace gid {
 
     protected:
         virtual void onRun() {
-            while (_positionChange->wait()) {
-                if (!_running) {
-                    break;
-                }
-                
+            while (_positionChange->wait() && _running) {
                 std::list<ref<Listener>>::iterator it;
                 GPS_POSITION position = getPosition();
 
