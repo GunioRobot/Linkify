@@ -3,7 +3,6 @@
 
 #include <map>
 #include <vector>
-#include "Application.h"
 #include "Exception.h"
 #include "Menu.h"
 #include "MenuItem.h"
@@ -86,7 +85,7 @@ namespace wm {
                     }
                     catch (Exception& exception) {
                         state.exceptionCaught = true;
-                        Application::exit(exception);
+                        exception.die();
                     }
                 }
                 

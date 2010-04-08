@@ -2,7 +2,6 @@
 
 
 #include <map>
-#include "../Application.h"
 #include "../Event.h"
 #include "../Exception.h"
 #include "../Object.h"
@@ -29,7 +28,7 @@ namespace ril {
                 ((CellularRadio*) userData)->notifyHandler(code, data, size);
             }
             catch (Exception& exception) {
-                Application::exit(exception);
+                exception.die();
             }
         }
 
@@ -46,7 +45,7 @@ namespace ril {
                     data, size);
             }
             catch (Exception& exception) {
-                Application::exit(exception);
+                exception.die();
             }
         }
 

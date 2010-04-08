@@ -48,6 +48,15 @@ namespace wm {
         }
 
 
+        virtual void die() {
+            UINT type = MB_OK + MB_ICONERROR;
+            const TCHAR* message = getMessage().c_str();
+
+            MessageBox(GetForegroundWindow(), message, NULL, type);
+            ExitProcess(EXIT_FAILURE);
+        }
+
+
         virtual String getMessage() {
             return _message;
         }

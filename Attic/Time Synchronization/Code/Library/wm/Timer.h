@@ -2,7 +2,6 @@
 
 
 #include <map>
-#include "Application.h"
 #include "Exception.h"
 #include "Object.h"
 
@@ -30,7 +29,7 @@ namespace wm {
                 }
                 catch (Exception& exception) {
                     timer->stop();
-                    Application::exit(exception);
+                    exception.die();
                 }
             }
         }

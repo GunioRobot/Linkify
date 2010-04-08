@@ -1,7 +1,6 @@
 #pragma once
 
 
-#include "Application.h"
 #include "Event.h"
 #include "Exception.h"
 #include "Waitable.h"
@@ -80,7 +79,7 @@ namespace wm {
                 return EXIT_SUCCESS;
             }
             catch (Exception& exception) {
-                Application::exit(exception);
+                exception.die();
                 return EXIT_FAILURE;
             }
         }
