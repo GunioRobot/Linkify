@@ -41,10 +41,18 @@ namespace wm {
 
     private:
         String _message;
+        char* _cache;
 
 
     public:
-        Exception(String message = S("")): _message(message) {
+        Exception(String message = S("")): _message(message), _cache(NULL) {
+        }
+
+
+        virtual ~Exception() {
+            if (_cache != NULL) {
+                delete _cache;
+            }
         }
 
 
@@ -59,6 +67,15 @@ namespace wm {
 
         virtual String getMessage() {
             return _message;
+        }
+
+
+        virtual const char* what() {
+            if (_cache == NULL) {
+                _cache = getMessage().toCharArray();
+            }
+
+            return _cache;
         }
     };
 }
