@@ -13,9 +13,27 @@
 
 
 class Executable: public wm::Application, public wm::Thread, public wm::Window {
-public:
+private:
     static const wm::String TITLE;
     static const wm::String WINDOW_CLASS;
+
+
+public:
+    static int start(HINSTANCE instance, int windowShowMode) {
+        try {
+            wm::Window::createClass(WINDOW_CLASS);
+
+            if (wm::Window::exists(WINDOW_CLASS, TITLE)) {
+                return EXIT_SUCCESS;
+            }
+            
+            return Executable(instance).start(windowShowMode);
+        }
+        catch (wm::Exception& exception) {
+            exception.die();
+            return EXIT_FAILURE;
+        }
+    }
 
 
 private:
