@@ -5,7 +5,7 @@ const wm::String Executable::TITLE(S("Time Synchronization"));
 const wm::String Executable::WINDOW_CLASS(S("TIME_SYNCHRONIZATION"));
 
 
-int WINAPI WinMain(
+extern "C" int APIENTRY WinMain(
     HINSTANCE instance,
     HINSTANCE previousInstance,
     LPTSTR commandLine,
