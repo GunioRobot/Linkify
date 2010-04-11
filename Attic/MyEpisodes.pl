@@ -1,17 +1,16 @@
 #!/usr/bin/perl
 
 # To Do:
-# - Use WWW::Mechanize.
 # - Check for invalid user name and password.
 # - Check for invalid HTTP responses.
-# - Merge with the MyTVShows exporter script.
-# - Have an option to save cookies locally.
-# - Have an option to save and compress the exported list to a file.
-# - Print episode number in format "S-E-".
+# - Have an option to save cookies locally?
+# - Have an option to save and compress the exported list to a file?
+# - Print episode number in format "S-E-"?
+# - Merge with the MyTVShows exporter script?
+# - Use WWW::Mechanize?
 
 
 # External modules:
-use Getopt::Long ();
 use HTTP::Cookies ();
 use HTTP::Request::Common ();
 use List::MoreUtils ();
@@ -99,17 +98,11 @@ sub log_in {
 
 
 sub main {
-    my $jobs = 5;
-    
     binmode STDOUT, ':utf8';
-    return unless Getopt::Long::GetOptions('jobs=i' => \$jobs);
     
-    if ((@ARGV != 2) || ($jobs <= 0)) {
-        print <<'USAGE' and return;
-Usage: [options] <name> <password>
-Options:
-  --jobs #
-USAGE
+    if (@ARGV != 2) {
+        print "Usage: <name> <password>\n";
+        return;
     }
     
     my ($name, $password) = @ARGV;
