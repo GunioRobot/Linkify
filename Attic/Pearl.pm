@@ -2,7 +2,7 @@ package Pearl;
 
 use base qw(Exporter);
 use strict;
-use threads ();
+use threads;
 use utf8;
 use warnings;
 
@@ -26,19 +26,13 @@ END {
 }
 
 
-our @EXPORT = qw(*STDNULL $false $true abstract async instantiate ls uncapitalize);
+our @EXPORT = qw(*STDNULL $false $true abstract instantiate lazy ls uncapitalize);
 our $VERSION = v2009.06.18;
 
 
 sub abstract {
     my (undef, $filename, $line, $subroutine) = caller(1);
     die "Abstract subroutine &$subroutine called at $filename line $line.\n";
-}
-
-
-sub async(&@) {
-    tie my $result, __PACKAGE__.'::Scalar::Lazy', @ARG;
-    return \$result;
 }
 
 
@@ -59,6 +53,12 @@ sub instantiate {
     my $class = ref($invocant) || $invocant;
     
     return bless \%self, $class;
+}
+
+
+sub lazy(&@) {
+    tie my $result, __PACKAGE__.'::Scalar::Lazy', @ARG;
+    return \$result;
 }
 
 
@@ -276,22 +276,6 @@ Indicates that a method is abstract and should be implemented.
         abstract();
     }
 
-=head2 C<async {...} @arguments>
-
-Executes code asynchronously, that is, in a separate thread of execution (if
-possible). The resulting value is a reference to a scalar, which points to the
-actual result.
-
-    sub greet {
-        print "Hello world!\n";
-        return 'Bye!';
-    }
-
-    my $result = async {greet()};
-
-    print "$result --> $$result\n";
-    print "Goodbye!\n";
-
 =head2 C<instantiate($class, %attributes)>
 
 Creates an instance of a class, using the given hash for the initial attributes.
@@ -300,6 +284,21 @@ Creates an instance of a class, using the given hash for the initial attributes.
         my ($class, $name, $age) = @ARG;
         return instantiate($class, name => $name, age => $age);
     }
+
+=head2 C<lazy {...} @arguments>
+
+Executes code asynchronously. The resulting value is a reference to a scalar,
+which points to the actual result.
+
+    sub greet {
+        print "Hello world!\n";
+        return 'Bye!';
+    }
+
+    my $result = lazy {greet()};
+
+    print "$result --> $$result\n";
+    print "Goodbye!\n";
 
 =head2 C<ls($directory)>
 
@@ -316,4 +315,4 @@ Removes capitalization of words.
 
 =head1 AUTHORS
 
-Márcio Faustino
+Márcio Moniz Bandim Faustino
