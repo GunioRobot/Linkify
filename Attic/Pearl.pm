@@ -30,7 +30,7 @@ our @EXPORT = qw(*STDNULL $false $true abstract instantiate lazy ls uncapitalize
 our $VERSION = v2009.06.18;
 
 
-sub abstract {
+sub abstract() {
     my (undef, $filename, $line, $subroutine) = caller(1);
     die "Abstract subroutine &$subroutine called at $filename line $line.\n";
 }
@@ -273,7 +273,8 @@ Contains constant boolean, number and string values for truth.
 Indicates that a method is abstract and should be implemented.
 
     sub equals {
-        abstract();
+        my ($x, $y) = @ARG;
+        abstract
     }
 
 =head2 C<instantiate($class, %attributes)>
