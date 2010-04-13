@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-# External modules:
 use File::Basename ();
 use File::Slurp ();
 use File::Spec ();
@@ -9,8 +8,6 @@ use FindBin ();
 use HTTP::Daemon ();
 use HTTP::Response ();
 use HTTP::Status ();
-
-# Internal modules:
 use Pearl;
 
 

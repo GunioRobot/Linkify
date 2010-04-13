@@ -5,22 +5,13 @@
 # - xmllint: <http://xmlsoft.org/xmldtd.html#validate1>
 # - xmlto: <http://cyberelk.net/tim/software/xmlto/>
 
-
-# External modules:
 use Archive::Extract ();
 use Crypt::SSLeay ();
 use File::Path ();
 use File::Spec ();
 use LWP::UserAgent ();
-use XML::DOM ();
-
-# Internal modules:
 use Pearl;
-
-
-eval {exit main(@ARGV)};
-print "Error: $EVAL_ERROR\n";
-exit 1;
+use XML::DOM ();
 
 
 sub download {
@@ -218,3 +209,8 @@ sub publish_v5 {
     
     return ($validate, $compile);
 }
+
+
+eval {exit main(@ARGV)};
+print "Error: $EVAL_ERROR\n";
+exit 1;

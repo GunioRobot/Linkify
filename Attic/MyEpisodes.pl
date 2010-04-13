@@ -9,16 +9,12 @@
 # - Merge with the MyTVShows exporter script?
 # - Use WWW::Mechanize?
 
-
-# External modules:
 use HTTP::Cookies ();
 use HTTP::Request::Common ();
 use List::MoreUtils ();
 use LWP::UserAgent ();
-use Text::xSV ();
-
-# Internal modules:
 use Pearl;
+use Text::xSV ();
 
 
 my $base_url = 'http://www.myepisodes.com/';
