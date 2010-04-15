@@ -5,12 +5,13 @@
 # - xmllint: <http://xmlsoft.org/xmldtd.html#validate1>
 # - xmlto: <http://cyberelk.net/tim/software/xmlto/>
 
+use defaults;
 use Archive::Extract ();
 use Crypt::SSLeay ();
+use Cwd ();
 use File::Path ();
 use File::Spec ();
 use LWP::UserAgent ();
-use Pearl;
 use XML::DOM ();
 
 
@@ -141,6 +142,18 @@ sub is_docbook {
     }
     
     return $false;
+}
+
+
+sub ls {
+    my ($path) = @ARG;
+    $path = Cwd::getcwd() unless defined $path;
+    
+    opendir my ($directory), $path or die $ERRNO;
+    my @files = File::Spec->no_upwards(readdir $directory);
+    closedir $directory;
+    
+    return ((@files == 1) && !wantarray) ? pop @files : @files;
 }
 
 

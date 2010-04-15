@@ -1,12 +1,11 @@
 package TV::Tracker::MyEpisodes;
 use base qw(TV::Tracker);
 
-use autodie;
+use defaults;
 use HTTP::Cookies ();
 use HTTP::Request::Common ();
 use List::MoreUtils ();
 use LWP::UserAgent ();
-use Pearl;
 use Regexp::Common qw(whitespace);
 
 

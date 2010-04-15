@@ -1,12 +1,11 @@
 #!/usr/bin/perl
 
-use autodie;
+use defaults;
 use threads;
 use threads::shared;
 
 use Getopt::Long ();
 use Module::Load ();
-use Pearl;
 use Regexp::Common qw(number);
 use Text::xSV ();
 use Thread::Queue ();

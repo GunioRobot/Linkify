@@ -1,9 +1,8 @@
 package TV::Tracker::MyTVShows;
 use base qw(TV::Tracker);
 
-use autodie;
+use defaults;
 use List::MoreUtils ();
-use Pearl;
 
 
 sub _download {

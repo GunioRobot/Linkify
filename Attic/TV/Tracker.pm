@@ -1,8 +1,7 @@
 package TV::Tracker;
 
-use autodie;
+use defaults;
 use LWP::UserAgent ();
-use Pearl;
 
 
 sub _download {
