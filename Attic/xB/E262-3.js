@@ -1,7 +1,7 @@
 /**
  * @fileoverview Ensures E262-3 conformance.
  * @author Márcio Faustino
- * @version 2009-07-06
+ * @version 2010-04-15
  * @see http://www.mozilla.org/js/language/E262-3.pdf
  */
 
@@ -80,10 +80,8 @@ var E262 = new function() {
      * @type Object
      */
     this.getGlobalObject = function() {
-        // Nested functions have the global object as the value of "this".
-        return (function() {
-            return this;
-        })();
+        // Nested functions have the global object as the value of the receiver.
+        return (function() {return this})();
     };
     
     
