@@ -1,12 +1,8 @@
 #!/usr/bin/perl
 
-# Creates an interface wrapper to dynamically load/unload and use a library.
+# Creates an interface wrapper to dynamically load/unload a library.
 
-use autodie;
-use strict;
-use utf8;
-use warnings;
-
+use defaults;
 use Class::Struct ();
 use Env::Path ();
 use File::Basename ();
@@ -46,7 +42,7 @@ interface($wrapper);
 
 
 sub functions {
-    my ($file) = @_;
+    my ($file) = @ARG;
     my $text = File::Slurp::read_file($file);
     my $comments = $Regexp::Common::RE{comment}{'C++'};
     my $parenthesis = $Regexp::Common::RE{balanced}{-parens => '()'};
@@ -68,7 +64,7 @@ sub functions {
 
 
 sub implementation {
-    my ($wrapper) = @_;
+    my ($wrapper) = @ARG;
     my @namespace = @{$wrapper->namespace()};
     my ($header, $name) = ($wrapper->header(), $wrapper->name());
     my $library = $wrapper->library();
@@ -162,7 +158,7 @@ sub include_dirs {
 
 
 sub interface {
-    my ($wrapper) = @_;
+    my ($wrapper) = @ARG;
     my @namespace = @{$wrapper->namespace()};
     my ($header, $name) = ($wrapper->header(), $wrapper->name());
     my $include = $wrapper->include();

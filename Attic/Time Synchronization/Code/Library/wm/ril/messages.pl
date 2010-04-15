@@ -2,10 +2,7 @@
 
 # Extracts errors messages.
 
-use autodie;
-use strict;
-use utf8;
-use warnings;
+use defaults;
 
 
 my $messages = 'messages';
