@@ -38,4 +38,10 @@ sub list_shows {
 }
 
 
+sub new {
+    my ($class, @args) = @ARG;
+    abstract
+}
+
+
 1;

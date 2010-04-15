@@ -7,13 +7,15 @@ use threads::shared;
 use Getopt::Long ();
 use Module::Load ();
 use Pearl;
+use Regexp::Common qw(number);
 use Text::xSV ();
 use Thread::Queue ();
 use TV::Tracker ();
 
 
 sub alphanumerically {
-    return (($a =~ m/^\d+$/) && ($b =~ m/^\d+$/)) ? $a <=> $b : $a cmp $b;
+    my $real = qr/^$Regexp::Common::RE{num}{real}$/;
+    return (($a =~ $real) && ($b =~ $real)) ? $a <=> $b : $a cmp $b;
 }
 
 
@@ -64,18 +66,29 @@ sub export {
 
 
 sub main {
-    $OUTPUT_AUTOFLUSH = 1;
+    my %options = (
+        'help' => \(my $help = $false),
+        'parallel=i' => \(my $parallel = 5),
+    );
+    
     binmode STDOUT, ':utf8';
+    return unless Getopt::Long::GetOptionsFromArray(\@ARG, %options);
     
-    return unless Getopt::Long::GetOptions('parallel=i' => \(my $parallel = 5));
-    die "No tracker specified.\n" if @ARGV == 0;
+    if ((@ARG == 0) || $help) {
+        print <<'USAGE' and return;
+Usage: [options] <tracker> <arguments>
+Options:
+  --help        Displays this information.
+  --parallel    Number of concurrent connections.
+USAGE
+    }
     
-    my $name = shift @ARGV;
+    my $name = shift @ARG;
     my $module = sprintf '%s::%s', TV::Tracker::, $name;
     
     Module::Load::load($module);
-    export($module->new(@ARGV), $parallel);
+    export($module->new(@ARG), $parallel);
 }
 
 
-main();
+main(@ARGV);

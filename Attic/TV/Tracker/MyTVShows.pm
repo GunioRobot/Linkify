@@ -1,6 +1,3 @@
-# http://www.mytvshows.org/
-# http://blog.mytvshows.org/kind-of-an-api/
-
 package TV::Tracker::MyTVShows;
 use base qw(TV::Tracker);
 
@@ -15,6 +12,7 @@ sub _download {
 }
 
 
+# See <http://blog.mytvshows.org/kind-of-an-api/>.
 sub get_status {
     my ($self, $show, $season, $episode) = @ARG;
     my $key = $self->{key};
@@ -62,7 +60,7 @@ sub list_shows {
 
 sub new {
     my $class = shift @ARG;
-    die "No user name and API key specified.\n" if @ARG != 2;
+    die "Arguments: <user name> <API key>\n" if @ARG != 2;
     
     my ($name, $key) = @ARG;
     return instantiate($class, name => $name, key => $key);

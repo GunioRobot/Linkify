@@ -1,5 +1,3 @@
-# http://www.myepisodes.com/
-
 package TV::Tracker::MyEpisodes;
 use base qw(TV::Tracker);
 
@@ -127,7 +125,7 @@ sub list_shows {
 
 sub new {
     my $class = shift @ARG;
-    die "No user name and password specified.\n" if @ARG != 2;
+    die "Arguments: <user name> <user password>\n" if @ARG != 2;
     
     my $self = instantiate($class);
     $self->__log_in(@ARG);
