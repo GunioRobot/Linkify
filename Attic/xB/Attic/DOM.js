@@ -17,7 +17,7 @@ var DOM = new function() {
     this.level = 1;
     
     this.INDEX_SIZE_ERR = 1;
-    this.STRING_SIZE_ERR = 2;
+    this.DOMSTRING_SIZE_ERR = 2;
     this.HIERARCHY_REQUEST_ERR = 3;
     this.WRONG_DOCUMENT_ERR = 4;
     this.INVALID_CHARACTER_ERR = 5;
