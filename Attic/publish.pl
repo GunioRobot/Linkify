@@ -25,7 +25,7 @@ sub download {
     }
     
     my $response = $browser->get($link, %options);
-    die $response->status_line() unless $response->is_success();
+    die $response->status_line()."\n" unless $response->is_success();
     
     return defined $output ? $output : $response->decoded_content();
 }
@@ -49,7 +49,7 @@ sub get_msvs {
         my $path = download($url, File::Spec->catfile($cache, $file));
         my $archive = Archive::Extract->new(archive => $path);
         
-        $archive->extract(to => $cache) or die $archive->error();
+        $archive->extract(to => $cache) or die $archive->error()."\n";
         unlink $path;
     }
     
@@ -92,7 +92,7 @@ sub get_saxon {
         my $path = download($url, File::Spec->catfile($cache, $file));
         my $archive = Archive::Extract->new(archive => $path);
         
-        $archive->extract(to => $cache) or die $archive->error();
+        $archive->extract(to => $cache) or die $archive->error()."\n";
         unlink $path;
     }
     
@@ -118,7 +118,7 @@ sub get_xsl {
         my $path = download($url, File::Spec->catfile($cache, $file));
         my $archive = Archive::Extract->new(archive => $path);
         
-        $archive->extract(to => $cache) or die $archive->error();
+        $archive->extract(to => $cache) or die $archive->error()."\n";
         unlink $path;
     }
     
@@ -164,31 +164,31 @@ sub main {
         if (@docbook_files == 1) {
             my ($file) = @docbook_files;
             print "Auto-detected file: $file\n";
-            return main($file);
+            main($file);
+            return;
         }
     }
     
     if (@ARG != 1) {
-        print "Compiles documents in DocBook format to HTML.\n";
-        print "Usage: [document file]\n";
-        return 1;
+        print <<'USAGE' and return;
+Compiles documents in DocBook format to HTML.
+Usage: [document file]
+USAGE
     }
     
     my ($file) = @ARG;
     my $document = XML::DOM::Parser->new()->parsefile($file);
     my $version = $document->getDocumentElement()->getAttribute('version');
     my $publish = ($version =~ m/^5/) ? \&publish_v5 : \&publish;
+    my ($validate, $compile) = &$publish($file);
     
     $document->dispose();
-    my ($validate, $compile) = $publish->($file);
     
     print "Validating...\n";
     system @$validate;
     
     print "Compiling...\n";
     system @$compile;
-    
-    return 0;
 }
 
 
@@ -224,6 +224,4 @@ sub publish_v5 {
 }
 
 
-eval {exit main(@ARGV)};
-print "Error: $EVAL_ERROR\n";
-exit 1;
+main(@ARGV);
