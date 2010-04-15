@@ -11,14 +11,6 @@ use File::Spec ();
 use Regexp::Common qw(balanced comment);
 
 
-my ($directory, $include) = @ARGV;
-my ($include_dir) = grep {-e File::Spec->catfile($_, $include)} include_dirs();
-my $include_file = File::Spec->catfile($include_dir, $include);
-
-my $name = 'interface';
-my @namespace = File::Spec->splitdir(File::Spec->canonpath($directory));
-my ($library) = File::Basename::fileparse($include_file, '.h');
-
 Class::Struct::struct Wrapper => {
     header => '$',
     include => '$',
@@ -27,18 +19,6 @@ Class::Struct::struct Wrapper => {
     name => '$',
     namespace => '@',
 };
-
-my $wrapper = Wrapper->new(
-    header => sprintf('__%s__', uc join '__', @namespace, $name),
-    include => $include,
-    include_file => $include_file,
-    library => $library,
-    name => $name,
-    namespace => \@namespace,
-);
-
-implementation($wrapper);
-interface($wrapper);
 
 
 sub functions {
@@ -236,3 +216,29 @@ EOT
 EOT
     close $output;
 }
+
+
+sub main {
+    my ($directory, $include) = @ARG;
+    my ($include_dir) = grep {-e File::Spec->catfile($_, $include)} include_dirs();
+    my $include_file = File::Spec->catfile($include_dir, $include);
+    
+    my $name = 'interface';
+    my @namespace = File::Spec->splitdir(File::Spec->canonpath($directory));
+    my ($library) = File::Basename::fileparse($include_file, '.h');
+    
+    my $wrapper = Wrapper->new(
+        header => sprintf('__%s__', uc join '__', @namespace, $name),
+        include => $include,
+        include_file => $include_file,
+        library => $library,
+        name => $name,
+        namespace => \@namespace,
+    );
+    
+    implementation($wrapper);
+    interface($wrapper);
+}
+
+
+main(@ARGV);
