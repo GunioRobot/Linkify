@@ -1,9 +1,9 @@
 /**
- * @fileoverview Ensures DOM Level 1 conformance.
+ * @fileoverview Ensures DOM conformance.
  * @author Márcio Faustino
- * @version 2009-07-06
- * @requires E262-3
- * @see http://www.w3.org/DOM/DOMTR#dom1
+ * @version 2010-04-15
+ * @requires E262
+ * @see http://www.w3.org/TR/REC-DOM-Level-1/
  */
 
 
@@ -17,7 +17,7 @@ var DOM = new function() {
     this.level = 1;
     
     this.INDEX_SIZE_ERR = 1;
-    this.thisSTRING_SIZE_ERR = 2;
+    this.STRING_SIZE_ERR = 2;
     this.HIERARCHY_REQUEST_ERR = 3;
     this.WRONG_DOCUMENT_ERR = 4;
     this.INVALID_CHARACTER_ERR = 5;
