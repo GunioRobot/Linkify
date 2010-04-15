@@ -80,7 +80,7 @@ var E262 = new function() {
      * @type Object
      */
     this.getGlobalObject = function() {
-        // Nested functions have the global object as the value of the receiver.
+        // Nested functions have the global object as the receiver.
         return (function() {return this})();
     };
     
