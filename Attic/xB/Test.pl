@@ -9,59 +9,60 @@ use HTTP::Response ();
 use HTTP::Status ();
 
 
-my $running = $true;
-
-my ($server, $client);
-my @port = (80, 8008, 8080, 8090);
-
-while (@port > 0) {
-    $server = HTTP::Daemon->new(LocalPort => shift @port, Timeout => 1) or next;
-}
-
-defined $server or die "Busy.\n";
-printf "[%s] On-line: %s\n", now(), $server->url();
-
-my $module_suffix = '.js';
-my $test_suffix = '.test'.$module_suffix;
-
-$SIG{INT} = sub {
-    printf "[%s] Stopping...\n", now();
-    $running = $false;
-};
-
-while ($running) {
-    $client = $server->accept() or next;
+sub main {
+    my @ports = (80, 8008, 8080, 8090);
+    my $running = $true;
+    my ($server, $client);
     
-    while (my $request = $client->get_request()) {
-        printf "[%s] Request: %s\n", now(), $request->uri();
-        
-        unless ($request->method() eq 'GET') {
-            $client->send_error(HTTP::Status::HTTP_FORBIDDEN);
-            next;
-        }
-        
-        my ($volume, $directory, $file) = File::Spec->splitpath($request->uri());
-        
-        if (($volume eq '') && ($directory eq '/')) {
-            if ($file eq '') {
-                $client->send_response(test());
-                next;
-            }
-            elsif (($file =~ m/\Q$module_suffix\E$/) && stat($file)) {
-                $client->send_response(module($file));
-                next;
-            }
-        }
-        
-        $client->send_error(HTTP::Status::HTTP_NOT_FOUND);
+    while (@ports > 0) {
+        $server = HTTP::Daemon->new(LocalPort => shift @ports, Timeout => 1) or next;
     }
+    
+    defined $server or die "Busy.\n";
+    printf "[%s] On-line: %s\n", now(), $server->url();
+    
+    my $module_suffix = '.js';
+    my $test_suffix = '.test'.$module_suffix;
+    
+    $SIG{INT} = sub {
+        printf "[%s] Stopping...\n", now();
+        $running = $false;
+    };
+    
+    while ($running) {
+        $client = $server->accept() or next;
+        
+        while (my $request = $client->get_request()) {
+            printf "[%s] Request: %s\n", now(), $request->uri();
+            
+            unless ($request->method() eq 'GET') {
+                $client->send_error(HTTP::Status::HTTP_FORBIDDEN);
+                next;
+            }
+            
+            my ($volume, $directory, $file) = File::Spec->splitpath($request->uri());
+            
+            if (($volume eq '') && ($directory eq '/')) {
+                if ($file eq '') {
+                    $client->send_response(test($module_suffix, $test_suffix));
+                    next;
+                }
+                elsif (($file =~ m/\Q$module_suffix\E$/) && stat($file)) {
+                    $client->send_response(module($file));
+                    next;
+                }
+            }
+            
+            $client->send_error(HTTP::Status::HTTP_NOT_FOUND);
+        }
+    }
+    continue {
+        close $client if defined $client;
+    }
+    
+    close $server if defined $server;
+    printf "[%s] Off-line.\n", now();
 }
-continue {
-    close $client if defined $client;
-}
-
-close $server if defined $server;
-printf "[%s] Off-line.\n", now();
 
 
 sub module {
@@ -78,6 +79,7 @@ sub module {
 
 
 sub modules {
+    my ($module_suffix, $test_suffix) = @ARG;
     my %depends;
     
     foreach my $path (glob '*'.$module_suffix) {
@@ -120,6 +122,7 @@ sub now {
 
 
 sub test {
+    my ($module_suffix, $test_suffix) = @ARG;
     my $response = HTTP::Response->new(HTTP::Status::HTTP_OK);
     
     $response->header('Content-Type' => 'text/html; charset=UTF-8');
@@ -185,7 +188,7 @@ function test(label, tests) {
     </script>
 HTML
     
-    foreach my $name (modules()) {
+    foreach my $name (modules($module_suffix, $test_suffix)) {
         $response->add_content_utf8(<<"HTML");
     
     <h2>$name</h2>
@@ -201,3 +204,6 @@ HTML
     
     return $response;
 }
+
+
+main(@ARGV);
