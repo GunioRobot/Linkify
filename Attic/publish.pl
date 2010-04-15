@@ -149,7 +149,7 @@ sub ls {
     my ($path) = @ARG;
     $path = Cwd::getcwd() unless defined $path;
     
-    opendir my ($directory), $path or die $ERRNO;
+    opendir my ($directory), $path;
     my @files = File::Spec->no_upwards(readdir $directory);
     closedir $directory;
     

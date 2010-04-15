@@ -1,7 +1,6 @@
 package defaults;
 
-use autodie;
-use base qw(Exporter);
+use base qw(Exporter autodie);
 use strict;
 use utf8;
 use warnings;
@@ -32,7 +31,6 @@ sub abstract() {
 
 
 sub import {
-    autodie->import();
     strict->import();
     utf8->import();
     warnings->import();
@@ -40,7 +38,8 @@ sub import {
     English->export_to_level(1);
     __PACKAGE__->export_to_level(1);
     
-    return 1;
+    # No export available.
+    goto &autodie::import;
 }
 
 
