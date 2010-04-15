@@ -1,5 +1,5 @@
 /**
- * @fileoverview Ensures E262-3 conformance.
+ * @fileoverview Ensures E262 conformance.
  * @author Márcio Faustino
  * @version 2010-04-15
  * @see http://www.mozilla.org/js/language/E262-3.pdf
