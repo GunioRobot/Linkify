@@ -10,19 +10,15 @@ use HTTP::Status ();
 
 
 sub main {
-    my @ports = (80, 8008, 8080, 8090);
     my $running = $true;
     my ($server, $client);
     
-    while (@ports > 0) {
-        $server = HTTP::Daemon->new(LocalPort => shift @ports, Timeout => 1) or next;
+    foreach my $port (80, 8008, 8080, 8090) {
+        $server = HTTP::Daemon->new(LocalPort => $port, Timeout => 1) and last;
     }
     
     defined $server or die "Busy.\n";
     printf "[%s] On-line: %s\n", now(), $server->url();
-    
-    my $module_suffix = '.js';
-    my $test_suffix = '.test'.$module_suffix;
     
     $SIG{INT} = sub {
         printf "[%s] Stopping...\n", now();
@@ -33,27 +29,7 @@ sub main {
         $client = $server->accept() or next;
         
         while (my $request = $client->get_request()) {
-            printf "[%s] Request: %s\n", now(), $request->uri();
-            
-            unless ($request->method() eq 'GET') {
-                $client->send_error(HTTP::Status::HTTP_FORBIDDEN);
-                next;
-            }
-            
-            my ($volume, $directory, $file) = File::Spec->splitpath($request->uri());
-            
-            if (($volume eq '') && ($directory eq '/')) {
-                if ($file eq '') {
-                    $client->send_response(test($module_suffix, $test_suffix));
-                    next;
-                }
-                elsif (($file =~ m/\Q$module_suffix\E$/) && stat($file)) {
-                    $client->send_response(module($file));
-                    next;
-                }
-            }
-            
-            $client->send_error(HTTP::Status::HTTP_NOT_FOUND);
+            reply($client, $request);
         }
     }
     continue {
@@ -118,6 +94,35 @@ sub now {
     return sprintf '%d-%02d-%02d %02d:%02d:%02d',
         ($year + 1900), ($month + 1), $day,
         $hours, $minutes, $seconds;
+}
+
+
+sub reply {
+    my ($client, $request) = @ARG;
+    my $module_suffix = '.js';
+    my $test_suffix = '.test'.$module_suffix;
+    
+    printf "[%s] Request: %s\n", now(), $request->uri();
+    
+    unless ($request->method() eq 'GET') {
+        $client->send_error(HTTP::Status::HTTP_FORBIDDEN);
+        return;
+    }
+    
+    my ($volume, $directory, $file) = File::Spec->splitpath($request->uri());
+    
+    if (($volume eq '') && ($directory eq '/')) {
+        if ($file eq '') {
+            $client->send_response(test($module_suffix, $test_suffix));
+            return;
+        }
+        elsif (($file =~ m/\Q$module_suffix\E$/) && stat($file)) {
+            $client->send_response(module($file));
+            return;
+        }
+    }
+    
+    $client->send_error(HTTP::Status::HTTP_NOT_FOUND);
 }
 
 
