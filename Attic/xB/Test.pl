@@ -1,17 +1,14 @@
 #!/usr/bin/perl
 
+use defaults;
 use File::Basename ();
 use File::Slurp ();
 use File::Spec ();
-use File::stat;
-use FindBin ();
 use HTTP::Daemon ();
 use HTTP::Response ();
 use HTTP::Status ();
-use Pearl;
 
 
-my $mtime = stat($PROGRAM_NAME)->mtime();
 my $running = $true;
 
 my ($server, $client);
@@ -61,19 +58,10 @@ while ($running) {
 }
 continue {
     close $client if defined $client;
-    
-    if ($mtime != stat($PROGRAM_NAME)->mtime()) {
-        printf "[%s] Reloading server...\n", now();
-        undef $mtime;
-        last;
-    }
 }
 
 close $server if defined $server;
 printf "[%s] Off-line.\n", now();
-
-my $script = File::Basename::basename($PROGRAM_NAME);
-exec File::Spec->catfile($FindBin::Bin, $script), @ARGV unless $mtime;
 
 
 sub module {
