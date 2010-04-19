@@ -2,7 +2,7 @@
 
 
 extern "C"
-BOOL APIENTRY DllMain(HANDLE module, DWORD  mode, LPVOID reserved) {
+BOOL APIENTRY DllMain(HANDLE module, DWORD mode, LPVOID reserved) {
     wm::Log::error(TEXT("##### DLL\n"));
     return TRUE;
 }
