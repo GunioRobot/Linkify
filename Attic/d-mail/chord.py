@@ -1,4 +1,12 @@
-# author: Pedro Garcia Lopez, PhD
+# -*- coding: utf-8 -*-
+
+
+"""
+@author: Pedro Garcia Lopez
+"""
+
+
+# Standard library:
 import random
 
 
