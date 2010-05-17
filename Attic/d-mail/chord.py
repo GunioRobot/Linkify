@@ -96,7 +96,7 @@ class Node:
         else:
             self.init_finger_table(n1)
             self.update_others()  
-            # Move keys !!! 
+            # Move keys.
     
     
     def init_finger_table(self, n1):
@@ -137,7 +137,7 @@ class Node:
             p.update_finger_table(self.successor(), i)
     
     
-    # not checked 
+    # Unchecked.
     def leave(self):
         self.successor().predecessor = self.predecessor
         self.predecessor.setSuccessor(self.successor())
