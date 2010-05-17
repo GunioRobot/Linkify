@@ -2,64 +2,65 @@
 
 
 """
+@author: Márcio Faustino
 @author: Pedro Garcia Lopez
 """
 
 
-# Standard library:
-import random
-
-
-BITS = 6
-MAX_NODES = 2 ** BITS
-
-
-def decr(value, size):
-    if size <= value:
-        return value - size
-    else:
-        return MAX_NODES - (size - value)
-
-
-def between(value, init, end):
-    if init == end:
-        return True
-    elif init > end:
-        shift = MAX_NODES - init
-        init = 0
-        end = (end + shift) % MAX_NODES
-        value = (value + shift) % MAX_NODES
+class Node (object):
+    BITS = 6
+    MAX_NODES = 2 ** BITS
     
-    return (init < value) and (value < end)
-
-
-def Ebetween(value, init, end):
-    if value == init:
-        return True
-    else:
-        return between(value, init, end)
-
-
-def betweenE(value, init, end):
-    if value == end:
-        return True
-    else:
-        return between(value, init, end)
-
-
-class Node:
+    
+    @classmethod
+    def between(cls, value, begin, end):
+        if begin == end:
+            return True
+        elif begin > end:
+            shift = cls.MAX_NODES - begin
+            begin = 0
+            end = (end + shift) % cls.MAX_NODES
+            value = (value + shift) % cls.MAX_NODES
+        
+        return (begin < value) and (value < end)
+    
+    
+    @classmethod
+    def between_begin(cls, value, begin, end):
+        if value == begin:
+            return True
+        else:
+            return cls.between(value, begin, end)
+    
+    
+    @classmethod
+    def between_end(cls, value, begin, end):
+        if value == end:
+            return True
+        else:
+            return cls.between(value, begin, end)
+    
+    
+    @classmethod
+    def decr(cls, value, size):
+        if size <= value:
+            return value - size
+        else:
+            return cls.MAX_NODES - (size - value)
+    
+    
     def __init__(self, ident):
         self.ident = ident
         self.finger = {}
         self.start = {}
         
-        for i in xrange(BITS):
-            self.start[i] = (self.ident + (2 ** i)) % (2 ** BITS)
+        for i in xrange(self.BITS):
+            self.start[i] = (self.ident + (2 ** i)) % (2 ** self.BITS)
     
     
     def closest_preceding_finger(self, ident):
-        for i in xrange(BITS - 1, -1, -1):
-            if between(self.finger[i].ident, self.ident, ident):
+        for i in xrange(self.BITS - 1, -1, -1):
+            if self.between(self.finger[i].ident, self.ident, ident):
                 return self.finger[i]
         
         return self
@@ -71,14 +72,14 @@ class Node:
         
         n1 = self
         
-        while not betweenE(ident, n1.ident, n1.successor().ident):
+        while not self.between_end(ident, n1.ident, n1.successor().ident):
             n1 = n1.closest_preceding_finger(ident)
         
         return n1
     
     
     def find_successor(self, ident):
-        if betweenE(ident, self.predecessor.ident, self.ident):
+        if self.between_end(ident, self.predecessor.ident, self.ident):
             return self
         
         return self.find_predecessor(ident).successor()
@@ -90,8 +91,8 @@ class Node:
         self.successor().predecessor = self
         self.predecessor.finger[0] = self
         
-        for i in xrange(BITS - 1):
-            if Ebetween(self.start[i + 1], self.ident, self.finger[i].ident):
+        for i in xrange(self.BITS - 1):
+            if self.between_begin(self.start[i + 1], self.ident, self.finger[i].ident):
                 self.finger[i + 1] = self.finger[i]
             else :
                 self.finger[i + 1] = n1.find_successor(self.start[i + 1])
@@ -99,7 +100,7 @@ class Node:
     
     def join(self, n1):
         if self == n1:
-            for i in xrange(BITS):
+            for i in xrange(self.BITS):
                 self.finger[i] = self
             self.predecessor = self
         else:
@@ -115,8 +116,30 @@ class Node:
         self.update_others_leave()
     
     
+    def print_nodes(self):
+        print ' Ring nodes:'
+        end = self
+        print self.ident
+        
+        while end != self.successor():
+            self = self.successor()
+            print self.ident
+        
+        print '-----------'
+    
+    
     def set_successor(self, succ):
         self.finger[0] = succ
+    
+    
+    def show_finger(self):
+        print 'Finger table of node', self.ident
+        print 'start:node'
+        
+        for i in xrange(self.BITS):
+            print self.start[i], ':', self.finger[i].ident
+        
+        print '-----------'
     
     
     def successor(self):
@@ -124,15 +147,15 @@ class Node:
     
     
     def update_finger_table(self, s, i):
-        if Ebetween(s.ident, self.ident, self.finger[i].ident) and self.ident != s.ident:
+        if self.between_begin(s.ident, self.ident, self.finger[i].ident) and self.ident != s.ident:
             self.finger[i] = s
             p = self.predecessor
             p.update_finger_table(s, i)
     
     
     def update_others(self):
-        for i in xrange(BITS):
-            prev = decr(self.ident, 2 ** i)
+        for i in xrange(self.BITS):
+            prev = self.decr(self.ident, 2 ** i)
             p = self.find_predecessor(prev)
             
             if prev == p.successor().ident:
@@ -142,39 +165,7 @@ class Node:
     
     
     def update_others_leave(self):
-        for i in xrange(BITS):
-            prev = decr(self.ident, 2 ** i)
+        for i in xrange(self.BITS):
+            prev = self.decr(self.ident, 2 ** i)
             p = self.find_predecessor(prev)
             p.update_finger_table(self.successor(), i)
-
-
-def hash_key(line):
-    import sha
-    key = long(sha.new(line).hexdigest(), 16)
-    return key
-
-
-def ident():
-    return long(random.uniform(0, 2 ** BITS))
-
-
-def printNodes(node):
-    print ' Ring nodes:'
-    end = node
-    print node.ident
-    
-    while end != node.successor():
-        node = node.successor()
-        print node.ident
-    
-    print '-----------'
-
-
-def showFinger(node):
-    print 'Finger table of node', node.ident
-    print 'start:node'
-    
-    for i in xrange(BITS):
-        print node.start[i], ':', node.finger[i].ident
-    
-    print '-----------'
