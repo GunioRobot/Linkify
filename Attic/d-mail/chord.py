@@ -57,15 +57,12 @@ class Node:
             self.start[i] = (self.ident + (2 ** i)) % (2 ** BITS)
     
     
-    def successor(self):
-        return self.finger[0]
-    
-    
-    def find_successor(self, ident):
-        if betweenE(ident, self.predecessor.ident, self.ident):
-            return self
+    def closest_preceding_finger(self, ident):
+        for i in xrange(BITS - 1, -1, -1):
+            if between(self.finger[i].ident, self.ident, ident):
+                return self.finger[i]
         
-        return self.find_predecessor(ident).successor()
+        return self
     
     
     def find_predecessor(self, ident):
@@ -80,23 +77,11 @@ class Node:
         return n1
     
     
-    def closest_preceding_finger(self, ident):
-        for i in xrange(BITS - 1, -1, -1):
-            if between(self.finger[i].ident, self.ident, ident):
-                return self.finger[i]
+    def find_successor(self, ident):
+        if betweenE(ident, self.predecessor.ident, self.ident):
+            return self
         
-        return self
-    
-    
-    def join(self, n1):
-        if self == n1:
-            for i in xrange(BITS):
-                self.finger[i] = self
-            self.predecessor = self
-        else:
-            self.init_finger_table(n1)
-            self.update_others()  
-            # Move keys.
+        return self.find_predecessor(ident).successor()
     
     
     def init_finger_table(self, n1):
@@ -112,6 +97,39 @@ class Node:
                 self.finger[i + 1] = n1.find_successor(self.start[i + 1])
     
     
+    def join(self, n1):
+        if self == n1:
+            for i in xrange(BITS):
+                self.finger[i] = self
+            self.predecessor = self
+        else:
+            self.init_finger_table(n1)
+            self.update_others()  
+            # Move keys.
+    
+    
+    # Unchecked.
+    def leave(self):
+        self.successor().predecessor = self.predecessor
+        self.predecessor.set_successor(self.successor())
+        self.update_others_leave()
+    
+    
+    def set_successor(self, succ):
+        self.finger[0] = succ
+    
+    
+    def successor(self):
+        return self.finger[0]
+    
+    
+    def update_finger_table(self, s, i):
+        if Ebetween(s.ident, self.ident, self.finger[i].ident) and self.ident != s.ident:
+            self.finger[i] = s
+            p = self.predecessor
+            p.update_finger_table(s, i)
+    
+    
     def update_others(self):
         for i in xrange(BITS):
             prev = decr(self.ident, 2 ** i)
@@ -123,29 +141,11 @@ class Node:
             p.update_finger_table(self, i)
     
     
-    def update_finger_table(self, s, i):
-        if Ebetween(s.ident, self.ident, self.finger[i].ident) and self.ident != s.ident:
-            self.finger[i] = s
-            p = self.predecessor
-            p.update_finger_table(s, i)
-    
-    
     def update_others_leave(self):
         for i in xrange(BITS):
             prev = decr(self.ident, 2 ** i)
             p = self.find_predecessor(prev)
             p.update_finger_table(self.successor(), i)
-    
-    
-    # Unchecked.
-    def leave(self):
-        self.successor().predecessor = self.predecessor
-        self.predecessor.setSuccessor(self.successor())
-        self.update_others_leave()
-    
-    
-    def setSuccessor(self, succ):
-        self.finger[0] = succ
 
 
 def hash_key(line):
