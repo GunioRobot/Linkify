@@ -38,6 +38,9 @@ n2.show_finger()
 n3.show_finger()
 n1.print_nodes()
 
+found = n1.find_successor(40)
+print 'found:', found.ident
+
 #toPajek(n1,'michord.net')
 #toPajek2(n1,'michord2.net')
 #print 'finish !!!'
