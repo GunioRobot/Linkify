@@ -1,17 +1,26 @@
-# author: Pedro Garcia Lopez, PhD
-from chord import *
+# -*- coding: utf-8 -*-
 
 
-n1 = Node(1)
-n2 = Node(8)
-n3 = Node(14)
-n4 = Node(21)
-n5 = Node(32)
-n6 = Node(38)
-n7 = Node(42)
-n8 = Node(48)
-n9 = Node(51)
-n10 = Node(56)
+"""
+@author: Márcio Faustino
+@author: Pedro Garcia Lopez
+"""
+
+
+# Internal modules:
+import chord
+
+
+n1 = chord.Node(1)
+n2 = chord.Node(8)
+n3 = chord.Node(14)
+n4 = chord.Node(21)
+n5 = chord.Node(32)
+n6 = chord.Node(38)
+n7 = chord.Node(42)
+n8 = chord.Node(48)
+n9 = chord.Node(51)
+n10 = chord.Node(56)
 
 n1.join(n1)
 n2.join(n1)

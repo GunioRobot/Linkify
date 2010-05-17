@@ -1,48 +1,42 @@
-# author: Pedro Garcia Lopez, PhD
-# README !!!! : Set the variable k to 160 in chord.py. The hash function generates keys of size 2^160.
-from chord import *
-from time import time
+# -*- coding: utf-8 -*-
 
 
-def hash_key(line):
-    import sha
-    key = long(sha.new(line).hexdigest(), 16)
-    return key
+"""
+@author: Márcio Faustino
+@author: Pedro Garcia Lopez
+"""
 
 
-def ident():
-    import random
-    return long(random.uniform(0, 2 ** BITS))
+# Standard library:
+import hashlib, random, time
+
+# Internal modules:
+import chord
 
 
-def main():
-
-    k = 160
-    t1  = time()
-    nodes = {}
-    for i in range(100):
-        nodes[i] = Node(ident())
-       # print nodes[i].ident
-    
-    for i in range(100):
-        nodes[i].join(nodes[0])
-    
-    t2 = time()
-    print 'Time to create 100 nodes'
-    print t2 - t1
-
-       
-    key = hash_key('pedro')
-    print key
-    found = nodes[0].find_predecessor(key)
-    print found.ident
-    
-   
-    print 'finish !!!'
-    
+def generate_id():
+    return long(random.uniform(0, 2 ** chord.Node.BITS))
 
 
+def generate_key(data):
+    return long(hashlib.sha1(data).hexdigest(), 16)
 
-if __name__ == "__main__":
 
-    main()
+chord.Node.BITS = 160
+t1 = time.time()
+nodes = {}
+
+for i in xrange(100):
+    nodes[i] = chord.Node(generate_id())
+    #print nodes[i].ident
+
+for i in xrange(100):
+    nodes[i].join(nodes[0])
+
+t2 = time.time()
+print 'Time to create 100 nodes:', t2 - t1
+
+key = generate_key('pedro')
+print key
+found = nodes[0].find_predecessor(key)
+print found.ident

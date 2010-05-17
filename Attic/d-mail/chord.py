@@ -9,7 +9,6 @@
 
 class Node (object):
     BITS = 6
-    MAX_NODES = 2 ** BITS
     
     
     @classmethod
@@ -17,10 +16,10 @@ class Node (object):
         if begin == end:
             return True
         elif begin > end:
-            shift = cls.MAX_NODES - begin
+            shift = cls.max_nodes() - begin
             begin = 0
-            end = (end + shift) % cls.MAX_NODES
-            value = (value + shift) % cls.MAX_NODES
+            end = (end + shift) % cls.max_nodes()
+            value = (value + shift) % cls.max_nodes()
         
         return (begin < value) and (value < end)
     
@@ -46,7 +45,12 @@ class Node (object):
         if size <= value:
             return value - size
         else:
-            return cls.MAX_NODES - (size - value)
+            return cls.max_nodes() - (size - value)
+    
+    
+    @classmethod
+    def max_nodes(cls):
+        return 2 ** cls.BITS
     
     
     def __init__(self, ident):
@@ -147,7 +151,7 @@ class Node (object):
     
     
     def update_finger_table(self, s, i):
-        if self.between_begin(s.ident, self.ident, self.finger[i].ident) and self.ident != s.ident:
+        if self.between_begin(s.ident, self.ident, self.finger[i].ident) and (self.ident != s.ident):
             self.finger[i] = s
             p = self.predecessor
             p.update_finger_table(s, i)
