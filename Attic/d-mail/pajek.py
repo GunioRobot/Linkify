@@ -4,7 +4,7 @@ def node2graph(node):
     current = node.successor()
     
     while current != node:    
-        graph[current.id] = []
+        graph[current.ident] = []
         addNode(graph, current)
         current = current.successor()
     
@@ -12,10 +12,10 @@ def node2graph(node):
 
 
 def addNode(graph, node):
-    graph[node.id] = []
+    graph[node.ident] = []
     
     for n in node.finger.values():
-        graph[node.id].append(n.id)
+        graph[node.ident].append(n.ident)
 
 
 def toPajek(node, filename):
