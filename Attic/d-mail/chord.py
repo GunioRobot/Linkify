@@ -53,7 +53,7 @@ class Node:
         self.finger = {}
         self.start = {}
         
-        for i in range(BITS):
+        for i in xrange(BITS):
             self.start[i] = (self.ident + (2 ** i)) % (2 ** BITS)
     
     
@@ -81,7 +81,7 @@ class Node:
     
     
     def closest_preceding_finger(self, ident):
-        for i in range(BITS - 1, -1, -1):
+        for i in xrange(BITS - 1, -1, -1):
             if between(self.finger[i].ident, self.ident, ident):
                 return self.finger[i]
         
@@ -90,7 +90,7 @@ class Node:
     
     def join(self, n1):
         if self == n1:
-            for i in range(BITS):
+            for i in xrange(BITS):
                 self.finger[i] = self
             self.predecessor = self
         else:
@@ -105,7 +105,7 @@ class Node:
         self.successor().predecessor = self
         self.predecessor.finger[0] = self
         
-        for i in range(BITS - 1):
+        for i in xrange(BITS - 1):
             if Ebetween(self.start[i + 1], self.ident, self.finger[i].ident):
                 self.finger[i + 1] = self.finger[i]
             else :
@@ -113,7 +113,7 @@ class Node:
     
     
     def update_others(self):
-        for i in range(BITS):
+        for i in xrange(BITS):
             prev = decr(self.ident, 2 ** i)
             p = self.find_predecessor(prev)
             
@@ -131,7 +131,7 @@ class Node:
     
     
     def update_others_leave(self):
-        for i in range(BITS):
+        for i in xrange(BITS):
             prev = decr(self.ident, 2 ** i)
             p = self.find_predecessor(prev)
             p.update_finger_table(self.successor(), i)
@@ -174,7 +174,7 @@ def showFinger(node):
     print 'Finger table of node', node.ident
     print 'start:node'
     
-    for i in range(BITS):
+    for i in xrange(BITS):
         print node.start[i], ':', node.finger[i].ident
     
     print '-----------'
