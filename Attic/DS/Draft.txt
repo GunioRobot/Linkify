@@ -2,6 +2,11 @@ Space Requirements per Node:
 x USED + y FREE; x >= 0; y >= x
 
 
+Replication Priority:
+- Most recent/old
+- Larger/smaller
+
+
 Replication:
 - Split into chunks and send each one to each successor.
     chunk = x / m
@@ -10,9 +15,28 @@ Replication:
     available_n = (x + y) * (block_n / ∑ block_n); n ∈ [1, p]; p <= m
 
 
-Replication Priority:
-- Most recent/old
-- Larger/smaller
+Replication:
+- Key's node: original copy.
+- Finger nodes: master copies.
+- ?: slave copies.
+
+
+How to use remaining available storage for additional copies?
+
+m = 3
+TOTAL = 2^3 = 8
+FILES = w x
+
+000 = A: B D
+001 = B: D A
+010
+011 = D: A B
+100
+101
+110
+111
+
+hash(w) = 010
 
 
 m = 2, N = 4
