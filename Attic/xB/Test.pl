@@ -59,11 +59,12 @@ sub modules {
     my %depends;
     
     foreach my $path (glob '*'.$module_suffix) {
-        open my $file, '<:utf8', $path;
-        my @requires = join('', <$file>) =~ m/\@requires\s+([^\s]+)/g;
-        close $file;
+        my $contents = File::Slurp::read_file($path,
+            binmode => ':raw', scalar_ref => $true);
         
+        my @requires = ($contents =~ m/\@requires\s+([^\s]+)/g);
         my $name = File::Basename::basename($path, $test_suffix, $module_suffix);
+        
         push @{$depends{$name}}, @requires;
     }
     
