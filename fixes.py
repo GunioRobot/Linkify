@@ -40,7 +40,8 @@ class _RemoveDoublePercents (object):
         return value.replace('%%', '')
 
 
-# Optimized version - decreases memory usage by half and speeds up parsing.
+# Optimized version - decreases memory usage and speeds up parsing.
+# <http://bugs.python.org/issue8009>
 def _parsestr(self, text, headersonly = False):
     feed_parser = email.feedparser.FeedParser(self._class)
     
@@ -53,6 +54,7 @@ def _parsestr(self, text, headersonly = False):
 
 # Fixes the memory error that sometimes occurs when downloading a large e-mail
 # message and adds a check for the SSL socket read function return value.
+# <http://bugs.python.org/issue1441530>
 class _ImapSsl (imaplib.IMAP4_SSL):
     def read(self, size):
         buffer = cStringIO.StringIO()
