@@ -61,8 +61,7 @@ namespace time {
     protected:
         virtual void onPositionChange(GPS_POSITION pos) {
             if ((pos.dwValidFields & GPS_VALID_UTC_TIME) != 0) {
-                getListeners()->onTimeChange(
-                    DateTime::utcToLocal(pos.stUTCTime));
+                getListeners()->onTimeChange(DateTime::utcToLocal(pos.stUTCTime));
             }
             else if (pos.FixQuality == GPS_FIX_QUALITY_UNKNOWN) {
                 getListeners()->onStatusChange(S("Obtaining position fix..."));
