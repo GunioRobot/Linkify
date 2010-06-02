@@ -2,6 +2,11 @@
 (function() {
 
 
+// Array.shuffle
+// - Don't use: array.sort(function() {return 0.5 - Math.random();});
+// - See http://www.robweir.com/blog/2010/02/microsoft-random-browser-ballot.html
+
+
 /**
  * Compares this array with another.
  *
