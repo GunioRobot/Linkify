@@ -210,4 +210,4 @@ Creates an instance of a class, using the given hash for the initial attributes.
 
 =head1 AUTHORS
 
-Márcio Moniz Bandim Faustino
+Márcio Faustino
