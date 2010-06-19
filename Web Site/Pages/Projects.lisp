@@ -7,7 +7,7 @@
   (:h3 "Projects")
   
   (:dl
-    (:dt (:a (@ (:href "http://eon.origo.ethz.ch/")) "Eon"))
+    (:dt "Eon")
     (:dd "Kernel experiment to learn more about the design and implementation of Operating Systems.")
     
     (:dt (:a (@ (:href "http://janus.sourceforge.net/")) "Janus"))
