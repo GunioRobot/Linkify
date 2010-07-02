@@ -88,9 +88,9 @@ window.addEventListener('load', function() {
     
     function tick() {
         var time = timeInput.value.split(/:/);
-        var hours = parseInt(time[0]);
-        var minutes = parseInt(time[1]);
-        var seconds = parseInt(time[2]);
+        var hours = Number(time[0]);
+        var minutes = Number(time[1]);
+        var seconds = Number(time[2]);
         
         ++seconds;
         
