@@ -1,1 +1,2 @@
 AddDefaultCharset Off
+AddType text/cache-manifest .manifest
