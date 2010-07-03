@@ -65,6 +65,9 @@ ul > li > a.TogglePlugins:before {
     content: -o-skin("Mail Attachments");
 }
 
+ul > li > a.Translate:before {
+    content: -o-skin("Chat Room");
+}
 
 ul > li > a.Up:before {
     content: -o-skin("Parent Folder");
@@ -77,6 +80,7 @@ ul > li > a.Up:before {
     
     <ul>
       <li><a class="Go" href="opera:/button/Go,,,,Group">Go</a></li>
+      <li><a class="Translate" href="opera:/button/Go to page,%22javascript:(function() {var s = window.getSelection().toString().replace(/^\s+/, '').replace(/\s+$/, ''); window.open('http://translate.google.com/' + (s.length == 0 ? 'translate?sl=auto&tl=en&u=' + encodeURI(location) : '#auto|en|' + encodeURIComponent(s)))})()%22,,Translate,Chat Room">Translate</a></li>
       <li><a class="BypassLogin" href="opera:/button/Go to page,%22javascript:void(window.open('http://bugmenot.com/view/' + encodeURI(location)))%22,,Bypass login,Mail Redirected">Bypass login</a></li>
       <li><a class="Up" href="opera:/button/Go to parent directory,,,,Parent folder">Go to parent directory</a></li>
       <li><a class="ClosePage" href="opera:/button/Close page,,,,Pagebar Close Button Skin">Close page</a></li>
