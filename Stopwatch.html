@@ -54,9 +54,9 @@ form > * > input {
     
     <script type="text/javascript">
 window.addEventListener('load', function() {
-    var timeInput = document.getElementById('Time').childNodes.item(0);
-    var pauseButton = document.getElementById('Pause').childNodes.item(0);
-    var resetButton = document.getElementById('Reset').childNodes.item(0);
+    var timeInput = document.querySelector('#Time > input');
+    var pauseButton = document.querySelector('#Pause > input');
+    var resetButton = document.querySelector('#Reset > input');
     
     var startMessage = pauseButton.value;
     var stopMessage = 'Stop';
