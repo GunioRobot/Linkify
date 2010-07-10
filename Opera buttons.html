@@ -7,7 +7,6 @@
     <title>Opera buttons</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="Author" content="Márcio Faustino"/>
-    
     <style type="text/css" media="screen">
 body {
     font-size: smaller;
@@ -25,10 +24,15 @@ ul > li + li {
 
 ul > li > a {
     color: inherit;
-    background-color: ThreeDFace;
-    
     text-decoration: none;
-    padding: 0.3em 0.5em 0.3em 0.5em;
+}
+
+ul > li > a:before {
+    position: relative;
+    margin-right: 8px;
+    
+    background-color: ThreeDFace;
+    padding: 0 4px 0 4px;
     
     border-width: 1px;
     border-style: solid;
@@ -39,10 +43,14 @@ ul > li > a {
     border-right-color: ThreeDShadow;
 }
 
-ul > li > a:before {
-    position: relative;
-    margin-right: 8px;
+ul > li > a.Small:before {
     top: 3px;
+    padding-top: 6px;
+}
+
+ul > li > a.Medium:before {
+    top: 6px;
+    padding-top: 12px;
 }
 
 ul > li > a.BypassLogin:before {
@@ -53,6 +61,10 @@ ul > li > a.ClosePage:before {
     content: -o-skin("Pagebar Close Button Skin");
 }
 
+ul > li > a.FakeEmail:before {
+    content: -o-skin("Mail Accounts Online");
+}
+
 ul > li > a.Go:before {
     content: -o-skin("Group");
 }
@@ -61,12 +73,16 @@ ul > li > a.MailAddress:before {
     content: -o-skin("View Mail");
 }
 
+ul > li > a.ReadMail:before {
+    content: -o-skin("Read mail");
+}
+
 ul > li > a.TogglePlugins:before {
     content: -o-skin("Mail Attachments");
 }
 
 ul > li > a.Translate:before {
-    content: -o-skin("View threaded");
+    content: -o-skin("Mail Thread");
 }
 
 ul > li > a.Up:before {
@@ -77,15 +93,16 @@ ul > li > a.Up:before {
   
   <body>
     <p>Drag a button onto a toolbar to install it:</p>
-    
     <ul>
-      <li><a class="Go" href="opera:/button/Go,,,,Group">Go</a></li>
-      <li><a class="Translate" href="opera:/button/Go to page,%22javascript:(function() {var s = window.getSelection().toString().replace(/^\s+/, '').replace(/\s+$/, ''); window.open('http://translate.google.com/' + (s.length == 0 ? 'translate?sl=auto&tl=en&u=' + encodeURIComponent(location) : '#auto|en|' + encodeURIComponent(s)))})()%22,,Translate,View threaded">Translate</a></li>
-      <li><a class="BypassLogin" href="opera:/button/Go to page,%22javascript:void(window.open('http://bugmenot.com/view/' + encodeURI(location)))%22,,Bypass login,Mail Redirected">Bypass login</a></li>
-      <li><a class="Up" href="opera:/button/Go to parent directory,,,,Parent folder">Go to parent directory</a></li>
-      <li><a class="ClosePage" href="opera:/button/Close page,,,,Pagebar Close Button Skin">Close page</a></li>
-      <li><a class="TogglePlugins" href="opera:/button/Enable plugins,,,,Mail Attachments|Disable plugins,,,,">Toggle plug-ins</a></li>
-      <li><a class="MailAddress" href="opera:/button/Send document address in mail,,,,View Mail">Mail document address</a></li>
+      <li><a class="Go Small" href="opera:/button/Go,,,,Group">Go</a></li>
+      <li><a class="Translate Small" href="opera:/button/Go to page,%22javascript:(function() {var s = window.getSelection().toString().replace(/^\s+/, '').replace(/\s+$/, ''); window.open('http://translate.google.com/' + (s.length == 0 ? 'translate?sl=auto&tl=en&u=' + encodeURIComponent(location) : '#auto|en|' + encodeURIComponent(s)))})()%22,,Translate,Mail Thread">Translate</a></li>
+      <li><a class="BypassLogin Small" href="opera:/button/Go to page,%22javascript:void(window.open('http://bugmenot.com/view/' + encodeURI(location)))%22,,Bypass login,Mail Redirected">Bypass login</a></li>
+      <li><a class="Up Small" href="opera:/button/Go to parent directory,,,,Parent folder">Go to parent directory</a></li>
+      <li><a class="ClosePage Small" href="opera:/button/Close page,,,,Pagebar Close Button Skin">Close page</a></li>
+      <li><a class="TogglePlugins Small" href="opera:/button/Enable plugins,,,,Mail Attachments|Disable plugins,,,,">Toggle plug-ins</a></li>
+      <li><a class="MailAddress Small" href="opera:/button/Send document address in mail,,,,View Mail">Mail document address</a></li>
+      <li><a class="FakeEmail Small" href="opera:/button/Go to page,%22javascript:(function() {var c = 'abcdefghijklmnopqrstuvwxyz', l = 14, u = ''; while (l-- >= 0) u += c[Math.floor(Math.random() * (c.length - 1))]; window.open('http://www.mailinator.com/maildir.jsp?email=' + u)})()%22,,Fake e-mail,Mail Accounts Online">Fake e-mail</a></li>
+      <li><a class="ReadMail Medium" href="opera:/button/Read mail,,Mail + Show popup menu,Internal Access Points">Read mail</a></li>
     </ul>
   </body>
 </html>
