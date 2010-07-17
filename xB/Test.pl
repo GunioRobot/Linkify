@@ -58,7 +58,7 @@ sub modules {
     my ($module_suffix, $test_suffix) = @ARG;
     my %depends;
     
-    foreach my $path (glob '*'.$module_suffix) {
+    foreach my $path (glob '*' . $module_suffix) {
         my $contents = File::Slurp::read_file($path,
             binmode => ':raw', scalar_ref => $true);
         
@@ -101,7 +101,7 @@ sub now {
 sub reply {
     my ($client, $request) = @ARG;
     my $module_suffix = '.js';
-    my $test_suffix = '.test'.$module_suffix;
+    my $test_suffix = '.test' . $module_suffix;
     
     printf "[%s] Request: %s\n", now(), $request->uri();
     

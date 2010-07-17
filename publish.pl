@@ -25,7 +25,7 @@ sub download {
     }
     
     my $response = $browser->get($link, %options);
-    die $response->status_line()."\n" unless $response->is_success();
+    die $response->status_line() . "\n" unless $response->is_success();
     
     return defined $output ? $output : $response->decoded_content();
 }
@@ -41,7 +41,7 @@ sub get_msvs {
         my $base_url = 'https://msv.dev.java.net';
         my $list = "$base_url/servlets/ProjectDocumentList?folderID=101";
         my ($leaf_url) = (download($list) =~ m/"([^"]+relames[^"]+\.zip)"/);
-        my $url = $base_url.$leaf_url;
+        my $url = $base_url . $leaf_url;
         my $file = File::Basename::fileparse($url);
         
         File::Path::mkpath($cache);
@@ -49,7 +49,7 @@ sub get_msvs {
         my $path = download($url, File::Spec->catfile($cache, $file));
         my $archive = Archive::Extract->new(archive => $path);
         
-        $archive->extract(to => $cache) or die $archive->error()."\n";
+        $archive->extract(to => $cache) or die $archive->error() . "\n";
         unlink $path;
     }
     
@@ -92,7 +92,7 @@ sub get_saxon {
         my $path = download($url, File::Spec->catfile($cache, $file));
         my $archive = Archive::Extract->new(archive => $path);
         
-        $archive->extract(to => $cache) or die $archive->error()."\n";
+        $archive->extract(to => $cache) or die $archive->error() . "\n";
         unlink $path;
     }
     
@@ -118,7 +118,7 @@ sub get_xsl {
         my $path = download($url, File::Spec->catfile($cache, $file));
         my $archive = Archive::Extract->new(archive => $path);
         
-        $archive->extract(to => $cache) or die $archive->error()."\n";
+        $archive->extract(to => $cache) or die $archive->error() . "\n";
         unlink $path;
     }
     

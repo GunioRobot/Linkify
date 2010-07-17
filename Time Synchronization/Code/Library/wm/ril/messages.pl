@@ -20,7 +20,7 @@ EOT
 while (my $line = <STDIN>) {
     if ($line =~ m/(RIL_E_\w+)[^\@]+\@constdefine\s+(.+)$/) {
         my $constant = $1;
-        my $text = ucfirst($2).($2 =~ m/\.$/ ? '' : '.');
+        my $text = ucfirst($2) . ($2 =~ m/\.$/ ? '' : '.');
         
         print $impl (<< "EOT");
     TEXT("$text"), // $constant

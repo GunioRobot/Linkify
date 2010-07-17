@@ -60,7 +60,7 @@ sub __log_in {
     my $agent = LWP::UserAgent->new();
     my $cookies = HTTP::Cookies->new();
     
-    my $log_in = HTTP::Request::Common::POST($base_url.'login.php', [
+    my $log_in = HTTP::Request::Common::POST($base_url . 'login.php', [
         username => $name,
         password => $password,
         action => 'Login',
@@ -85,7 +85,7 @@ sub __log_in {
 
 sub _download {
     my ($self, $url) = @ARG;
-    return $self->SUPER::_download($base_url.$url, $self->{cookies});
+    return $self->SUPER::_download($base_url . $url, $self->{cookies});
 }
 
 
