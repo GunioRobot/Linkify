@@ -4,11 +4,16 @@ use defaults;
 use threads;
 use threads::shared;
 
+# External modules:
+use File::Basename ();
+use File::Spec ();
 use Getopt::Long ();
 use Module::Load ();
 use Regexp::Common qw(number);
 use Text::xSV ();
 use Thread::Queue ();
+
+# Internal modules:
 use TV::Tracker ();
 
 
@@ -64,6 +69,14 @@ sub export {
 }
 
 
+sub list_trackers {
+    my ($directory) = grep -d, glob '*';
+    
+    return map {scalar File::Basename::fileparse($ARG, '.pm')}
+        glob File::Spec->catfile($directory, '*.pm');
+}
+
+
 sub main {
     my %options = (
         'help' => \(my $help = $false),
@@ -74,8 +87,12 @@ sub main {
     return unless Getopt::Long::GetOptionsFromArray(\@ARG, %options);
     
     if ((@ARG == 0) || $help) {
-        print <<'USAGE' and return;
+        my @trackers = list_trackers();
+        print <<"USAGE" and return;
 Usage: [options] <tracker> <arguments>
+
+Trackers: @trackers
+
 Options:
   --help        Displays this information.
   --parallel    Number of concurrent connections.
