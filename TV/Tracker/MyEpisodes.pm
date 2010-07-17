@@ -78,6 +78,8 @@ sub __log_in {
     
     die "$warning.\n" unless $warning eq '';
     $self->{cookies} = $cookies;
+    
+    return $self;
 }
 
 
@@ -122,14 +124,17 @@ sub list_shows {
 }
 
 
+sub name {
+    my ($self) = @ARG;
+    return 'MyEpisodes';
+}
+
+
 sub new {
     my $class = shift @ARG;
     die "Arguments: <user name> <user password>\n" if @ARG != 2;
     
-    my $self = instantiate($class);
-    $self->__log_in(@ARG);
-    
-    return $self;
+    return instantiate($class)->__log_in(@ARG);
 }
 
 

@@ -5,9 +5,11 @@ use threads;
 use threads::shared;
 
 # External modules:
+use DateTime ();
 use File::Basename ();
 use File::Spec ();
 use Getopt::Long ();
+use IO::Compress::Bzip2 ();
 use Module::Load ();
 use Regexp::Common qw(number);
 use Text::xSV ();
@@ -23,8 +25,37 @@ sub alphanumerically {
 }
 
 
+sub backup {
+    my ($tracker, $parallel, $output) = @ARG;
+    my $episodes = Thread::Queue->new();
+    
+    my $backup = async {
+        my $stream = do {
+            if ($output) {
+                \*STDOUT;
+            }
+            else {
+                my $date_time = DateTime->now();
+                
+                IO::Compress::Bzip2->new(sprintf '%s (%sT%sZ).csv.bz2',
+                    $tracker->name(),
+                    $date_time->ymd(''),
+                    $date_time->hms(''));
+            }
+        };
+        
+        print $stream $ARG while $ARG = $episodes->dequeue();
+        close $stream unless $output;
+    };
+    
+    export($tracker, $parallel, $episodes);
+    $episodes->enqueue(undef);
+    $backup->join();
+}
+
+
 sub export {
-    my ($tracker, $parallel) = @ARG;
+    my ($tracker, $parallel, $episodes) = @ARG;
     my %shows :shared = $tracker->list_shows();
     my $header = 'Name ID/Name/Season ID/Season/Episode ID/Episode/Status';
     my $csv = Text::xSV->new();
@@ -32,22 +63,20 @@ sub export {
     my $remaining :shared = 0;
     
     $csv->set_header(split '/', $header);
-    $csv->print_header();
+    $episodes->enqueue($csv->format_header());
     
     async {
-        while (my $item = $work->dequeue()) {
+        for (; my $item = $work->dequeue(); --$remaining) {
             my ($show_id, $season_id, $season, $ep_id, $ep) = @$item;
             my $status = $tracker->get_status($show_id, $season_id, $ep_id);
             
-            print $csv->format_row(
+            $episodes->enqueue($csv->format_row(
                 $show_id, $shows{$show_id},
                 $season_id, $season,
                 $ep_id, $ep,
-                $status);
-            
-            --$remaining;
+                $status));
         }
-    }->detach() for 1..$parallel;
+    }->detach() for 1 .. $parallel;
     
     foreach my $show (sort alphanumerically keys %shows) {
         my %seasons = $tracker->list_seasons($show);
@@ -80,13 +109,14 @@ sub list_trackers {
 sub main {
     my %options = (
         'help' => \(my $help = $false),
+        'output' => \(my $output = $false),
         'parallel=i' => \(my $parallel = 5),
     );
     
     binmode STDOUT, ':utf8';
     return unless Getopt::Long::GetOptionsFromArray(\@ARG, %options);
     
-    if ((@ARG == 0) || $help) {
+    if ((@ARG == 0) || $help || ($parallel < 1)) {
         my @trackers = list_trackers();
         print <<"USAGE" and return;
 Usage: [options] <tracker> <arguments>
@@ -94,7 +124,8 @@ Usage: [options] <tracker> <arguments>
 Trackers: @trackers
 
 Options:
-  --help        Displays this information.
+  --help        Display this information.
+  --output      Print to standard output instead of saving to a file.
   --parallel    Number of concurrent connections.
 USAGE
     }
@@ -103,7 +134,7 @@ USAGE
     my $module = sprintf '%s::%s', TV::Tracker::, $name;
     
     Module::Load::load($module);
-    export($module->new(@ARG), $parallel);
+    backup($module->new(@ARG), $parallel, $output);
 }
 
 

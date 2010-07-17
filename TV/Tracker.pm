@@ -37,6 +37,12 @@ sub list_shows {
 }
 
 
+sub name {
+    my ($self) = @ARG;
+    abstract
+}
+
+
 sub new {
     my ($class, @args) = @ARG;
     abstract

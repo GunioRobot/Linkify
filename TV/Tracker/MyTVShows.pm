@@ -57,6 +57,12 @@ sub list_shows {
 }
 
 
+sub name {
+    my ($self) = @ARG;
+    return 'MyTVShows';
+}
+
+
 sub new {
     my $class = shift @ARG;
     die "Arguments: <user name> <API key>\n" if @ARG != 2;
