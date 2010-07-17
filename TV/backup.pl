@@ -6,11 +6,8 @@ use threads::shared;
 
 # External modules:
 use DateTime ();
-use File::Basename ();
-use File::Spec ();
 use Getopt::Long ();
 use IO::Compress::Bzip2 ();
-use Module::Load ();
 use Regexp::Common qw(number);
 use Text::xSV ();
 use Thread::Queue ();
@@ -98,14 +95,6 @@ sub export {
 }
 
 
-sub list_trackers {
-    my ($directory) = grep -d, glob '*';
-    
-    return map {scalar File::Basename::fileparse($ARG, '.pm')}
-        glob File::Spec->catfile($directory, '*.pm');
-}
-
-
 sub main {
     my %options = (
         'help' => \(my $help = $false),
@@ -117,7 +106,7 @@ sub main {
     return unless Getopt::Long::GetOptionsFromArray(\@ARG, %options);
     
     if ((@ARG == 0) || $help || ($parallel < 1)) {
-        my @trackers = list_trackers();
+        my @trackers = TV::Tracker->list_trackers();
         print <<"USAGE" and return;
 Usage: [options] <tracker> <arguments>
 
@@ -130,11 +119,7 @@ Options:
 USAGE
     }
     
-    my $name = shift @ARG;
-    my $module = sprintf '%s::%s', TV::Tracker::, $name;
-    
-    Module::Load::load($module);
-    backup($module->new(@ARG), $parallel, $output);
+    backup(TV::Tracker->load_tracker(@ARG), $parallel, $output);
 }
 
 
