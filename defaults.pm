@@ -21,7 +21,7 @@ BEGIN {
 
 
 our @EXPORT = qw(*STDNULL $false $true abstract instantiate);
-our $VERSION = v2010.04.15;
+our $VERSION = v2010.07.17;
 
 
 sub abstract() {
@@ -51,13 +51,13 @@ sub instantiate {
 }
 
 
+our $false = 0;
+our $true = 1;
+
+Internals::SvREADONLY($false, 1);
+Internals::SvREADONLY($true, 1);
+
 open STDNULL, '+<', File::Spec->devnull();
-
-tie our $false, 'defaults::Scalar::Constant',
-    defaults::Scalar::Overloaded->new(0, 0, 'false');
-
-tie our $true, 'defaults::Scalar::Constant',
-    defaults::Scalar::Overloaded->new(1, 1, 'true');
 
 binmode STDERR;
 binmode STDIN;
@@ -68,90 +68,6 @@ STDOUT->autoflush($true);
 
 $LIST_SEPARATOR = ', ';
 $WARNING = $true;
-
-
-# ------------------------------------------------------------------------------
-
-
-package defaults::Scalar::Constant;
-
-use strict;
-use warnings;
-
-use Carp ();
-use English qw(-no_match_vars);
-
-
-sub FETCH {
-    my ($self) = @ARG;
-    return $$self;
-}
-
-
-sub TIESCALAR {
-    my ($package) = caller;
-    Carp::croak('Internal package') unless $package eq defaults::;
-    
-    my ($class, $self) = @ARG;
-    return bless \$self, $class;
-}
-
-
-*STORE = *UNTIE = sub {
-    Carp::croak('Constant values are read-only');
-};
-
-
-# ------------------------------------------------------------------------------
-
-
-package defaults::Scalar::Overloaded;
-
-use strict;
-use warnings;
-
-use overload
-    'fallback' => 1,
-    'bool' => \&to_boolean,
-    '0+' => \&to_number,
-    '""' => \&to_string;
-
-use Carp ();
-use English qw(-no_match_vars);
-
-
-sub new {
-    my ($class, $boolean, $number, $string) = @ARG;
-    my ($package) = caller;
-    
-    Carp::croak('Internal package') unless $package eq defaults::;
-    
-    my %self = (
-        boolean => $boolean,
-        number => $number,
-        string => $string,
-    );
-    
-    return bless \%self, $class;
-}
-
-
-sub to_boolean {
-    my ($self) = @ARG;
-    return $self->{boolean};
-}
-
-
-sub to_number {
-    my ($self) = @ARG;
-    return $self->{number};
-}
-
-
-sub to_string {
-    my ($self) = @ARG;
-    return $self->{string};
-}
 
 
 1;
@@ -180,11 +96,11 @@ Standard null stream.
 
 =item C<$false>
 
-Contains constant boolean, number and string values for falsehood.
+Constant for falsehood.
 
 =item C<$true>
 
-Contains constant boolean, number and string values for truth.
+Constant for truth.
 
 =back
 
