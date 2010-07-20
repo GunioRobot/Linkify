@@ -11,7 +11,7 @@ use HTTP::Status ();
 
 sub main {
     my $running = $true;
-    my ($server, $client);
+    my $server;
     
     foreach my $port (80, 8008, 8080, 8090) {
         $server = HTTP::Daemon->new(LocalPort => $port, Timeout => 1) and last;
@@ -26,14 +26,10 @@ sub main {
     };
     
     while ($running) {
-        $client = $server->accept() or next;
-        
-        while (my $request = $client->get_request()) {
-            reply($client, $request);
+        if (my $client = $server->accept()) {
+            reply($client, $ARG) while $ARG = $client->get_request();
+            close $client;
         }
-    }
-    continue {
-        close $client if defined $client;
     }
     
     close $server if defined $server;
@@ -62,7 +58,7 @@ sub modules {
         my $contents = File::Slurp::read_file($path,
             binmode => ':raw', scalar_ref => $true);
         
-        my @requires = ($contents =~ m/\@requires\s+([^\s]+)/g);
+        my @requires = ($contents =~ m'@requires\s+([^\s]+)'g);
         my $name = File::Basename::basename($path, $test_suffix, $module_suffix);
         
         push @{$depends{$name}}, @requires;
@@ -93,8 +89,7 @@ sub now {
     my ($seconds, $minutes, $hours, $day, $month, $year) = localtime;
     
     return sprintf '%d-%02d-%02d %02d:%02d:%02d',
-        ($year + 1900), ($month + 1), $day,
-        $hours, $minutes, $seconds;
+        ($year + 1900), ($month + 1), $day, $hours, $minutes, $seconds;
 }
 
 
@@ -124,6 +119,7 @@ sub reply {
     }
     
     $client->send_error(HTTP::Status::HTTP_NOT_FOUND);
+    return;
 }
 
 
