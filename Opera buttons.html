@@ -61,12 +61,20 @@ ul > li > a.ClosePage:before {
     content: -o-skin("Pagebar Close Button Skin");
 }
 
-ul > li > a.FakeEmail:before {
+ul > li > a.EmptyCache:before {
+    content: -o-skin("Show trash");
+}
+
+ul > li > a.FakeMail:before {
     content: -o-skin("Mail Accounts Online");
 }
 
 ul > li > a.Go:before {
     content: -o-skin("Group");
+}
+
+ul > li > a.GoUp:before {
+    content: -o-skin("Parent Folder");
 }
 
 ul > li > a.MailAddress:before {
@@ -84,24 +92,21 @@ ul > li > a.TogglePlugins:before {
 ul > li > a.Translate:before {
     content: -o-skin("Mail Thread");
 }
-
-ul > li > a.Up:before {
-    content: -o-skin("Parent Folder");
-}
     </style>
   </head>
   
   <body>
     <p>Drag a button onto a toolbar to install it:</p>
     <ul>
-      <li><a class="Go Small" href="opera:/button/Go,,,,Group">Go</a></li>
-      <li><a class="Translate Small" href="opera:/button/Go to page,%22javascript:(function() {var s = window.getSelection().toString().replace(/^\s+/, '').replace(/\s+$/, ''); window.open('http://translate.google.com/' + (s.length == 0 ? 'translate?sl=auto&tl=en&u=' + encodeURIComponent(location) : '#auto|en|' + encodeURIComponent(s)))})()%22,,Translate,Mail Thread">Translate</a></li>
       <li><a class="BypassLogin Small" href="opera:/button/Go to page,%22javascript:void(window.open('http://bugmenot.com/view/' + encodeURI(location)))%22,,Bypass login,Mail Redirected">Bypass login</a></li>
-      <li><a class="Up Small" href="opera:/button/Go to parent directory,,,,Parent folder">Go to parent directory</a></li>
       <li><a class="ClosePage Small" href="opera:/button/Close page,,,,Pagebar Close Button Skin">Close page</a></li>
+      <li><a class="EmptyCache Small" href="opera:/button/Clear disk cache,,,Empty cache,Show Trash">Empty cache</a></li>
+      <li><a class="FakeMail Small" href="opera:/button/Go to page,%22javascript:(function() {var c = 'abcdefghijklmnopqrstuvwxyz', l = 14, u = ''; while (l-- >= 0) u += c[Math.floor(Math.random() * (c.length - 1))]; window.open('http://www.mailinator.com/maildir.jsp?email=' + u)})()%22,,Fake mail,Mail Accounts Online">Fake mail</a></li>
+      <li><a class="Go Small" href="opera:/button/Go,,,,Group">Go</a></li>
+      <li><a class="GoUp Small" href="opera:/button/Go to parent directory,,,Go up,Parent folder">Go up</a></li>
+      <li><a class="MailAddress Small" href="opera:/button/Send document address in mail,,,Mail address,View Mail">Mail address</a></li>
       <li><a class="TogglePlugins Small" href="opera:/button/Enable plugins,,,,Mail Attachments|Disable plugins,,,,">Toggle plug-ins</a></li>
-      <li><a class="MailAddress Small" href="opera:/button/Send document address in mail,,,,View Mail">Mail document address</a></li>
-      <li><a class="FakeEmail Small" href="opera:/button/Go to page,%22javascript:(function() {var c = 'abcdefghijklmnopqrstuvwxyz', l = 14, u = ''; while (l-- >= 0) u += c[Math.floor(Math.random() * (c.length - 1))]; window.open('http://www.mailinator.com/maildir.jsp?email=' + u)})()%22,,Fake e-mail,Mail Accounts Online">Fake e-mail</a></li>
+      <li><a class="Translate Small" href="opera:/button/Go to page,%22javascript:(function() {var s = window.getSelection().toString().replace(/^\s+/, '').replace(/\s+$/, ''); window.open('http://translate.google.com/' + (s.length == 0 ? 'translate?sl=auto&tl=en&u=' + encodeURIComponent(location) : '#auto|en|' + encodeURIComponent(s)))})()%22,,Translate,Mail Thread">Translate</a></li>
       <li><a class="ReadMail Medium" href="opera:/button/Read Mail & Get mail + Show popup menu, %22Internal Access Points%22, Mail">Read mail</a></li>
     </ul>
   </body>
