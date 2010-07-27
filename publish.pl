@@ -10,9 +10,42 @@ use Archive::Extract ();
 use Crypt::SSLeay ();
 use Cwd ();
 use File::Path ();
+use File::Slurp ();
 use File::Spec ();
 use LWP::UserAgent ();
 use XML::DOM ();
+
+
+my $NAMESPACE = 'http://docbook.org/ns/docbook';
+my $PUBLIC_ID = qr{-//OASIS//DTD\s+DocBook\s+XML\s+V([\d.]+)//EN};
+
+
+sub detect_version {
+    my ($file) = @ARG;
+    my $doc = eval {XML::DOM::Parser->new()->parsefile($file)};
+    
+    if ($EVAL_ERROR) {
+        my $xml = File::Slurp::read_file($file, scalar_ref => $true);
+        
+        if ($$xml =~ m/\bxmlns\s*=\s*"\Q$NAMESPACE\E"/) {
+            my @versions = ($$xml =~ m/<[^<>?]*\bversion\s*=\s*"([^"]+)"/g);
+            return pop @versions if @versions == 1;
+        }
+        elsif ($$xml =~ m/"$PUBLIC_ID"/) {
+            return $1;
+        }
+    }
+    else {
+        if ($doc->getDocumentElement()->getAttribute('xmlns') eq $NAMESPACE) {
+            return $doc->getDocumentElement()->getAttribute('version');
+        }
+        elsif (my $doctype = $doc->getDoctype()) {
+            return $1 if $doctype->getPubId() =~ m/^$PUBLIC_ID$/;
+        }
+    }
+    
+    return;
+}
 
 
 sub download {
@@ -129,22 +162,6 @@ sub get_xsl {
 }
 
 
-sub is_docbook {
-    my ($file) = @ARG;
-    my $doc = eval {XML::DOM::Parser->new()->parsefile($file)} or return $false;
-    my $namespace = $doc->getDocumentElement()->getAttribute('xmlns');
-    
-    if ($namespace eq 'http://docbook.org/ns/docbook') {
-        return $true;
-    }
-    if (my $doctype = $doc->getDoctype()) {
-        return $doctype->getPubId() =~ m|^-//OASIS//DTD DocBook XML|;
-    }
-    
-    return $false;
-}
-
-
 sub ls {
     my ($path) = @ARG;
     $path = Cwd::getcwd() unless defined $path;
@@ -158,41 +175,54 @@ sub ls {
 
 
 sub main {
-    if (@ARG == 0) {
-        my @docbook_files = grep {m/\.xml$/ && is_docbook($ARG)} ls();
+    my ($file) = @ARG;
+    my $version;
+    
+    if (defined $file) {
+        $version = detect_version($file);
+    }
+    else {
+        my %versions;
         
-        if (@docbook_files == 1) {
-            my ($file) = @docbook_files;
-            print "Auto-detected file: $file\n";
-            main($file);
-            return;
+        foreach my $file (grep m/\.xml$/, ls()) {
+            my $version = detect_version($file);
+            $versions{$file} = $version if defined $version;
+        }
+        
+        if (keys(%versions) == 1) {
+            ($file, $version) = %versions;
+            print "Automatic detection: DocBook v$version: $file\n\n";
         }
     }
     
-    if (@ARG != 1) {
-        print <<'USAGE' and return;
+    if (defined($file) && defined($version)) {
+        publish($file, $version);
+    }
+    else {
+        print << 'USAGE';
 Compiles documents in DocBook format to HTML.
-Usage: [document file]
+Usage: [file]
 USAGE
     }
     
-    my ($file) = @ARG;
-    my $document = XML::DOM::Parser->new()->parsefile($file);
-    my $version = $document->getDocumentElement()->getAttribute('version');
-    my $publish = ($version =~ m/^5/) ? \&publish_v5 : \&publish;
-    my ($validate, $compile) = &$publish($file);
-    
-    $document->dispose();
-    
-    print "Validating...\n";
-    system @$validate;
-    
-    print "Compiling...\n";
-    system @$compile;
+    return;
 }
 
 
 sub publish {
+    my ($file, $version) = @ARG;
+    my $publish = sprintf 'publish_v%u', $version;
+    my ($validate, $compile) = __PACKAGE__->can($publish)->($file);
+    
+    system @$validate;
+    print "\n";
+    system @$compile;
+    
+    return;
+}
+
+
+sub publish_v4 {
     my ($file) = @ARG;
     my $validate = ['xmllint', '--noout', '--valid', $file];
     my $compile = ['xmlto', 'html-nochunks', $file];
