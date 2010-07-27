@@ -107,7 +107,7 @@ sub main {
     
     if ((@ARG == 0) || $help || ($parallel < 1)) {
         my @trackers = TV::Tracker->list_trackers();
-        print <<"USAGE" and return;
+        print << "USAGE" and return;
 Usage: [options] <tracker> <arguments>
 
 Trackers: @trackers

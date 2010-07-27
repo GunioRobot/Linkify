@@ -128,7 +128,7 @@ sub test {
     my $response = HTTP::Response->new(HTTP::Status::HTTP_OK);
     
     $response->header('Content-Type' => 'text/html; charset=UTF-8');
-    $response->add_content_utf8(<<'HTML');
+    $response->add_content_utf8(<< 'HTML');
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -191,7 +191,7 @@ function test(label, tests) {
 HTML
     
     foreach my $name (modules($module_suffix, $test_suffix)) {
-        $response->add_content_utf8(<<"HTML");
+        $response->add_content_utf8(<< "HTML");
     
     <h2>$name</h2>
     <script src="$name$module_suffix" type="text/javascript"></script>
@@ -199,7 +199,7 @@ HTML
 HTML
     }
     
-    $response->add_content_utf8(<<'HTML');
+    $response->add_content_utf8(<< 'HTML');
   </body>
 </html>
 HTML
