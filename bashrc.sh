@@ -3,17 +3,7 @@
 # TODO: Don't resolve symbolic links.
 # TODO: Use unlimited history.
 
-if [ -z "$PS1" ]; then
-    echo . $0
-    exit
-else
-    # Install unless running interactively or read as a configuration file.
-    if [ "$BASH_ARGV" != "$HOME/.bashrc" ]; then
-        cp -bv $BASH_ARGV ~/.bashrc
-        chmod -x ~/.bashrc
-    fi
-fi
-
+[ -z "$PS1" ] && exit
 [ -n `which dircolors` ] && eval "$(dircolors -b)"
 [ -n `which lesspipe` ] && eval "$(lesspipe)"
 [ -f /etc/bash_completion ] && source /etc/bash_completion
