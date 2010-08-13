@@ -31,17 +31,24 @@ bind 'set expand-tilde off'
 alias -- -='cd -'
 alias ..='cd ..'
 alias ...='cd ../..'
+
 alias l='ls -CF'
 alias ll='ls -lA'
 alias ls='ls --color=auto'
 alias dir='ls -l'
+
 alias cd='cd -L'
 alias vg='valgrind --tool=memcheck --leak-check=yes --show-reachable=yes'
 alias nano='nano -w'
+
 alias ack='ack-grep --sort-files'
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
+
+alias ainstall='sudo apt-get install'
+alias aupdate='sudo apt-get update'
+alias aupgrade='sudo apt-get upgrade'
 
 export ACK_COLOR_FILENAME='dark blue'
 export EDITOR=$(which kwrite || echo $(which nano) -w)
