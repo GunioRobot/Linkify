@@ -38,10 +38,12 @@ alias dir='ls -l'
 alias cd='cd -L'
 alias vg='valgrind --tool=memcheck --leak-check=yes --show-reachable=yes'
 alias nano='nano -w'
+alias ack='ack-grep --sort-files'
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
+export ACK_COLOR_FILENAME='dark blue'
 export EDITOR=$(which kwrite || echo $(which nano) -w)
 export HISTCONTROL=ignoreboth
 export PS1='\[\033[30;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\n\$ '
