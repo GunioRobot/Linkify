@@ -80,6 +80,7 @@ if [ "$(uname -o)" = "Cygwin" ]; then
     export TEMP=$TMP
     bind '"\e[1;5C": forward-word'
     bind '"\e[1;5D": backward-word'
+    [ "$CD" ] && cd $CD
 else
     export TERM=xterm-color
 fi
