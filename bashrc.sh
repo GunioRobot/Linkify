@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# TODO: Don't resolve symbolic links.
-# TODO: Use unlimited history.
-
 [ -z "$PS1" ] && exit
 [ -n `which dircolors` ] && eval "$(dircolors -b)"
 [ -n `which lesspipe` ] && eval "$(lesspipe)"
@@ -34,17 +31,17 @@ alias ...='cd ../..'
 
 alias l='ls -CF'
 alias ll='ls -lA'
-alias ls='ls --color=auto'
+alias ls='\ls -Xh --color=auto --group-directories-first'
 alias dir='ls -l'
 
-alias cd='cd -L'
+alias cd='\cd -L'
 alias vg='valgrind --tool=memcheck --leak-check=yes --show-reachable=yes'
-alias nano='nano -w'
+alias nano='\nano -w'
 
 alias ack='ack-grep --sort-files'
-alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
+alias grep='\grep --color=auto'
+alias fgrep='\fgrep --color=auto'
+alias egrep='\egrep --color=auto'
 
 alias ainstall='sudo apt-get install'
 alias aupdate='sudo apt-get update'
@@ -53,10 +50,13 @@ alias aupgrade='sudo apt-get upgrade'
 export ACK_COLOR_FILENAME='dark blue'
 export EDITOR=$(which kwrite || echo $(which nano) -w)
 export HISTCONTROL=ignoreboth
-export PS1='\[\033[30;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\n\$ '
+export PS1='\[\033[4;30;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\n\$ '
 export TERM=xterm-color
 
-# Flush history session and set xterm title.
+# Remove bright green.
+export LS_COLORS=$(echo $LS_COLORS | sed -r 's/=01;/=30;/g')
+
+# Sync history session to file and set xterm title.
 export PROMPT_COMMAND='
 history -a
 unset -v HISTSIZE HISTFILESIZE
