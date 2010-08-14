@@ -58,22 +58,31 @@ alias ll='ls -lA'
 alias ls='ls -Xh --color=auto --group-directories-first'
 alias dir='ls -l'
 
-_have valgrind && alias vg="$NAME --tool=memcheck --leak-check=yes --show-reachable=yes"
-_have colordiff && alias diff=$NAME
 alias less='less -R'
-_have nano && (alias nano="TERM=xterm $NAME"; export EDITOR=$LOCATION)
-
-_have colorgcc && (alias gcc=$NAME; alias g++=$NAME)
-_have ack-grep && alias ack="$NAME --sort-files"
 alias grep='grep -E --color=auto'
 alias igrep='grep -i'
 alias rgrep='grep -r'
 
 export ACK_COLOR_FILENAME='dark blue'
-_have kwrite && export EDITOR=$LOCATION
 export HISTCONTROL=ignoreboth
 export PS1='\[\033[4;30;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\n\$ '
-_have cygpath 2>/dev/null && export TERM=cygwin || export TERM=xterm-color
+
+_have valgrind && alias vg="$NAME --tool=memcheck --leak-check=yes --show-reachable=yes"
+_have colordiff && alias diff=$NAME
+_have nano && (alias nano="TERM=xterm $NAME"; export EDITOR=$LOCATION)
+_have colorgcc && (alias gcc=$NAME; alias g++=$NAME)
+_have ack-grep && alias ack="$NAME --sort-files"
+_have kwrite && export EDITOR=$LOCATION
+
+if [ "$(uname -o)" = "Cygwin" ]; then
+    export TERM=cygwin
+    export TMP=/tmp
+    export TEMP=$TMP
+    bind '"\e[1;5C": forward-word'
+    bind '"\e[1;5D": backward-word'
+else
+    export TERM=xterm-color
+fi
 
 # Remove bright colors.
 export LS_COLORS=$(echo $LS_COLORS | sed -r 's/=01;/=30;/g')
