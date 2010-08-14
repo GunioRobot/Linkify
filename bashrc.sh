@@ -1,9 +1,48 @@
 #!/bin/bash
 
-[ -z "$PS1" ] && exit
-[ -n `which dircolors` ] && eval "$(dircolors -b)"
-[ -n `which lesspipe` ] && eval "$(lesspipe)"
-[ -f /etc/bash_completion ] && source /etc/bash_completion
+test -f /etc/bash_completion && source $_
+TRAPS=''
+
+case "$-" in
+*i*)
+    INTERACTIVE=''
+;;
+*)
+    INTERACTIVE='x'
+;;
+esac
+
+cleanup() {
+    _have apt-get && (sudo $NAME -qq autoremove; sudo $NAME -qq clean)
+    rm -rf ~/.cpan/build
+    rm -rf ~/.cpan/sources
+}
+
+reload() {
+    [ "$TRAPS" ] && eval "($TRAPS)"
+    exec $SHELL
+}
+
+# Disable tilde expansion.
+_expand() {
+    return
+}
+
+_have() {
+    NAME=$1
+    LOCATION=$(which $NAME 2>/dev/null)
+    
+    if [ "$LOCATION" ]; then
+        eval "HAVE_$(echo $NAME | tr '[:lower:]-' '[:upper:]_')='x'"
+        return 0
+    else
+        [ "$INTERACTIVE" ] && echo "Missing: $NAME" 1>&2
+        return 1
+    fi
+}
+
+_have dircolors && eval "$($NAME -b)"
+_have lesspipe && eval "$($NAME)"
 
 shopt -s cdspell checkwinsize histappend
 bind 'set completion-ignore-case on'
@@ -16,24 +55,25 @@ alias ...='cd ../..'
 
 alias l='ls -CF'
 alias ll='ls -lA'
-alias ls='\ls -Xh --color=auto --group-directories-first'
+alias ls='ls -Xh --color=auto --group-directories-first'
 alias dir='ls -l'
 
-alias vg='valgrind --tool=memcheck --leak-check=yes --show-reachable=yes'
-alias diff=colordiff
-alias less='\less -R'
-alias nano='TERM=xterm \nano'
+_have valgrind && alias vg="$NAME --tool=memcheck --leak-check=yes --show-reachable=yes"
+_have colordiff && alias diff=$NAME
+alias less='less -R'
+_have nano && (alias nano="TERM=xterm $NAME"; export EDITOR=$LOCATION)
 
-alias ack='ack-grep --sort-files'
-alias grep='\grep -E --color=auto'
+_have colorgcc && (alias gcc=$NAME; alias g++=$NAME)
+_have ack-grep && alias ack="$NAME --sort-files"
+alias grep='grep -E --color=auto'
 alias igrep='grep -i'
 alias rgrep='grep -r'
 
 export ACK_COLOR_FILENAME='dark blue'
-export EDITOR=$(which kwrite || which nano)
+_have kwrite && export EDITOR=$LOCATION
 export HISTCONTROL=ignoreboth
 export PS1='\[\033[4;30;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\n\$ '
-export TERM=xterm-color
+_have cygpath 2>/dev/null && export TERM=cygwin || export TERM=xterm-color
 
 # Remove bright colors.
 export LS_COLORS=$(echo $LS_COLORS | sed -r 's/=01;/=30;/g')
@@ -45,10 +85,8 @@ unset -v HISTSIZE HISTFILESIZE
 echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"
 '
 
-TRAPS=''
-
 # Install temporary Nano configuration.
-if [ ! -e ~/.nanorc ]; then
+if [ "$HAVE_NANO" -a ! "$INTERACTIVE" -a ! -e ~/.nanorc ]; then
     cat << 'TEXT' > ~/.nanorc && TRAPS="rm ~/.nanorc; $TRAPS"
 include "/usr/share/nano/asm.nanorc"
 include "/usr/share/nano/c.nanorc"
@@ -77,31 +115,4 @@ set tabstospaces
 TEXT
 fi
 
-# Install temporary colored output GCC aliases.
-if [ ! -d ~/.bin ]; then
-    mkdir ~/.bin && cd $_
-    ln -s `which colorgcc` gcc
-    ln -s `which colorgcc` g++
-    TRAPS="rm -r ~/.bin; $TRAPS"
-    cd ..
-fi
-
-[ -d ~/.bin ] && export PATH="~/.bin:$PATH"
-[ -n "$TRAPS" ] && trap "($TRAPS)" EXIT
-
-cleanup() {
-    sudo apt-get -qq autoremove
-    sudo apt-get -qq clean
-    rm -rf ~/.cpan/build
-    rm -rf ~/.cpan/sources
-}
-
-reload() {
-    [ -n "$TRAPS" ] && eval "($TRAPS)"
-    exec $SHELL
-}
-
-# Disable tilde expansion.
-_expand() {
-    return
-}
+[ "$TRAPS" ] && trap "($TRAPS)" EXIT
