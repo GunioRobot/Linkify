@@ -82,24 +82,28 @@ _have valgrind && alias vg="$NAME --tool=memcheck --leak-check=yes --show-reacha
 
 export ACK_COLOR_FILENAME='dark blue'
 export HISTCONTROL=ignoreboth
+export HISTFILESIZE=$(wc -l $HISTFILE)
+export HISTSIZE=$HISTFILESIZE
 export PS1='\[\033[4;30;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\n\$ '
 
 # Remove bright colors.
 export LS_COLORS=$(echo $LS_COLORS | sed -r 's/=01;/=30;/g')
 
-# Sync history session to file and set xterm title.
+# Save history session to file and set xterm title.
 export PROMPT_COMMAND='
+export HISTFILESIZE=$(($(history 1 | awk "{print \$1}") + 3))
+export HISTSIZE=$HISTFILESIZE
 history -a
-unset -v HISTSIZE HISTFILESIZE
 echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"
 '
 
 if [ "$(uname -o)" = "Cygwin" ]; then
     export TERM=cygwin
-    export TMP=/tmp
-    export TEMP=$TMP
+    export TEMP=/tmp
+    export TMP=$TMP
     bind '"\e[1;5C": forward-word'
     bind '"\e[1;5D": backward-word'
+    bind '"\e[2;2~": paste-from-clipboard'
     [ -n "$CD" ] && cd "$(cygpath "$CD")" && unset CD
 else
     export TERM=xterm-color
