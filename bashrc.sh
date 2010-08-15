@@ -89,14 +89,14 @@ export LS_COLORS=$(echo $LS_COLORS | sed -r 's/=01;/=30;/g')
 
 # Save history session to file and set xterm title.
 export PROMPT_COMMAND='
-export HISTFILESIZE=$(($(history 1 | awk "{print \$1}") + 3))
+export HISTFILESIZE=$((HISTFILESIZE + 1))
 export HISTSIZE=$HISTFILESIZE
 history -a
 echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"
 '
 
 if [ -n "$HISTFILE" ]; then
-    export HISTFILESIZE=$(wc -l $HISTFILE)
+    export HISTFILESIZE=$(($(wc -l $HISTFILE | cut -d ' ' -f1) + 1))
     export HISTSIZE=$HISTFILESIZE
 fi
 
