@@ -100,7 +100,7 @@ if [ "$(uname -o)" = "Cygwin" ]; then
     export TEMP=$TMP
     bind '"\e[1;5C": forward-word'
     bind '"\e[1;5D": backward-word'
-    [ -n "$CD" ] && cd $CD && unset CD
+    [ -n "$CD" ] && cd "$(cygpath "$CD")" && unset CD
 else
     export TERM=xterm-color
 fi
