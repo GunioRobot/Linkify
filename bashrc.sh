@@ -18,7 +18,7 @@ if [ -n "$WINDIR" -a -z "$INTERACTIVE" ]; then
 fi
 
 test -f /etc/bash_completion && source $_
-TRAPS=''
+EXIT_TRAPS=''
 
 cleanup() {
     _have apt-get && (sudo $NAME -qq autoremove; sudo $NAME -qq clean)
@@ -27,7 +27,7 @@ cleanup() {
 }
 
 reload() {
-    [ -n "$TRAPS" ] && eval "($TRAPS)"
+    [ -n "$EXIT_TRAPS" ] && eval "($EXIT_TRAPS)"
     exec $SHELL
 }
 
@@ -49,9 +49,6 @@ _have() {
     fi
 }
 
-_have dircolors && eval "$($NAME -b)"
-_have lesspipe && eval "$($NAME)"
-
 shopt -s cdspell checkwinsize histappend
 bind 'set completion-ignore-case on'
 bind 'set expand-tilde off'
@@ -71,16 +68,30 @@ alias grep='grep -E --color=auto'
 alias igrep='grep -i'
 alias rgrep='grep -r'
 
+_have dircolors && eval "$($NAME -b)"
+_have lesspipe && eval "$($NAME)"
+
+_have nano && (alias nano="TERM=xterm $NAME"; export EDITOR=$LOCATION)
+_have kwrite && export EDITOR=$LOCATION
+
+_have ack-grep && alias ack="$NAME --sort-files"
+_have colordiff && alias diff=$NAME
+_have colorgcc && (alias gcc=$NAME; alias g++=$NAME)
+_have valgrind && alias vg="$NAME --tool=memcheck --leak-check=yes --show-reachable=yes"
+
 export ACK_COLOR_FILENAME='dark blue'
 export HISTCONTROL=ignoreboth
 export PS1='\[\033[4;30;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\n\$ '
 
-_have valgrind && alias vg="$NAME --tool=memcheck --leak-check=yes --show-reachable=yes"
-_have colordiff && alias diff=$NAME
-_have nano && (alias nano="TERM=xterm $NAME"; export EDITOR=$LOCATION)
-_have colorgcc && (alias gcc=$NAME; alias g++=$NAME)
-_have ack-grep && alias ack="$NAME --sort-files"
-_have kwrite && export EDITOR=$LOCATION
+# Remove bright colors.
+export LS_COLORS=$(echo $LS_COLORS | sed -r 's/=01;/=30;/g')
+
+# Sync history session to file and set xterm title.
+export PROMPT_COMMAND='
+history -a
+unset -v HISTSIZE HISTFILESIZE
+echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"
+'
 
 if [ "$(uname -o)" = "Cygwin" ]; then
     export TERM=cygwin
@@ -93,19 +104,8 @@ else
     export TERM=xterm-color
 fi
 
-# Remove bright colors.
-export LS_COLORS=$(echo $LS_COLORS | sed -r 's/=01;/=30;/g')
-
-# Sync history session to file and set xterm title.
-export PROMPT_COMMAND='
-history -a
-unset -v HISTSIZE HISTFILESIZE
-echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"
-'
-
-# Install temporary Nano configuration.
 if [ -n "$HAVE_NANO" -a -n "$INTERACTIVE" -a ! -e ~/.nanorc ]; then
-    cat << 'TEXT' > ~/.nanorc && TRAPS="rm ~/.nanorc; $TRAPS"
+    cat << 'TEXT' > ~/.nanorc && EXIT_TRAPS="rm ~/.nanorc; $EXIT_TRAPS"
 include "/usr/share/nano/asm.nanorc"
 include "/usr/share/nano/c.nanorc"
 include "/usr/share/nano/html.nanorc"
@@ -133,4 +133,4 @@ set tabstospaces
 TEXT
 fi
 
-[ -n "$TRAPS" ] && trap "($TRAPS)" EXIT
+[ -n "$EXIT_TRAPS" ] && trap "($EXIT_TRAPS)" EXIT
