@@ -73,18 +73,15 @@ alias rgrep='grep -r'
 _have dircolors && eval "$($NAME -b)"
 _have lesspipe && eval "$($NAME)"
 
-_have kwrite && export EDITOR=$LOCATION \
-    || _have nano && alias nano="TERM=xterm $NAME" && export EDITOR=$LOCATION
-
 _have ack-grep ack && alias ack="$NAME --sort-files"
 _have colordiff && alias diff=$NAME
 _have colorgcc && (alias gcc=$NAME; alias g++=$NAME)
+_have kwrite && export EDITOR=$LOCATION
+_have nano && [ -z "$HAVE_KWRITE" ] && export EDITOR=$LOCATION
 _have valgrind && alias vg="$NAME --tool=memcheck --leak-check=yes --show-reachable=yes"
 
 export ACK_COLOR_FILENAME='dark blue'
 export HISTCONTROL=ignoreboth
-export HISTFILESIZE=$(wc -l $HISTFILE)
-export HISTSIZE=$HISTFILESIZE
 export PS1='\[\033[4;30;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\n\$ '
 
 # Remove bright colors.
@@ -97,6 +94,11 @@ export HISTSIZE=$HISTFILESIZE
 history -a
 echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"
 '
+
+if [ -n "$HISTFILE" ]; then
+    export HISTFILESIZE=$(wc -l $HISTFILE)
+    export HISTSIZE=$HISTFILESIZE
+fi
 
 if [ "$(uname -o)" = "Cygwin" ]; then
     export TERM=cygwin
