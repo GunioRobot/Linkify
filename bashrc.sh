@@ -1,8 +1,5 @@
 #!/bin/bash
 
-test -f /etc/bash_completion && source $_
-TRAPS=''
-
 case "$-" in
 *i*)
     INTERACTIVE=''
@@ -11,6 +8,20 @@ case "$-" in
     INTERACTIVE='x'
 ;;
 esac
+
+if [ "$INTERACTIVE" ]; then
+    # When started from within Windows this command won't be found.
+    \ls 2>/dev/null 1>&2
+    
+    if [ "$?" = "127" ]; then
+        export CD=$*
+        export HOME=/home/$USERNAME
+        exec $SHELL -il
+    fi
+fi
+
+test -f /etc/bash_completion && source $_
+TRAPS=''
 
 cleanup() {
     _have apt-get && (sudo $NAME -qq autoremove; sudo $NAME -qq clean)

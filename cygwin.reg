@@ -1,13 +1,16 @@
 REGEDIT4
 
+
 [HKEY_CLASSES_ROOT\Directory\shell\Cygwin]
 @="Open &Cygwin Here"
 
 [HKEY_CLASSES_ROOT\Directory\shell\Cygwin\command]
-@="c:\\cygwin\\cygwin.bat %L"
+@="C:\\cygwin\\bin\\bash.exe /home/marcio/.bashrc %L"
+#@="C:\\cygwin\\bin\\bash.exe /home/%USERNAME%/.bashrc %L"
 
 [HKEY_CLASSES_ROOT\Drive\shell\Cygwin]
 @="Open &Cygwin Here"
 
 [HKEY_CLASSES_ROOT\Drive\shell\Cygwin\command]
-@="c:\\cygwin\\cygwin.bat %L"
+@="C:\\cygwin\\bin\\bash.exe /home/marcio/.bashrc %L"
+#@="C:\\cygwin\\bin\\bash.exe /home/%USERNAME%/.bashrc %L"
