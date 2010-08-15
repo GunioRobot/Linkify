@@ -2,15 +2,12 @@
 
 case "$-" in
 *i*)
-    INTERACTIVE=''
-;;
-*)
     INTERACTIVE='x'
 ;;
 esac
 
-if [ "$INTERACTIVE" ]; then
-    # When started from within Windows this command won't be found.
+# Cygwin helper.
+if [ -n "$WINDIR" -a -z "$INTERACTIVE" ]; then
     \ls 2>/dev/null 1>&2
     
     if [ "$?" = "127" ]; then
@@ -30,7 +27,7 @@ cleanup() {
 }
 
 reload() {
-    [ "$TRAPS" ] && eval "($TRAPS)"
+    [ -n "$TRAPS" ] && eval "($TRAPS)"
     exec $SHELL
 }
 
@@ -43,11 +40,11 @@ _have() {
     NAME=$1
     LOCATION=$(which $NAME 2>/dev/null)
     
-    if [ "$LOCATION" ]; then
+    if [ -n "$LOCATION" ]; then
         eval "HAVE_$(echo $NAME | tr '[:lower:]-' '[:upper:]_')='x'"
         return 0
     else
-        [ "$INTERACTIVE" ] && echo "Missing: $NAME" 1>&2
+        [ -z "$INTERACTIVE" ] && echo "Missing: $NAME" 1>&2
         return 1
     fi
 }
@@ -91,7 +88,7 @@ if [ "$(uname -o)" = "Cygwin" ]; then
     export TEMP=$TMP
     bind '"\e[1;5C": forward-word'
     bind '"\e[1;5D": backward-word'
-    [ "$CD" ] && cd $CD
+    [ -n "$CD" ] && cd $CD && unset CD
 else
     export TERM=xterm-color
 fi
@@ -107,7 +104,7 @@ echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"
 '
 
 # Install temporary Nano configuration.
-if [ "$HAVE_NANO" -a ! "$INTERACTIVE" -a ! -e ~/.nanorc ]; then
+if [ -n "$HAVE_NANO" -a -n "$INTERACTIVE" -a ! -e ~/.nanorc ]; then
     cat << 'TEXT' > ~/.nanorc && TRAPS="rm ~/.nanorc; $TRAPS"
 include "/usr/share/nano/asm.nanorc"
 include "/usr/share/nano/c.nanorc"
@@ -136,4 +133,4 @@ set tabstospaces
 TEXT
 fi
 
-[ "$TRAPS" ] && trap "($TRAPS)" EXIT
+[ -n "$TRAPS" ] && trap "($TRAPS)" EXIT
