@@ -37,16 +37,17 @@ _expand() {
 }
 
 _have() {
-    NAME=$1
-    LOCATION=$(which $NAME 2>/dev/null)
+    for NAME; do
+        LOCATION=$(which $NAME 2>/dev/null)
+        
+        if [ -n "$LOCATION" ]; then
+            eval "HAVE_$(echo $NAME | tr '[:lower:]-' '[:upper:]_')='x'"
+            return 0
+        fi
+    done
     
-    if [ -n "$LOCATION" ]; then
-        eval "HAVE_$(echo $NAME | tr '[:lower:]-' '[:upper:]_')='x'"
-        return 0
-    else
-        [ -z "$INTERACTIVE" ] && echo "Missing: $NAME" 1>&2
-        return 1
-    fi
+    [ -z "$INTERACTIVE" ] && echo "Missing: $*" 1>&2
+    return 1
 }
 
 shopt -s cdspell checkwinsize histappend
@@ -74,7 +75,7 @@ _have lesspipe && eval "$($NAME)"
 _have nano && (alias nano="TERM=xterm $NAME"; export EDITOR=$LOCATION)
 _have kwrite && export EDITOR=$LOCATION
 
-_have ack-grep && alias ack="$NAME --sort-files"
+_have ack-grep ack && alias ack="$NAME --sort-files"
 _have colordiff && alias diff=$NAME
 _have colorgcc && (alias gcc=$NAME; alias g++=$NAME)
 _have valgrind && alias vg="$NAME --tool=memcheck --leak-check=yes --show-reachable=yes"
