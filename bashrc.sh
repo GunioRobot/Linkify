@@ -75,7 +75,7 @@ _have lesspipe && eval "$($NAME)"
 
 _have ack-grep ack && alias ack="$NAME --sort-files"
 _have colordiff && alias diff=$NAME
-_have colorgcc && (alias gcc=$NAME; alias g++=$NAME)
+_have colorgcc && alias gcc=$NAME && alias g++=$NAME
 _have kwrite && export EDITOR=$LOCATION
 _have nano && [ -z "$HAVE_KWRITE" ] && export EDITOR=$LOCATION
 _have valgrind && alias vg="$NAME --tool=memcheck --leak-check=yes --show-reachable=yes"
