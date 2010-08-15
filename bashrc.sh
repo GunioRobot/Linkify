@@ -73,8 +73,8 @@ alias rgrep='grep -r'
 _have dircolors && eval "$($NAME -b)"
 _have lesspipe && eval "$($NAME)"
 
-_have nano && (alias nano="TERM=xterm $NAME"; export EDITOR=$LOCATION)
-_have kwrite && export EDITOR=$LOCATION
+_have kwrite && export EDITOR=$LOCATION \
+    || _have nano && alias nano="TERM=xterm $NAME" && export EDITOR=$LOCATION
 
 _have ack-grep ack && alias ack="$NAME --sort-files"
 _have colordiff && alias diff=$NAME
