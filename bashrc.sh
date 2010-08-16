@@ -23,8 +23,7 @@ EXIT_TRAPS=''
 cleanup() {
     _have apt-get && (sudo $NAME -qq autoremove; sudo $NAME -qq clean)
     perl -i -ne 'print unless $seen{$_}++' $HISTFILE
-    rm -rf ~/.cpan/build
-    rm -rf ~/.cpan/sources
+    rm -rf ~/.cpan/build ~/.cpan/sources
 }
 
 reload() {
@@ -34,7 +33,7 @@ reload() {
 
 # Disable tilde expansion.
 _expand() {
-    return
+    return 0
 }
 
 _have() {
