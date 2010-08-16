@@ -65,10 +65,9 @@ alias ll='ls -lA'
 alias ls='ls -Xh --color=auto --group-directories-first'
 alias dir='ls -l'
 
+alias sed='sed -r'
 alias less='less -R'
 alias grep='grep -E --color=auto'
-alias igrep='grep -i'
-alias rgrep='grep -r'
 
 _have dircolors && eval "$($NAME -b)"
 _have lesspipe && eval "$($NAME)"
