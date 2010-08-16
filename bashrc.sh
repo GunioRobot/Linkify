@@ -84,7 +84,7 @@ export HISTCONTROL=ignoreboth
 export PS1='\[\033[4;30;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\n\$ '
 
 # Remove bright colors.
-export LS_COLORS=$(echo $LS_COLORS | sed -r 's/=01;/=30;/g')
+export LS_COLORS=$(echo $LS_COLORS | sed -e 's/=01;/=30;/g')
 
 # Save history session to file and set xterm title.
 export PROMPT_COMMAND='
@@ -121,7 +121,7 @@ fi
 
 if [ -n "$HAVE_NANO" -a -n "$INTERACTIVE" -a ! -e ~/.nanorc ]; then
     EXIT_TRAPS="rm ~/.nanorc; $EXIT_TRAPS"
-    ls -1 /usr/share/nano/*.nanorc | sed -re 's/(.+)/include "\1"/' > ~/.nanorc
+    ls -1 /usr/share/nano/*.nanorc | sed -e 's/(.+)/include "\1"/' > ~/.nanorc
     cat << 'TEXT' >> ~/.nanorc
 set autoindent
 set const
