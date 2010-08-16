@@ -111,7 +111,7 @@ $PROMPT_COMMAND
     bind '"\e[2;2~": paste-from-clipboard'
     [ -n "$CD" ] && cd "$(cygpath "$CD")" && unset CD
 else
-    export TERM=xterm-color
+    export TERM=xterm
     export PROMPT_COMMAND="
 export HISTFILESIZE=\$((\$(history 1 | awk '{print \$1}') + 3))
 export HISTSIZE=\$HISTFILESIZE
