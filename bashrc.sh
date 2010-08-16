@@ -121,19 +121,9 @@ $PROMPT_COMMAND
 fi
 
 if [ -n "$HAVE_NANO" -a -n "$INTERACTIVE" -a ! -e ~/.nanorc ]; then
-    cat << 'TEXT' > ~/.nanorc && EXIT_TRAPS="rm ~/.nanorc; $EXIT_TRAPS"
-include "/usr/share/nano/asm.nanorc"
-include "/usr/share/nano/c.nanorc"
-include "/usr/share/nano/html.nanorc"
-include "/usr/share/nano/java.nanorc"
-include "/usr/share/nano/man.nanorc"
-include "/usr/share/nano/nanorc.nanorc"
-include "/usr/share/nano/patch.nanorc"
-include "/usr/share/nano/perl.nanorc"
-include "/usr/share/nano/python.nanorc"
-include "/usr/share/nano/ruby.nanorc"
-include "/usr/share/nano/sh.nanorc"
-
+    EXIT_TRAPS="rm ~/.nanorc; $EXIT_TRAPS"
+    ls -1 /usr/share/nano/*.nanorc | sed -re 's/(.+)/include "\1"/' > ~/.nanorc
+    cat << 'TEXT' >> ~/.nanorc
 set autoindent
 set const
 set morespace
