@@ -8,7 +8,7 @@ esac
 
 # Cygwin helper.
 if [ -n "$WINDIR" -a -z "$INTERACTIVE" ]; then
-    \ls 2>/dev/null 1>&2
+    ls 2>/dev/null 1>&2
     
     if [ "$?" = "127" ]; then
         export CD=$*
