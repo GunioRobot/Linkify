@@ -191,7 +191,7 @@ sub main {
         
         if (keys(%versions) == 1) {
             ($file, $version) = %versions;
-            print "Automatic detection: DocBook v$version: $file\n\n";
+            print "Automatic detection: DocBook v$version: $file\n";
         }
     }
     
@@ -214,6 +214,7 @@ sub publish {
     my $publish = sprintf 'publish_v%u', $version;
     my ($validate, $compile) = __PACKAGE__->can($publish)->($file);
     
+    print "\n";
     system @$validate;
     print "\n";
     system @$compile;
