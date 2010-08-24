@@ -116,6 +116,10 @@ export HISTFILESIZE=\$((\$(history 1 | awk '{print \$1}') + 3))
 export HISTSIZE=\$HISTFILESIZE
 $PROMPT_COMMAND
 "
+    if [ "$(stat --format=%i /)" != "2" ]; then
+        echo "chroot:" $(uname -srmo)
+        umask 0002
+    fi
 fi
 
 if [ -n "$HAVE_NANO" -a -n "$INTERACTIVE" -a ! -e ~/.nanorc ]; then
