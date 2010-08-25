@@ -20,17 +20,6 @@ fi
 test -f /etc/bash_completion && source $_
 EXIT_TRAPS=''
 
-cleanup() {
-    _have apt-get && (sudo $NAME -qq autoremove; sudo $NAME -qq clean)
-    perl -i -ne 'print unless $seen{$_}++' $HISTFILE
-    rm -rf ~/.cpan/{build,sources}
-}
-
-reload() {
-    [ -n "$EXIT_TRAPS" ] && eval "($EXIT_TRAPS)"
-    exec $SHELL
-}
-
 # Disable tilde expansion.
 _expand() {
     return 0
@@ -41,7 +30,7 @@ _have() {
         LOCATION=$(which $NAME 2>/dev/null)
         
         if [ -n "$LOCATION" ]; then
-            eval "HAVE_$(echo $NAME | tr '[:lower:]-' '[:upper:]_')='x'"
+            eval "HAVE_$(echo $NAME | tr '[:lower:]-' '[:upper:]_')='$LOCATION'"
             return 0
         fi
     done
@@ -70,6 +59,9 @@ alias grep='grep -E --color=auto'
 
 _have dircolors && eval "$($NAME -b)"
 _have lesspipe && eval "$($NAME)"
+
+# Cache for the interactive diff function.
+_have kompare meld kdiff3
 
 _have ack-grep ack && alias ack="$NAME --sort-files"
 _have colordiff && alias diff=$NAME
@@ -141,3 +133,26 @@ TEXT
 fi
 
 [ -n "$EXIT_TRAPS" ] && trap "($EXIT_TRAPS)" EXIT
+
+cleanup() {
+    _have apt-get && (sudo $NAME -qq autoremove; sudo $NAME -qq clean)
+    perl -i -ne 'print unless $seen{$_}++' $HISTFILE
+    rm -rf ~/.cpan/{build,sources}
+}
+
+idiff() {
+    if [ -n "$HAVE_KOMPARE" ]; then
+        kompare -c "$1" "$2"
+    elif [ -n "$HAVE_MELD" ]; then
+        meld "$1" "$2"
+    elif [ -n "$HAVE_KDIFF3" ]; then
+        kdiff3 "$1" "$2"
+    else
+        diff "$1" "$2" | less
+    fi
+}
+
+reload() {
+    [ -n "$EXIT_TRAPS" ] && eval "($EXIT_TRAPS)"
+    exec $SHELL
+}
