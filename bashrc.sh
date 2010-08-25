@@ -129,7 +129,6 @@ if [ -n "$HAVE_NANO" -a -n "$INTERACTIVE" -a ! -e ~/.nanorc ]; then
 set autoindent
 set const
 set morespace
-set mouse
 set noconvert
 set nonewlines
 set nowrap
