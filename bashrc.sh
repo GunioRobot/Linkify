@@ -39,10 +39,13 @@ _have() {
     return 1
 }
 
+if [ -n "$INTERACTIVE" ]; then
+    bind 'set completion-ignore-case on'
+    bind 'set expand-tilde off'
+    bind 'set mark-symlinked-directories on'
+fi
+
 shopt -s cdspell checkwinsize histappend
-bind 'set completion-ignore-case on'
-bind 'set expand-tilde off'
-bind 'set mark-symlinked-directories on'
 
 alias -- -='cd -'
 alias ..='cd ..'
