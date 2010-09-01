@@ -93,6 +93,7 @@ if [ -n "$HISTFILE" ]; then
 fi
 
 if [ "$(uname -o)" = "Cygwin" ]; then
+    export CYGWIN=nodosfilewarning
     export TERM=cygwin
     export TEMP=/tmp
     export TMP=$TMP
@@ -113,7 +114,7 @@ export HISTSIZE=\$HISTFILESIZE
 $PROMPT_COMMAND
 "
     if [ "$(stat --format=%i /)" != "2" ]; then
-        echo "chroot:" $(uname -srmo)
+        echo "* chroot:" $(uname -srmo)
         umask 0002
     fi
 fi
@@ -136,12 +137,19 @@ set tabstospaces
 TEXT
 fi
 
+CLEANUP=$(($(date +%s) - $(stat --format=%Y ~/.cleanup 2>/dev/null || echo 0)))
+
+if [ "$CLEANUP" -gt "$((14 * 24 * 60 * 60))" ]; then
+    echo "* Time to clean up!"
+fi
+
 [ -n "$EXIT_TRAPS" ] && trap "($EXIT_TRAPS)" EXIT
 
 cleanup() {
     _have apt-get && (sudo $NAME -qq autoremove; sudo $NAME -qq clean)
     perl -i -ne 'print unless $seen{$_}++' $HISTFILE
     rm -rf ~/.cpan/{build,sources}
+    touch ~/.cleanup
 }
 
 idiff() {
