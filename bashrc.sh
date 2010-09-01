@@ -71,6 +71,7 @@ _have colordiff && alias diff=$NAME
 _have colorgcc && alias gcc=$NAME && alias g++=$NAME
 _have kwrite && export EDITOR=$LOCATION
 _have nano && [ -z "$HAVE_KWRITE" ] && export EDITOR=$LOCATION
+_have source-highlight && alias s="$NAME --failsafe -n -t 4 -f esc -o STDOUT"
 _have valgrind && alias vg="$NAME --tool=memcheck --leak-check=yes --show-reachable=yes"
 
 export ACK_COLOR_FILENAME='dark blue'
