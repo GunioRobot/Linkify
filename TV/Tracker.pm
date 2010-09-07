@@ -53,7 +53,7 @@ sub list_trackers {
 
 sub load_tracker {
     my ($class, $name, @args) = @ARG;
-    my $module = sprintf '%s::%s', __PACKAGE__, $name;
+    my $module = join '::', __PACKAGE__, $name;
     
     Module::Load::load($module);
     return $module->new(@args);

@@ -33,11 +33,8 @@ sub backup {
             }
             else {
                 my $date_time = DateTime->now();
-                
                 IO::Compress::Bzip2->new(sprintf '%s (%sT%sZ).csv.bz2',
-                    $tracker->name(),
-                    $date_time->ymd(''),
-                    $date_time->hms(''));
+                    $tracker->name(), $date_time->ymd(''), $date_time->hms(''));
             }
         };
         
