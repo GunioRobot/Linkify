@@ -1,0 +1,126 @@
+import os, re, sys
+from SCons.Script.SConscript import SConsEnvironment
+
+
+def BuildTool(env):
+    tools = env['TOOLS']
+    
+    # The order of each alias is important.
+    aliases = {
+        'GNU': ['mingw', 'g++', 'gcc'],
+        'MSVC': ['msvc'],
+    }
+    
+    for (name, aliases) in aliases.items():
+        for alias in aliases:
+            if alias in tools:
+                return (name, alias)
+
+
+def CompileIDL(env, file):
+    for path in env['ENV']['INCLUDE'].split(os.pathsep):
+        source_file = os.path.join(path, file)
+        
+        if os.path.exists(source_file):
+            env.Command(file, source_file, Copy('$TARGET', '$SOURCE'))
+            env.TypeLibrary(file)
+            break
+
+
+def DisplayToDoItems(target = None, source = None, env = None):
+    for node in source:
+        code = open(node.path).read()
+        
+        # Remove leading characters from single line comments.
+        code = re.sub(r'(?m)^.*(?=//)', '', code)
+        
+        # Convert single line comments to block comments.
+        code = re.sub(r'(?s)// TODO: ([^\n]+)((?:\n// (?!TODO)[^\n]+)*)',
+            r'/* TODO: \1\2 */',
+            code)
+        
+        items = []
+        
+        for item in re.findall(r'(?s)/[*] TODO: (.+?)\s*[*]/', code):
+            # Collapse into a single line.
+            items.append(re.sub(r'(?s)\n(//)?\s+', ' ', item))
+        
+        if len(items) > 0:
+            print 'In "%s":' % node
+            for item in items:
+                print '-', item
+
+
+def EmbedManifest(env, target):
+    (EXE_TYPE, DLL_TYPE) = (1, 2)
+    
+    file_type = EXE_TYPE if str(target).endswith('.exe') else DLL_TYPE
+    manifest = '-manifest ${TARGET}.manifest'
+    output = '-outputresource:$TARGET;' + str(file_type)
+    
+    env.AddPostAction(target, 'mt -nologo %s %s' % (manifest, output))
+    env.Clean(target, '%s.manifest' % target)
+
+
+def Files(env, pattern, root = os.curdir, recurse = False, variant = None):
+    patterns = pattern if isinstance(pattern, list) else [pattern]
+    files = []
+    
+    for pattern in patterns:
+        files.extend(env.Glob(os.path.join(root, pattern), strings = True))
+    
+    if variant is not None:
+        files = [os.path.join(variant, f) for f in files]
+    
+    if recurse:
+        if not callable(recurse):
+            recurse = lambda path: True
+        
+        for name in os.listdir(root):
+            path = os.path.normpath(os.path.join(root, name))
+            
+            if os.path.isdir(path) and recurse(path):
+                files.extend(Files(env, patterns, path, recurse, variant))
+    
+    return files
+
+
+def FindSConscript(name = 'SConscript'):
+    if os.path.exists(name):
+        return name
+    
+    paths = os.listdir(os.curdir)
+    paths.sort()
+    
+    for path in paths:
+        if os.path.isdir(path):
+            file = os.path.join(path, name)
+            
+            if os.path.exists(file):
+                return file
+
+
+def ListToDoItems(env, target, source):
+    output = 'Searching To Do items...'
+    to_do = env.Alias(target, source, env.Action(DisplayToDoItems, output))
+    
+    env.AlwaysBuild(to_do)
+    return to_do
+
+
+SConsEnvironment.BuildTool = BuildTool
+SConsEnvironment.CompileIDL = CompileIDL
+SConsEnvironment.EmbedManifest = EmbedManifest
+SConsEnvironment.Files = Files
+SConsEnvironment.ListToDoItems = ListToDoItems
+
+script = FindSConscript()
+
+if script is None:
+    sys.exit('No main file found: ' + script)
+else:
+    print 'Auto-detected main file: ' + script
+    SConscript(script)
+
+if GetOption('clean'):
+    Execute(Delete('.sconsign.dblite'))

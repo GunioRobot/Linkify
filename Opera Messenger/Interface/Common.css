@@ -1,0 +1,26 @@
+*[onclick] {
+    cursor: pointer;
+}
+
+*[onclick]:hover {
+    text-decoration: underline;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body,
+input,
+select {
+    font: Menu;
+}
+
+input[onclick] {
+    cursor: inherit;
+}
+
+input[onclick]:hover {
+    text-decoration: inherit;
+}

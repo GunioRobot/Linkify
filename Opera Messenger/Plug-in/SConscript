@@ -1,0 +1,23 @@
+import os
+
+
+env = Environment(
+    CPPDEFINES = ['MOZILLA_STRICT_API'],
+    CPPPATH = os.environ['NP_API_SDK_INCLUDE_PATH'].split(os.pathsep))
+
+project = 'npExample'
+files = Glob('*.cpp')
+builder = env.BuildTool()[0]
+
+if builder == 'GNU':
+    env.Append(CCFLAGS = ['-ansi', '-Wall'])
+elif builder == 'MSVC':
+    files += env.RES(project + '.rc')
+    env['WINDOWS_INSERT_DEF'] = True
+    env.Append(CPPDEFINES = ['_WINDOWS', '_X86_', 'WIN32'])
+    env.Append(CCFLAGS = ['/EHsc', '/MD'])
+
+library = env.SharedLibrary(project, files).pop(0)
+
+if builder == 'MSVC':
+    env.EmbedManifest(library)

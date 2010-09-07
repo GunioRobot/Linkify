@@ -1,0 +1,36 @@
+#include <WinVer.h>
+#include "npExample.h"
+
+
+VS_VERSION_INFO VERSIONINFO
+  FILEVERSION PLUGIN_MAJOR_VERSION, PLUGIN_MINOR_VERSION, PLUGIN_MICRO_VERSION, 0
+  PRODUCTVERSION PLUGIN_MAJOR_VERSION, PLUGIN_MINOR_VERSION, PLUGIN_MICRO_VERSION, 0
+  FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+  FILEFLAGS 0
+  FILEOS VOS__WINDOWS32
+  FILETYPE VFT_DLL
+  FILESUBTYPE VFT2_UNKNOWN
+  BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+      BLOCK "040904E4"
+      BEGIN
+        VALUE "FileDescription", PLUGIN_DESCRIPTION
+        VALUE "FileVersion", PLUGIN_VERSION
+        VALUE "LegalCopyright", "Márcio Faustino"
+        VALUE "MIMEType", PLUGIN_MIME_TYPE
+        VALUE "ProductName", PLUGIN_NAME
+        VALUE "ProductVersion", PLUGIN_VERSION
+      END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+      // First value:
+      //   MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US)
+      //
+      // Second value:
+      //   Code page number of the WinLatin1 character encoding.
+      //
+      VALUE "Translation", 0x409, 1252
+    END
+  END
