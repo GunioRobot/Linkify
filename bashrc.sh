@@ -43,6 +43,8 @@ if [ -n "$INTERACTIVE" ]; then
     bind 'set completion-ignore-case on'
     bind 'set expand-tilde off'
     bind 'set mark-symlinked-directories on'
+    bind '"\e[1;5C": forward-word'
+    bind '"\e[1;5D": backward-word'
 fi
 
 shopt -s cdspell checkwinsize histappend
@@ -103,8 +105,6 @@ export HISTFILESIZE=\$((HISTFILESIZE + 1))
 export HISTSIZE=\$HISTFILESIZE
 $PROMPT_COMMAND
 "
-    bind '"\e[1;5C": forward-word'
-    bind '"\e[1;5D": backward-word'
     bind '"\e[2;2~": paste-from-clipboard'
     [ -n "$CD" ] && cd "$(cygpath "$CD")" && unset CD
 else
