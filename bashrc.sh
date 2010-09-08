@@ -53,11 +53,11 @@ alias -- -='cd -'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
+alias .....='cd ../../../..'
 
-alias l='ls -CF'
-alias ll='ls -lA'
-alias ls='ls -Xh --color=auto --group-directories-first'
-alias dir='ls -l'
+alias l='ls -CFXh --color=auto --group-directories-first'
+alias ll='l -l'
+alias dir='l -lA'
 
 alias sed='sed -r'
 alias less='less -R'
@@ -71,11 +71,16 @@ _have kompare meld kdiff3
 
 _have ack-grep ack && alias ack="$NAME --sort-files"
 _have colordiff && alias diff=$NAME
-_have colorgcc && alias gcc=$NAME && alias g++=$NAME
+_have colorgcc && alias gcc=$NAME g++=$NAME
 _have kwrite && export EDITOR=$LOCATION
 _have nano && [ -z "$HAVE_KWRITE" ] && export EDITOR=$LOCATION
-_have source-highlight && alias s="$NAME --failsafe -n -t 4 -f esc -o STDOUT"
-_have valgrind && alias vg="$NAME --tool=memcheck --leak-check=yes --show-reachable=yes"
+
+_have source-highlight && s() {
+    $HAVE_SOURCE_HIGHLIGHT --failsafe -n -t 4 -f esc -o STDOUT $@ | less
+}
+
+_have valgrind \
+    && alias vg="$NAME --tool=memcheck --leak-check=yes --show-reachable=yes"
 
 export ACK_COLOR_FILENAME='dark blue'
 export HISTCONTROL=ignoreboth
@@ -156,11 +161,11 @@ cleanup() {
 # Interactive "diff".
 idiff() {
     if [ -n "$HAVE_KOMPARE" ]; then
-        kompare -c "$1" "$2"
+        $HAVE_KOMPARE -c "$1" "$2"
     elif [ -n "$HAVE_MELD" ]; then
-        meld "$1" "$2"
+        $HAVE_MELD "$1" "$2"
     elif [ -n "$HAVE_KDIFF3" ]; then
-        kdiff3 "$1" "$2"
+        $HAVE_KDIFF3 "$1" "$2"
     else
         diff "$1" "$2" | less
     fi
