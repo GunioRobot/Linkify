@@ -50,6 +50,7 @@ shopt -s cdspell checkwinsize histappend
 alias -- -='cd -'
 alias ..='cd ..'
 alias ...='cd ../..'
+alias ....='cd ../../..'
 
 alias l='ls -CF'
 alias ll='ls -lA'
