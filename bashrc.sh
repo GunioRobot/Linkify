@@ -64,7 +64,7 @@ alias grep='grep -E --color=auto'
 _have dircolors && eval "$($NAME -b)"
 _have lesspipe && eval "$($NAME)"
 
-# Cache for the interactive diff function.
+# Cache for "idiff".
 _have kompare meld kdiff3
 
 _have ack-grep ack && alias ack="$NAME --sort-files"
@@ -153,6 +153,7 @@ cleanup() {
     touch ~/.cleanup
 }
 
+# Interactive "diff".
 idiff() {
     if [ -n "$HAVE_KOMPARE" ]; then
         kompare -c "$1" "$2"
