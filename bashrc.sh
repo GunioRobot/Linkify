@@ -69,7 +69,12 @@ _have lesspipe && eval "$($NAME)"
 # Cache for "idiff".
 _have kompare meld kdiff3
 
-_have ack-grep ack && alias ack="$NAME --sort-files"
+_have ack-grep ack && alias \
+    ack="$NAME --sort-files" \
+    ack0='ack -l --print0' \
+    ack.="xargs -0 $LOCATION -l --print0 --sort-files" \
+    0ack="xargs -0 $LOCATION --sort-files"
+
 _have colordiff && alias diff=$NAME
 _have colorgcc && alias gcc=$NAME g++=$NAME
 _have kwrite && export EDITOR=$LOCATION
