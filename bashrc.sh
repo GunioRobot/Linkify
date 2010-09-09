@@ -84,7 +84,7 @@ _have valgrind \
 
 export ACK_COLOR_FILENAME='dark blue'
 export HISTCONTROL=ignoreboth
-export PS1='\[\033[4;30;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\n\$ '
+export PS1='\[\033[4;30;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\n\$\[\033[00m\] '
 
 # Remove bright colors.
 export LS_COLORS=$(echo $LS_COLORS | sed -e 's/=01;/=30;/g')
