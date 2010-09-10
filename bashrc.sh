@@ -84,6 +84,12 @@ _have source-highlight && s() {
     $HAVE_SOURCE_HIGHLIGHT --failsafe -n -t 4 -f esc -o STDOUT $@ | less
 }
 
+_have svn && alias \
+    sci="$NAME ci" \
+    sdi="$NAME di" \
+    sst="$NAME st" \
+    sup="$NAME up"
+
 _have valgrind \
     && alias vg="$NAME --tool=memcheck --leak-check=yes --show-reachable=yes"
 
