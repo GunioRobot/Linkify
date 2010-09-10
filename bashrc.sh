@@ -169,6 +169,10 @@ cleanup() {
     touch ~/.cleanup
 }
 
+f() {
+    find $@ -a ! -name '*.svn-base'
+}
+
 # Interactive "diff".
 idiff() {
     if [ -n "$HAVE_KOMPARE" ]; then
