@@ -49,11 +49,12 @@ fi
 
 shopt -s cdspell checkwinsize histappend
 
-alias -- -='cd -'
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
-alias .....='cd ../../../..'
+alias c='cd'
+alias -- -='c -'
+alias ..='c ..'
+alias ...='c ../..'
+alias ....='c ../../..'
+alias .....='c ../../../..'
 
 alias l='ls -CFXh --color=auto --group-directories-first'
 alias ll='l -l'
