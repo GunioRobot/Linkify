@@ -67,11 +67,13 @@ alias grep='grep -E --color=auto'
 _have dircolors && eval "$($NAME -b)"
 _have lesspipe && eval "$($NAME)"
 
-# Cache for "idiff".
+# Cache.
 _have kompare meld kdiff3
+_have source-highlight
 
 _have ack-grep ack && alias \
     ack="$NAME --sort-files" \
+    f='ack -ag' \
     ack0='ack -l --print0' \
     ack.="xargs -0 $LOCATION -l --print0 --sort-files" \
     0ack="xargs -0 $LOCATION --sort-files"
@@ -80,10 +82,6 @@ _have colordiff && alias diff=$NAME
 _have colorgcc && alias gcc=$NAME g++=$NAME
 _have kwrite && export EDITOR=$LOCATION
 _have nano && [ -z "$HAVE_KWRITE" ] && export EDITOR=$LOCATION
-
-_have source-highlight && s() {
-    $HAVE_SOURCE_HIGHLIGHT --failsafe -n -t 4 -f esc -o STDOUT $@ | less
-}
 
 _have svn && alias \
     sci="$NAME ci" \
@@ -172,10 +170,6 @@ cleanup() {
     touch ~/.cleanup
 }
 
-f() {
-    find $@ -a ! -name '*.svn-base'
-}
-
 # Interactive "diff".
 idiff() {
     if [ -n "$HAVE_KOMPARE" ]; then
@@ -192,4 +186,12 @@ idiff() {
 reload() {
     [ -n "$EXIT_TRAPS" ] && eval "($EXIT_TRAPS)"
     exec $SHELL
+}
+
+s() {
+    if [ -n "$HAVE_SOURCE_HIGHLIGHT" ]; then
+        $HAVE_SOURCE_HIGHLIGHT --failsafe -n -t 4 -f esc -o STDOUT $@ | less
+    else
+        less $@
+    fi
 }
