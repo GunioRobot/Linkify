@@ -87,6 +87,7 @@ _have source-highlight && s() {
 
 _have svn && alias \
     sci="$NAME ci" \
+    sco="$NAME co" \
     sdi="$NAME di" \
     sre="$NAME revert" \
     sst="$NAME st" \
