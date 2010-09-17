@@ -73,9 +73,9 @@ _have source-highlight
 
 _have ack-grep ack && alias \
     f="$NAME --sort-files" \
-    ack0='f -l --print0' \
-    ack.="xargs -0 $LOCATION -l --print0 --sort-files" \
-    0ack="xargs -0 $LOCATION --sort-files"
+    f0='f -l --print0' \
+    f.="xargs -0 $LOCATION -l --print0 --sort-files" \
+    0f="xargs -0 $LOCATION --sort-files"
 
 _have colordiff && alias diff=$NAME
 _have colorgcc && alias gcc=$NAME g++=$NAME
