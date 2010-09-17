@@ -72,9 +72,8 @@ _have kompare meld kdiff3
 _have source-highlight
 
 _have ack-grep ack && alias \
-    ack="$NAME --sort-files" \
-    f='ack -ag' \
-    ack0='ack -l --print0' \
+    f="$NAME --sort-files" \
+    ack0='f -l --print0' \
     ack.="xargs -0 $LOCATION -l --print0 --sort-files" \
     0ack="xargs -0 $LOCATION --sort-files"
 
