@@ -170,6 +170,10 @@ cleanup() {
     touch ~/.cleanup
 }
 
+ff() {
+    find $@ -a ! -name '*.svn-base'
+}
+
 # Interactive "diff".
 idiff() {
     if [ -n "$HAVE_KOMPARE" ]; then
@@ -190,7 +194,7 @@ reload() {
 
 s() {
     if [ -n "$HAVE_SOURCE_HIGHLIGHT" ]; then
-        $HAVE_SOURCE_HIGHLIGHT --failsafe -n -t 4 -f esc -o STDOUT $@ | less
+        $HAVE_SOURCE_HIGHLIGHT --failsafe -t 4 -f esc -o STDOUT $@ | less
     else
         less $@
     fi
