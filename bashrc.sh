@@ -77,11 +77,6 @@ _have ack-grep ack && alias \
     f.="xargs -0 $LOCATION -l --print0 --sort-files" \
     0f="xargs -0 $LOCATION --sort-files"
 
-_have colordiff && alias diff=$NAME
-_have colorgcc && alias gcc=$NAME g++=$NAME
-_have kwrite && export EDITOR=$LOCATION
-_have nano && [ -z "$HAVE_KWRITE" ] && export EDITOR=$LOCATION
-
 _have svn && alias \
     sci="$NAME ci" \
     sco="$NAME co" \
@@ -90,8 +85,12 @@ _have svn && alias \
     sst="$NAME st" \
     sup="$NAME up"
 
-_have valgrind \
-    && alias vg="$NAME --tool=memcheck --leak-check=yes --show-reachable=yes"
+_have colordiff && alias diff=$NAME
+_have colorgcc && alias gcc=$NAME g++=$NAME
+_have cpan && alias cpan="sudo PERL_AUTOINSTALL=1 PERL_MM_USE_DEFAULT=1 FTP_PASSIVE=1 $NAME"
+_have kwrite && export EDITOR=$LOCATION
+_have nano && [ -z "$HAVE_KWRITE" ] && export EDITOR=$LOCATION
+_have valgrind && alias vg="$NAME --tool=memcheck --leak-check=yes --show-reachable=yes"
 
 export ACK_COLOR_FILENAME='dark blue'
 export HISTCONTROL=ignoreboth
