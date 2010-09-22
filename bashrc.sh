@@ -111,6 +111,7 @@ if [ -n "$HISTFILE" ]; then
 fi
 
 if [ "$(uname -o)" = "Cygwin" ]; then
+    alias sudo=''
     export CYGWIN=nodosfilewarning
     export TERM=cygwin
     export TEMP=/tmp
