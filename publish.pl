@@ -182,16 +182,14 @@ sub main {
         $version = detect_version($file);
     }
     else {
-        my %versions;
-        
-        foreach my $file (grep m/\.xml$/, ls()) {
-            my $version = detect_version($file);
-            $versions{$file} = $version if defined $version;
-        }
-        
-        if (keys(%versions) == 1) {
-            ($file, $version) = %versions;
-            print "Automatic detection: DocBook v$version: $file\n";
+        foreach my $xml_file (grep m/\.xml$/i, ls()) {
+            $version = detect_version($xml_file);
+            
+            if (defined $version) {
+                $file = $xml_file;
+                print "Automatic detection: DocBook v$version: $file\n";
+                last;
+            }
         }
     }
     
@@ -245,7 +243,7 @@ sub publish_v5 {
     );
     
     $data{$ARG} = $data{$ARG}->($cache) for sort keys %data;
-    $out =~ s/\.xml$/.html/;
+    $out =~ s/\.xml$/.html/i;
     
     my ($msvs, $rng, $saxon, $xsl) = @data{qw(msvs rng saxon xsl)};
     my $validate = ['java', '-jar', $msvs, "file://localhost/$rng", $file];
