@@ -86,7 +86,6 @@ _have svn && alias \
     sup="$NAME up"
 
 _have colordiff && alias diff=$NAME
-_have colorgcc && alias gcc=$NAME g++=$NAME
 _have cpan && alias cpan="sudo PERL_AUTOINSTALL=1 PERL_MM_USE_DEFAULT=1 FTP_PASSIVE=1 $NAME"
 _have kwrite && export EDITOR=$LOCATION
 _have nano && [ -z "$HAVE_KWRITE" ] && export EDITOR=$LOCATION
@@ -124,6 +123,7 @@ $PROMPT_COMMAND
     bind '"\e[2;2~": paste-from-clipboard'
     [ -n "$CD" ] && cd "$(cygpath "$CD")" && unset CD
 else
+    _have colorgcc && alias gcc=$NAME g++=$NAME
     export TERM=xterm
     export PROMPT_COMMAND="
 export HISTFILESIZE=\$((\$(history 1 | awk '{print \$1}') + 3))
