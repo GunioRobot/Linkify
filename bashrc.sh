@@ -72,10 +72,10 @@ _have kompare meld kdiff3
 _have source-highlight
 
 _have ack-grep ack && alias \
-    f="$NAME --sort-files" \
+    f="$NAME --all --sort-files" \
     f0='f -l --print0' \
-    f.="xargs -0 $LOCATION -l --print0 --sort-files" \
-    0f="xargs -0 $LOCATION --sort-files"
+    f.="xargs -0 $LOCATION -l --print0 --all --sort-files" \
+    0f="xargs -0 $LOCATION --all --sort-files"
 
 _have svn && alias \
     sci="$NAME ci" \
