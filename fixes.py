@@ -90,7 +90,6 @@ class _ImapSsl (imaplib.IMAP4_SSL):
 
 
 _fixes = [
-    # (module, name, target Python version, object)
     (ConfigParser.SafeConfigParser, '_badpercent_re', 0x20602F0, _CheckBadPercent(ConfigParser.SafeConfigParser._interpvar_re)),
     (ConfigParser.SafeConfigParser, '_interpvar_re', 0x20602F0, _RemoveDoublePercents(ConfigParser.SafeConfigParser._interpvar_re)),
     (email.parser.Parser, 'parsestr', 0x20604F0, _parsestr),
