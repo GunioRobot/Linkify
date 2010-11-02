@@ -165,7 +165,7 @@ fi
 cleanup() {
     _have apt-get && (sudo $NAME -qq autoremove; sudo $NAME -qq clean)
     perl -i -ne 'print unless $seen{$_}++' $HISTFILE
-    rm -rf ~/.cpan/{build,sources}
+    sudo rm -rf ~/.cpan/{build,sources}
     touch ~/.cleanup
 }
 
