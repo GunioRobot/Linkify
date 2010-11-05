@@ -201,3 +201,10 @@ s() {
         less $@
     fi
 }
+
+for BASHRC in $(echo $BASH_SOURCE $(readlink $BASH_SOURCE)); do
+    for BASHRC_CHILD in $(ls -1 $BASHRC.* 2>/dev/null); do
+        source $BASHRC_CHILD
+        echo "* Loaded $BASHRC_CHILD"
+    done
+done
