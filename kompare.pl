@@ -1,8 +1,9 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 
 # Helper script to use Kompare as the diff command e.g. for SVN, Git, etc.
 
 use strict;
+use warnings;
 use File::stat qw(stat);
 
 exit system qw(kompare -c), do {
