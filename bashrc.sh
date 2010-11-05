@@ -43,8 +43,10 @@ if [ -n "$INTERACTIVE" ]; then
     bind 'set completion-ignore-case on'
     bind 'set expand-tilde off'
     bind 'set mark-symlinked-directories on'
-    bind '"\e[1;5C": forward-word'
-    bind '"\e[1;5D": backward-word'
+    bind '"\e[1;5C": forward-word' # Ctrl + Right
+    bind '"\e[1;5D": backward-word' # Ctrl + Left
+    bind '"\e[3;5~": kill-word' # Ctrl + Delete
+    bind '"\e[2;5~": backward-kill-word' # Ctrl + Insert
 fi
 
 shopt -s cdspell checkwinsize histappend
@@ -120,7 +122,7 @@ export HISTFILESIZE=\$((HISTFILESIZE + 1))
 export HISTSIZE=\$HISTFILESIZE
 $PROMPT_COMMAND
 "
-    bind '"\e[2;2~": paste-from-clipboard'
+    bind '"\e[2;2~": paste-from-clipboard' # Shift + Insert
     [ -n "$CD" ] && cd "$(cygpath "$CD")" && unset CD
 else
     _have colorgcc && alias gcc=$NAME g++=$NAME
