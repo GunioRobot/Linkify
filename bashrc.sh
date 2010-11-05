@@ -133,6 +133,7 @@ export HISTSIZE=\$HISTFILESIZE
 $PROMPT_COMMAND
 "
     if [ "$(stat --format=%i /)" != "2" ]; then
+        export CHROOT='x'
         echo "* chroot:" $(uname -srmo)
         umask 0002
     fi
