@@ -22,6 +22,7 @@ static size_t parse(char* string) {
 
 
 static int usage(void) {
+    puts("Dictionary generator.");
     puts("Usage:");
     printf("  %s <minimum length> <maximum length>\n", NUMBER_ARGUMENT);
     printf("  %s <initial word> <maximum length>\n", WORD_ARGUMENT);
