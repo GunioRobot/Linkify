@@ -1,0 +1,17 @@
+color white/black white/blue
+timeout 3
+default 1
+
+title Eon
+root (hd0,2)
+kernel --type=multiboot /Eon
+
+title Windows
+root (hd0,1)
+chainloader +1
+
+title Linux
+root (hd0,0)
+kernel /boot/vmlinuz-2.6.24-26-generic root=UUID=ab5e6384-4fcc-4390-9239-77fd82909740 ro quiet splash
+initrd /boot/initrd.img-2.6.24-26-generic
+quiet
