@@ -65,7 +65,7 @@ alias ll='l -l'
 alias dir='l -lA'
 
 alias sed='sed -r'
-alias less='less -R'
+alias less='less -x4 -cR'
 alias grep='grep -E --color=auto'
 
 _have dircolors && eval "$($NAME -b)"
