@@ -29,6 +29,7 @@ def guess_lexer(file_name, text):
     except pygments.util.ClassNotFound:
         lexer = pygments.lexers.guess_lexer(text)
     
+    lexer.add_filter('codetagify')
     lexer.add_filter('whitespace', tabs = True, spaces = True)
     return lexer
 
