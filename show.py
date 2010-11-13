@@ -1,10 +1,16 @@
 #!/usr/bin/env python
+# -*- coding: utf8 -*-
+
+
+# Standard library:
+import argparse, re, subprocess, sys
+
+# External modules:
+import pygments, pygments.formatters, pygments.lexers
+
 
 # TODO: Add support for diff-like options and launch a graphical tool instead.
 # TODO: Use Pygment filters.
-
-import pygments, pygments.formatters, pygments.lexers
-import argparse, re, subprocess, sys
 
 
 def display(stream, text, lexer, formatter):
