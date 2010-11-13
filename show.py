@@ -3,14 +3,13 @@
 
 
 # Standard library:
-import argparse, re, subprocess, sys
+import argparse, codecs, locale, re, subprocess, sys
 
 # External modules:
 import pygments, pygments.formatters, pygments.lexers
 
 
 # TODO: Add support for diff-like options and launch a graphical tool instead.
-# TODO: Use Pygment filters.
 
 
 def display(stream, text, lexer, formatter):
@@ -26,9 +25,16 @@ def guess_lexer(file_name, text):
         return None
     
     try:
-        return pygments.lexers.guess_lexer_for_filename(file_name, text)
+        lexer = pygments.lexers.guess_lexer_for_filename(file_name, text)
     except pygments.util.ClassNotFound:
-        return pygments.lexers.guess_lexer(text)
+        lexer = pygments.lexers.guess_lexer(text)
+    
+    lexer.add_filter('whitespace', tabs = True, spaces = True)
+    return lexer
+
+
+def locale_writer(stream):
+    return codecs.getwriter(locale.getpreferredencoding())(stream)
 
 
 def parse_arguments():
@@ -82,6 +88,7 @@ for line in args.file:
             pager = subprocess.Popen(args.pager, stdin = subprocess.PIPE)
             text = ''.join(lines)
             lexer = guess_lexer(args.file.name, text)
+            pager.stdin = locale_writer(pager.stdin)
             
             display(pager.stdin, text, lexer, formatter)
     else:
@@ -94,4 +101,4 @@ if pager is not None:
 elif len(lines) > 0:
     text = ''.join(lines)
     lexer = guess_lexer(args.file.name, text)
-    display(sys.stdout, text, lexer, formatter)
+    display(locale_writer(sys.stdout), text, lexer, formatter)
