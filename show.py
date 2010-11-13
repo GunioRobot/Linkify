@@ -85,7 +85,10 @@ args = create_arguments_parser().parse_args()
 source = None
 
 if (args.u is True) and (len(args.L) == 2) and (len(args.file) == 2):
-    diff_args = ['diff', '-u', '-L', args.L[0], '-L', args.L[1]]
+    # Kompare chokes on tab characters in labels.
+    labels = [l.replace('\t', ' ') for l in args.L]
+    
+    diff_args = ['diff', '-u', '-L', labels[0], '-L', labels[1]]
     diff_args.extend([f.name for f in args.file])
     
     source = subprocess.Popen(diff_args, stdout = subprocess.PIPE).stdout
