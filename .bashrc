@@ -72,7 +72,6 @@ _have dircolors && eval "$($NAME -b)"
 _have lesspipe && eval "$($NAME)"
 
 # Cache.
-_have kompare meld kdiff3
 _have source-highlight
 
 _have ack-grep ack && alias \
@@ -176,18 +175,6 @@ cleanup() {
 
 ff() {
     find $@ -a ! -name '*.svn-base'
-}
-
-idiff() {
-    if [ -n "$HAVE_KOMPARE" ]; then
-        $HAVE_KOMPARE -c "$1" "$2"
-    elif [ -n "$HAVE_MELD" ]; then
-        $HAVE_MELD "$1" "$2"
-    elif [ -n "$HAVE_KDIFF3" ]; then
-        $HAVE_KDIFF3 "$1" "$2"
-    else
-        diff "$1" "$2" | less
-    fi
 }
 
 reload() {
