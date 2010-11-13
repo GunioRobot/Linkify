@@ -2,10 +2,9 @@
 
 # TODO: Add support for diff-like options and launch a graphical tool instead.
 # TODO: Use Pygment filters.
-# TODO: Detect already colorized input.
 
 import pygments, pygments.formatters, pygments.lexers
-import argparse, subprocess, sys
+import argparse, re, subprocess, sys
 
 
 def display(stream, text, lexer, formatter):
@@ -16,6 +15,10 @@ def display(stream, text, lexer, formatter):
 
 
 def guess_lexer(file_name, text):
+    # Detect ANSI "color" escape sequences.
+    if re.search(r'\x1B\[\d+(;\d+)*m', text):
+        return None
+    
     try:
         return pygments.lexers.guess_lexer_for_filename(file_name, text)
     except pygments.util.ClassNotFound:
