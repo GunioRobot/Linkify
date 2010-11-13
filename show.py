@@ -81,17 +81,7 @@ def locale_writer(stream):
     return codecs.getwriter(locale.getpreferredencoding())(stream)
 
 
-def parse_arguments():
-    parser = create_arguments_parser()
-    args = parser.parse_args()
-    
-    if args.pager is None:
-        args.pager = ['less', '-cRx4']
-    
-    return args
-
-
-args = parse_arguments()
+args = create_arguments_parser().parse_args()
 source = None
 
 if (args.u is True) and (len(args.L) == 2) and (len(args.file) == 2):
@@ -115,11 +105,18 @@ for line in source:
     lines.append(line)
     
     if len(lines) >= args.lines:
-        pager = subprocess.Popen(args.pager, stdin = subprocess.PIPE)
         text = ''.join(lines)
         lexer = guess_lexer(source.name, text)
-        pager.stdin = locale_writer(pager.stdin)
         
+        if args.pager is None:
+            if isinstance(lexer, pygments.lexers.DiffLexer):
+                args.pager = ['kompare', '-o', '-']
+                lexer = None
+            else:
+                args.pager = ['less', '-cRx4']
+        
+        pager = subprocess.Popen(args.pager, stdin = subprocess.PIPE)
+        pager.stdin = locale_writer(pager.stdin)
         display(pager.stdin, text, lexer, formatter)
 
 if pager is not None:
