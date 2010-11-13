@@ -59,6 +59,7 @@ alias ...='c ../..'
 alias ....='c ../../..'
 alias .....='c ../../../..'
 
+alias e='$EDITOR'
 alias l='ls -CFXh --color=auto --group-directories-first'
 alias ll='l -l'
 alias dir='l -lA'
