@@ -13,7 +13,12 @@
 
 
 # Standard library:
-import argparse, codecs, locale, re, subprocess, sys
+import codecs, locale, re, subprocess, sys
+
+try:
+    import argparse
+except ImportError as error:
+    sys.exit('Python 2.7 or newer is required: %s' % error)
 
 # External modules:
 import pygments, pygments.formatters, pygments.lexers
