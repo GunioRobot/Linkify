@@ -21,7 +21,10 @@ except ImportError as error:
     sys.exit('Python 2.7 or newer is required: %s' % error)
 
 # External modules:
-import pygments, pygments.formatters, pygments.lexers
+try:
+    import pygments, pygments.formatters, pygments.lexers
+except ImportError as error:
+    sys.exit('Pygments is required, see <http://pygments.org/>: %s' % error)
 
 
 def create_arguments_parser():
