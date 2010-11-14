@@ -46,7 +46,7 @@ def create_arguments_parser():
         nargs = '*',
         default = [sys.stdin],
         type = file,
-        help = 'File to be show, otherwise read from standard input.')
+        help = 'File to be shown, otherwise read from standard input.')
     
     return parser
 
