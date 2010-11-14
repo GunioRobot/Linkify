@@ -184,6 +184,7 @@ SHOW_PY=$(dirname $REAL_BASH_SOURCE 2>/dev/null)"/show.py"
 if [ -e "$SHOW_PY" ]; then
     alias s=$SHOW_PY
     alias diff='s'
+    export GIT_EXTERNAL_DIFF=$SHOW_PY
 else
     alias s='less'
     _have colordiff && alias diff=$NAME
