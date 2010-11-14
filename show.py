@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 
 
 # TODO: Clean up (abstract logic behind classes e.g. Pager, LessPager, etc).
