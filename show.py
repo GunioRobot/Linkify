@@ -89,26 +89,26 @@ source = args.file
 
 if args.file2 is not None:
     files = [args.file, args.file2]
-    diff_args = ['diff']
+    diff = ['diff']
     
     if args.u:
-        diff_args.append('-u')
+        diff.append('-u')
     
     if args.label is None:
         args.label = [file.name for file in files]
     
     for label in args.label:
         # Kompare chokes on tab characters in labels.
-        diff_args.extend(['-L', label.replace('\t', ' ')])
+        diff.extend(['-L', label.replace('\t', ' ')])
     
     if args.file2 is sys.stdin:
         # Compare standard input with given file, not the other way around.
         files.reverse()
     
     for file in files:
-        diff_args.append('-' if file is sys.stdin else file.name)
+        diff.append('-' if file is sys.stdin else file.name)
     
-    source = subprocess.Popen(diff_args, stdout = subprocess.PIPE).stdout
+    source = subprocess.Popen(diff, stdout = subprocess.PIPE).stdout
 
 formatter = pygments.formatters.Terminal256Formatter()
 lexer = None
