@@ -2,9 +2,7 @@
 <job>
   <script language="JScript">
   <![CDATA[
-/**
- * Automatic silent download using Free Download Manager.
- */
+// Automatic silent download using Free Download Manager.
 
 if (WScript.Arguments.length != 1) {
     WScript.Echo('Wrong number of arguments.');
