@@ -3,10 +3,13 @@
 
 
 # TODO: Clean up (abstract logic behind classes e.g. Pager, LessPager, etc).
-# TODO: Handle the KeyboardInterrupt exception gracefully.
-# TODO: Detect missing programs and provide automatic installation or fallbacks. 
-# TODO: Allow override of the default diff pager program.
 # TODO: Guess input syntax even if already colored.
+# TODO: Handle the KeyboardInterrupt exception gracefully.
+# TODO: Detect missing programs and provide automatic installation or fallbacks.
+# TODO: Pass real files to Kompare instead of diff output.
+# TODO: Allow override of the default diff pager program (e.g. opendiff kdiff3
+#       tkdiff xxdiff meld kompare gvimdiff diffuse ecmerge p4merge araxis
+#       emerge vimdiff).
 
 
 # Standard library:
@@ -60,7 +63,11 @@ def create_arguments_parser():
     parser.add_argument('file2',
         nargs = '?',
         type = argparse.FileType(),
-        help = 'If given, file to be compared against, switching to diff mode.')
+        help = 'If given, file to be compared against, and switch to diff mode.')
+    
+    parser.add_argument('git',
+        nargs = '*',
+        help = 'If given, assume git diff arguments, and switch to diff mode.')
     
     return parser
 
@@ -98,7 +105,16 @@ lexer = None
 pager = None
 lines = []
 
+if len(args.git) == 5:
+    # Parse git diff arguments.
+    (path, old_file) = (args.file, args.file2)
+    (old_hex, old_mode, new_file, new_hex, new_mode) = args.git
+    
+    (args.file, args.file2) = (old_file, path)
+    args.label = [path.name + ' (%s)' % h for h in [old_hex, new_hex]]
+
 if args.file2 is not None:
+    # Switch to diff mode.
     files = [args.file, args.file2]
     diff = ['diff']
     
