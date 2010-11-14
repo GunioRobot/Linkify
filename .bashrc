@@ -59,7 +59,6 @@ alias ...='c ../..'
 alias ....='c ../../..'
 alias .....='c ../../../..'
 
-alias d='diff'
 alias e='$EDITOR'
 alias l='ls -CFXh --color=auto --group-directories-first'
 alias ll='l -l'
@@ -86,7 +85,6 @@ _have svn && alias \
     sst="$NAME st" \
     sup="$NAME up"
 
-_have colordiff && alias diff=$NAME
 _have cpan && alias cpan="sudo PERL_AUTOINSTALL=1 PERL_MM_USE_DEFAULT=1 FTP_PASSIVE=1 $NAME"
 _have kwrite && export EDITOR=$LOCATION
 _have nano && [ -z "$HAVE_KWRITE" ] && export EDITOR=$LOCATION
@@ -185,12 +183,10 @@ SHOW_PY=$(dirname $REAL_BASH_SOURCE 2>/dev/null)"/show.py"
 
 if [ -e "$SHOW_PY" ]; then
     alias s=$SHOW_PY
-    
-    diff() {
-        $SHOW_PY -u -L "$1" -L "$2" "$1" "$2"
-    }
+    alias diff='s'
 else
     alias s='less'
+    _have colordiff && alias diff=$NAME
 fi
 
 for BASHRC in $(echo $BASH_SOURCE $REAL_BASH_SOURCE); do
