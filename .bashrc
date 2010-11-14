@@ -59,6 +59,7 @@ alias ...='c ../..'
 alias ....='c ../../..'
 alias .....='c ../../../..'
 
+alias d='diff'
 alias e='$EDITOR'
 alias l='ls -CFXh --color=auto --group-directories-first'
 alias ll='l -l'
@@ -70,9 +71,6 @@ alias grep='grep -E --color=auto'
 
 _have dircolors && eval "$($NAME -b)"
 _have lesspipe && eval "$($NAME)"
-
-# Cache.
-_have source-highlight
 
 _have ack-grep ack && alias \
     f="$NAME --sort-files" \
@@ -182,15 +180,20 @@ reload() {
     exec $SHELL
 }
 
-s() {
-    if [ -n "$HAVE_SOURCE_HIGHLIGHT" ]; then
-        $HAVE_SOURCE_HIGHLIGHT --failsafe -t 4 -f esc -o STDOUT $@ | less
-    else
-        less $@
-    fi
-}
+REAL_BASH_SOURCE=$(readlink $BASH_SOURCE)
+SHOW_PY=$(dirname $REAL_BASH_SOURCE 2>/dev/null)"/show.py"
 
-for BASHRC in $(echo $BASH_SOURCE $(readlink $BASH_SOURCE)); do
+if [ -e "$SHOW_PY" ]; then
+    alias s=$SHOW_PY
+    
+    diff() {
+        $SHOW_PY -u -L "$1" -L "$2" "$1" "$2"
+    }
+else
+    alias s='less'
+fi
+
+for BASHRC in $(echo $BASH_SOURCE $REAL_BASH_SOURCE); do
     for BASHRC_CHILD in $(ls -1 $BASHRC.* 2>/dev/null); do
         source $BASHRC_CHILD
         echo "* Loaded $BASHRC_CHILD"
