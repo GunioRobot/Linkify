@@ -2,6 +2,13 @@
 # -*- coding: utf8 -*-
 
 
+# TODO: Clean up (abstract logic behind classes e.g. Pager, LessPager, etc).
+# TODO: Handle the KeyboardInterrupt exception gracefully.
+# TODO: Detect missing programs and provide automatic installation or fallbacks. 
+# TODO: Allow override of the default diff pager program.
+# TODO: Guess input syntax even if already colored.
+
+
 # Standard library:
 import argparse, codecs, locale, re, subprocess, sys
 
@@ -85,7 +92,11 @@ def locale_writer(stream):
 
 
 args = create_arguments_parser().parse_args()
+formatter = pygments.formatters.Terminal256Formatter()
 source = args.file
+lexer = None
+pager = None
+lines = []
 
 if args.file2 is not None:
     files = [args.file, args.file2]
@@ -109,11 +120,6 @@ if args.file2 is not None:
         diff.append('-' if file is sys.stdin else file.name)
     
     source = subprocess.Popen(diff, stdout = subprocess.PIPE).stdout
-
-formatter = pygments.formatters.Terminal256Formatter()
-lexer = None
-pager = None
-lines = []
 
 for line in source:
     if pager is not None:
