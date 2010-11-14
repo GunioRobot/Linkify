@@ -19,7 +19,9 @@ def create_arguments_parser():
         
         return number
     
-    parser = argparse.ArgumentParser(parents = [create_diff_arguments_parser()])
+    parser = argparse.ArgumentParser(description = '''
+        Smart pager with automatic syntax highlighting and diff support.
+    ''')
     
     parser.add_argument('-l',
         dest = 'lines',
@@ -27,30 +29,24 @@ def create_arguments_parser():
         type = natural,
         help = 'Number of lines to display inline before paging.')
     
+    parser.add_argument('-L',
+        action = 'append',
+        help = '(diff)')
+    
     parser.add_argument('-p',
         dest = 'pager',
         action = 'append',
         help = 'Custom pager program to use and arguments.')
+    
+    parser.add_argument('-u',
+        action = 'store_true',
+        help = '(diff)')
     
     parser.add_argument('file',
         nargs = '*',
         default = [sys.stdin],
         type = file,
         help = 'File to be show, otherwise read from standard input.')
-    
-    return parser
-
-
-def create_diff_arguments_parser():
-    parser = argparse.ArgumentParser(add_help = False)
-    
-    parser.add_argument('-u',
-        action = 'store_true',
-        help = '(diff)')
-    
-    parser.add_argument('-L',
-        action = 'append',
-        help = '(diff)')
     
     return parser
 
