@@ -30,6 +30,7 @@ def create_arguments_parser():
         help = 'Number of lines to display inline before paging.')
     
     parser.add_argument('-L',
+        dest = 'label',
         action = 'append',
         help = '(diff)')
     
@@ -40,13 +41,19 @@ def create_arguments_parser():
     
     parser.add_argument('-u',
         action = 'store_true',
+        default = True,
         help = '(diff)')
     
     parser.add_argument('file',
-        nargs = '*',
-        default = [sys.stdin],
-        type = file,
-        help = 'File to be shown, otherwise read from standard input.')
+        nargs = '?',
+        default = sys.stdin,
+        type = argparse.FileType(),
+        help = 'File to be shown, otherwise use standard input.')
+    
+    parser.add_argument('file2',
+        nargs = '?',
+        type = argparse.FileType(),
+        help = 'If given, file to be compared against, switching to diff mode.')
     
     return parser
 
@@ -78,18 +85,30 @@ def locale_writer(stream):
 
 
 args = create_arguments_parser().parse_args()
-source = None
+source = args.file
 
-if (args.u is True) and (len(args.L) == 2) and (len(args.file) == 2):
-    # Kompare chokes on tab characters in labels.
-    labels = [l.replace('\t', ' ') for l in args.L]
+if args.file2 is not None:
+    files = [args.file, args.file2]
+    diff_args = ['diff']
     
-    diff_args = ['diff', '-u', '-L', labels[0], '-L', labels[1]]
-    diff_args.extend([f.name for f in args.file])
+    if args.u:
+        diff_args.append('-u')
+    
+    if args.label is None:
+        args.label = [file.name for file in files]
+    
+    for label in args.label:
+        # Kompare chokes on tab characters in labels.
+        diff_args.extend(['-L', label.replace('\t', ' ')])
+    
+    if args.file2 is sys.stdin:
+        # Compare standard input with given file, not the other way around.
+        files.reverse()
+    
+    for file in files:
+        diff_args.append('-' if file is sys.stdin else file.name)
     
     source = subprocess.Popen(diff_args, stdout = subprocess.PIPE).stdout
-else:
-    (source,) = args.file
 
 formatter = pygments.formatters.Terminal256Formatter()
 lexer = None
