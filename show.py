@@ -3,7 +3,7 @@
 
 
 # TODO: Clean up (abstract logic behind classes e.g. Pager, LessPager, etc).
-# TODO: Guess input syntax even if already colored.
+# TODO: Guess input syntax even if already colored to use an appropriate pager.
 # TODO: Handle the KeyboardInterrupt exception gracefully.
 # TODO: Detect missing programs and provide automatic installation or fallbacks.
 # TODO: Pass real files to Kompare instead of diff output.
