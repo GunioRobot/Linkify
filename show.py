@@ -5,10 +5,11 @@
 # TODO: Use a percentage of the current terminal height instead of a fixed
 #       number of lines.
 # TODO: Clean up (abstract logic behind classes e.g. Pager, LessPager, etc).
-# TODO: Guess input syntax even if already colored to use an appropriate pager.
 # TODO: Handle the KeyboardInterrupt exception gracefully.
 # TODO: Detect missing programs and provide automatic installation or fallbacks.
-# TODO: Pass real files to Kompare instead of diff output.
+# TODO: Guess input syntax even if already colored to use an appropriate pager.
+# TODO: Pass real files to Kompare instead of diff output?
+# TODO: Force diff lexer in diff mode.
 # TODO: Allow override of the default diff pager program (e.g. opendiff kdiff3
 #       tkdiff xxdiff meld kompare gvimdiff diffuse ecmerge p4merge araxis
 #       emerge vimdiff).
