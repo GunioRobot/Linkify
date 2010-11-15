@@ -133,6 +133,31 @@ class Arguments (argparse.ArgumentParser):
         args.label = [path.name + ' (%s)' % h for h in [old_hex, new_hex]]
 
 
+class Pager (object):
+    def __init__(self, stream):
+        self._stream = codecs.getwriter(locale.getpreferredencoding())(stream)
+    
+    
+    def close(self):
+        self._stream.close()
+    
+    
+    def write(self, string):
+        self._stream.write(string)
+
+
+class ProgramPager (Pager):
+    def __init__(self, command):
+        self._process = subprocess.Popen(command, stdin = subprocess.PIPE)
+        super(ProgramPager, self).__init__(self._process.stdin)
+    
+    
+    def close(self):
+        super(ProgramPager, self).close()
+        self._process.communicate()
+        self._process.wait()
+
+
 def display(stream, text, lexer, formatter):
     if lexer is not None:
         text = pygments.highlight(text, lexer, formatter)
@@ -154,10 +179,6 @@ def guess_lexer(file_name, text):
     return lexer
 
 
-def locale_writer(stream):
-    return codecs.getwriter(locale.getpreferredencoding())(stream)
-
-
 args = Arguments().parse_args()
 formatter = pygments.formatters.Terminal256Formatter()
 lexer = pygments.lexers.DiffLexer() if args.diff_mode else None
@@ -166,7 +187,7 @@ lines = []
 
 for line in args.file:
     if pager is not None:
-        display(pager.stdin, line, lexer, formatter)
+        display(pager, line, lexer, formatter)
         continue
     
     lines.append(line)
@@ -184,17 +205,14 @@ for line in args.file:
             else:
                 args.pager = ['less', '-cRx4']
         
-        pager = subprocess.Popen(args.pager, stdin = subprocess.PIPE)
-        pager.stdin = locale_writer(pager.stdin)
-        display(pager.stdin, text, lexer, formatter)
+        pager = ProgramPager(args.pager)
+        display(pager, text, lexer, formatter)
 
 if pager is not None:
-    pager.communicate()
-    pager.stdin.close()
-    pager.wait()
+    pager.close()
 elif len(lines) > 0:
     text = ''.join(lines)
     lexer = guess_lexer(args.file.name, text)
-    display(locale_writer(sys.stdout), text, lexer, formatter)
+    display(Pager(sys.stdout), text, lexer, formatter)
 
 args.file.close()
