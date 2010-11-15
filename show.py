@@ -29,57 +29,61 @@ except ImportError as error:
     sys.exit('Pygments is required, see <http://pygments.org/>: %s' % error)
 
 
-def create_arguments_parser():
-    def natural(value):
-        number = int(value, 10)
+class Arguments (argparse.ArgumentParser):
+    def __init__(self):
+        super(Arguments, self).__init__(description = '''
+            Smart pager with automatic syntax highlighting and diff support.''')
         
-        if number < 0:
-            raise argparse.ArgumentTypeError('%d is not a natural number'
-                % value)
+        def natural(value):
+            number = int(value, 10)
+            
+            if number < 0:
+                raise argparse.ArgumentTypeError('%d is not a natural number'
+                    % value)
+            
+            return number
         
-        return number
-    
-    parser = argparse.ArgumentParser(description = '''
-        Smart pager with automatic syntax highlighting and diff support.
-    ''')
-    
-    parser.add_argument('-l',
-        dest = 'lines',
-        default = 15,
-        type = natural,
-        help = 'Number of lines to display inline before paging.')
-    
-    parser.add_argument('-L',
-        dest = 'label',
-        action = 'append',
-        help = '(diff)')
-    
-    parser.add_argument('-p',
-        dest = 'pager',
-        action = 'append',
-        help = 'Custom pager program to use and arguments.')
-    
-    parser.add_argument('-u',
-        action = 'store_true',
-        default = True,
-        help = '(diff)')
-    
-    parser.add_argument('file',
-        nargs = '?',
-        default = sys.stdin,
-        type = argparse.FileType(),
-        help = 'File to be shown, otherwise use standard input.')
-    
-    parser.add_argument('file2',
-        nargs = '?',
-        type = argparse.FileType(),
-        help = 'If given, file to be compared against, and switch to diff mode.')
-    
-    parser.add_argument('git',
-        nargs = '*',
-        help = 'If given, assume git diff arguments, and switch to diff mode.')
-    
-    return parser
+        arguments = [
+            ('-l', {
+                'dest': 'lines',
+                'default': 15,
+                'type': natural,
+                'help': 'Number of lines to display inline before paging.',
+            }),
+            ('-L', {
+                'dest': 'label',
+                'action': 'append',
+                'help': '(diff)',
+            }),
+            ('-p', {
+                'dest': 'pager',
+                'action': 'append',
+                'help': 'Custom pager program to use and arguments.',
+            }),
+            ('-u', {
+                'action': 'store_true',
+                'default': True,
+                'help': '(diff)',
+            }),
+            ('file', {
+                'nargs': '?',
+                'default': sys.stdin,
+                'type': argparse.FileType(),
+                'help': 'File to be shown, otherwise use standard input.',
+            }),
+            ('file2', {
+                'nargs': '?',
+                'type': argparse.FileType(),
+                'help': 'File to be compared against, and switch to diff mode.',
+            }),
+            ('git', {
+                'nargs': '*',
+                'help': 'Assume git diff arguments, and switch to diff mode.',
+            }),
+        ]
+        
+        for name, options in arguments:
+            self.add_argument(name, **options)
 
 
 def display(stream, text, lexer, formatter):
@@ -107,7 +111,7 @@ def locale_writer(stream):
     return codecs.getwriter(locale.getpreferredencoding())(stream)
 
 
-args = create_arguments_parser().parse_args()
+args = Arguments().parse_args()
 formatter = pygments.formatters.Terminal256Formatter()
 source = args.file
 lexer = None
