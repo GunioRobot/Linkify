@@ -84,6 +84,53 @@ class Arguments (argparse.ArgumentParser):
         
         for name, options in arguments:
             self.add_argument(name, **options)
+    
+    
+    def parse_args(self):
+        args = super(Arguments, self).parse_args()
+        
+        if len(args.git) == 5:
+            self._parse_git_diff_arguments(args)
+        
+        if args.file2 is None:
+            args.diff_mode = False
+        else:
+            args.diff_mode = True
+            self._parse_diff_arguments(args)
+        
+        return args
+    
+    
+    def _parse_diff_arguments(self, args):
+        files = [args.file, args.file2]
+        diff = ['diff']
+        
+        if args.u:
+            diff.append('-u')
+        
+        if args.label is None:
+            args.label = [file.name for file in files]
+        
+        for label in args.label:
+            # Kompare chokes on tab characters in labels.
+            diff.extend(['-L', label.replace('\t', ' ')])
+        
+        if args.file2 is sys.stdin:
+            # Compare standard input with given file, not the other way around.
+            files.reverse()
+        
+        for file in files:
+            diff.append('-' if file is sys.stdin else file.name)
+        
+        args.file = subprocess.Popen(diff, stdout = subprocess.PIPE).stdout
+    
+    
+    def _parse_git_diff_arguments(self, args):
+        (path, old_file) = (args.file, args.file2)
+        (old_hex, old_mode, new_file, new_hex, new_mode) = args.git
+        
+        (args.file, args.file2) = (old_file, path)
+        args.label = [path.name + ' (%s)' % h for h in [old_hex, new_hex]]
 
 
 def display(stream, text, lexer, formatter):
@@ -113,45 +160,11 @@ def locale_writer(stream):
 
 args = Arguments().parse_args()
 formatter = pygments.formatters.Terminal256Formatter()
-source = args.file
-lexer = None
+lexer = pygments.lexers.DiffLexer() if args.diff_mode else None
 pager = None
 lines = []
 
-if len(args.git) == 5:
-    # Parse git diff arguments.
-    (path, old_file) = (args.file, args.file2)
-    (old_hex, old_mode, new_file, new_hex, new_mode) = args.git
-    
-    (args.file, args.file2) = (old_file, path)
-    args.label = [path.name + ' (%s)' % h for h in [old_hex, new_hex]]
-
-if args.file2 is not None:
-    # Switch to diff mode.
-    lexer = pygments.lexers.DiffLexer()
-    files = [args.file, args.file2]
-    diff = ['diff']
-    
-    if args.u:
-        diff.append('-u')
-    
-    if args.label is None:
-        args.label = [file.name for file in files]
-    
-    for label in args.label:
-        # Kompare chokes on tab characters in labels.
-        diff.extend(['-L', label.replace('\t', ' ')])
-    
-    if args.file2 is sys.stdin:
-        # Compare standard input with given file, not the other way around.
-        files.reverse()
-    
-    for file in files:
-        diff.append('-' if file is sys.stdin else file.name)
-    
-    source = subprocess.Popen(diff, stdout = subprocess.PIPE).stdout
-
-for line in source:
+for line in args.file:
     if pager is not None:
         display(pager.stdin, line, lexer, formatter)
         continue
@@ -162,7 +175,7 @@ for line in source:
         text = ''.join(lines)
         
         if lexer is None:
-            lexer = guess_lexer(source.name, text)
+            lexer = guess_lexer(args.file.name, text)
         
         if args.pager is None:
             if isinstance(lexer, pygments.lexers.DiffLexer):
@@ -181,7 +194,7 @@ if pager is not None:
     pager.wait()
 elif len(lines) > 0:
     text = ''.join(lines)
-    lexer = guess_lexer(source.name, text)
+    lexer = guess_lexer(args.file.name, text)
     display(locale_writer(sys.stdout), text, lexer, formatter)
 
-source.close()
+args.file.close()
