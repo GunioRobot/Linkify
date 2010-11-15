@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 
+# TODO: Use a percentage of the current terminal height instead of a fixed
+#       number of lines.
 # TODO: Clean up (abstract logic behind classes e.g. Pager, LessPager, etc).
 # TODO: Guess input syntax even if already colored to use an appropriate pager.
 # TODO: Handle the KeyboardInterrupt exception gracefully.
