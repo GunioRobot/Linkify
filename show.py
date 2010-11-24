@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 
-# TODO: Handle the KeyboardInterrupt exception gracefully.
 # TODO: Use a percentage of the current terminal height instead of a fixed
 #       number of lines.
 # TODO: Detect missing programs and provide automatic installation or fallbacks
@@ -261,8 +260,11 @@ class AutomaticPager (Pager):
 args = Arguments().parse_args()
 pager = AutomaticPager(args.file.name, 15, args.diff_mode)
 
-for line in args.file:
-    pager.write(line)
+try:
+    for line in args.file:
+        pager.write(line)
+except KeyboardInterrupt:
+    pass
 
 args.file.close()
 pager.close()
