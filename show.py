@@ -120,8 +120,10 @@ class Arguments (argparse.ArgumentParser):
 
 class Pager (object):
     __metaclass__ = abc.ABCMeta
+    ansi_color_escape = r'\x1B\[\d+(;\d+)*m'
     
     
+    @property
     def accepts_color(self):
         return True
     
@@ -146,6 +148,9 @@ class StreamPager (Pager):
     
     
     def write(self, text):
+        if not self.accepts_color:
+            text = re.sub(self.ansi_color_escape, '', text)
+        
         self._stream.write(text)
 
 
@@ -166,6 +171,7 @@ class DiffPager (ProgramPager):
         super(DiffPager, self).__init__(['kompare', '-o', '-'])
     
     
+    @property
     def accepts_color(self):
         return False
 
@@ -191,7 +197,6 @@ class AutomaticPager (Pager):
         self._inline_lines = 0
         
         self._line_separator = '\n'
-        self._ansi_color_escape = r'\x1B\[\d+(;\d+)*m'
     
     
     def close(self):
@@ -203,8 +208,6 @@ class AutomaticPager (Pager):
     
     
     def write(self, text):
-        text = re.sub(self._ansi_color_escape, '', text)
-        
         if self._output is None:
             self._inline_buffer += text
             self._inline_lines += text.count(self._line_separator)
@@ -225,16 +228,15 @@ class AutomaticPager (Pager):
     
     def _guess_lexer(self, text):
         if self._diff_mode:
-            lexer = pygments.lexers.DiffLexer()
+            return pygments.lexers.DiffLexer()
         else:
+            clean_text = re.sub(self.ansi_color_escape, '', text)
+            
             try:
-                lexer = pygments.lexers.guess_lexer_for_filename(
-                    self._source_name, text)
+                return pygments.lexers.guess_lexer_for_filename(
+                    self._source_name, clean_text)
             except pygments.util.ClassNotFound:
-                lexer = pygments.lexers.guess_lexer(text)
-        
-        lexer.add_filter('codetagify')
-        return lexer
+                return pygments.lexers.guess_lexer(clean_text)
     
     
     def _setup_output(self, text):
@@ -247,12 +249,13 @@ class AutomaticPager (Pager):
         else:
             self._output = TextPager()
         
-        if self._output.accepts_color():
-            self._lexer = lexer
-            self._formatter = pygments.formatters.Terminal256Formatter()
-        else:
+        if re.search(self.ansi_color_escape, text):
             self._lexer = pygments.lexers.TextLexer()
-            self._formatter = pygments.formatters.NullFormatter()
+        else:
+            self._lexer = lexer
+            self._lexer.add_filter('codetagify')
+        
+        self._formatter = pygments.formatters.Terminal256Formatter()
 
 
 args = Arguments().parse_args()
