@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
+# TODO: Handle files that don't exist and directories.
 # TODO: Automatically detect input encoding (e.g. chardet).
 # TODO: Detect missing programs and provide automatic installation or fallbacks
 #       (e.g. opendiff kdiff3 tkdiff xxdiff meld kompare gvimdiff diffuse
