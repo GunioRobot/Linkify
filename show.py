@@ -2,15 +2,13 @@
 # -*- coding: utf-8 -*-
 
 
-# TODO: Use a percentage of the current terminal height instead of a fixed
-#       number of lines.
 # TODO: Detect missing programs and provide automatic installation or fallbacks
 #       (e.g. opendiff kdiff3 tkdiff xxdiff meld kompare gvimdiff diffuse
 #       ecmerge p4merge araxis emerge vimdiff).
 
 
 # Standard library:
-import abc, codecs, locale, re, subprocess, sys
+import abc, codecs, fcntl, locale, os, re, struct, subprocess, sys, termios
 
 try:
     import argparse
@@ -186,9 +184,8 @@ class TextPager (ProgramPager):
 
 
 class AutomaticPager (Pager):
-    def __init__(self, source_name, max_inline_lines, diff_mode):
+    def __init__(self, source_name, diff_mode):
         self._source_name = source_name
-        self._max_inline_lines = max_inline_lines
         self._diff_mode = diff_mode
         
         self._output = None
@@ -196,6 +193,7 @@ class AutomaticPager (Pager):
         self._inline_lines = 0
         
         self._line_separator = '\n'
+        self._inline_lines_threshold = 0.375
     
     
     def close(self):
@@ -238,6 +236,43 @@ class AutomaticPager (Pager):
                 return pygments.lexers.guess_lexer(clean_text)
     
     
+    def _guess_terminal_height(self):
+        def ioctl_GWINSZ(fd):
+            size_data = fcntl.ioctl(fd, termios.TIOCGWINSZ, '1234')
+            (rows, columns) = struct.unpack('hh', size_data)
+            return rows
+        
+        for stream in (sys.stdin, sys.stdout, sys.stderr):
+            try:
+                return ioctl_GWINSZ(stream.fileno())
+            except:
+                continue
+        
+        try:
+            fd = os.open(os.ctermid(), os.O_RDONLY)
+            try:
+                return ioctl_GWINSZ(fd)
+            finally:
+                os.close(fd)
+        except:
+            pass
+        
+        try:
+            process = subprocess.Popen(['stty', 'size'], stdout = subprocess.PIPE)
+            (rows, columns) = process.stdout.read().split()
+            return rows
+        except:
+            pass
+        
+        return 25
+    
+    
+    @property
+    def _max_inline_lines(self):
+        height = self._guess_terminal_height()
+        return int(round(height * self._inline_lines_threshold))
+    
+    
     def _setup_output(self, text):
         lexer = self._guess_lexer(text)
         
@@ -258,7 +293,7 @@ class AutomaticPager (Pager):
 
 
 args = Arguments().parse_args()
-pager = AutomaticPager(args.file.name, 15, args.diff_mode)
+pager = AutomaticPager(args.file.name, args.diff_mode)
 
 try:
     for line in args.file:
