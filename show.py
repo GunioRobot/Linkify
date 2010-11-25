@@ -190,31 +190,32 @@ class AutomaticPager (Pager):
         self._source_name = source_name
         self._diff_mode = diff_mode
         
+        self._buffer = ''
+        self._buffered_lines = 0
         self._output = None
-        self._inline_buffer = ''
-        self._inline_lines = 0
         
         self._line_separator = '\n'
         self._inline_lines_threshold = 0.375
     
     
     def close(self):
-        if self._output is None:
-            self._setup_output(self._inline_buffer)
-            self._display(self._inline_buffer)
+        if self._buffer != '':
+            self._setup_output(self._buffer)
+            self._display(self._buffer)
         
-        self._output.close()
+        if self._output is not None:
+            self._output.close()
     
     
     def write(self, text):
         if self._output is None:
-            self._inline_buffer += text
-            self._inline_lines += text.count(self._line_separator)
+            self._buffer += text
+            self._buffered_lines += text.count(self._line_separator)
             
-            if self._inline_lines <= self._max_inline_lines:
+            if self._buffered_lines <= self._max_inline_lines:
                 return
             
-            text = self._inline_buffer
+            (text, self._buffer) = (self._buffer, '')
             self._setup_output(text)
         
         self._display(text)
@@ -278,7 +279,7 @@ class AutomaticPager (Pager):
     def _setup_output(self, text):
         lexer = self._guess_lexer(text)
         
-        if self._inline_lines <= self._max_inline_lines:
+        if self._buffered_lines <= self._max_inline_lines:
             self._output = StreamPager(sys.stdout)
         elif self._diff_mode or isinstance(lexer, pygments.lexers.DiffLexer):
             self._output = DiffPager()
