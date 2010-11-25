@@ -119,7 +119,13 @@ class Arguments (argparse.ArgumentParser):
         (old_hex, old_mode, new_file, new_hex, new_mode) = args.git
         
         (args.file, args.file2) = (old_file, path)
-        args.label = [path.name + ' (%s)' % h for h in [old_hex, new_hex]]
+        args.label = []
+        
+        for commit in (old_hex, new_hex):
+            if re.match(r'^0+$', commit):
+                args.label.append('%s (working copy)' % path.name)
+            else:
+                args.label.append('%s (commit %s)' % (path.name, commit))
 
 
 class Pager (object):
