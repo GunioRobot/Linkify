@@ -10,7 +10,7 @@
 
 
 # Standard library:
-import abc, codecs, fcntl, locale, os, re, struct, subprocess, sys, termios
+import abc, codecs, errno, fcntl, locale, os, re, struct, subprocess, sys, termios
 
 try:
     import argparse
@@ -150,7 +150,13 @@ class StreamPager (Pager):
         if not self.accepts_color:
             text = re.sub(self.ansi_color_escape, '', text)
         
-        self._stream.write(text)
+        try:
+            self._stream.write(text)
+        except IOError as error:
+            if error.errno == errno.EPIPE:
+                raise EOFError()
+            else:
+                raise
 
 
 class ProgramPager (StreamPager):
@@ -301,7 +307,7 @@ pager = AutomaticPager(args.file.name, args.diff_mode)
 try:
     for line in args.file:
         pager.write(line)
-except KeyboardInterrupt:
+except (KeyboardInterrupt, EOFError):
     pass
 
 args.file.close()
