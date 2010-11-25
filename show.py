@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 
-# TODO: Automatically detect input encoding (e.g. chardet).
 # TODO: Show documentation and/or code of a Perl module when given a file name
 #       that looks like a namespace and doesn't point to a valid file? E.g.
 #       ./show.py IO::Handle
@@ -87,6 +86,7 @@ class Arguments (argparse.ArgumentParser):
             args.diff_mode = True
             self._parse_diff_arguments(args)
         
+        args.file = codecs.getreader(locale.getpreferredencoding())(args.file)
         return args
     
     
@@ -130,7 +130,7 @@ class Arguments (argparse.ArgumentParser):
 
 class Pager (object):
     __metaclass__ = abc.ABCMeta
-    ansi_color_escape = r'\x1B\[\d+(;\d+)*m'
+    ansi_color_escape = ur'\x1B\[\d+(;\d+)*m'
     
     
     @property
@@ -159,7 +159,7 @@ class StreamPager (Pager):
     
     def write(self, text):
         if not self.accepts_color:
-            text = re.sub(self.ansi_color_escape, '', text)
+            text = re.sub(self.ansi_color_escape, u'', text)
         
         try:
             self._stream.write(text)
@@ -214,16 +214,16 @@ class AutomaticPager (Pager):
         self._source_name = source_name
         self._diff_mode = diff_mode
         
-        self._buffer = ''
+        self._buffer = u''
         self._buffered_lines = 0
         self._output = None
         
-        self._line_separator = '\n'
+        self._line_separator = u'\n'
         self._inline_lines_threshold = 0.375
     
     
     def close(self):
-        if self._buffer != '':
+        if self._buffer != u'':
             self._setup_output(self._buffer)
             self._display(self._buffer)
         
@@ -239,7 +239,7 @@ class AutomaticPager (Pager):
             if self._buffered_lines <= self._max_inline_lines:
                 return
             
-            (text, self._buffer) = (self._buffer, '')
+            (text, self._buffer) = (self._buffer, u'')
             self._setup_output(text)
         
         self._display(text)
@@ -254,7 +254,7 @@ class AutomaticPager (Pager):
         if self._diff_mode:
             return pygments.lexers.DiffLexer()
         else:
-            clean_text = re.sub(self.ansi_color_escape, '', text)
+            clean_text = re.sub(self.ansi_color_escape, u'', text)
             
             try:
                 return pygments.lexers.guess_lexer_for_filename(
