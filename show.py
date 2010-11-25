@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 
-# TODO: Handle files that don't exist and directories.
 # TODO: Automatically detect input encoding (e.g. chardet).
 # TODO: Detect missing programs and provide automatic installation or fallbacks
 #       (e.g. opendiff kdiff3 tkdiff xxdiff meld kompare gvimdiff diffuse
@@ -71,7 +70,13 @@ class Arguments (argparse.ArgumentParser):
     
     
     def parse_args(self):
-        args = super(Arguments, self).parse_args()
+        try:
+            args = super(Arguments, self).parse_args()
+        except IOError as error:
+            if error.errno in (errno.ENOENT, errno.EISDIR):
+                sys.exit(str(error))
+            else:
+                raise
         
         if len(args.git) == 5:
             self._parse_git_diff_arguments(args)
