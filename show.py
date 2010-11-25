@@ -3,9 +3,6 @@
 
 
 # TODO: Automatically detect input encoding (e.g. chardet).
-# TODO: Detect missing programs and provide automatic installation or fallbacks
-#       (e.g. opendiff kdiff3 tkdiff xxdiff meld kompare gvimdiff diffuse
-#       ecmerge p4merge araxis emerge vimdiff).
 # TODO: Show documentation and/or code of a Perl module when given a file name
 #       that looks like a namespace and doesn't point to a valid file? E.g.
 #       ./show.py IO::Handle
