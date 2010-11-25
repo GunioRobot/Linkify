@@ -291,8 +291,8 @@ class AutomaticPager (Pager):
             pass
         
         try:
-            process = subprocess.Popen(['stty', 'size'], stdout = subprocess.PIPE)
-            (rows, columns) = process.stdout.read().split()
+            stty = subprocess.Popen(['stty', 'size'], stdout = subprocess.PIPE)
+            (rows, columns) = stty.stdout.read().split()
             return rows
         except:
             pass
