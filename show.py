@@ -166,7 +166,14 @@ class StreamPager (Pager):
 
 class ProgramPager (StreamPager):
     def __init__(self, command):
-        self._process = subprocess.Popen(command, stdin = subprocess.PIPE)
+        try:
+            self._process = subprocess.Popen(command, stdin = subprocess.PIPE)
+        except OSError as error:
+            if error.errno == errno.ENOENT:
+                raise NotImplementedError
+            else:
+                raise
+        
         super(ProgramPager, self).__init__(self._process.stdin)
     
     
@@ -293,7 +300,10 @@ class AutomaticPager (Pager):
         if self._buffered_lines <= self._max_inline_lines:
             self._output = StreamPager(sys.stdout)
         elif self._diff_mode or isinstance(lexer, pygments.lexers.DiffLexer):
-            self._output = DiffPager()
+            try:
+                self._output = DiffPager()
+            except NotImplementedError:
+                self._output = TextPager()
         else:
             self._output = TextPager()
         
