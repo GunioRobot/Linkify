@@ -254,7 +254,13 @@ class AutomaticPager (Pager):
                 return pygments.lexers.guess_lexer_for_filename(
                     self._source_name, clean_text)
             except pygments.util.ClassNotFound:
+                pass
+            
+            try:
                 return pygments.lexers.guess_lexer(clean_text)
+            except TypeError:
+                # echo .text | pygmentize -g
+                return pygments.lexers.TextLexer()
     
     
     def _guess_terminal_height(self):
