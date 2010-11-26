@@ -185,6 +185,7 @@ if [ -e "$SHOW_PY" ]; then
     alias s=$SHOW_PY
     alias diff='s'
     export GIT_EXTERNAL_DIFF=$SHOW_PY
+    export GIT_PAGER=cat
     export ACK_PAGER=$SHOW_PY
 else
     alias s='less'
