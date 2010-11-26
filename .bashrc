@@ -91,6 +91,7 @@ _have nano && [ -z "$HAVE_KWRITE" ] && export EDITOR=$LOCATION
 _have valgrind && alias vg="$NAME --tool=memcheck --leak-check=yes --show-reachable=yes"
 
 export ACK_COLOR_FILENAME='dark blue'
+export GIT_PAGER=cat
 export HISTCONTROL=ignoreboth
 export PS1='\[\033[4;30;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\n\$\[\033[00m\] '
 
@@ -185,7 +186,6 @@ if [ -e "$SHOW_PY" ]; then
     alias s=$SHOW_PY
     alias diff='s'
     export GIT_EXTERNAL_DIFF=$SHOW_PY
-    export GIT_PAGER=cat
     export ACK_PAGER=$SHOW_PY
 else
     alias s='less'
