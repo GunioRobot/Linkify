@@ -93,6 +93,7 @@ _have valgrind && alias vg="$NAME --tool=memcheck --leak-check=yes --show-reacha
 export ACK_COLOR_FILENAME='dark blue'
 export GIT_PAGER=cat
 export HISTCONTROL=ignoreboth
+export PYTHONDONTWRITEBYTECODE=yes
 export PS1='\[\033[4;30;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\n\$\[\033[00m\] '
 
 # Remove bright colors.
