@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 
 
+# TODO: Follow files, e.g. $ tail -F file.log
 # TODO: Show documentation and/or code of a Perl module when given a file name
 #       that looks like a namespace and doesn't point to a valid file? E.g.
-#       ./show.py IO::Handle
+#       $ ./show.py IO::Handle
 
 
 # Standard library:
