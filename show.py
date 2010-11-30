@@ -18,6 +18,12 @@ except ImportError as error:
 
 # External modules:
 try:
+    import chardet
+except ImportError as error:
+    sys.exit('chardet is required, see <http://chardet.feedparser.org/>: %s'
+        % error)
+
+try:
     import pygments, pygments.formatters, pygments.lexers
 except ImportError as error:
     sys.exit('Pygments is required, see <http://pygments.org/>: %s' % error)
@@ -87,7 +93,6 @@ class Arguments (argparse.ArgumentParser):
             args.diff_mode = True
             self._parse_diff_arguments(args)
         
-        args.file = codecs.getreader(locale.getpreferredencoding())(args.file)
         return args
     
     
@@ -211,8 +216,8 @@ class TextPager (ProgramPager):
 
 
 class AutomaticPager (Pager):
-    def __init__(self, source_name, diff_mode):
-        self._source_name = source_name
+    def __init__(self, input, diff_mode):
+        self._input = input
         self._diff_mode = diff_mode
         
         self._buffer = u''
@@ -221,6 +226,20 @@ class AutomaticPager (Pager):
         
         self._line_separator = u'\n'
         self._inline_lines_threshold = 0.375
+    
+    
+    def __iter__(self):
+        encoding = locale.getpreferredencoding()
+        
+        for line in self._input:
+            try:
+                yield line.decode(encoding)
+            except UnicodeDecodeError as error:
+                text = self._buffer.encode() + line
+                encoding = chardet.detect(text)['encoding']
+                yield line.decode(encoding)
+        
+        raise StopIteration
     
     
     def close(self):
@@ -259,7 +278,7 @@ class AutomaticPager (Pager):
             
             try:
                 return pygments.lexers.guess_lexer_for_filename(
-                    self._source_name, clean_text)
+                    self._input.name, clean_text)
             except pygments.util.ClassNotFound:
                 pass
             
@@ -330,10 +349,10 @@ class AutomaticPager (Pager):
 
 
 args = Arguments().parse_args()
-pager = AutomaticPager(args.file.name, args.diff_mode)
+pager = AutomaticPager(args.file, args.diff_mode)
 
 try:
-    for line in args.file:
+    for line in pager:
         pager.write(line)
 except (KeyboardInterrupt, EOFError):
     pass
