@@ -285,7 +285,8 @@ class AutomaticPager (Pager):
             try:
                 return pygments.lexers.guess_lexer(clean_text)
             except TypeError:
-                # echo .text | pygmentize -g
+                # See <http://bitbucket.org/birkenfeld/pygments-main/issue/618/>
+                # $ echo .text | pygmentize -g
                 return pygments.lexers.TextLexer()
     
     
