@@ -95,6 +95,7 @@ export GIT_PAGER=cat
 export HISTCONTROL=ignoreboth
 export PYTHONDONTWRITEBYTECODE=yes
 export PS1='\[\033[4;30;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\n\$\[\033[00m\] '
+export TRASH="$HOME/.local/share/Trash/files/"
 
 # Remove bright colors.
 export LS_COLORS=$(echo $LS_COLORS | sed -e 's/=01;/=30;/g')
