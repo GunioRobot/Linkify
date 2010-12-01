@@ -124,7 +124,6 @@ $PROMPT_COMMAND
     bind '"\e[2;2~": paste-from-clipboard'      # Shift + Insert
     [ -n "$CD" ] && cd "$(cygpath "$CD")" && unset CD
 else
-    _have colorgcc && alias gcc=$NAME g++=$NAME
     export TERM=xterm
     export PROMPT_COMMAND="
 export HISTFILESIZE=\$((\$(history 1 | awk '{print \$1}') + 3))
