@@ -50,8 +50,8 @@ class Arguments (argparse.ArgumentParser):
                 'help': 'diff labels',
             }),
             ('-u', {
-                'action': 'store_true',
-                'default': True,
+                'action': 'store_const',
+                'const': None,
                 'help': 'ignored for diff compatibility',
             }),
             ('file', {
@@ -98,10 +98,7 @@ class Arguments (argparse.ArgumentParser):
     
     def _parse_diff_arguments(self, args):
         files = [args.file, args.file2]
-        diff = ['diff']
-        
-        if args.u:
-            diff.append('-u')
+        diff = ['diff', '-u']
         
         if args.label is None:
             args.label = [file.name for file in files]
