@@ -35,7 +35,7 @@ _have() {
         fi
     done
     
-    [ -z "$INTERACTIVE" ] && echo "Missing: $*" 1>&2
+    [ -n "$INTERACTIVE" ] && echo "Missing: $*" 1>&2
     return 1
 }
 
@@ -133,7 +133,7 @@ $PROMPT_COMMAND
 "
     if [ "$(stat --format=%i /)" != "2" ]; then
         export CHROOT='x'
-        echo "* chroot:" $(uname -srmo)
+        [ -n "$INTERACTIVE" ] && echo "* chroot:" $(uname -srmo)
         umask 0002
     fi
 fi
@@ -156,10 +156,12 @@ set tabstospaces
 TEXT
 fi
 
-CLEANUP=$(($(date +%s) - $(stat --format=%Y ~/.cleanup 2>/dev/null || echo 0)))
-
-if [ "$CLEANUP" -gt "$((14 * 24 * 60 * 60))" ]; then
-    echo "* Time to clean up!"
+if [ -n "$INTERACTIVE" ]; then
+    CLEANUP=$(($(date +%s) - $(stat --format=%Y ~/.cleanup 2>/dev/null || echo 0)))
+    
+    if [ "$CLEANUP" -gt "$((14 * 24 * 60 * 60))" ]; then
+        echo "* Time to clean up!"
+    fi
 fi
 
 [ -n "$EXIT_TRAPS" ] && trap "($EXIT_TRAPS)" EXIT
@@ -204,6 +206,6 @@ fi
 for BASHRC in $(echo $BASH_SOURCE $REAL_BASH_SOURCE); do
     for BASHRC_CHILD in $(ls -1 $BASHRC.* 2>/dev/null); do
         source $BASHRC_CHILD
-        echo "* Loaded $BASHRC_CHILD"
+        [ -n "$INTERACTIVE" ] && echo "* Loaded $BASHRC_CHILD"
     done
 done
