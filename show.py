@@ -134,7 +134,7 @@ class Arguments (argparse.ArgumentParser):
                 args.label.append('%s (commit %s)' % (path.name, commit))
 
 
-class Pager (object):
+class Reader (object):
     __metaclass__ = abc.ABCMeta
     ansi_color_escape = ur'\x1B\[\d+(;\d+)*m'
     
@@ -154,7 +154,7 @@ class Pager (object):
         pass
 
 
-class StreamPager (Pager):
+class StreamReader (Reader):
     def __init__(self, stream):
         self._stream = codecs.getwriter(locale.getpreferredencoding())(stream)
     
@@ -176,7 +176,7 @@ class StreamPager (Pager):
                 raise
 
 
-class ProgramPager (StreamPager):
+class ProgramReader (StreamReader):
     def __init__(self, command):
         try:
             self._process = subprocess.Popen(command, stdin = subprocess.PIPE)
@@ -186,18 +186,18 @@ class ProgramPager (StreamPager):
             else:
                 raise
         
-        super(ProgramPager, self).__init__(self._process.stdin)
+        super(ProgramReader, self).__init__(self._process.stdin)
     
     
     def close(self):
-        super(ProgramPager, self).close()
+        super(ProgramReader, self).close()
         self._process.communicate()
         self._process.wait()
 
 
-class DiffPager (ProgramPager):
+class DiffReader (ProgramReader):
     def __init__(self):
-        super(DiffPager, self).__init__(['kompare', '-o', '-'])
+        super(DiffReader, self).__init__(['kompare', '-o', '-'])
     
     
     @property
@@ -205,9 +205,9 @@ class DiffPager (ProgramPager):
         return False
 
 
-class TextPager (ProgramPager):
+class TextReader (ProgramReader):
     def __init__(self, tab_size = 4):
-        super(TextPager, self).__init__([
+        super(TextReader, self).__init__([
             'less',
             '--clear-screen',
             '--RAW-CONTROL-CHARS',
@@ -215,7 +215,7 @@ class TextPager (ProgramPager):
         ])
 
 
-class AutomaticPager (Pager):
+class Pager (Reader):
     def __init__(self, input, diff_mode):
         self._input = input
         self._diff_mode = diff_mode
@@ -331,14 +331,14 @@ class AutomaticPager (Pager):
         lexer = self._guess_lexer(text)
         
         if self._buffered_lines <= self._max_inline_lines:
-            self._output = StreamPager(sys.stdout)
+            self._output = StreamReader(sys.stdout)
         elif self._diff_mode or isinstance(lexer, pygments.lexers.DiffLexer):
             try:
-                self._output = DiffPager()
+                self._output = DiffReader()
             except NotImplementedError:
-                self._output = TextPager()
+                self._output = TextReader()
         else:
-            self._output = TextPager()
+            self._output = TextReader()
         
         if re.search(self.ansi_color_escape, text):
             self._lexer = pygments.lexers.TextLexer()
@@ -350,7 +350,7 @@ class AutomaticPager (Pager):
 
 
 args = Arguments().parse_args()
-pager = AutomaticPager(args.file, args.diff_mode)
+pager = Pager(args.file, args.diff_mode)
 
 try:
     for line in pager:
