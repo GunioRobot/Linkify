@@ -9,7 +9,8 @@
 
 
 # Standard library:
-import abc, codecs, errno, fcntl, locale, os, re, struct, subprocess, sys, termios
+import abc, codecs, errno, fcntl, locale, os, re, struct, subprocess, sys, \
+    termios, time
 
 try:
     import argparse
@@ -44,6 +45,12 @@ class Arguments (argparse.ArgumentParser):
             return number
         
         arguments = [
+            ('-f', {
+                'dest': 'follow',
+                'action': 'store_true',
+                'default': False,
+                'help': 'follow file like tail',
+            }),
             ('-L', {
                 'dest': 'label',
                 'action': 'append',
@@ -213,9 +220,10 @@ class TextReader (ProgramReader):
 
 
 class Pager (Reader):
-    def __init__(self, input, diff_mode):
+    def __init__(self, input, diff_mode, follow):
         self._input = input
         self._diff_mode = diff_mode
+        self._follow = follow
         
         self._buffer = u''
         self._buffered_lines = 0
@@ -226,20 +234,38 @@ class Pager (Reader):
     
     
     def __iter__(self):
-        encoding = locale.getpreferredencoding()
+        (detected, encoding) = (False, locale.getpreferredencoding())
         
         for line in self._input:
             try:
                 yield line.decode(encoding)
             except UnicodeDecodeError as error:
+                if detected:
+                    raise
+                
                 text = self._buffer.encode() + line
-                encoding = chardet.detect(text)['encoding']
+                (detected, encoding) = (True, chardet.detect(text)['encoding'])
                 yield line.decode(encoding)
+        
+        if self._follow:
+            while True:
+                line = self._input.readline()
+                
+                if len(line) == 0:
+                    previous_size = os.path.getsize(self._input.name)
+                    time.sleep(1)
+                    
+                    if os.path.getsize(self._input.name) < previous_size:
+                        self._input.seek(0)
+                else:
+                    yield line.decode(encoding)
         
         raise StopIteration
     
     
     def close(self):
+        self._input.close()
+        
         if self._buffer != u'':
             self._setup_output(self._buffer)
             self._display(self._buffer)
@@ -347,13 +373,14 @@ class Pager (Reader):
 
 
 args = Arguments().parse_args()
-pager = Pager(args.file, args.diff_mode)
+pager = Pager(args.file, args.diff_mode, args.follow)
 
 try:
     for line in pager:
         pager.write(line)
-except (KeyboardInterrupt, EOFError):
+except KeyboardInterrupt:
+    print
+except EOFError:
     pass
 
-args.file.close()
 pager.close()
