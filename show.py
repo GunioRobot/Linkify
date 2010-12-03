@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 
-# TODO: Follow files, e.g. $ tail -F file.log
+# TODO: Follow file automatically if it changes size?
+# TODO: Clean up exception handling. $ ./show.py -f file ^C ^C
 # TODO: Show documentation and/or code of a Perl module when given a file name
 #       that looks like a namespace and doesn't point to a valid file? E.g.
 #       $ ./show.py IO::Handle
