@@ -47,27 +47,27 @@ class Arguments (argparse.ArgumentParser):
             ('-L', {
                 'dest': 'label',
                 'action': 'append',
-                'help': '(diff)',
+                'help': 'diff labels',
             }),
             ('-u', {
                 'action': 'store_true',
                 'default': True,
-                'help': '(diff)',
+                'help': 'ignored for diff compatibility',
             }),
             ('file', {
                 'nargs': '?',
                 'default': sys.stdin,
                 'type': argparse.FileType(),
-                'help': 'File to be shown, otherwise use standard input.',
+                'help': 'file to display, otherwise use standard input',
             }),
             ('file2', {
                 'nargs': '?',
                 'type': argparse.FileType(),
-                'help': 'File to be compared against, and switch to diff mode.',
+                'help': 'file to compare with, and switch to diff mode',
             }),
             ('git', {
                 'nargs': '*',
-                'help': 'Assume git diff arguments, and switch to diff mode.',
+                'help': 'assume git diff arguments, and switch to diff mode',
             }),
         ]
         
