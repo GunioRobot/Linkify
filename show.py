@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
+# TODO: Support Git diff file add/removal.
 # TODO: Follow file automatically if it changes size?
 # TODO: Clean up exception handling. $ ./show.py -f file ^C ^C
 # TODO: Show documentation and/or code of a Perl module when given a file name
