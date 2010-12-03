@@ -173,14 +173,6 @@ cleanup() {
     touch ~/.cleanup
 }
 
-easy_install() {
-    local SITE=$(python -c '
-import sys
-print filter(lambda p: p.endswith("site-packages"), sys.path).pop(0)')
-    
-    sudo PYTHONPATH=$SITE easy_install --install-dir $SITE $@
-}
-
 ff() {
     find $@ -a ! -name '*.svn-base'
 }
