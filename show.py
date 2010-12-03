@@ -31,8 +31,8 @@ except ImportError as error:
 
 class Arguments (argparse.ArgumentParser):
     def __init__(self):
-        super(Arguments, self).__init__(description = '''
-            Smart pager with automatic syntax highlighting and diff support.''')
+        super(Arguments, self).__init__(description =
+            '''Automatic pager with syntax highlighting and diff support.''')
         
         def natural(value):
             number = int(value, 10)
