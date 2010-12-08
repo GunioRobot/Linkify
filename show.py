@@ -37,15 +37,6 @@ class Arguments (argparse.ArgumentParser):
         super(Arguments, self).__init__(description =
             '''Automatic pager with syntax highlighting and diff support.''')
         
-        def natural(value):
-            number = int(value, 10)
-            
-            if number < 0:
-                raise argparse.ArgumentTypeError('%d is not a natural number'
-                    % value)
-            
-            return number
-        
         arguments = [
             ('-f', {
                 'dest': 'follow',
