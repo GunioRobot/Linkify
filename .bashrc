@@ -135,8 +135,8 @@ $PROMPT_COMMAND
 "
     if [ "$(stat --format=%i /)" != "2" ]; then
         export CHROOT='x'
+        export DISPLAY=:0.0
         [ -n "$INTERACTIVE" ] && echo "* chroot:" $(uname -srmo)
-        umask 0002
     fi
 fi
 
