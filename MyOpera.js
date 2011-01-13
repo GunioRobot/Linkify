@@ -21,4 +21,12 @@ function removeTabIndex() {
 }
 
 
+function switchToClassicUploader() {
+    if (typeof old_uploader_toggle != 'undefined') {
+        old_uploader_toggle();
+    }
+}
+
+
 document.addEventListener('DOMContentLoaded', removeTabIndex, false);
+document.addEventListener('DOMContentLoaded', switchToClassicUploader, false);
