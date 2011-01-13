@@ -96,7 +96,6 @@ unset PYTHONDONTWRITEBYTECODE
 export ACK_COLOR_FILENAME='dark blue'
 export GIT_PAGER=cat
 export HISTCONTROL=ignoreboth
-export PS1='\[\033[4;30;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\n\$\[\033[00m\] '
 export TRASH="$HOME/.local/share/Trash/files/"
 
 # Remove bright colors.
@@ -112,6 +111,8 @@ if [ -n "$HISTFILE" ]; then
     export HISTFILESIZE=$(($(wc -l $HISTFILE | cut -d ' ' -f1) + 1))
     export HISTSIZE=$HISTFILESIZE
 fi
+
+PS1_USER_HOST='\u@\h'
 
 if [ "$(uname -o)" = "Cygwin" ]; then
     alias sudo=''
@@ -134,11 +135,14 @@ export HISTSIZE=\$HISTFILESIZE
 $PROMPT_COMMAND
 "
     if [ "$(stat --format=%i /)" != "2" ]; then
+        PS1_USER_HOST="($PS1_USER_HOST)"
         export CHROOT='x'
         export DISPLAY=:0.0
         [ -n "$INTERACTIVE" ] && echo "* chroot:" $(uname -srmo)
     fi
 fi
+
+export PS1="\[\033[4;30;32m\]$PS1_USER_HOST\[\033[00m\]:\[\033[01;34m\]\w\n\\$\[\033[00m\] "
 
 if [ -n "$HAVE_NANO" -a -n "$INTERACTIVE" -a ! -e ~/.nanorc ]; then
     EXIT_TRAPS="rm ~/.nanorc; $EXIT_TRAPS"
