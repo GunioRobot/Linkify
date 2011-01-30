@@ -90,12 +90,10 @@ _have kwrite && export EDITOR=$LOCATION
 _have nano && [ -z "$HAVE_KWRITE" ] && export EDITOR=$LOCATION
 _have valgrind && alias vg="$NAME --tool=memcheck --leak-check=yes --show-reachable=yes"
 
-# Allow Pygments to be installed.
-unset PYTHONDONTWRITEBYTECODE
-
 export ACK_COLOR_FILENAME='dark blue'
 export GIT_PAGER=cat
 export HISTCONTROL=ignoreboth
+export PYTHONDONTWRITEBYTECODE=yes
 export TRASH="$HOME/.local/share/Trash/files/"
 
 # Remove bright colors.
