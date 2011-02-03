@@ -19,7 +19,8 @@ import abc, codecs, errno, fcntl, locale, os, re, struct, subprocess, sys, \
 try:
     import argparse
 except ImportError as error:
-    sys.exit('Python 2.7 or newer is required: %s' % error)
+    sys.exit('argparse is required, see <http://code.google.com/p/argparse/>: %s'
+        % error)
 
 # External modules:
 try:
