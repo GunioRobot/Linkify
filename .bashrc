@@ -77,6 +77,10 @@ _have ack-grep ack && alias \
     f.="xargs -0 $LOCATION -l --print0 --sort-files" \
     0f="xargs -0 $LOCATION --sort-files"
 
+_have git && alias \
+    gdi="$NAME diff" \
+    gst="$NAME status"
+
 _have svn && alias \
     sci="$NAME ci" \
     sco="$NAME co" \
