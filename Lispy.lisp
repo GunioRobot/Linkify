@@ -150,9 +150,9 @@
            (not (zerop (rem year 100))))))
 
 
+#+CLISP
 (defmacro macro (name &environment env)
   "Converts a macro to a function, e.g. (funcall (macro and) 1 2) --> 2"
-  #-CLISP (error "Only CLISP is supported.")
   
   (let ((local-env (gensym))
         (macro-env (gensym)))
