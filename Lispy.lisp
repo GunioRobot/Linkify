@@ -1,9 +1,4 @@
-(defconstant false nil)
-(defconstant true t)
 (defconstant *white-space* '(#\Newline #\Space #\Tab))
-
-
-(setf (fdefinition 'new-line) #'terpri)
 
 
 (defmacro alambda (parameters &body body)
@@ -37,7 +32,7 @@
         (lambda (&rest arguments)
           (reduce #'funcall
                   rest
-                  :from-end true
+                  :from-end t
                   :initial-value (apply fn arguments))))))
 
 
@@ -102,16 +97,6 @@
 
 (defmethod empty? ((str string))
   (zerop (length str)))
-
-
-; Does the same as the deprecated function "remove-if-not".
-(defmethod filter ((include? function) (values list))
-  (if (empty? values)
-      ()
-      (let ((value (first values)))
-        (if (funcall include? value)
-            (cons value (filter include? (rest values)))
-            (filter include? (rest values))))))
 
 
 (defmethod flatten ((values list))
