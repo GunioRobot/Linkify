@@ -13,15 +13,15 @@ use IO::Handle ();
 BEGIN {
     if ($OSNAME eq 'MSWin32') {
         # Detect the redirection problem.
-        my $in = IO::Handle->new_from_fd(fileno(STDIN), 'r');
-        $in or die "Run this script again using the interpreter explicitly.\n";
+        my $in = IO::Handle->new_from_fd(fileno(STDIN), 'r')
+            or die "Run this script again using the interpreter explicitly.\n";
         $in->close();
     }
 }
 
 
 our @EXPORT = qw(*STDNULL $false $true abstract instantiate);
-our $VERSION = v2010.07.17;
+our $VERSION = v2011.02.25;
 
 
 sub abstract() {
@@ -121,7 +121,10 @@ Creates an instance of a class, using the given hash for the initial attributes.
 
     sub new {
         my ($class, $name, $age) = @ARG;
-        return instantiate($class, name => $name, age => $age);
+        
+        return instantiate($class,
+            name => $name,
+            age => $age);
     }
 
 =head1 AUTHORS

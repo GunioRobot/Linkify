@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 # External programs:
 # - Java: <http://java.sun.com/javase/downloads/>
