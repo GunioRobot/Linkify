@@ -10,16 +10,6 @@ use File::Spec ();
 use IO::Handle ();
 
 
-BEGIN {
-    if ($OSNAME eq 'MSWin32') {
-        # Detect the redirection problem.
-        my $in = IO::Handle->new_from_fd(fileno(STDIN), 'r')
-            or die "Run this script again using the interpreter explicitly.\n";
-        $in->close();
-    }
-}
-
-
 our @EXPORT = qw(*STDNULL $false $true abstract instantiate);
 our $VERSION = v2011.02.25;
 
