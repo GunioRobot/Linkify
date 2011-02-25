@@ -13,8 +13,7 @@
 
 
 # Standard library:
-import abc, codecs, errno, fcntl, locale, os, re, struct, subprocess, sys, \
-    termios, time
+import abc, codecs, errno, locale, os, re, struct, subprocess, sys, time
 
 try:
     import argparse
@@ -311,6 +310,7 @@ class Pager (Reader):
     
     def _guess_terminal_height(self):
         def ioctl_GWINSZ(fd):
+            import fcntl, termios
             size_data = fcntl.ioctl(fd, termios.TIOCGWINSZ, '1234')
             (rows, columns) = struct.unpack('hh', size_data)
             return rows
