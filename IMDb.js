@@ -27,16 +27,22 @@ function addParentsGuideWindow() {
     with (contents) {
         style.display = 'none';
         style.border = 'none';
+        style.width = '100%';
+        style.height = '100%';
     }
     
     container.addEventListener('mouseover', function() {
         title.style.display = 'none';
         contents.style.display = 'block';
+        container.style.width = '50%';
+        container.style.height = '30%';
     }, false);
     
     container.addEventListener('mouseout', function() {
         title.style.display = 'inline';
         contents.style.display = 'none';
+        container.style.width = '';
+        container.style.height = '';
     }, false);
     
     contents.src = 'http://www.imdb.com/title/' + movie + '/parentalguide?userjs';
