@@ -50,6 +50,9 @@ if [ -n "$INTERACTIVE" ]; then
     bind '"\e[2~": unix-word-rubout'            # Insert
 fi
 
+# Allow non-breakable spaces (AltGr + Space).
+setxkbmap -option "nbsp:none"
+
 shopt -s cdspell checkwinsize histappend
 
 alias c='cd'
