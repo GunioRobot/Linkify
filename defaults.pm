@@ -10,13 +10,19 @@ use File::Spec ();
 use IO::Handle ();
 
 
-our @EXPORT = qw(*STDNULL $false $true abstract instantiate);
-our $VERSION = v2011.02.25;
+our @EXPORT = qw(*STDNULL $false $true abstract const instantiate);
+our $VERSION = v2011.04.02;
 
 
 sub abstract() {
     my (undef, $file, $line, $subroutine) = caller(1);
     die "Abstract subroutine &$subroutine called at $file line $line.\n";
+}
+
+
+sub const :lvalue {
+    Internals::SvREADONLY($_[0], 1);
+    $_[0];
 }
 
 
@@ -41,11 +47,8 @@ sub instantiate {
 }
 
 
-our $false = 0;
-our $true = 1;
-
-Internals::SvREADONLY($false, 1);
-Internals::SvREADONLY($true, 1);
+const our $false = 0;
+const our $true = 1;
 
 open STDNULL, '+<', File::Spec->devnull();
 
@@ -96,7 +99,7 @@ Constant for truth.
 
 =head1 FUNCTIONS
 
-=head2 C<abstract()>
+=head2 C<abstract>
 
 Indicates that a function is abstract and should be implemented.
 
@@ -104,6 +107,12 @@ Indicates that a function is abstract and should be implemented.
         my ($x, $y) = @ARG;
         abstract
     }
+
+=head2 C<const SCALAR>
+
+Indicates that a scalar variable is read-only.
+
+    const my $BUFFER_SIZE = 64;
 
 =head2 C<instantiate($class, %attributes)>
 
