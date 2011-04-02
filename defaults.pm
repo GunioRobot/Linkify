@@ -11,7 +11,7 @@ use File::Spec ();
 use IO::Handle ();
 
 
-our @EXPORT = qw(*STDNULL $false $true abstract const instantiate);
+our @EXPORT = qw(*STDNULL $false $true abstract const);
 our $VERSION = v2011.04.02;
 
 
@@ -38,14 +38,6 @@ sub import {
     
     # No export available.
     goto &autodie::import;
-}
-
-
-sub instantiate {
-    my ($invocant, %self) = @ARG;
-    my $class = ref($invocant) || $invocant;
-    
-    return bless \%self, $class;
 }
 
 
@@ -130,18 +122,6 @@ Indicates that a function is abstract and should be implemented.
 Indicates that a scalar variable is read-only.
 
     const my $BUFFER_SIZE = 64;
-
-=head2 C<instantiate($class, %attributes)>
-
-Creates an instance of a class, using the given hash for the initial attributes.
-
-    sub new {
-        my ($class, $name, $age) = @ARG;
-        
-        return instantiate($class,
-            name => $name,
-            age => $age);
-    }
 
 =head1 AUTHORS
 
