@@ -83,21 +83,17 @@ exports useful definitions.
 
 =head1 VARIABLES
 
-=over
-
-=item C<STDNULL>
+=head2 C<STDNULL>
 
 Standard null stream.
 
-=item C<$false>
+=head2 C<$false>
 
 Constant for falsehood.
 
-=item C<$true>
+=head2 C<$true>
 
 Constant for truth.
-
-=back
 
 =head1 FUNCTIONS
 
