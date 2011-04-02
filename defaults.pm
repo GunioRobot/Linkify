@@ -1,6 +1,7 @@
 package defaults;
 
 use base qw(Exporter autodie);
+use feature qw(:5.10);
 use strict;
 use utf8;
 use warnings;
@@ -27,6 +28,7 @@ sub const :lvalue {
 
 
 sub import {
+    feature->import(qw(:5.10));
     strict->import();
     utf8->import();
     warnings->import();
@@ -77,9 +79,26 @@ __END__
 
 =head1 DESCRIPTION
 
-Automatically imports commonly used modules (C<English>), turns on essential
-pragmas (C<autodie>, C<strict>, C<utf8>, C<warnings>), sets some defaults and
-exports useful definitions.
+Automatically imports commonly used modules, turns on essential pragmas, sets
+some defaults and exports useful definitions.
+
+=head1 IMPORTS
+
+=over
+
+=item C<autodie>
+
+=item C<feature qw(:5.10)>
+
+=item C<strict>
+
+=item C<utf8>
+
+=item C<warnings>
+
+=item C<English qw(-no_match_vars)>
+
+=back
 
 =head1 VARIABLES
 
