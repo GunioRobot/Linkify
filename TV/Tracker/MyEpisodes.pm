@@ -134,7 +134,7 @@ sub new {
     my $class = shift @ARG;
     die "Arguments: <user name> <user password>\n" if @ARG != 2;
     
-    return instantiate($class)->__log_in(@ARG);
+    return bless({}, $class)->__log_in(@ARG);
 }
 
 

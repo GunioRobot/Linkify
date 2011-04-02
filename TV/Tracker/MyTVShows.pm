@@ -68,7 +68,7 @@ sub new {
     die "Arguments: <user name> <API key>\n" if @ARG != 2;
     
     my ($name, $key) = @ARG;
-    return instantiate($class, name => $name, key => $key);
+    return bless {name => $name, key => $key}, $class;
 }
 
 
