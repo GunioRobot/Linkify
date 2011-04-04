@@ -15,6 +15,7 @@ our @EXPORT = qw(*STDNULL $false $true const);
 our $VERSION = v2011.04.02;
 
 
+# TODO: Use first one available of Const::Fast, Data::Lock, Readonly::XS?
 sub const :lvalue {
     Internals::SvREADONLY($ARG[0], 1);
     $ARG[0];
