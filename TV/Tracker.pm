@@ -1,5 +1,9 @@
 package TV::Tracker;
 
+# TODO: Use Moose::Role?
+# TODO: Use LWPx::ParanoidUserAgent?
+# TODO: Use HTML (DOM) parsers instead of manual regex parsing?
+
 use defaults;
 use Carp ();
 use File::Spec ();
