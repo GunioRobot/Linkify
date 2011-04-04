@@ -11,14 +11,8 @@ use File::Spec ();
 use IO::Handle ();
 
 
-our @EXPORT = qw(*STDNULL $false $true abstract const);
+our @EXPORT = qw(*STDNULL $false $true const);
 our $VERSION = v2011.04.02;
-
-
-sub abstract() {
-    my (undef, $file, $line, $subroutine) = caller(1);
-    die "Abstract subroutine &$subroutine called at $file line $line.\n";
-}
 
 
 sub const :lvalue {
@@ -107,15 +101,6 @@ Constant for falsehood.
 Constant for truth.
 
 =head1 FUNCTIONS
-
-=head2 C<abstract>
-
-Indicates that a function is abstract and should be implemented.
-
-    sub equals {
-        my ($x, $y) = @ARG;
-        abstract
-    }
 
 =head2 C<const SCALAR>
 
