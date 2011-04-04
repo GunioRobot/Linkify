@@ -22,8 +22,8 @@ sub abstract() {
 
 
 sub const :lvalue {
-    Internals::SvREADONLY($_[0], 1);
-    $_[0];
+    Internals::SvREADONLY($ARG[0], 1);
+    $ARG[0];
 }
 
 
