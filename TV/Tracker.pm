@@ -1,6 +1,7 @@
 package TV::Tracker;
 
 use defaults;
+use Carp ();
 use File::Spec ();
 use LWP::UserAgent ();
 use Module::Load ();
@@ -17,25 +18,25 @@ sub _download {
 
 sub get_status {
     my ($self, $show, $season, $episode) = @ARG;
-    abstract
+    Carp::confess('abstract');
 }
 
 
 sub list_episodes {
     my ($self, $show, $season) = @ARG;
-    abstract
+    Carp::confess('abstract');
 }
 
 
 sub list_seasons {
     my ($self, $show) = @ARG;
-    abstract
+    Carp::confess('abstract');
 }
 
 
 sub list_shows {
     my ($self) = @ARG;
-    abstract
+    Carp::confess('abstract');
 }
 
 
@@ -62,13 +63,13 @@ sub load_tracker {
 
 sub name {
     my ($self) = @ARG;
-    abstract
+    Carp::confess('abstract');
 }
 
 
 sub new {
     my ($class, @args) = @ARG;
-    abstract
+    Carp::confess('abstract');
 }
 
 
