@@ -50,9 +50,6 @@ if [ -n "$INTERACTIVE" ]; then
     bind '"\e[2~": unix-word-rubout'            # Insert
 fi
 
-# Allow non-breakable spaces (AltGr + Space).
-setxkbmap -option "nbsp:none"
-
 shopt -s cdspell checkwinsize histappend
 
 alias c='cd'
@@ -70,6 +67,9 @@ alias dir='l -lA'
 alias sed='sed -r'
 alias less='less -x4 -cR'
 alias grep='grep -E --color=auto'
+
+# Allow non-breakable spaces (e.g. AltGr + Space).
+_have setxkbmap && $NAME -option "nbsp:none"
 
 _have dircolors && eval "$($NAME -b)"
 _have lesspipe && eval "$($NAME)"
