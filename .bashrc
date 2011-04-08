@@ -170,14 +170,16 @@ fi
 
 KDE_START_SSH_ADD=~/.kde/Autostart/ssh-add.sh
 
-if  [ -n "$KDE_FULL_SESSION" -a ! -e $KDE_START_SSH_ADD ]; then
-    cat << 'TEXT' > $KDE_START_SSH_ADD && chmod +x $KDE_START_SSH_ADD
+if [ -z "$KDE_FULL_SESSION" -o ! -e $KDE_START_SSH_ADD ]; then
+    ssh-add < /dev/null 2> /dev/null
+    
+    if  [ -n "$KDE_FULL_SESSION" ]; then
+        cat << 'TEXT' > $KDE_START_SSH_ADD && chmod +x $KDE_START_SSH_ADD
 #!/bin/sh
 ssh-add
 TEXT
+    fi
 fi
-
-ssh-add < /dev/null
 
 if [ -n "$INTERACTIVE" ]; then
     CLEANUP=$(($(date +%s) - $(stat --format=%Y ~/.cleanup 2>/dev/null || echo 0)))
