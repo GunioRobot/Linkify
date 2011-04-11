@@ -19,9 +19,6 @@ fi
 
 source /etc/bash_completion 2> /dev/null
 
-# Disable tilde expansion.
-unset _expand
-
 _have() {
     for NAME; do
         LOCATION=$(which $NAME 2> /dev/null)
@@ -46,6 +43,9 @@ if [ -n "$INTERACTIVE" ]; then
     bind '"\e[2;5~": backward-kill-word'        # Ctrl + Insert
     bind '"\e[2~": unix-word-rubout'            # Insert
 fi
+
+# Disable tilde expansion.
+unset _expand
 
 shopt -s cdspell checkwinsize histappend
 
@@ -186,11 +186,11 @@ for BASHRC in $(echo $BASH_SOURCE $REAL_BASH_SOURCE); do
     done
 done
 
-_in_git() {
+_is_git() {
     (cd "$1" && git symbolic-ref HEAD > /dev/null 2>&1)
 }
 
-_in_svn() {
+_is_svn() {
     svn info "$1" > /dev/null 2>&1
 }
 
@@ -212,9 +212,9 @@ reload() {
 sci() {
     local REPO=$(if [ -z "$1" ]; then echo .; else echo "$1"; fi)
     
-    if _in_git $REPO; then
+    if _is_git $REPO; then
         (cd $REPO && git commit -a)
-    elif _in_svn $REPO; then
+    elif _is_svn $REPO; then
         svn commit $REPO
     fi
 }
@@ -222,9 +222,9 @@ sci() {
 sdi() {
     local REPO=$(if [ -z "$1" ]; then echo .; else echo "$1"; fi)
     
-    if _in_git $REPO; then
+    if _is_git $REPO; then
         (cd $REPO && git diff)
-    elif _in_svn $REPO; then
+    elif _is_svn $REPO; then
         svn diff $REPO
     fi
 }
@@ -232,9 +232,9 @@ sdi() {
 sst() {
     local REPO=$(if [ -z "$1" ]; then echo .; else echo "$1"; fi)
     
-    if _in_git $REPO; then
+    if _is_git $REPO; then
         (cd $REPO && git status)
-    elif _in_svn $REPO; then
+    elif _is_svn $REPO; then
         svn status $REPO
     fi
 }
