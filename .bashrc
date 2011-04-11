@@ -168,14 +168,6 @@ TEXT
     fi
 fi
 
-if [ -n "$INTERACTIVE" ]; then
-    CLEANUP=$(($(date +%s) - $(stat --format=%Y ~/.cleanup 2> /dev/null || echo 0)))
-    
-    if [ "$CLEANUP" -gt "$((14 * 24 * 60 * 60))" ]; then
-        echo "* Time to clean up!"
-    fi
-fi
-
 [ -n "$EXIT_TRAPS" ] && trap "($EXIT_TRAPS)" EXIT
 
 REAL_BASH_SOURCE=$(readlink $BASH_SOURCE)
