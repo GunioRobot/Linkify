@@ -82,8 +82,7 @@ _have svn && alias \
 _have ack-grep ack && alias f="$NAME --sort-files"
 _have cpan && alias cpan="sudo PERL_AUTOINSTALL=1 PERL_MM_USE_DEFAULT=1 FTP_PASSIVE=1 $NAME"
 _have ksshaskpass ssh-askpass && export SSH_ASKPASS=$LOCATION
-_have kwrite && export EDITOR=$LOCATION
-_have nano && [ -z "$HAVE_KWRITE" ] && export EDITOR=$LOCATION
+_have kwrite nano && export EDITOR=$LOCATION
 _have valgrind && alias vg="$NAME --tool=memcheck --leak-check=yes --show-reachable=yes"
 
 export ACK_COLOR_FILENAME='dark blue'
