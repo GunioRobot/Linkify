@@ -17,7 +17,7 @@ if [ -n "$WINDIR" -a -z "$INTERACTIVE" ]; then
     fi
 fi
 
-test -f /etc/bash_completion && source $_
+[ -f /etc/bash_completion ] && source $_
 EXIT_TRAPS=''
 
 # Disable tilde expansion.
