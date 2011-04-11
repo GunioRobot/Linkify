@@ -21,9 +21,7 @@ source /etc/bash_completion 2> /dev/null
 EXIT_TRAPS=''
 
 # Disable tilde expansion.
-_expand() {
-    return 0
-}
+unset _expand
 
 _have() {
     for NAME; do
