@@ -35,7 +35,7 @@ _have() {
         fi
     done
     
-    [ -n "$INTERACTIVE" ] && echo "* Missing: $*" 1>&2
+    [ -n "$INTERACTIVE" ] && echo "* Missing: $@" 1>&2
     return 1
 }
 
