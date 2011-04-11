@@ -170,7 +170,7 @@ fi
 
 KDE_START_SSH_ADD=~/.kde/Autostart/ssh-add.sh
 
-if [ -z "$KDE_FULL_SESSION" -o ! -e $KDE_START_SSH_ADD ]; then
+if [ -z "$KDE_FULL_SESSION" -o ! -e "$KDE_START_SSH_ADD" ]; then
     ssh-add < /dev/null 2> /dev/null
     
     if  [ -n "$KDE_FULL_SESSION" ]; then
