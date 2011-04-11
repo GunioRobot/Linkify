@@ -177,11 +177,9 @@ else
     _have colordiff && alias diff=$NAME
 fi
 
-for BASHRC in $(echo $BASH_SOURCE $REAL_BASH_SOURCE); do
-    for BASHRC_CHILD in $(ls -1 $BASHRC.* 2> /dev/null); do
-        source $BASHRC_CHILD
-        [ -n "$INTERACTIVE" ] && echo "* Loaded: $BASHRC_CHILD"
-    done
+for BASHRC_CHILD in $(ls -1 $BASH_SOURCE.* 2> /dev/null); do
+    source $BASHRC_CHILD
+    [ -n "$INTERACTIVE" ] && echo "* Loaded: $BASHRC_CHILD"
 done
 
 _is_git() {
