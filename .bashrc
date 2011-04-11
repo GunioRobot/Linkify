@@ -77,7 +77,7 @@ _have svn && alias \
     sup="$NAME up"
 
 _have ack-grep ack && alias f="$NAME --sort-files"
-_have cpan && alias cpan="sudo PERL_AUTOINSTALL=1 PERL_MM_USE_DEFAULT=1 FTP_PASSIVE=1 $NAME"
+_have cpan && alias cpan="PERL_AUTOINSTALL=1 PERL_MM_USE_DEFAULT=1 FTP_PASSIVE=1 $NAME"
 _have ksshaskpass ssh-askpass && export SSH_ASKPASS=$LOCATION
 _have kwrite nano && export EDITOR=$LOCATION
 
@@ -105,7 +105,6 @@ fi
 PS1_USER_HOST='\u@\h'
 
 if [ "$(uname -o)" = "Cygwin" ]; then
-    alias sudo=''
     export CYGWIN=nodosfilewarning
     export TERM=cygwin
     export TEMP=/tmp
@@ -196,8 +195,7 @@ _is_svn() {
 cleanup() {
     _have apt-get && (sudo $NAME -qq autoremove; sudo $NAME -qq clean)
     perl -i -ne 'print unless $seen{$_}++' $HISTFILE
-    sudo rm -rf ~/.cpan/{build,sources}
-    touch ~/.cleanup
+    rm -rf ~/.cpan/{build,sources}
 }
 
 ff() {
