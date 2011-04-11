@@ -74,16 +74,10 @@ _have setxkbmap && $NAME -option "nbsp:none"
 _have dircolors && eval "$($NAME -b)"
 _have lesspipe && eval "$($NAME)"
 
-_have git && alias \
-    gdi="$NAME diff" \
-    gst="$NAME status"
-
 _have svn && alias \
     sci="$NAME ci" \
     sco="$NAME co" \
-    sdi="$NAME di" \
     sre="$NAME revert" \
-    sst="$NAME st" \
     sup="$NAME up"
 
 _have ack-grep ack && alias f="$NAME --sort-files"
@@ -208,6 +202,14 @@ for BASHRC in $(echo $BASH_SOURCE $REAL_BASH_SOURCE); do
     done
 done
 
+_in_git() {
+    (cd "$1" && git symbolic-ref HEAD 2>/dev/null 1>&2)
+}
+
+_in_svn() {
+    svn info "$1" 2>/dev/null 1>&2
+}
+
 cleanup() {
     _have apt-get && (sudo $NAME -qq autoremove; sudo $NAME -qq clean)
     perl -i -ne 'print unless $seen{$_}++' $HISTFILE
@@ -222,4 +224,24 @@ ff() {
 reload() {
     [ -n "$EXIT_TRAPS" ] && eval "($EXIT_TRAPS)"
     exec $SHELL
+}
+
+sdi() {
+    local REPO=$(if [ -z "$1" ]; then echo .; else echo "$1"; fi)
+    
+    if _in_git $REPO; then
+        (cd $REPO && git diff)
+    elif _in_svn $REPO; then
+        svn diff $REPO
+    fi
+}
+
+sst() {
+    local REPO=$(if [ -z "$1" ]; then echo .; else echo "$1"; fi)
+    
+    if _in_git $REPO; then
+        (cd $REPO && git status)
+    elif _in_svn $REPO; then
+        svn status $REPO
+    fi
 }
