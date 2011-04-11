@@ -11,7 +11,7 @@ if [ -n "$WINDIR" -a -z "$INTERACTIVE" ]; then
     ls > /dev/null 2>&1
     
     if [ "$?" = "127" ]; then
-        export CD=$*
+        export CD=$@
         export HOME=/home/$USERNAME
         exec $SHELL -il
     fi
