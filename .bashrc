@@ -75,7 +75,6 @@ _have dircolors && eval "$($NAME -b)"
 _have lesspipe && eval "$($NAME)"
 
 _have svn && alias \
-    sci="$NAME ci" \
     sco="$NAME co" \
     sre="$NAME revert" \
     sup="$NAME up"
@@ -224,6 +223,16 @@ ff() {
 reload() {
     [ -n "$EXIT_TRAPS" ] && eval "($EXIT_TRAPS)"
     exec $SHELL
+}
+
+sci() {
+    local REPO=$(if [ -z "$1" ]; then echo .; else echo "$1"; fi)
+    
+    if _in_git $REPO; then
+        (cd $REPO && git commit -a)
+    elif _in_svn $REPO; then
+        svn commit $REPO
+    fi
 }
 
 sdi() {
