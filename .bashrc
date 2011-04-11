@@ -188,22 +188,6 @@ fi
 
 [ -n "$EXIT_TRAPS" ] && trap "($EXIT_TRAPS)" EXIT
 
-cleanup() {
-    _have apt-get && (sudo $NAME -qq autoremove; sudo $NAME -qq clean)
-    perl -i -ne 'print unless $seen{$_}++' $HISTFILE
-    sudo rm -rf ~/.cpan/{build,sources}
-    touch ~/.cleanup
-}
-
-ff() {
-    find $@ -a ! -name '*.svn-base'
-}
-
-reload() {
-    [ -n "$EXIT_TRAPS" ] && eval "($EXIT_TRAPS)"
-    exec $SHELL
-}
-
 REAL_BASH_SOURCE=$(readlink $BASH_SOURCE)
 SHOW_PY=$(dirname $REAL_BASH_SOURCE 2>/dev/null)"/show.py"
 
@@ -223,3 +207,19 @@ for BASHRC in $(echo $BASH_SOURCE $REAL_BASH_SOURCE); do
         [ -n "$INTERACTIVE" ] && echo "* Loaded: $BASHRC_CHILD"
     done
 done
+
+cleanup() {
+    _have apt-get && (sudo $NAME -qq autoremove; sudo $NAME -qq clean)
+    perl -i -ne 'print unless $seen{$_}++' $HISTFILE
+    sudo rm -rf ~/.cpan/{build,sources}
+    touch ~/.cleanup
+}
+
+ff() {
+    find $@ -a ! -name '*.svn-base'
+}
+
+reload() {
+    [ -n "$EXIT_TRAPS" ] && eval "($EXIT_TRAPS)"
+    exec $SHELL
+}
