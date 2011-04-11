@@ -74,12 +74,6 @@ _have setxkbmap && $NAME -option "nbsp:none"
 _have dircolors && eval "$($NAME -b)"
 _have lesspipe && eval "$($NAME)"
 
-_have ack-grep ack && alias \
-    f="$NAME --sort-files" \
-    f0='f -l --print0' \
-    f.="xargs -0 $LOCATION -l --print0 --sort-files" \
-    0f="xargs -0 $LOCATION --sort-files"
-
 _have git && alias \
     gdi="$NAME diff" \
     gst="$NAME status"
@@ -92,6 +86,7 @@ _have svn && alias \
     sst="$NAME st" \
     sup="$NAME up"
 
+_have ack-grep ack && alias f="$NAME --sort-files"
 _have cpan && alias cpan="sudo PERL_AUTOINSTALL=1 PERL_MM_USE_DEFAULT=1 FTP_PASSIVE=1 $NAME"
 _have ksshaskpass ssh-askpass && export SSH_ASKPASS=$LOCATION
 _have kwrite && export EDITOR=$LOCATION
