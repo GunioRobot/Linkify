@@ -18,7 +18,6 @@ if [ -n "$WINDIR" -a -z "$INTERACTIVE" ]; then
 fi
 
 source /etc/bash_completion 2> /dev/null
-EXIT_TRAPS=''
 
 # Disable tilde expansion.
 unset _expand
@@ -138,9 +137,8 @@ export PS1="\[\033[4;30;32m\]$PS1_USER_HOST\[\033[00m\]:\[\033[01;34m\]\w\n\\$\[
 NANO_RC=~/.nanorc
 
 if [ -n "$HAVE_NANO" -a -n "$INTERACTIVE" -a ! -e "$NANO_RC" ]; then
-    EXIT_TRAPS="rm ~/.nanorc; $EXIT_TRAPS"
     ls -1 /usr/share/nano/*.nanorc | sed -e 's/(.+)/include "\1"/' > $NANO_RC
-    cat << 'TEXT' > $NANO_RC
+    cat << 'TEXT' >> $NANO_RC
 set autoindent
 set const
 set morespace
@@ -167,8 +165,6 @@ ssh-add
 TEXT
     fi
 fi
-
-[ -n "$EXIT_TRAPS" ] && trap "($EXIT_TRAPS)" EXIT
 
 REAL_BASH_SOURCE=$(readlink $BASH_SOURCE)
 SHOW_PY=$(dirname $REAL_BASH_SOURCE 2> /dev/null)"/show.py"
@@ -210,7 +206,6 @@ ff() {
 }
 
 reload() {
-    [ -n "$EXIT_TRAPS" ] && eval "($EXIT_TRAPS)"
     exec $SHELL
 }
 
