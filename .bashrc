@@ -135,6 +135,12 @@ if _have git; then
         [ -n "$REF" ] && echo -e "\033[00m:\033[0;33m${REF#refs/heads/}"
     }
     
+    for GIT_SETTING in "color.ui auto" "push.default tracking"; do
+        if ! git config --global --get $GIT_SETTING > /dev/null; then
+            git config --global $GIT_SETTING
+        fi
+    done
+    
     PS1_USER_HOST="$PS1_USER_HOST\$(_git_branch)"
 fi
 
