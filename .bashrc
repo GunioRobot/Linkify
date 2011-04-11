@@ -129,6 +129,15 @@ $PROMPT_COMMAND
     fi
 fi
 
+if _have git; then
+    _git_branch() {
+        local REF=$(git symbolic-ref HEAD 2> /dev/null)
+        [ -n "$REF" ] && echo -e "\033[00m:\033[0;33m${REF#refs/heads/}"
+    }
+    
+    PS1_USER_HOST="$PS1_USER_HOST\$(_git_branch)"
+fi
+
 export PS1="\[\033[4;30;32m\]$PS1_USER_HOST\[\033[00m\]:\[\033[01;34m\]\w\n\\$\[\033[00m\] "
 
 NANO_RC=~/.nanorc
