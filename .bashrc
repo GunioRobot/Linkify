@@ -8,7 +8,7 @@ esac
 
 # Cygwin helper.
 if [ -n "$WINDIR" -a -z "$INTERACTIVE" ]; then
-    ls 2>/dev/null 1>&2
+    ls > /dev/null 2>&1
     
     if [ "$?" = "127" ]; then
         export CD=$*
@@ -27,7 +27,7 @@ _expand() {
 
 _have() {
     for NAME; do
-        LOCATION=$(which $NAME 2>/dev/null)
+        LOCATION=$(which $NAME 2> /dev/null)
         
         if [ -n "$LOCATION" ]; then
             eval "HAVE_$(echo $NAME | tr '[:lower:]-' '[:upper:]_')='$LOCATION'"
@@ -171,7 +171,7 @@ TEXT
 fi
 
 if [ -n "$INTERACTIVE" ]; then
-    CLEANUP=$(($(date +%s) - $(stat --format=%Y ~/.cleanup 2>/dev/null || echo 0)))
+    CLEANUP=$(($(date +%s) - $(stat --format=%Y ~/.cleanup 2> /dev/null || echo 0)))
     
     if [ "$CLEANUP" -gt "$((14 * 24 * 60 * 60))" ]; then
         echo "* Time to clean up!"
@@ -181,7 +181,7 @@ fi
 [ -n "$EXIT_TRAPS" ] && trap "($EXIT_TRAPS)" EXIT
 
 REAL_BASH_SOURCE=$(readlink $BASH_SOURCE)
-SHOW_PY=$(dirname $REAL_BASH_SOURCE 2>/dev/null)"/show.py"
+SHOW_PY=$(dirname $REAL_BASH_SOURCE 2> /dev/null)"/show.py"
 
 if [ -e "$SHOW_PY" ]; then
     alias s=$SHOW_PY
@@ -194,18 +194,18 @@ else
 fi
 
 for BASHRC in $(echo $BASH_SOURCE $REAL_BASH_SOURCE); do
-    for BASHRC_CHILD in $(ls -1 $BASHRC.* 2>/dev/null); do
+    for BASHRC_CHILD in $(ls -1 $BASHRC.* 2> /dev/null); do
         source $BASHRC_CHILD
         [ -n "$INTERACTIVE" ] && echo "* Loaded: $BASHRC_CHILD"
     done
 done
 
 _in_git() {
-    (cd "$1" && git symbolic-ref HEAD 2>/dev/null 1>&2)
+    (cd "$1" && git symbolic-ref HEAD > /dev/null 2>&1)
 }
 
 _in_svn() {
-    svn info "$1" 2>/dev/null 1>&2
+    svn info "$1" > /dev/null 2>&1
 }
 
 cleanup() {
