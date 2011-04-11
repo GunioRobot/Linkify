@@ -83,7 +83,6 @@ _have kwrite nano && export EDITOR=$LOCATION
 
 export ACK_COLOR_FILENAME='dark blue'
 export DISPLAY=:0.0
-export GIT_PAGER=cat
 export HISTCONTROL=ignoreboth
 export PYTHONDONTWRITEBYTECODE=yes
 export TRASH="$HOME/.local/share/Trash/files/"
@@ -171,6 +170,7 @@ if [ -e "$SHOW_PY" ]; then
     alias s=$SHOW_PY
     alias diff='s'
     export GIT_EXTERNAL_DIFF=$SHOW_PY
+    export GIT_PAGER=$SHOW_PY
     export ACK_PAGER=$SHOW_PY
 else
     alias s='less'
