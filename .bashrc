@@ -145,10 +145,12 @@ fi
 
 export PS1="\[\033[4;30;32m\]$PS1_USER_HOST\[\033[00m\]:\[\033[01;34m\]\w\n\\$\[\033[00m\] "
 
-if [ -n "$HAVE_NANO" -a -n "$INTERACTIVE" -a ! -e ~/.nanorc ]; then
+NANO_RC=~/.nanorc
+
+if [ -n "$HAVE_NANO" -a -n "$INTERACTIVE" -a ! -e "$NANO_RC" ]; then
     EXIT_TRAPS="rm ~/.nanorc; $EXIT_TRAPS"
-    ls -1 /usr/share/nano/*.nanorc | sed -e 's/(.+)/include "\1"/' > ~/.nanorc
-    cat << 'TEXT' > ~/.nanorc
+    ls -1 /usr/share/nano/*.nanorc | sed -e 's/(.+)/include "\1"/' > $NANO_RC
+    cat << 'TEXT' > $NANO_RC
 set autoindent
 set const
 set morespace
