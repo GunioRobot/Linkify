@@ -79,7 +79,7 @@ _have kwrite nano && export EDITOR=$LOCATION
 export ACK_COLOR_FILENAME='dark blue'
 export DISPLAY=:0.0
 export HISTCONTROL=ignoreboth
-export LESS='-x4 -cR'
+export LESS='--tabs=4 --clear-screen --RAW-CONTROL-CHARS'
 export PYTHONDONTWRITEBYTECODE=x
 
 # Remove bright colors.
