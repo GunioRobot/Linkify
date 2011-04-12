@@ -175,9 +175,11 @@ class StreamReader (Reader):
 
 
 class ProgramReader (StreamReader):
-    def __init__(self, command):
+    def __init__(self, command, stderr = None):
         try:
-            self._process = subprocess.Popen(command, stdin = subprocess.PIPE)
+            self._process = subprocess.Popen(command,
+                stderr = stderr,
+                stdin = subprocess.PIPE)
         except OSError as error:
             if error.errno == errno.ENOENT:
                 raise NotImplementedError
@@ -194,7 +196,8 @@ class ProgramReader (StreamReader):
 
 class DiffReader (ProgramReader):
     def __init__(self):
-        super(DiffReader, self).__init__(['kompare', '-o', '-'])
+        super(DiffReader, self).__init__(['kompare', '-o', '-'],
+            stderr = file(os.path.devnull))
     
     
     @property
