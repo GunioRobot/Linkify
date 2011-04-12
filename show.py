@@ -213,7 +213,7 @@ class DiffReader (ProgramReader):
 
 
 class TextReader (ProgramReader):
-    def __init__(self, tab_size = 4):
+    def __init__(self):
         super(TextReader, self).__init__(['less'])
 
 
