@@ -97,11 +97,6 @@ history -a
 echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"
 '
 
-if [ -n "$HISTFILE" ]; then
-    export HISTFILESIZE=$(($(wc -l $HISTFILE | cut -d ' ' -f1) + 1))
-    export HISTSIZE=$HISTFILESIZE
-fi
-
 PS1_USER_HOST='\u@\h'
 
 if [ "$(uname -o)" = "Cygwin" ]; then
@@ -109,20 +104,12 @@ if [ "$(uname -o)" = "Cygwin" ]; then
     export TERM=cygwin
     export TEMP=/tmp
     export TMP=$TMP
-    export PROMPT_COMMAND="
-export HISTFILESIZE=\$((HISTFILESIZE + 1))
-export HISTSIZE=\$HISTFILESIZE
-$PROMPT_COMMAND
-"
+    
     bind '"\e[2;2~": paste-from-clipboard'      # Shift + Insert
     [ -n "$CD" ] && cd "$(cygpath "$CD")" && unset CD
 else
     export TERM=xterm
-    export PROMPT_COMMAND="
-export HISTFILESIZE=\$((\$(history 1 | awk '{print \$1}') + 3))
-export HISTSIZE=\$HISTFILESIZE
-$PROMPT_COMMAND
-"
+    
     if [ "$(stat --format=%i /)" != "2" ]; then
         PS1_USER_HOST="($PS1_USER_HOST)"
         export CHROOT='x'
