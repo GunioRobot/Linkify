@@ -227,7 +227,7 @@ class Pager (Reader):
         for line in self._input:
             try:
                 yield line.decode(encoding)
-            except UnicodeDecodeError as error:
+            except UnicodeDecodeError:
                 if detected:
                     raise
                 
