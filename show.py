@@ -110,7 +110,7 @@ class Arguments (argparse.ArgumentParser):
     
     def _parse_diff_arguments(self, args):
         if args.label is None:
-            args.label = [file.name for file in files]
+            args.label = [file.name for file in args.file, args.file2]
         
         args.file = StringIO.StringIO(''.join(
             difflib.unified_diff(
