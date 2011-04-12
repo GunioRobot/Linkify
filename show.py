@@ -22,7 +22,8 @@ import abc, codecs, difflib, errno, locale, os, re, StringIO, struct, \
 dependencies = {
     ('argparse',): 'http://code.google.com/p/argparse/',
     ('chardet',): 'http://chardet.feedparser.org/',
-    ('pygments', 'pygments.formatters', 'pygments.lexers'): 'http://pygments.org/',
+    ('pygments', 'pygments.formatters', 'pygments.lexers'):
+        'http://pygments.org/',
 }
 
 scope = __import__(__name__)
