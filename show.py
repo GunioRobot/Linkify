@@ -3,7 +3,6 @@
 
 
 # TODO: Support Git diff file add/removal.
-# TODO: Detect when Git is using a pager to send everything at once.
 # TODO: Follow file automatically if it changes size?
 # TODO: Clean up exception handling.
 #       $ ./show.py -f file ^C ^C
@@ -338,6 +337,9 @@ class Pager (Reader):
     
     @property
     def _max_inline_lines(self):
+        if not sys.stdout.isatty():
+            return self._buffered_lines
+        
         height = self._guess_terminal_height()
         return int(round(height * self._inline_lines_threshold))
     
