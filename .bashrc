@@ -62,9 +62,7 @@ alias e='$EDITOR'
 alias l='ls -CFXh --color=auto --group-directories-first'
 alias ll='l -l'
 alias dir='l -lA'
-
 alias sed='sed -r'
-alias less='less $LESS'
 alias grep='grep -E --color=auto'
 
 # Allow non-breakable spaces (e.g. AltGr + Space).
