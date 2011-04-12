@@ -23,6 +23,7 @@ source /etc/bash_completion 2> /dev/null
 _expand() {
     eval cur=$cur
 }
+
 _have() {
     for NAME; do
         LOCATION=$(which $NAME 2> /dev/null)
