@@ -214,12 +214,7 @@ class DiffReader (ProgramReader):
 
 class TextReader (ProgramReader):
     def __init__(self, tab_size = 4):
-        super(TextReader, self).__init__([
-            'less',
-            '--clear-screen',
-            '--RAW-CONTROL-CHARS',
-            '--tabs=%d' % tab_size,
-        ])
+        super(TextReader, self).__init__(['less'])
 
 
 class Pager (Reader):
