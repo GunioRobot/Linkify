@@ -15,7 +15,8 @@
 
 
 # Standard library:
-import abc, codecs, errno, locale, os, re, struct, subprocess, sys, time
+import abc, codecs, difflib, errno, locale, os, re, StringIO, struct, \
+    subprocess, sys, time
 
 
 dependencies = {
@@ -107,24 +108,12 @@ class Arguments (argparse.ArgumentParser):
     
     
     def _parse_diff_arguments(self, args):
-        files = [args.file, args.file2]
-        diff = ['diff', '-u']
-        
         if args.label is None:
             args.label = [file.name for file in files]
         
-        for label in args.label:
-            # Kompare chokes on tab characters in labels.
-            diff.extend(['-L', label.replace('\t', ' ')])
-        
-        if args.file2 is sys.stdin:
-            # Compare standard input with given file, not the other way around.
-            files.reverse()
-        
-        for file in files:
-            diff.append('-' if file is sys.stdin else file.name)
-        
-        args.file = subprocess.Popen(diff, stdout = subprocess.PIPE).stdout
+        args.file = StringIO.StringIO(''.join(
+            difflib.unified_diff(
+                args.file.readlines(), args.file2.readlines(), *args.label)))
     
     
     def _parse_git_diff_arguments(self, args):
