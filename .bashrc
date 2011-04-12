@@ -19,6 +19,10 @@ fi
 
 source /etc/bash_completion 2> /dev/null
 
+# Disable tilde expansion only.
+_expand() {
+    eval cur=$cur
+}
 _have() {
     for NAME; do
         LOCATION=$(which $NAME 2> /dev/null)
@@ -43,9 +47,6 @@ if [ -n "$INTERACTIVE" ]; then
     bind '"\e[2;5~": backward-kill-word'        # Ctrl + Insert
     bind '"\e[2~": unix-word-rubout'            # Insert
 fi
-
-# Disable tilde expansion.
-unset _expand
 
 shopt -s cdspell checkwinsize histappend
 
