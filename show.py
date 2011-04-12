@@ -11,7 +11,6 @@
 #       that looks like a namespace and doesn't point to a valid file? E.g.
 #       $ ./show.py IO::Handle
 # TODO: Profile speed execution.
-# TODO: Display error output from external programs without syntax highlighting.
 
 
 # Standard library:
