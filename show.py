@@ -3,6 +3,7 @@
 
 
 # TODO: Support Git diff file add/removal.
+# TODO: Detect when Git is using a pager to send everything at once.
 # TODO: Follow file automatically if it changes size?
 # TODO: Clean up exception handling.
 #       $ ./show.py -f file ^C ^C
