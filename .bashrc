@@ -85,7 +85,6 @@ export ACK_COLOR_FILENAME='dark blue'
 export DISPLAY=:0.0
 export HISTCONTROL=ignoreboth
 export PYTHONDONTWRITEBYTECODE=yes
-export TRASH="$HOME/.local/share/Trash/files/"
 
 # Remove bright colors.
 export LS_COLORS=$(echo $LS_COLORS | sed -e 's/=01;/=30;/g')
