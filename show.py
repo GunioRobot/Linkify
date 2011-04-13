@@ -65,10 +65,13 @@ class FileType (argparse.FileType):
                     path = 'http://' + path
                 else:
                     raise
-        
-        stream = urllib2.urlopen(path)
-        setattr(stream, 'name', path)
-        return stream
+            
+            try:
+                stream = urllib2.urlopen(path)
+                setattr(stream, 'name', path)
+                return stream
+            except urllib2.URLError:
+                raise error
 
 
 class Arguments (argparse.ArgumentParser):
