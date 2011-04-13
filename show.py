@@ -51,10 +51,10 @@ if len(missing) > 0:
     sys.exit(1)
 
 
-class FileType (argparse.FileType):
+class InputType (argparse.FileType):
     def __call__(self, path, *args):
         try:
-            return super(FileType, self).__call__(path, *args)
+            return super(InputType, self).__call__(path, *args)
         except IOError as error:
             if error.errno == errno.ENOENT:
                 try:
@@ -136,12 +136,12 @@ class Arguments (argparse.ArgumentParser):
             ('file', {
                 'nargs': '?',
                 'default': sys.stdin,
-                'type': FileType(),
+                'type': InputType(),
                 'help': 'input to display',
             }),
             ('file2', {
                 'nargs': '?',
-                'type': FileType(),
+                'type': InputType(),
                 'help': 'input to compare with, and switch to diff mode',
             }),
             ('git', {
