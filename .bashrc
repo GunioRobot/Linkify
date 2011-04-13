@@ -97,7 +97,7 @@ history -a
 echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"
 '
 
-PS1_USER_HOST='\u@\h'
+ps1_user_host='\u@\h'
 
 if [ "$(uname -o)" = 'Cygwin' ]; then
     export CYGWIN=nodosfilewarning
@@ -111,7 +111,7 @@ else
     export TERM=xterm
     
     if [ "$(stat --format=%i /)" != '2' ]; then
-        PS1_USER_HOST="($PS1_USER_HOST)"
+        ps1_user_host="($ps1_user_host)"
         export CHROOT='x'
         [ -n "$INTERACTIVE" ] && echo "* chroot: $(uname -srmo)"
     fi
@@ -119,26 +119,28 @@ fi
 
 if _have git; then
     _git_branch() {
-        local REF=$(git symbolic-ref HEAD 2> /dev/null)
-        [ -n "$REF" ] && echo -e "\033[00m:\033[0;33m${REF#refs/heads/}"
+        local path=$(git symbolic-ref HEAD 2> /dev/null)
+        [ -n "$path" ] && echo -e "\033[00m:\033[0;33m${path#refs/heads/}"
     }
     
-    for GIT_SETTING in 'color.ui auto' 'push.default tracking'; do
-        if ! git config --global --get $GIT_SETTING > /dev/null; then
-            git config --global $GIT_SETTING
+    for git_setting in 'color.ui auto' 'push.default tracking'; do
+        if ! git config --global --get $git_setting > /dev/null; then
+            git config --global $git_setting
         fi
     done
     
-    PS1_USER_HOST="$PS1_USER_HOST\$(_git_branch)"
+    unset git_setting
+    ps1_user_host="$ps1_user_host\$(_git_branch)"
 fi
 
-export PS1="\[\033[4;30;32m\]$PS1_USER_HOST\[\033[00m\]:\[\033[01;34m\]\w\n\\$\[\033[00m\] "
+export PS1="\[\033[4;30;32m\]$ps1_user_host\[\033[00m\]:\[\033[01;34m\]\w\n\\$\[\033[00m\] "
+unset ps1_user_host
 
-NANO_RC=~/.nanorc
+nano_rc=~/.nanorc
 
-if [ -n "$HAVE_NANO" -a -n "$INTERACTIVE" -a ! -e "$NANO_RC" ]; then
-    ls -1 /usr/share/nano/*.nanorc | sed -e 's/(.+)/include "\1"/' > $NANO_RC
-    cat << 'TEXT' >> $NANO_RC
+if [ -n "$HAVE_NANO" -a -n "$INTERACTIVE" -a ! -e "$nano_rc" ]; then
+    ls -1 /usr/share/nano/*.nanorc | sed -e 's/(.+)/include "\1"/' > $nano_rc
+    cat << 'TEXT' >> $nano_rc
 set autoindent
 set const
 set morespace
@@ -153,37 +155,44 @@ set tabstospaces
 TEXT
 fi
 
-KDE_START_SSH_ADD=~/.kde/Autostart/ssh-add.sh
+unset nano_rc
 
-if [ -z "$KDE_FULL_SESSION" -o ! -e "$KDE_START_SSH_ADD" ]; then
+kde_start_ssh_add=~/.kde/Autostart/ssh-add.sh
+
+if [ -z "$KDE_FULL_SESSION" -o ! -e "$kde_start_ssh_add" ]; then
     ssh-add < /dev/null 2> /dev/null
     
     if  [ -n "$KDE_FULL_SESSION" ]; then
-        cat << 'TEXT' > $KDE_START_SSH_ADD && chmod +x $KDE_START_SSH_ADD
+        cat << 'TEXT' > $kde_start_ssh_add && chmod +x $kde_start_ssh_add
 #!/bin/sh
 ssh-add
 TEXT
     fi
 fi
 
-REAL_BASH_SOURCE=$(readlink $BASH_SOURCE)
-SHOW_PY="$(dirname $REAL_BASH_SOURCE 2> /dev/null)/show.py"
+unset kde_start_ssh_add
 
-if [ -e "$SHOW_PY" ]; then
-    alias s=$SHOW_PY
+show_py="$(dirname $(readlink $BASH_SOURCE) 2> /dev/null)/show.py"
+
+if [ -e "$show_py" ]; then
+    alias s=$show_py
     alias diff='s'
-    export ACK_PAGER=$SHOW_PY
-    export GIT_EXTERNAL_DIFF=$SHOW_PY
-    export GIT_PAGER=$SHOW_PY
+    export ACK_PAGER=$show_py
+    export GIT_EXTERNAL_DIFF=$show_py
+    export GIT_PAGER=$show_py
 else
     alias s='less'
     _have colordiff && alias diff=$NAME
 fi
 
-for BASHRC_CHILD in $(ls -1 $BASH_SOURCE.* 2> /dev/null); do
-    source $BASHRC_CHILD
-    [ -n "$INTERACTIVE" ] && echo "* Loaded: $BASHRC_CHILD"
+unset show_py
+
+for bashrc_child in $(ls -1 $BASH_SOURCE.* 2> /dev/null); do
+    source $bashrc_child
+    [ -n "$INTERACTIVE" ] && echo "* Loaded: $bashrc_child"
 done
+
+unset bashrc_child
 
 _is_git() {
     (cd "$1" && git symbolic-ref HEAD > /dev/null 2>&1)
@@ -208,31 +217,31 @@ reload() {
 }
 
 sci() {
-    local REPO=$(if [ -z "$1" ]; then echo .; else echo "$1"; fi)
+    local path=$(if [ -z "$1" ]; then echo .; else echo "$1"; fi)
     
-    if _is_git $REPO; then
-        (cd $REPO && git commit -a)
-    elif _is_svn $REPO; then
-        svn commit $REPO
+    if _is_git $path; then
+        (cd $path && git commit -a)
+    elif _is_svn $path; then
+        svn commit $path
     fi
 }
 
 sdi() {
-    local REPO=$(if [ -z "$1" ]; then echo .; else echo "$1"; fi)
+    local path=$(if [ -z "$1" ]; then echo .; else echo "$1"; fi)
     
-    if _is_git $REPO; then
-        (cd $REPO && git diff)
-    elif _is_svn $REPO; then
-        svn diff $REPO
+    if _is_git $path; then
+        (cd $path && git diff)
+    elif _is_svn $path; then
+        svn diff $path
     fi
 }
 
 sst() {
-    local REPO=$(if [ -z "$1" ]; then echo .; else echo "$1"; fi)
+    local path=$(if [ -z "$1" ]; then echo .; else echo "$1"; fi)
     
-    if _is_git $REPO; then
-        (cd $REPO && git status)
-    elif _is_svn $REPO; then
-        svn status $REPO
+    if _is_git $path; then
+        (cd $path && git status)
+    elif _is_svn $path; then
+        svn status $path
     fi
 }
