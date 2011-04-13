@@ -32,13 +32,14 @@ dependencies = {
         'http://pygments.org/',
 }
 
-scope = __import__(__name__)
 missing = []
 
 for modules in dependencies:
     try:
+        import __main__
+        
         for module in modules:
-            setattr(scope, module, __import__(module))
+            setattr(__main__, module, __import__(module))
     except ImportError:
         missing.append(modules)
 
