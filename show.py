@@ -332,7 +332,7 @@ class Pager (Reader):
         except:
             pass
         
-        return 25
+        return 0
     
     
     @property
