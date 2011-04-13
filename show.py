@@ -9,9 +9,6 @@
 # TODO: Clean up exception handling.
 #       $ ./show.py -f file ^C ^C
 #       $ ./show.py long-file ^C
-# TODO: Show documentation and/or code of a Perl module when given a file name
-#       that looks like a namespace and doesn't point to a valid file?
-#       $ ./show.py IO::Handle
 # TODO: Do a text search if given a directory as the second file (e.g. ack-grep,
 #       git-grep).
 #       $ ./show.py text .
@@ -57,13 +54,35 @@ class FileType (argparse.FileType):
         try:
             return super(FileType, self).__call__(path, *args)
         except IOError as error:
-            if error.errno != errno.ENOENT:
-                raise
+            if error.errno == errno.ENOENT:
+                try:
+                    return self._open_url(path)
+                except urllib2.URLError:
+                    pass
+                
+                try:
+                    return self._open_perldoc(path)
+                except IOError:
+                    pass
             
-            try:
-                return self._open_url(path)
-            except urllib2.URLError:
-                raise error
+            raise error
+    
+    
+    def _open_perldoc(self, module):
+        identifier = r'^[A-Z_a-z][0-9A-Z_a-z]*(?:::[0-9A-Z_a-z]+)*$'
+        error = 'Not a Perl module: '
+        
+        if not re.match(identifier, module):
+            raise IOError(error + module)
+        
+        process = subprocess.Popen(['perldoc', module],
+            stderr = file(os.devnull),
+            stdout = subprocess.PIPE)
+        
+        if process.wait() == 0:
+            return process.stdout
+        else:
+            raise IOError(error + module)
     
     
     def _open_url(self, url):
@@ -85,8 +104,11 @@ class FileType (argparse.FileType):
 
 class Arguments (argparse.ArgumentParser):
     def __init__(self):
-        super(Arguments, self).__init__(description =
-            '''Automatic pager with syntax highlighting and diff support.''')
+        super(Arguments, self).__init__(
+            description = 'Automatic pager with syntax highlighting and diff\
+                support.',
+            epilog = '''An input can be '-' for standard input (default), a\
+                file path, an URL or a Perl module name.''')
         
         arguments = [
             ('-f', {
@@ -109,12 +131,12 @@ class Arguments (argparse.ArgumentParser):
                 'nargs': '?',
                 'default': sys.stdin,
                 'type': FileType(),
-                'help': 'file or URL to display, otherwise use standard input',
+                'help': 'input to display',
             }),
             ('file2', {
                 'nargs': '?',
                 'type': FileType(),
-                'help': 'file or URL to compare with, and switch to diff mode',
+                'help': 'input to compare with, and switch to diff mode',
             }),
             ('git', {
                 'nargs': '*',
@@ -279,14 +301,14 @@ class Pager (Reader):
         
         for line in self._input:
             try:
-                yield line.decode(encoding)
+                yield self._clean_input(line.decode(encoding))
             except UnicodeDecodeError:
                 if detected:
                     raise
                 
                 text = self._buffer.encode() + line
                 (detected, encoding) = (True, chardet.detect(text)['encoding'])
-                yield line.decode(encoding)
+                yield self._clean_input(line.decode(encoding))
         
         if self._follow:
             while True:
@@ -299,7 +321,7 @@ class Pager (Reader):
                     if os.path.getsize(self._input.name) < previous_size:
                         self._input.seek(0)
                 else:
-                    yield line.decode(encoding)
+                    yield self._clean_input(line.decode(encoding))
         
         raise StopIteration
     
@@ -327,6 +349,11 @@ class Pager (Reader):
             self._setup_output(text)
         
         self._display(text)
+    
+    
+    def _clean_input(self, text):
+        # Clean up the backspace control character.
+        return re.sub(ur'.\x08', u'', text)
     
     
     def _display(self, text):
