@@ -80,9 +80,13 @@ class InputType (argparse.FileType):
         if not re.match(identifier, module):
             raise IOError(error + module)
         
-        process = subprocess.Popen(['perldoc', module],
-            stderr = file(os.devnull),
-            stdout = subprocess.PIPE)
+        try:
+            process = subprocess.Popen(['perldoc', module],
+                stderr = file(os.devnull),
+                stdout = subprocess.PIPE)
+        except OSError as error:
+            if error.errno == errno.ENOENT:
+                raise IOError(str(error))
         
         if process.wait() == 0:
             return process.stdout
