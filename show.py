@@ -87,6 +87,8 @@ class InputType (argparse.FileType):
         except OSError as error:
             if error.errno == errno.ENOENT:
                 raise IOError(str(error))
+            else:
+                raise
         
         if process.wait() == 0:
             return process.stdout
