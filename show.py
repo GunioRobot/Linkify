@@ -15,6 +15,7 @@
 #       $ ./show.py '\d+' ~
 # TODO: Do a file search if given a directory as the fist file (e.g. find).
 #       $ ./show.py . '*.txt'
+# TODO: Show the Perl module names when doing a diff.
 # TODO: Take line width and wrapping into account when paging.
 # TODO: Profile speed execution.
 
