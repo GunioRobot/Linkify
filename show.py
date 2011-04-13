@@ -66,6 +66,9 @@ class FileType (argparse.FileType):
                     return self._open_perldoc(path)
                 except IOError:
                     pass
+                
+                if path == 'self':
+                    return file(__main__.__file__)
             
             raise error
     
@@ -110,7 +113,8 @@ class Arguments (argparse.ArgumentParser):
             description = 'Automatic pager with syntax highlighting and diff\
                 support.',
             epilog = '''An input can be '-' for standard input (default), a\
-                file path, an URL or a Perl module name.''')
+                file path, an URL, a Perl module name, or 'self' for the\
+                source code.''')
         
         arguments = [
             ('-f', {
