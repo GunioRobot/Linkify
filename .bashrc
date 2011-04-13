@@ -217,7 +217,11 @@ reload() {
 
 sci() {
     if _in_git; then
-        git commit -a $@
+        if  [ -z "$@" ]; then
+            git commit -a
+        else
+            git commit $@
+        fi
     elif _in_svn; then
         svn commit $@
     else
