@@ -70,10 +70,15 @@ class FileType (argparse.FileType):
         if urlparse.urlparse(url).scheme == '':
             if re.match(r'^www\.', url, re.IGNORECASE):
                 url = 'http://' + url
-            else:
-                raise urllib2.URLError()
         
-        stream = urllib2.urlopen(url)
+        try:
+            stream = urllib2.urlopen(url)
+        except ValueError as error:
+            if re.match(r'^unknown url type:', str(error), re.IGNORECASE):
+                raise urllib2.URLError(str(error))
+            else:
+                raise
+        
         setattr(stream, 'name', url)
         return stream
 
