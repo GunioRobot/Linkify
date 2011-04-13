@@ -97,7 +97,7 @@ class Arguments (argparse.ArgumentParser):
         try:
             args = super(Arguments, self).parse_args()
         except IOError as error:
-            if error.errno in errno.ENOENT, errno.EISDIR:
+            if error.errno in (errno.ENOENT, errno.EISDIR):
                 sys.exit(str(error))
             else:
                 raise
