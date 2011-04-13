@@ -8,8 +8,15 @@
 #       $ ./show.py -f file ^C ^C
 #       $ ./show.py long-file ^C
 # TODO: Show documentation and/or code of a Perl module when given a file name
-#       that looks like a namespace and doesn't point to a valid file? E.g.
+#       that looks like a namespace and doesn't point to a valid file?
 #       $ ./show.py IO::Handle
+# TODO: Do a text search if given a directory as the second file (e.g. ack-grep,
+#       git-grep).
+#       $ ./show.py text .
+#       $ ./show.py '\d+' ~
+# TODO: Do a file search if given a directory as the fist file (e.g. find).
+#       $ ./show.py . '*.txt'
+# TODO: Take line width and wrapping into account when paging.
 # TODO: Profile speed execution.
 
 
