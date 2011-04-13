@@ -73,7 +73,6 @@ _have setxkbmap && $NAME -option 'nbsp:none'
 _have dircolors && eval "$($NAME -b)"
 _have lesspipe && eval "$($NAME)"
 
-_have svn && alias sco="$NAME co"
 _have ack-grep ack && alias f="$NAME --sort-files"
 _have cpan && alias cpan="PERL_AUTOINSTALL=1 PERL_MM_USE_DEFAULT=1 FTP_PASSIVE=1 $NAME"
 _have ksshaskpass ssh-askpass && export SSH_ASKPASS=$LOCATION
