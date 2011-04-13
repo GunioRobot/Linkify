@@ -34,7 +34,7 @@ _have() {
         fi
     done
     
-    [ -n "$INTERACTIVE" ] && echo "* Missing: $@" 1>&2
+    [ -n "$INTERACTIVE" ] && echo "* Missing: $@" >&2
     return 1
 }
 
@@ -75,7 +75,6 @@ _have lesspipe && eval "$($NAME)"
 
 _have svn && alias \
     sco="$NAME co" \
-    sre="$NAME revert" \
     sup="$NAME up"
 
 _have ack-grep ack && alias f="$NAME --sort-files"
@@ -194,12 +193,16 @@ done
 
 unset bashrc_child
 
-_is_git() {
-    (cd "$1" && git symbolic-ref HEAD > /dev/null 2>&1)
+_in_git() {
+    git symbolic-ref HEAD > /dev/null 2>&1
 }
 
-_is_svn() {
-    svn info "$1" > /dev/null 2>&1
+_in_scm() {
+    echo "* SCM? $(pwd)" >&2
+}
+
+_in_svn() {
+    svn info > /dev/null 2>&1
 }
 
 cleanup() {
@@ -217,31 +220,41 @@ reload() {
 }
 
 sci() {
-    local path=$(if [ -z "$1" ]; then echo .; else echo "$1"; fi)
-    
-    if _is_git $path; then
-        (cd $path && git commit -a)
-    elif _is_svn $path; then
-        svn commit $path
+    if _in_git; then
+        git commit -a $@
+    elif _in_svn; then
+        svn commit $@
+    else
+        _in_scm
     fi
 }
 
 sdi() {
-    local path=$(if [ -z "$1" ]; then echo .; else echo "$1"; fi)
-    
-    if _is_git $path; then
-        (cd $path && git diff)
-    elif _is_svn $path; then
-        svn diff $path
+    if _in_git; then
+        git diff $@
+    elif _in_svn; then
+        svn diff $@
+    else
+        _in_scm
+    fi
+}
+
+sre() {
+    if _in_git; then
+        git checkout $@
+    elif _in_svn; then
+        svn revert $@
+    else
+        _in_scm
     fi
 }
 
 sst() {
-    local path=$(if [ -z "$1" ]; then echo .; else echo "$1"; fi)
-    
-    if _is_git $path; then
-        (cd $path && git status)
-    elif _is_svn $path; then
-        svn status $path
+    if _in_git; then
+        git status $@
+    elif _in_svn; then
+        svn status $@
+    else
+        _in_scm
     fi
 }
