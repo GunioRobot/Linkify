@@ -60,18 +60,22 @@ class FileType (argparse.FileType):
             if error.errno != errno.ENOENT:
                 raise
             
-            if urlparse.urlparse(path).scheme == '':
-                if re.match(r'^www\.', path, re.IGNORECASE):
-                    path = 'http://' + path
-                else:
-                    raise
-            
             try:
-                stream = urllib2.urlopen(path)
-                setattr(stream, 'name', path)
-                return stream
+                return self._open_url(path)
             except urllib2.URLError:
                 raise error
+    
+    
+    def _open_url(self, url):
+        if urlparse.urlparse(url).scheme == '':
+            if re.match(r'^www\.', url, re.IGNORECASE):
+                url = 'http://' + url
+            else:
+                raise urllib2.URLError()
+        
+        stream = urllib2.urlopen(url)
+        setattr(stream, 'name', url)
+        return stream
 
 
 class Arguments (argparse.ArgumentParser):
