@@ -10,9 +10,9 @@ esac
 if [ -n "$WINDIR" -a -z "$INTERACTIVE" ]; then
     ls > /dev/null 2>&1
     
-    if [ "$?" = "127" ]; then
+    if [ "$?" = '127' ]; then
         export CD=$@
-        export HOME=/home/$USERNAME
+        export HOME="/home/$USERNAME"
         exec $SHELL -il
     fi
 fi
@@ -68,7 +68,7 @@ alias less='less -x4 -cR'
 alias grep='grep -E --color=auto'
 
 # Allow non-breakable spaces (e.g. AltGr + Space).
-_have setxkbmap && $NAME -option "nbsp:none"
+_have setxkbmap && $NAME -option 'nbsp:none'
 
 _have dircolors && eval "$($NAME -b)"
 _have lesspipe && eval "$($NAME)"
@@ -99,21 +99,21 @@ echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"
 
 PS1_USER_HOST='\u@\h'
 
-if [ "$(uname -o)" = "Cygwin" ]; then
+if [ "$(uname -o)" = 'Cygwin' ]; then
     export CYGWIN=nodosfilewarning
     export TERM=cygwin
     export TEMP=/tmp
-    export TMP=$TMP
+    export TMP='$TMP'
     
     bind '"\e[2;2~": paste-from-clipboard'      # Shift + Insert
     [ -n "$CD" ] && cd "$(cygpath "$CD")" && unset CD
 else
     export TERM=xterm
     
-    if [ "$(stat --format=%i /)" != "2" ]; then
+    if [ "$(stat --format=%i /)" != '2' ]; then
         PS1_USER_HOST="($PS1_USER_HOST)"
         export CHROOT='x'
-        [ -n "$INTERACTIVE" ] && echo "* chroot:" $(uname -srmo)
+        [ -n "$INTERACTIVE" ] && echo "* chroot: $(uname -srmo)"
     fi
 fi
 
@@ -123,7 +123,7 @@ if _have git; then
         [ -n "$REF" ] && echo -e "\033[00m:\033[0;33m${REF#refs/heads/}"
     }
     
-    for GIT_SETTING in "color.ui auto" "push.default tracking"; do
+    for GIT_SETTING in 'color.ui auto' 'push.default tracking'; do
         if ! git config --global --get $GIT_SETTING > /dev/null; then
             git config --global $GIT_SETTING
         fi
@@ -167,14 +167,14 @@ TEXT
 fi
 
 REAL_BASH_SOURCE=$(readlink $BASH_SOURCE)
-SHOW_PY=$(dirname $REAL_BASH_SOURCE 2> /dev/null)"/show.py"
+SHOW_PY="$(dirname $REAL_BASH_SOURCE 2> /dev/null)/show.py"
 
 if [ -e "$SHOW_PY" ]; then
     alias s=$SHOW_PY
     alias diff='s'
+    export ACK_PAGER=$SHOW_PY
     export GIT_EXTERNAL_DIFF=$SHOW_PY
     export GIT_PAGER=$SHOW_PY
-    export ACK_PAGER=$SHOW_PY
 else
     alias s='less'
     _have colordiff && alias diff=$NAME
