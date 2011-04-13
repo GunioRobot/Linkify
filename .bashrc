@@ -2,7 +2,7 @@
 
 case "$-" in
 *i*)
-    INTERACTIVE='x'
+    INTERACTIVE=x
 ;;
 esac
 
@@ -81,7 +81,7 @@ _have kwrite nano && export EDITOR=$LOCATION
 export ACK_COLOR_FILENAME='dark blue'
 export DISPLAY=:0.0
 export HISTCONTROL=ignoreboth
-export PYTHONDONTWRITEBYTECODE=yes
+export PYTHONDONTWRITEBYTECODE=x
 
 # Remove bright colors.
 export LS_COLORS=$(echo $LS_COLORS | sed -e 's/=01;/=30;/g')
@@ -107,7 +107,7 @@ else
     
     if [ "$(stat --format=%i /)" != '2' ]; then
         ps1_user_host="($ps1_user_host)"
-        export CHROOT='x'
+        export CHROOT=x
         [ -n "$INTERACTIVE" ] && echo "* chroot: $(uname -srmo)"
     fi
 fi
@@ -151,7 +151,6 @@ TEXT
 fi
 
 unset nano_rc
-
 kde_start_ssh_add=~/.kde/Autostart/ssh-add.sh
 
 if [ -z "$KDE_FULL_SESSION" -o ! -e "$kde_start_ssh_add" ]; then
@@ -166,7 +165,6 @@ TEXT
 fi
 
 unset kde_start_ssh_add
-
 show_py="$(dirname $(readlink $BASH_SOURCE) 2> /dev/null)/show.py"
 
 if [ -e "$show_py" ]; then
