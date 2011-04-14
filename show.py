@@ -65,6 +65,8 @@ class InputType (argparse.FileType):
                 process = subprocess.Popen([implementation, module],
                     stderr = file(os.devnull),
                     stdout = subprocess.PIPE)
+                
+                break
             except OSError as error:
                 if error.errno != errno.ENOENT:
                     raise
