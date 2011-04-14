@@ -118,13 +118,9 @@ if _have git; then
         [ -n "$path" ] && echo -e "\033[00m:\033[0;33m${path#refs/heads/}"
     }
     
-    for git_setting in 'color.ui auto' 'push.default tracking'; do
-        if ! git config --global --get $git_setting > /dev/null; then
-            git config --global $git_setting
-        fi
-    done
+    git config --global color.ui auto
+    git config --global push.default tracking
     
-    unset git_setting
     ps1_user_host="$ps1_user_host\$(_git_branch)"
 fi
 
