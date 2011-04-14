@@ -50,6 +50,14 @@ if len(missing) > 0:
     sys.exit(1)
 
 
+def resolve_path(stream):
+    if stream is sys.stdin:
+        return stream.name
+    else:
+        path = os.path.realpath(stream.name)
+        return path if os.path.exists(path) else stream.name
+
+
 class InputType (argparse.FileType):
     def __call__(self, path, *args):
         try:
@@ -184,18 +192,7 @@ class Arguments (argparse.ArgumentParser):
     
     def _parse_diff_arguments(self, args):
         if args.label is None:
-            args.label = []
-            
-            for file in args.file, args.file2:
-                if file is sys.stdin:
-                    args.label.append('')
-                else:
-                    path = os.path.realpath(file.name)
-                    
-                    if os.path.exists(path):
-                        args.label.append(path)
-                    else:
-                        args.label.append(file.name)
+            args.label = [resolve_path(f) for f in args.file, args.file2]
         
         args.file = StringIO.StringIO(''.join(
             difflib.unified_diff(
@@ -211,9 +208,9 @@ class Arguments (argparse.ArgumentParser):
         
         for commit in old_hex, new_hex:
             if re.match(r'^0+$', commit):
-                args.label.append('%s (working copy)' % path.name)
+                args.label.append('%s\t(working copy)' % path.name)
             else:
-                args.label.append('%s (commit %s)' % (path.name, commit))
+                args.label.append('%s\t(commit %s)' % (path.name, commit))
 
 
 class Reader (object):
