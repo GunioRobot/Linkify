@@ -96,9 +96,11 @@ class InputType (argparse.FileType):
     
     
     def _open_url(self, url):
-        if urlparse.urlparse(url).scheme == '':
-            if re.match(r'^www\.', url, re.IGNORECASE):
-                url = 'http://' + url
+        url_like = (urlparse.urlparse(url).scheme == '') \
+            and re.match(r'^www\.', url, re.IGNORECASE)
+        
+        if url_like:
+            url = 'http://' + url
         
         try:
             stream = urllib2.urlopen(url)
