@@ -3,8 +3,6 @@
 
 
 # TODO: Support Git diff file add/removal.
-# TODO: Show the full file paths when using Git diff, so that Kompare can
-#       properly find them.
 # TODO: Follow file automatically if it changes size?
 # TODO: Clean up exception handling.
 #       $ ./show.py -f file ^C ^C
@@ -200,17 +198,18 @@ class Arguments (argparse.ArgumentParser):
     
     
     def _parse_git_diff_arguments(self, args):
-        (path, old_file) = (args.file, args.file2)
+        (stream, old_file) = (args.file, args.file2)
         (old_hex, old_mode, new_file, new_hex, new_mode) = args.git
         
-        (args.file, args.file2) = (old_file, path)
+        (args.file, args.file2) = (old_file, stream)
+        path = resolve_path(stream)
         args.label = []
         
         for commit in old_hex, new_hex:
             if re.match(r'^0+$', commit):
-                args.label.append('%s\t(working copy)' % path.name)
+                args.label.append('%s\t(working copy)' % path)
             else:
-                args.label.append('%s\t(commit %s)' % (path.name, commit))
+                args.label.append('%s\t(commit %s)' % (path, commit))
 
 
 class Reader (object):
