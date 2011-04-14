@@ -22,7 +22,7 @@
 import defaults
 
 # Standard library:
-import abc, codecs, difflib, errno, locale, os, re, StringIO, struct, \
+import abc, codecs, difflib, errno, inspect, locale, os, re, StringIO, struct, \
     subprocess, sys, time, urllib2, urlparse
 
 defaults.externals(
@@ -46,7 +46,7 @@ class InputType (argparse.FileType):
                     pass
                 
                 if path == u'self':
-                    return file(__main__.__file__)
+                    return file(inspect.getfile(InputType))
             
             raise error
     
@@ -368,8 +368,8 @@ class Pager (Reader):
     def _guess_terminal_height(self):
         def ioctl_GWINSZ(fd):
             import fcntl, termios
-            size_data = fcntl.ioctl(fd, termios.TIOCGWINSZ, u'1234')
-            (rows, columns) = struct.unpack(u'hh', size_data)
+            size_data = fcntl.ioctl(fd, termios.TIOCGWINSZ, '1234')
+            (rows, columns) = struct.unpack('hh', size_data)
             return rows
         
         for stream in sys.stdin, sys.stdout, sys.stderr:
