@@ -429,7 +429,7 @@ class Pager (Reader):
     @property
     def _max_inline_lines(self):
         if not sys.stdout.isatty():
-            return self._buffered_lines
+            return float('Infinity')
         
         height = self._guess_terminal_height()
         return int(round(height * self._inline_lines_threshold))
