@@ -6,6 +6,7 @@ use strict;
 use utf8;
 use warnings;
 
+use Carp ();
 use English qw(-no_match_vars);
 use File::Spec ();
 use IO::Handle ();
@@ -17,6 +18,7 @@ our $VERSION = v2011.04.02;
 
 # TODO: Use first one available of Const::Fast, Data::Lock, Readonly::XS?
 sub const :lvalue {
+    Carp::croak('Not a scalar variable') if @ARG != 1;
     Internals::SvREADONLY($ARG[0], 1);
     $ARG[0];
 }
