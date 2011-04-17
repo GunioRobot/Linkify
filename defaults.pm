@@ -11,10 +11,11 @@ use Carp ();
 use English qw(-no_match_vars);
 use File::Spec ();
 use IO::Handle ();
+use Try::Tiny ();
 
 
 our @EXPORT = qw(*STDNULL $false $true const);
-our $VERSION = v2011.04.02;
+our $VERSION = v2011.04.17;
 
 
 # TODO: Use first one available of Const::Fast, Data::Lock, Readonly::XS?
@@ -32,8 +33,9 @@ sub import {
     utf8->import();
     warnings->import();
     
-    English->export_to_level(1);
     __PACKAGE__->export_to_level(1);
+    English->export_to_level(1);
+    Try::Tiny->export_to_level(1);
     
     # No export available.
     goto &autodie::import;
@@ -90,6 +92,8 @@ some defaults and exports useful definitions.
 =item C<warnings>
 
 =item C<English qw(-no_match_vars)>
+
+=item C<Try::Tiny>
 
 =back
 
