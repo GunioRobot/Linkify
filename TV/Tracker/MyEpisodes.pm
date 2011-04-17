@@ -1,6 +1,6 @@
 package TV::Tracker::MyEpisodes;
-use base qw(TV::Tracker);
 
+use base qw(TV::Tracker);
 use defaults;
 use HTTP::Cookies ();
 use HTTP::Request::Common ();
@@ -9,7 +9,7 @@ use LWP::UserAgent ();
 use Regexp::Common qw(whitespace);
 
 
-my $base_url = 'http://www.myepisodes.com/';
+const my $BASE_URL = 'http://www.myepisodes.com/';
 
 
 sub __cache_episodes {
@@ -60,7 +60,7 @@ sub __log_in {
     my $agent = LWP::UserAgent->new();
     my $cookies = HTTP::Cookies->new();
     
-    my $log_in = HTTP::Request::Common::POST($base_url . 'login.php', [
+    my $log_in = HTTP::Request::Common::POST($BASE_URL . 'login.php', [
         username => $name,
         password => $password,
         action => 'Login',
@@ -85,7 +85,7 @@ sub __log_in {
 
 sub _download {
     my ($self, $url) = @ARG;
-    return $self->SUPER::_download($base_url . $url, $self->{cookies});
+    return $self->SUPER::_download($BASE_URL . $url, $self->{cookies});
 }
 
 
@@ -136,6 +136,3 @@ sub new {
     
     return bless({}, $class)->__log_in(@ARG);
 }
-
-
-1;

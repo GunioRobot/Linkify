@@ -1,8 +1,8 @@
 package TV::Tracker;
 
-# TODO: Use Moose::Role?
-# TODO: Use LWPx::ParanoidUserAgent?
-# TODO: Use HTML (DOM) parsers instead of manual regex parsing?
+# TODO: Use Moose.
+# TODO: Use LWPx::ParanoidUserAgent.
+# TODO: Use HTML (DOM) parsers instead of manual regex parsing.
 
 use defaults;
 use Carp ();
@@ -75,6 +75,3 @@ sub new {
     my ($class, @args) = @ARG;
     Carp::confess('abstract');
 }
-
-
-1;

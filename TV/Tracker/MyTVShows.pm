@@ -1,6 +1,6 @@
 package TV::Tracker::MyTVShows;
-use base qw(TV::Tracker);
 
+use base qw(TV::Tracker);
 use defaults;
 use List::MoreUtils ();
 
@@ -70,6 +70,3 @@ sub new {
     my ($name, $key) = @ARG;
     return bless {name => $name, key => $key}, $class;
 }
-
-
-1;
