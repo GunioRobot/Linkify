@@ -3,6 +3,7 @@ package defaults;
 use base qw(Exporter autodie);
 use feature qw(:5.10);
 use strict;
+use true;
 use utf8;
 use warnings;
 
@@ -27,6 +28,7 @@ sub const :lvalue {
 sub import {
     feature->import(qw(:5.10));
     strict->import();
+    true->import();
     utf8->import();
     warnings->import();
     
@@ -80,6 +82,8 @@ some defaults and exports useful definitions.
 =item C<feature qw(:5.10)>
 
 =item C<strict>
+
+=item C<true>
 
 =item C<utf8>
 
