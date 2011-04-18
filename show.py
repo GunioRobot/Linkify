@@ -159,7 +159,8 @@ class StreamReader (Reader):
     
     
     def close(self):
-        self._stream.close()
+        if self._stream.stream is not sys.stdout:
+            self._stream.close()
     
     
     def write(self, text):
