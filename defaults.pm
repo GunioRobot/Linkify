@@ -58,10 +58,6 @@ $LIST_SEPARATOR = ', ';
 $WARNING = $true;
 
 
-1;
-
-__END__
-
 =pod
 
 =encoding UTF-8
