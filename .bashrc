@@ -64,7 +64,7 @@ alias ll='l -l'
 alias dir='l -lA'
 
 alias sed='sed -r'
-alias less='less -x4 -cR'
+alias less='less $LESS'
 alias grep='grep -E --color=auto'
 
 # Allow non-breakable spaces (e.g. AltGr + Space).
@@ -81,6 +81,7 @@ _have kwrite nano && export EDITOR=$LOCATION
 export ACK_COLOR_FILENAME='dark blue'
 export DISPLAY=:0.0
 export HISTCONTROL=ignoreboth
+export LESS='-x4 -cR'
 export PYTHONDONTWRITEBYTECODE=x
 
 # Remove bright colors.
