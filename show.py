@@ -192,7 +192,6 @@ class ProgramReader (StreamReader):
     def close(self):
         super(ProgramReader, self).close()
         self._process.communicate()
-        self._process.wait()
 
 
 class DiffReader (ProgramReader):
