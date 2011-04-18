@@ -15,23 +15,29 @@
 # Standard library:
 import abc, codecs, errno, locale, os, re, struct, subprocess, sys, time
 
-try:
-    import argparse
-except ImportError as error:
-    sys.exit('argparse is required, see <http://code.google.com/p/argparse/>: %s'
-        % error)
 
-# External modules:
-try:
-    import chardet
-except ImportError as error:
-    sys.exit('chardet is required, see <http://chardet.feedparser.org/>: %s'
-        % error)
+dependencies = {
+    ('argparse',): 'http://code.google.com/p/argparse/',
+    ('chardet',): 'http://chardet.feedparser.org/',
+    ('pygments', 'pygments.formatters', 'pygments.lexers'): 'http://pygments.org/',
+}
 
-try:
-    import pygments, pygments.formatters, pygments.lexers
-except ImportError as error:
-    sys.exit('Pygments is required, see <http://pygments.org/>: %s' % error)
+scope = __import__(__name__)
+missing = []
+
+for modules in dependencies:
+    try:
+        for module in modules:
+            setattr(scope, module, __import__(module))
+    except ImportError:
+        missing.append(modules)
+
+if len(missing) > 0:
+    for modules in missing:
+        print >> sys.stderr, '%s is required: %s' \
+            % (modules[0], dependencies[modules])
+    
+    sys.exit(1)
 
 
 class Arguments (argparse.ArgumentParser):
