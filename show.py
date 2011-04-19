@@ -139,7 +139,7 @@ class Arguments (argparse.ArgumentParser):
 
 class Reader (object):
     __metaclass__ = abc.ABCMeta
-    ansi_color_escape = ur'\x1B\[\d+(;\d+)*m'
+    ansi_color_escape = ur'\x1B\[(\d+(;\d+)*)?m'
     
     
     @property
