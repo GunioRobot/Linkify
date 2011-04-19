@@ -118,7 +118,13 @@ class Arguments (argparse.ArgumentParser):
     
     def _parse_diff_arguments(self, args):
         if args.label is None:
-            args.label = [file.name for file in args.file, args.file2]
+            args.label = []
+            
+            for file in args.file, args.file2:
+                if file is sys.stdin:
+                    args.label.append('')
+                else:
+                    args.label.append(os.path.realpath(file.name))
         
         args.file = StringIO.StringIO(''.join(
             difflib.unified_diff(
