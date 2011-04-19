@@ -24,7 +24,7 @@
 
 # Standard library:
 import abc, codecs, difflib, errno, locale, os, re, StringIO, struct, \
-    subprocess, sys, time
+    subprocess, sys, time, urllib2, urlparse
 
 
 dependencies = {
@@ -52,6 +52,24 @@ if len(missing) > 0:
     sys.exit(1)
 
 
+class FileType (argparse.FileType):
+    def __init__(self, *args, **kargs):
+        super(FileType, self).__init__(*args, **kargs)
+    
+    
+    def __call__(self, path, *args):
+        try:
+            return super(FileType, self).__call__(path, *args)
+        except IOError as error:
+            if (error.errno != errno.ENOENT) \
+                    or (urlparse.urlparse(path).scheme == ''):
+                raise
+            
+            stream = urllib2.urlopen(path)
+            setattr(stream, 'name', path)
+            return stream
+
+
 class Arguments (argparse.ArgumentParser):
     def __init__(self):
         super(Arguments, self).__init__(description =
@@ -77,13 +95,13 @@ class Arguments (argparse.ArgumentParser):
             ('file', {
                 'nargs': '?',
                 'default': sys.stdin,
-                'type': argparse.FileType(),
-                'help': 'file to display, otherwise use standard input',
+                'type': FileType(),
+                'help': 'file or URL to display, otherwise use standard input',
             }),
             ('file2', {
                 'nargs': '?',
-                'type': argparse.FileType(),
-                'help': 'file to compare with, and switch to diff mode',
+                'type': FileType(),
+                'help': 'file or URL to compare with, and switch to diff mode',
             }),
             ('git', {
                 'nargs': '*',
@@ -124,7 +142,12 @@ class Arguments (argparse.ArgumentParser):
                 if file is sys.stdin:
                     args.label.append('')
                 else:
-                    args.label.append(os.path.realpath(file.name))
+                    path = os.path.realpath(file.name)
+                    
+                    if os.path.exists(path):
+                        args.label.append(path)
+                    else:
+                        args.label.append(file.name)
         
         args.file = StringIO.StringIO(''.join(
             difflib.unified_diff(
