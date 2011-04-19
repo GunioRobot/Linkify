@@ -3,6 +3,8 @@
 
 
 # TODO: Support Git diff file add/removal.
+# TODO: Show the full file paths when using Git diff, so that Kompare can
+#       properly find them.
 # TODO: Follow file automatically if it changes size?
 # TODO: Clean up exception handling.
 #       $ ./show.py -f file ^C ^C
