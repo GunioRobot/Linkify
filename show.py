@@ -61,13 +61,18 @@ class FileType (argparse.FileType):
         try:
             return super(FileType, self).__call__(path, *args)
         except IOError as error:
-            if (error.errno != errno.ENOENT) \
-                    or (urlparse.urlparse(path).scheme == ''):
+            if error.errno != errno.ENOENT:
                 raise
             
-            stream = urllib2.urlopen(path)
-            setattr(stream, 'name', path)
-            return stream
+            if urlparse.urlparse(path).scheme == '':
+                if re.match(r'^www\.', path, re.IGNORECASE):
+                    path = 'http://' + path
+                else:
+                    raise
+        
+        stream = urllib2.urlopen(path)
+        setattr(stream, 'name', path)
+        return stream
 
 
 class Arguments (argparse.ArgumentParser):
