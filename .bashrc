@@ -210,7 +210,9 @@ reload() {
 
 sci() {
     if _in_git; then
-        if  [ -z "$@" ]; then
+        local cached=$(git diff --cached --name-only --diff-filter=AM | wc -l)
+        
+        if  [ $# -eq 0 -a $cached -eq 0 ]; then
             git commit -a
         else
             git commit $@
