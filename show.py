@@ -53,10 +53,6 @@ if len(missing) > 0:
 
 
 class FileType (argparse.FileType):
-    def __init__(self, *args, **kargs):
-        super(FileType, self).__init__(*args, **kargs)
-    
-    
     def __call__(self, path, *args):
         try:
             return super(FileType, self).__call__(path, *args)
