@@ -97,7 +97,7 @@ class Arguments (argparse.ArgumentParser):
         try:
             args = super(Arguments, self).parse_args()
         except IOError as error:
-            if error.errno in (errno.ENOENT, errno.EISDIR):
+            if error.errno in errno.ENOENT, errno.EISDIR:
                 sys.exit(str(error))
             else:
                 raise
@@ -130,7 +130,7 @@ class Arguments (argparse.ArgumentParser):
         (args.file, args.file2) = (old_file, path)
         args.label = []
         
-        for commit in (old_hex, new_hex):
+        for commit in old_hex, new_hex:
             if re.match(r'^0+$', commit):
                 args.label.append('%s (working copy)' % path.name)
             else:
@@ -317,7 +317,7 @@ class Pager (Reader):
             (rows, columns) = struct.unpack('hh', size_data)
             return rows
         
-        for stream in (sys.stdin, sys.stdout, sys.stderr):
+        for stream in sys.stdin, sys.stdout, sys.stderr:
             try:
                 return ioctl_GWINSZ(stream.fileno())
             except:
