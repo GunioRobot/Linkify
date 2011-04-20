@@ -32,12 +32,11 @@ dependencies = {
         'http://pygments.org/',
 }
 
+import __main__
 missing = []
 
 for modules in dependencies:
     try:
-        import __main__
-        
         for module in modules:
             setattr(__main__, module, __import__(module))
     except ImportError:
