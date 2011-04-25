@@ -7,6 +7,19 @@
     <title>Opera Settings</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="Author" content="Márcio Faustino"/>
+    <script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    var links = document.getElementsByTagName('a');
+    
+    for (var i = 0; i < links.length; ++i) {
+        var link = links.item(i);
+        
+        if (!link.hasAttribute('class')) {
+            link.setAttribute('target', '_blank');
+        }
+    }
+}, false);
+    </script>
     <style type="text/css" media="screen">
 body {
     font-size: smaller;
