@@ -184,8 +184,9 @@ class Arguments (argparse.ArgumentParser):
         if args.label is None:
             args.label = [self._resolve_path(f) for f in args.file, args.file2]
         
-        args.file = StringIO.StringIO(''.join(
-            difflib.unified_diff(
+        args.file = StringIO.StringIO(
+            'diff -u %s\n' % ' '.join(args.label)
+            + ''.join(difflib.unified_diff(
                 args.file.readlines(), args.file2.readlines(), *args.label)))
     
     
