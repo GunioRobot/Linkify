@@ -377,16 +377,16 @@ class Pager (Reader):
             clean_text = re.sub(self.ansi_color_escape, u'', text)
             
             try:
-                return pygments.lexers.guess_lexer_for_filename(
-                    self._input.name, clean_text)
-            except pygments.util.ClassNotFound:
-                pass
-            
-            try:
                 return pygments.lexers.guess_lexer(clean_text)
             except TypeError:
                 # See <http://bitbucket.org/birkenfeld/pygments-main/issue/618/>
                 # $ echo .text | pygmentize -g
+                pass
+            
+            try:
+                return pygments.lexers.guess_lexer_for_filename(
+                    self._input.name, clean_text)
+            except pygments.util.ClassNotFound:
                 return pygments.lexers.TextLexer()
     
     
