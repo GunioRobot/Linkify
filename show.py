@@ -191,17 +191,10 @@ class Arguments (argparse.ArgumentParser):
     
     def _parse_git_diff_arguments(self, args):
         (stream, old_file) = (args.file, args.file2)
-        (old_hex, old_mode, new_file, new_hex, new_mode) = args.git
-        
         (args.file, args.file2) = (old_file, stream)
-        path = self._resolve_path(stream)
-        args.label = []
         
-        for commit in old_hex, new_hex:
-            if re.match(r'^0+$', commit):
-                args.label.append('%s\t(working copy)' % path)
-            else:
-                args.label.append('%s\t(commit %s)' % (path, commit))
+        path = self._resolve_path(stream)
+        args.label = [path, path]
     
     
     def _resolve_path(self, stream):
