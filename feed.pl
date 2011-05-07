@@ -6,6 +6,8 @@ use Mojolicious::Lite;
 use XML::FeedPP ();
 
 
+# TODO: Keep favicon.ico from original feed.
+
 sub filter_feed_items(&$) {
     my ($keep_item, $url) = @ARG;
     my $feed = XML::FeedPP->new($url);
