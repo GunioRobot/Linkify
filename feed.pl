@@ -18,6 +18,8 @@ sub filter_feed_items(&$) {
 }
 
 
+# TODO: Include posters as inline attachments.
+
 get '/hd-trailers' => sub {
     shift->render(
         format => 'rss',
