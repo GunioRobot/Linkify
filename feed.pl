@@ -7,8 +7,6 @@ use Mojolicious::Lite;
 use XML::FeedPP ();
 
 
-# TODO: Keep favicon.ico from original feed.
-
 app->helper(filter_feed_items => sub {
     my ($self, $url, $keep_item) = @ARG;
     my $feed = try {
@@ -32,6 +30,17 @@ app->helper(filter_feed_items => sub {
             format => 'txt',
             status => HTTP::Status::HTTP_GATEWAY_TIMEOUT,
             text => '');
+    }
+});
+
+
+# TODO: Keep favicon.ico from original feed?
+
+app->hook(before_dispatch => sub {
+    my ($self) = @ARG;
+    
+    if ($self->req->url->path eq '/favicon.ico') {
+        $self->render_not_found;
     }
 });
 
