@@ -39,7 +39,7 @@ ul + p {
     margin-top: 2em;
 }
 
-ul > li + li {
+ul.Buttons > li + li {
     margin-top: 1.25em;
 }
 
@@ -118,7 +118,7 @@ ul > li > a.Translate:before {
   
   <body>
     <p>Buttons:</p>
-    <ul>
+    <ul class="Buttons">
       <li><a class="BypassLogin Small" href="opera:/button/Go to page,%22javascript:void(window.open('http://bugmenot.com/view/' + encodeURI(location)))%22,,Bypass login,Mail Redirected">Bypass login</a></li>
       <li><a class="ClosePage Small" href="opera:/button/Close page,,,,Pagebar Close Button Skin">Close page</a></li>
       <li><a class="EmptyCache Small" href="opera:/button/Clear disk cache,,,Empty cache,Show Trash">Empty cache</a></li>
@@ -138,6 +138,8 @@ ul > li > a.Translate:before {
       <li><a href="opera:config#Network|URLFilterFile">Content blocking</a></li>
       <li><a href="opera:config#MailBox|NotesFile">Notes</a></li>
       <li><a href="opera:config#UserPrefs|EnableOnDemandPlugin">On-demand plug-in</a></li>
+      <li><a href="opera:config#Thumbnail Logo Score Banner">Speed Dial Thumbnail Banner</a> = 1000</li>
+      <li><a href="opera:config#Thumbnail Logo Score Threshold">Speed Dial Thumbnail Threshold</a> = 1000</li>
     </ul>
     
     <p>Menu setup:</p>
