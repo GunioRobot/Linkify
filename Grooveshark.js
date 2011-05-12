@@ -1,15 +1,17 @@
 // ==UserScript==
-// @include http://listen.grooveshark.com/*
+// @include http://grooveshark.com/*
 // ==/UserScript==
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    function $(/* ... */) {
-        return document.getElementById.apply(document, arguments);
-    }
+    var fullWidth = document.createElement('style');
     
-    var ad = $('adBar') || $('sidebar');
+    fullWidth.appendChild(document.createTextNode(
+        '#application {margin-right: 0 !important;}'));
     
+    fullWidth.type = 'text/css';
+    document.querySelector('html > head').appendChild(fullWidth);
+    
+    var ad = document.getElementById('capital');
     ad.parentNode.removeChild(ad);
-    $('mainContentWrapper').style.width = '100%';
 }, false);
