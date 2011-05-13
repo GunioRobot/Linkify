@@ -9,11 +9,17 @@ use XML::FeedPP ();
 
 app->helper(filter_feed_items => sub {
     my ($self, $url, $keep_item) = @ARG;
+    
     my $feed = try {
         XML::FeedPP->new($url);
     }
     catch {
         die $ARG unless $ARG =~ m/^\QLoading failed: $url\E/;
+        
+        $self->render(
+            status => HTTP::Status::HTTP_GATEWAY_TIMEOUT,
+            text => "Feed error: $ARG");
+        
         undef;
     };
     
@@ -24,12 +30,6 @@ app->helper(filter_feed_items => sub {
         $self->render(
             format => 'rss',
             text => $feed->to_string);
-    }
-    else {
-        $self->render(
-            format => 'txt',
-            status => HTTP::Status::HTTP_GATEWAY_TIMEOUT,
-            text => '');
     }
 });
 
