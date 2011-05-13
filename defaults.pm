@@ -15,7 +15,7 @@ use Try::Tiny ();
 
 
 our @EXPORT = qw(*STDNULL $false $true const);
-our $VERSION = v2011.04.17;
+our $VERSION = v2011.05.13;
 
 
 # TODO: Use first one available of Const::Fast, Data::Lock, Readonly::XS?
@@ -28,10 +28,10 @@ sub const :lvalue {
 
 sub import {
     feature->import(qw(:5.10));
-    strict->import();
-    true->import();
-    utf8->import();
-    warnings->import();
+    strict->import;
+    true->import;
+    utf8->import;
+    warnings->import;
     
     __PACKAGE__->export_to_level(1);
     English->export_to_level(1);
@@ -45,7 +45,7 @@ sub import {
 const our $false = 0;
 const our $true = 1;
 
-open STDNULL, '+<', File::Spec->devnull();
+open STDNULL, '+<', File::Spec->devnull;
 
 binmode STDERR;
 binmode STDIN;
