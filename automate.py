@@ -2,11 +2,14 @@
 # -*- coding: utf-8 -*-
 
 
+# TODO: Use logging.
+
+
 # Standard library:
-import abc, HTMLParser, re, urllib2
+import abc, difflib, HTMLParser, os.path, re, urllib2, urlparse
 
 # External modules:
-import feedparser
+import feedparser, lxml.html
 
 
 class DownloadManager (object):
@@ -63,12 +66,21 @@ class FreeDownloadManager (DownloadManager, MicrosoftWindowsTypeLibrary):
         wg_url_receiver.AddDownload()
     
     
-    def has_download(self, url, check_redirect = True):
-        # Only the final URL is usually stored in the download history.
-        if check_redirect:
+    def has_download(self, url, fuzzy = False, redirect = True):
+        if redirect:
             url = urllib2.urlopen(url).geturl()
         
-        return url in self._list_downloads()
+        found_url = url in self._list_downloads()
+        
+        if found_url or not fuzzy:
+            return found_url
+        
+        # TODO: Warn about fuzzy matches.
+        matches = difflib.get_close_matches(url, self._list_downloads(),
+            cutoff = 0.9,
+            n = 1)
+        
+        return len(matches) > 0
     
     
     def _list_downloads(self):
@@ -114,15 +126,16 @@ class IgnDailyFixFeed (Feed):
     
     
     def list_downloads(self):
-        videos = []
+        videos = set()
         
         for entry in self.get_feed().entries:
             if entry.title.startswith(u'IGN Daily Fix:'):
-                videos.append(entry.enclosures[0].href)
+                videos.add(entry.enclosures[0].href)
         
         return videos
 
 
+# TODO: Use lxml.html.
 class TrailerLinksHtmlParser (HTMLParser.HTMLParser, object):
     @classmethod
     def get_resolution(cls, url):
@@ -185,28 +198,68 @@ class HdTrailersFeed (Feed, TrailerLinksHtmlParser):
     
     
     def list_downloads(self):
-        videos = []
+        videos = set()
         
         for entry in self.get_feed().entries:
             if re.search(ur'\b(teaser|trailer)\b', entry.title, re.IGNORECASE):
                 if hasattr(entry, u'enclosures'):
                     urls = [enclosure.href for enclosure in entry.enclosures]
                     self.sort_by_resolution(urls)
-                    videos.append(urls[0])
+                    videos.add(urls[0])
                 else:
                     self.reset()
                     self.feed(entry.content[0].value)
-                    videos.append(self.link)
+                    videos.add(self.link)
         
         return videos
 
 
+class InterfaceLiftFeed (Feed):
+    BASE_URL = u'http://interfacelift.com'
+    
+    
+    def __init__(self):
+        super(InterfaceLiftFeed, self).__init__(
+            self.BASE_URL + u'/wallpaper/rss/index.xml')
+    
+    
+    # TODO: Choose the highest available resolution.
+    def list_downloads(self, resolution = u'1600x900'):
+        download_code = self._get_download_code()
+        wallpapers = set()
+        
+        for entry in self.get_feed().entries:
+            entry_doc = lxml.html.fromstring(entry.summary)
+            
+            # Get preview image URL to build the actual wallpaper URL.
+            preview_url = entry_doc.xpath(u'//img/@src')[0]
+            image_url = preview_url.replace(u'previews', download_code)
+            wallpaper_url = urlparse.urlparse(image_url)
+            
+            # Build the final wallpaper URL for the intended resolution.
+            (path, ext) = os.path.splitext(wallpaper_url.path)
+            wallpaper_url = list(wallpaper_url)
+            wallpaper_url[2] = path + u'_' + resolution + ext
+            
+            wallpapers.add(urlparse.urlunparse(wallpaper_url))
+        
+        return wallpapers
+    
+    
+    def _get_download_code(self):
+        script_url = self.BASE_URL + u'/inc_NEW/jscript.js'
+        script = urllib2.urlopen(script_url).read()
+        
+        return re.findall(u'"/wallpaper/([^/]+)/"', script).pop()
+
+
 fdm = FreeDownloadManager()
 
-for video in HdTrailersFeed().list_downloads():
-    print video, fdm.has_download(video)
+for wallpaper in InterfaceLiftFeed().list_downloads():
+    print wallpaper, fdm.has_download(wallpaper, fuzzy = True)
 
-print
+#for video in HdTrailersFeed().list_downloads():
+    #print video, fdm.has_download(video)
 
-for video in IgnDailyFixFeed().list_downloads():
-    print video, fdm.has_download(video)
+#for video in IgnDailyFixFeed().list_downloads():
+    #print video, fdm.has_download(video)
