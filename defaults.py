@@ -11,6 +11,7 @@ __version__ = u'2011-0515'
 # TODO: Implement constants?
 # TODO: Export Infinity constant?
 # TODO: Enable UTF-8 source text automatically?
+# TODO: Automate namespace cleanup to allow: from defaults import *
 
 
 # Standard library:
@@ -128,4 +129,6 @@ for module, name, version, fix in fixes:
     if sys.hexversion <= version:
         setattr(module, name, fix)
 
+del ConfigParser, cStringIO, email, imaplib, sys
+del CheckBadPercent, Imap4Ssl, RemoveDoublePercents, parsestr
 del fixes, module, name, version, fix
