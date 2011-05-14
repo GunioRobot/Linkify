@@ -283,6 +283,7 @@ else:
                 if not dl_manager.has_url(source, url):
                     print u'>', url
                     dl_manager.download_url(url)
+                    time.sleep(1)
         
         print datetime.datetime.now().isoformat(), u'Pausing...'
         time.sleep(5 * 60)
