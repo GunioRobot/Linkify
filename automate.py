@@ -4,6 +4,7 @@
 
 # TODO: Use logging.
 # TODO: Compress InterfaceLIFT wallpapers after download.
+# TODO: Create MS Win32 system service?
 # TODO: Choose the highest available wallpaper resolution that most closely
 #       matches the running computer's.
 
