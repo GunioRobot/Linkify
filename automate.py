@@ -3,10 +3,11 @@
 
 
 # TODO: Use logging.
-# TODO: Compress InterfaceLIFT wallpapers after download.
 # TODO: Create MS Win32 system service?
-# TODO: Choose the highest available wallpaper resolution that most closely
-#       matches the running computer's.
+# TODO: Cut the first few seconds of the IGN Daily Fix videos.
+# TODO: Compress InterfaceLIFT wallpapers after download.
+# TODO: Choose the highest available InterfaceLIFT wallpaper resolution that 
+#       most closely matches the running computer's.
 
 
 # Standard library:
