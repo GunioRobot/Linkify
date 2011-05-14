@@ -7,7 +7,7 @@
 
 
 # Standard library:
-import abc, difflib, os.path, re, urllib2, urlparse
+import abc, datetime, difflib, os.path, re, time, urllib2, urlparse
 
 # External modules:
 import feedparser, lxml.html
@@ -228,13 +228,24 @@ class InterfaceLiftFeed (Feed):
         return re.findall(u'"/wallpaper/([^/]+)/"', script).pop()
 
 
-fdm = FreeDownloadManager()
-
-for wallpaper in InterfaceLiftFeed().list_downloads():
-    print wallpaper, fdm.has_download(wallpaper, fuzzy = True)
-
-for video in HdTrailersFeed().list_downloads():
-    print video, fdm.has_download(video)
-
-for video in IgnDailyFixFeed().list_downloads():
-    print video, fdm.has_download(video)
+while True:
+    fdm = FreeDownloadManager()
+    
+    for wallpaper in InterfaceLiftFeed().list_downloads():
+        if not fdm.has_download(wallpaper, fuzzy = True):
+            print u'\t' + wallpaper
+            fdm.download(wallpaper)
+    
+    for video in HdTrailersFeed().list_downloads():
+        if not fdm.has_download(video):
+            print u'\t' + video
+            fdm.download(video)
+    
+    for video in IgnDailyFixFeed().list_downloads():
+        if not fdm.has_download(video):
+            print u'\t' + video
+            fdm.download(video)
+    
+    print datetime.datetime.now().isoformat(), u'Waiting...'
+    time.sleep(5 * 60)
+    print datetime.datetime.now().isoformat(), u'Resuming...'
