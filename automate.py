@@ -13,6 +13,17 @@ import abc, datetime, difflib, os.path, re, time, urllib2, urlparse
 import feedparser, lxml.html
 
 
+class Downloader (object):
+    def open_url(self, url):
+        parsed_url = urlparse.urlparse(url)
+        request = urllib2.Request(url)
+        
+        if parsed_url.hostname == 'trailers.apple.com':
+            request.add_header(u'User-Agent', u'QuickTime')
+        
+        return urllib2.build_opener().open(request)
+
+
 class DownloadManager (object):
     __metaclass__ = abc.ABCMeta
     
@@ -27,7 +38,7 @@ class DownloadManager (object):
         pass
 
 
-class MicrosoftWindowsTypeLibrary (object):
+class MsWindowsTypeLibrary (object):
     def __init__(self, path):
         import pythoncom, win32com.client
         global pythoncom, win32com
@@ -48,10 +59,11 @@ class MicrosoftWindowsTypeLibrary (object):
             % (name, self._path))
 
 
-class FreeDownloadManager (DownloadManager, MicrosoftWindowsTypeLibrary):
+class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
     def __init__(self):
         DownloadManager.__init__(self)
-        MicrosoftWindowsTypeLibrary.__init__(self, u'fdm.tlb')
+        MsWindowsTypeLibrary.__init__(self, u'fdm.tlb')
+        Downloader.__init__(self)
         
         self._cached_downloads_list = None
     
@@ -63,14 +75,13 @@ class FreeDownloadManager (DownloadManager, MicrosoftWindowsTypeLibrary):
         wg_url_receiver.DisableURLExistsCheck = False
         wg_url_receiver.ForceDownloadAutoStart = True
         wg_url_receiver.ForceSilent = True
+        wg_url_receiver.ForceSilentEx = True
         
         wg_url_receiver.AddDownload()
     
     
-    def has_download(self, url, fuzzy = False, redirect = True):
-        if redirect:
-            url = urllib2.urlopen(url).geturl()
-        
+    def has_download(self, url, fuzzy = False):
+        url = self.open_url(url).geturl()
         found_url = url in self._list_downloads()
         
         if found_url or not fuzzy:
@@ -188,7 +199,7 @@ class HdTrailersFeed (Feed):
         return int(resolution.pop())
 
 
-class InterfaceLiftFeed (Feed):
+class InterfaceLiftFeed (Feed, Downloader):
     BASE_URL = u'http://interfacelift.com'
     
     
@@ -222,9 +233,7 @@ class InterfaceLiftFeed (Feed):
     
     
     def _get_download_code(self):
-        script_url = self.BASE_URL + u'/inc_NEW/jscript.js'
-        script = urllib2.urlopen(script_url).read()
-        
+        script = self.open_url(self.BASE_URL + u'/inc_NEW/jscript.js').read()
         return re.findall(u'"/wallpaper/([^/]+)/"', script).pop()
 
 
