@@ -178,9 +178,9 @@ class TrailerLinksHtmlParser (HTMLParser.HTMLParser, object):
         self._resolution = 0
 
 
-class HdTrailers (Feed, TrailerLinksHtmlParser):
+class HdTrailersFeed (Feed, TrailerLinksHtmlParser):
     def __init__(self):
-        super(HdTrailers, self).__init__(
+        super(HdTrailersFeed, self).__init__(
             u'http://feeds.hd-trailers.net/hd-trailers/blog')
     
     
@@ -203,7 +203,7 @@ class HdTrailers (Feed, TrailerLinksHtmlParser):
 
 fdm = FreeDownloadManager()
 
-for video in HdTrailers().list_downloads():
+for video in HdTrailersFeed().list_downloads():
     print video, fdm.has_download(video)
 
 print
