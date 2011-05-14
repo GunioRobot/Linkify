@@ -3,19 +3,23 @@
 
 
 # TODO: Use logging.
+# TODO: Hide terminal while executing download finished events.
+# TODO: Use command line options to choose the download manager, execute
+#       download finished events, etc.
 # TODO: Handle HTTP connection errors (off-line, not found, etc).
 # TODO: Create MS Win32 system service?
 # TODO: Cut the first few seconds of the IGN Daily Fix videos.
-# TODO: Compress InterfaceLIFT wallpapers after download.
+# TODO: When compressing InterfaceLIFT wallpapers, do a copy and then overwrite
+#       to prevent corruption while saving.
 # TODO: Choose the highest available InterfaceLIFT wallpaper resolution that 
 #       most closely matches the running computer's.
 
 
 # Standard library:
-import abc, datetime, os.path, re, time, urllib2, urlparse
+import abc, datetime, os.path, re, sys, time, urllib2, urlparse
 
 # External modules:
-import feedparser, lxml.html
+import feedparser, lxml.html, PIL.Image
 
 
 class Downloader (object):
@@ -64,13 +68,16 @@ class MsWindowsTypeLibrary (object):
 
 
 class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
+    FILE_NAME_DOWNLOAD_TEXT = 0
+    
+    
     def __init__(self):
         DownloadManager.__init__(self)
         MsWindowsTypeLibrary.__init__(self, u'fdm.tlb')
         Downloader.__init__(self)
         
         self._cached_downloads_stat = False
-        self._urls = set()
+        self._downloads = set()
     
     
     def download_url(self, url):
@@ -83,33 +90,40 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
         wg_url_receiver.ForceSilentEx = True
         
         wg_url_receiver.AddDownload()
-        self._urls.add(url)
+        self._downloads.add((url, None))
     
     
     def has_url(self, source, url):
         redirected_url = self.open_url(url).geturl()
         
-        for past_url in self._list_urls():
+        for past_url, file_name in self._list_urls():
             if source.equal_urls(url, redirected_url, past_url):
                 return True
         
         return False
     
     
+    def get_urls_by_file_name(self, name):
+        for url, file_name in self._list_urls():
+            if file_name == name:
+                yield url
+    
+    
     def _list_urls(self):
         if self._cached_downloads_stat:
-            for url in self._urls:
-                yield url
+            for download in self._downloads:
+                yield download
         else:
             downloads_stat = self.get_data_type(u'FDMDownloadsStat')
             downloads_stat.BuildListOfDownloads(True, True)
             
             # Don't start at the oldest URL to find newer downloads faster.
             for i in reversed(xrange(0, downloads_stat.DownloadCount)):
-                url = downloads_stat.Download(i).Url
-                self._urls.add(url)
+                download = downloads_stat.Download(i)
+                file_name = download.DownloadText(self.FILE_NAME_DOWNLOAD_TEXT)
                 
-                yield url
+                self._downloads.add((download.Url, file_name))
+                yield (download.Url, file_name)
             
             self._cached_downloads_stat = True
 
@@ -120,6 +134,10 @@ class DownloadSource (object):
     
     def equal_urls(self, original, redirected, past):
         return redirected == past
+    
+    
+    def download_finished(self, url, file_path):
+        pass
     
     
     @abc.abstractmethod
@@ -205,12 +223,18 @@ class HdTrailersFeed (Feed):
 
 
 class InterfaceLiftFeed (Feed, Downloader):
-    BASE_URL = u'http://interfacelift.com'
+    HOST_NAME = u'interfacelift.com'
     
     
     def __init__(self):
         super(InterfaceLiftFeed, self).__init__(
-            self.BASE_URL + u'/wallpaper/rss/index.xml')
+            u'http://' + self.HOST_NAME + u'/wallpaper/rss/index.xml')
+    
+    
+    def download_finished(self, url, file_path):
+        if urlparse.urlparse(url).hostname == self.HOST_NAME:
+            image = PIL.Image.open(file_path)
+            image.save(file_path, quality = 85)
     
     
     def equal_urls(self, original, redirected, past):
@@ -234,21 +258,31 @@ class InterfaceLiftFeed (Feed, Downloader):
     
     
     def _get_session_code(self):
-        script = self.open_url(self.BASE_URL + u'/inc_NEW/jscript.js').read()
+        script_url = u'http://' + self.HOST_NAME + u'/inc_NEW/jscript.js'
+        script = self.open_url(script_url).read()
+        
         return re.findall(u'"/wallpaper/([^/]+)/"', script).pop(0)
 
 
 dl_manager = FreeDownloadManager()
 sources = [IgnDailyFixFeed(), InterfaceLiftFeed(), HdTrailersFeed()]
+sys.argv.pop(0)
 
-while True:
-    print datetime.datetime.now().isoformat(), u'Starting...'
+if len(sys.argv) == 1:
+    [file_path] = sys.argv
     
-    for source in sources:
-        for url in source.list_urls():
-            if not dl_manager.has_url(source, url):
-                print u'>', url
-                dl_manager.download_url(url)
-    
-    print datetime.datetime.now().isoformat(), u'Pausing...'
-    time.sleep(5 * 60)
+    for url in dl_manager.get_urls_by_file_name(os.path.basename(file_path)):
+        for source in sources:
+            source.download_finished(url, file_path)
+else:
+    while True:
+        print datetime.datetime.now().isoformat(), u'Starting...'
+        
+        for source in sources:
+            for url in source.list_urls():
+                if not dl_manager.has_url(source, url):
+                    print u'>', url
+                    dl_manager.download_url(url)
+        
+        print datetime.datetime.now().isoformat(), u'Pausing...'
+        time.sleep(5 * 60)
