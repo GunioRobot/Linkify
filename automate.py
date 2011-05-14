@@ -6,7 +6,7 @@
 
 
 # Standard library:
-import abc, difflib, HTMLParser, os.path, re, urllib2, urlparse
+import abc, difflib, os.path, re, urllib2, urlparse
 
 # External modules:
 import feedparser, lxml.html
@@ -135,63 +135,7 @@ class IgnDailyFixFeed (Feed):
         return videos
 
 
-# TODO: Use lxml.html.
-class TrailerLinksHtmlParser (HTMLParser.HTMLParser, object):
-    @classmethod
-    def get_resolution(cls, url):
-        resolution = re.findall(ur'(\d{3,4})p', url)
-        
-        if len(resolution) != 1:
-            resolution = re.findall(ur'(480|720|1080)', url)
-            
-            if len(resolution) != 1:
-                return 0
-        
-        return int(resolution.pop())
-    
-    
-    @classmethod
-    def sort_by_resolution(cls, urls):
-        urls.sort(
-            lambda x, y: cmp(cls.get_resolution(x), cls.get_resolution(y)),
-            reverse = True)
-    
-    
-    def handle_data(self, data):
-        if self._current_link is not None:
-            resolution = self.get_resolution(data)
-            
-            if resolution > self._resolution:
-                self._link = self._current_link
-                self._resolution = resolution
-    
-    
-    def handle_endtag(self, tag):
-        self._current_link = None
-    
-    
-    def handle_starttag(self, tag, attrs):
-        if tag == u'a':
-            for name, value in attrs:
-                if name == u'href':
-                    self._current_link = value
-                    break
-    
-    
-    @property
-    def link(self):
-        return self._link
-    
-    
-    def reset(self):
-        super(TrailerLinksHtmlParser, self).reset()
-        
-        self._current_link = None
-        self._link = None
-        self._resolution = 0
-
-
-class HdTrailersFeed (Feed, TrailerLinksHtmlParser):
+class HdTrailersFeed (Feed):
     def __init__(self):
         super(HdTrailersFeed, self).__init__(
             u'http://feeds.hd-trailers.net/hd-trailers/blog')
@@ -204,14 +148,43 @@ class HdTrailersFeed (Feed, TrailerLinksHtmlParser):
             if re.search(ur'\b(teaser|trailer)\b', entry.title, re.IGNORECASE):
                 if hasattr(entry, u'enclosures'):
                     urls = [enclosure.href for enclosure in entry.enclosures]
-                    self.sort_by_resolution(urls)
-                    videos.add(urls[0])
-                else:
-                    self.reset()
-                    self.feed(entry.content[0].value)
-                    videos.add(self.link)
+                    videos.add(self._find_highest_resolution(urls))
+                    continue
+                
+                # Parse HTML to find movie links.
+                entry_doc = lxml.html.fromstring(entry.content[0].value)
+                (last_url, last_resolution) = (None, 0)
+                
+                for link in entry_doc.xpath(u'//a[text() != ""]'):
+                    resolution = self._get_resolution(link.text)
+                    
+                    if resolution > last_resolution:
+                        last_url = link.attrib[u'href']
+                        last_resolution = resolution
+                
+                videos.add(last_url)
         
         return videos
+    
+    
+    def _find_highest_resolution(self, urls):
+        urls.sort(
+            lambda x, y: cmp(self._get_resolution(x), self._get_resolution(y)),
+            reverse = True)
+        
+        return urls[0]
+    
+    
+    def _get_resolution(self, text):
+        resolution = re.findall(ur'(\d{3,4})p', text)
+        
+        if len(resolution) != 1:
+            resolution = re.findall(ur'(480|720|1080)', text)
+            
+            if len(resolution) != 1:
+                return 0
+        
+        return int(resolution.pop())
 
 
 class InterfaceLiftFeed (Feed):
@@ -258,8 +231,8 @@ fdm = FreeDownloadManager()
 for wallpaper in InterfaceLiftFeed().list_downloads():
     print wallpaper, fdm.has_download(wallpaper, fuzzy = True)
 
-#for video in HdTrailersFeed().list_downloads():
-    #print video, fdm.has_download(video)
+for video in HdTrailersFeed().list_downloads():
+    print video, fdm.has_download(video)
 
-#for video in IgnDailyFixFeed().list_downloads():
-    #print video, fdm.has_download(video)
+for video in IgnDailyFixFeed().list_downloads():
+    print video, fdm.has_download(video)
