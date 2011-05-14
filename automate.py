@@ -3,6 +3,7 @@
 
 
 # TODO: Use logging.
+# TODO: Compress InterfaceLIFT wallpapers after download.
 
 
 # Standard library:
@@ -196,7 +197,8 @@ class InterfaceLiftFeed (Feed):
             self.BASE_URL + u'/wallpaper/rss/index.xml')
     
     
-    # TODO: Choose the highest available resolution.
+    # TODO: Choose the highest available resolution that most closely matches
+    # the running computer's.
     def list_downloads(self, resolution = u'1600x900'):
         download_code = self._get_download_code()
         wallpapers = set()
