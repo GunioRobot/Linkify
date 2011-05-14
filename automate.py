@@ -3,6 +3,7 @@
 
 
 # TODO: Use logging.
+# TODO: Handle HTTP connection errors (off-line, not found, etc).
 # TODO: Create MS Win32 system service?
 # TODO: Cut the first few seconds of the IGN Daily Fix videos.
 # TODO: Compress InterfaceLIFT wallpapers after download.
@@ -68,8 +69,8 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
         MsWindowsTypeLibrary.__init__(self, u'fdm.tlb')
         Downloader.__init__(self)
         
-        self._downloads = set()
         self._cached_downloads_stat = False
+        self._downloaded_urls = set()
     
     
     def download(self, url):
@@ -82,22 +83,22 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
         wg_url_receiver.ForceSilentEx = True
         
         wg_url_receiver.AddDownload()
-        self._downloads.add(url)
+        self._downloaded_urls.add(url)
     
     
     def has_downloaded(self, source, url):
         redirected_url = self.open_url(url).geturl()
         
-        for downloaded_url in self._list_downloads():
+        for downloaded_url in self._list_downloaded_urls():
             if source.equal_urls(url, downloaded_url, redirected_url):
                 return True
         
         return False
     
     
-    def _list_downloads(self):
+    def _list_downloaded_urls(self):
         if self._cached_downloads_stat:
-            for url in self._downloads:
+            for url in self._downloaded_urls:
                 yield url
         else:
             downloads_stat = self.get_type(u'FDMDownloadsStat')
@@ -106,7 +107,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
             # Don't start at the oldest URL to find newer downloads faster.
             for i in reversed(xrange(0, downloads_stat.DownloadCount)):
                 url = downloads_stat.Download(i).Url
-                self._downloads.add(url)
+                self._downloaded_urls.add(url)
                 
                 yield url
             
@@ -122,7 +123,7 @@ class DownloadSource (object):
     
     
     @abc.abstractmethod
-    def list_downloads(self):
+    def list_urls(self):
         pass
 
 
@@ -141,14 +142,10 @@ class IgnDailyFixFeed (Feed):
             u'http://feeds.ign.com/ignfeeds/podcasts/games/')
     
     
-    def list_downloads(self):
-        videos = set()
-        
+    def list_urls(self):
         for entry in self.get_feed().entries:
             if entry.title.startswith(u'IGN Daily Fix:'):
-                videos.add(entry.enclosures[0].href)
-        
-        return videos
+                yield entry.enclosures[0].href
 
 
 class HdTrailersFeed (Feed):
@@ -166,30 +163,25 @@ class HdTrailersFeed (Feed):
             original, redirected, downloaded)
     
     
-    def list_downloads(self):
-        videos = set()
-        
+    def list_urls(self):
         for entry in self.get_feed().entries:
             if re.search(ur'\b(teaser|trailer)\b', entry.title, re.IGNORECASE):
                 if hasattr(entry, u'enclosures'):
                     urls = [enclosure.href for enclosure in entry.enclosures]
-                    videos.add(self._find_highest_resolution(urls))
-                    continue
-                
-                # Parse HTML to find movie links.
-                entry_doc = lxml.html.fromstring(entry.content[0].value)
-                (last_url, last_resolution) = (None, 0)
-                
-                for link in entry_doc.xpath(u'//a[text() != ""]'):
-                    resolution = self._get_resolution(link.text)
+                    yield self._find_highest_resolution(urls)
+                else:
+                    # Parse HTML to find movie links.
+                    html = lxml.html.fromstring(entry.content[0].value)
+                    (url, highest_resolution) = (None, 0)
                     
-                    if resolution > last_resolution:
-                        last_url = link.attrib[u'href']
-                        last_resolution = resolution
-                
-                videos.add(last_url)
-        
-        return videos
+                    for link in html.xpath(u'//a[text() != ""]'):
+                        resolution = self._get_resolution(link.text)
+                        
+                        if resolution > highest_resolution:
+                            url = link.attrib[u'href']
+                            highest_resolution = resolution
+                    
+                    yield url
     
     
     def _find_highest_resolution(self, strings):
@@ -203,13 +195,13 @@ class HdTrailersFeed (Feed):
     def _get_resolution(self, text):
         resolution = re.findall(ur'(\d{3,4})p', text)
         
-        if len(resolution) != 1:
+        if len(resolution) == 0:
             resolution = re.findall(ur'(480|720|1080)', text)
             
-            if len(resolution) != 1:
+            if len(resolution) == 0:
                 return 0
         
-        return int(resolution.pop())
+        return int(resolution.pop(0))
 
 
 class InterfaceLiftFeed (Feed, Downloader):
@@ -225,16 +217,12 @@ class InterfaceLiftFeed (Feed, Downloader):
         return os.path.basename(redirected) == os.path.basename(downloaded)
     
     
-    def list_downloads(self, resolution = u'1600x900'):
-        download_code = self._get_download_code()
-        wallpapers = set()
+    def list_urls(self, resolution = u'1600x900'):
+        code = self._get_session_code()
         
         for entry in self.get_feed().entries:
-            entry_doc = lxml.html.fromstring(entry.summary)
-            
-            # Get preview image URL to build the actual wallpaper URL.
-            preview_url = entry_doc.xpath(u'//img/@src')[0]
-            image_url = preview_url.replace(u'previews', download_code)
+            html = lxml.html.fromstring(entry.summary)
+            image_url = html.xpath(u'//img/@src')[0].replace(u'previews', code)
             wallpaper_url = urlparse.urlparse(image_url)
             
             # Build the final wallpaper URL for the intended resolution.
@@ -242,26 +230,25 @@ class InterfaceLiftFeed (Feed, Downloader):
             wallpaper_url = list(wallpaper_url)
             wallpaper_url[2] = path + u'_' + resolution + ext
             
-            wallpapers.add(urlparse.urlunparse(wallpaper_url))
-        
-        return wallpapers
+            yield urlparse.urlunparse(wallpaper_url)
     
     
-    def _get_download_code(self):
+    def _get_session_code(self):
         script = self.open_url(self.BASE_URL + u'/inc_NEW/jscript.js').read()
-        return re.findall(u'"/wallpaper/([^/]+)/"', script).pop()
+        return re.findall(u'"/wallpaper/([^/]+)/"', script).pop(0)
 
 
-fdm = FreeDownloadManager()
+dl_manager = FreeDownloadManager()
+sources = [IgnDailyFixFeed(), InterfaceLiftFeed(), HdTrailersFeed()]
 
 while True:
     print datetime.datetime.now().isoformat(), u'Starting...'
     
-    for source in [IgnDailyFixFeed(), InterfaceLiftFeed(), HdTrailersFeed()]:
-        for url in source.list_downloads():
-            if not fdm.has_downloaded(source, url):
+    for source in sources:
+        for url in source.list_urls():
+            if not dl_manager.has_downloaded(source, url):
                 print u'>', url
-                fdm.download(url)
+                dl_manager.download(url)
     
     print datetime.datetime.now().isoformat(), u'Pausing...'
     time.sleep(5 * 60)
