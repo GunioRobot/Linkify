@@ -33,12 +33,12 @@ class DownloadManager (object):
     
     
     @abc.abstractmethod
-    def download(self, url):
+    def download_url(self, url):
         pass
     
     
     @abc.abstractmethod
-    def has_downloaded(self, source, url):
+    def has_url(self, source, url):
         pass
 
 
@@ -51,7 +51,7 @@ class MsWindowsTypeLibrary (object):
         self._lib = pythoncom.LoadTypeLib(self._path)
     
     
-    def get_type(self, type_name):
+    def get_data_type(self, type_name):
         for i in xrange(0, self._lib.GetTypeInfoCount()):
             (name, doc, help_ctxt, help_file) = self._lib.GetDocumentation(i)
             
@@ -70,11 +70,11 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
         Downloader.__init__(self)
         
         self._cached_downloads_stat = False
-        self._downloaded_urls = set()
+        self._urls = set()
     
     
-    def download(self, url):
-        wg_url_receiver = self.get_type(u'WGUrlReceiver')
+    def download_url(self, url):
+        wg_url_receiver = self.get_data_type(u'WGUrlReceiver')
         
         wg_url_receiver.Url = url
         wg_url_receiver.DisableURLExistsCheck = False
@@ -83,31 +83,31 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
         wg_url_receiver.ForceSilentEx = True
         
         wg_url_receiver.AddDownload()
-        self._downloaded_urls.add(url)
+        self._urls.add(url)
     
     
-    def has_downloaded(self, source, url):
+    def has_url(self, source, url):
         redirected_url = self.open_url(url).geturl()
         
-        for downloaded_url in self._list_downloaded_urls():
-            if source.equal_urls(url, downloaded_url, redirected_url):
+        for past_url in self._list_urls():
+            if source.equal_urls(url, redirected_url, past_url):
                 return True
         
         return False
     
     
-    def _list_downloaded_urls(self):
+    def _list_urls(self):
         if self._cached_downloads_stat:
-            for url in self._downloaded_urls:
+            for url in self._urls:
                 yield url
         else:
-            downloads_stat = self.get_type(u'FDMDownloadsStat')
+            downloads_stat = self.get_data_type(u'FDMDownloadsStat')
             downloads_stat.BuildListOfDownloads(True, True)
             
             # Don't start at the oldest URL to find newer downloads faster.
             for i in reversed(xrange(0, downloads_stat.DownloadCount)):
                 url = downloads_stat.Download(i).Url
-                self._downloaded_urls.add(url)
+                self._urls.add(url)
                 
                 yield url
             
@@ -118,8 +118,8 @@ class DownloadSource (object):
     __metaclass__ = abc.ABCMeta
     
     
-    def equal_urls(self, original, redirected, downloaded):
-        return redirected == downloaded
+    def equal_urls(self, original, redirected, past):
+        return redirected == past
     
     
     @abc.abstractmethod
@@ -154,13 +154,13 @@ class HdTrailersFeed (Feed):
             u'http://feeds.hd-trailers.net/hd-trailers/blog')
     
     
-    def equal_urls(self, original, redirected, downloaded):
+    def equal_urls(self, original, redirected, past):
         if urlparse.urlparse(original).hostname == u'playlist.yahoo.com':
             return urlparse.urlparse(redirected).path \
-                == urlparse.urlparse(downloaded).path
+                == urlparse.urlparse(past).path
         
         return super(HdTrailersFeed, self).equal_urls(
-            original, redirected, downloaded)
+            original, redirected, past)
     
     
     def list_urls(self):
@@ -213,8 +213,8 @@ class InterfaceLiftFeed (Feed, Downloader):
             self.BASE_URL + u'/wallpaper/rss/index.xml')
     
     
-    def equal_urls(self, original, redirected, downloaded):
-        return os.path.basename(redirected) == os.path.basename(downloaded)
+    def equal_urls(self, original, redirected, past):
+        return os.path.basename(redirected) == os.path.basename(past)
     
     
     def list_urls(self, resolution = u'1600x900'):
@@ -246,9 +246,9 @@ while True:
     
     for source in sources:
         for url in source.list_urls():
-            if not dl_manager.has_downloaded(source, url):
+            if not dl_manager.has_url(source, url):
                 print u'>', url
-                dl_manager.download(url)
+                dl_manager.download_url(url)
     
     print datetime.datetime.now().isoformat(), u'Pausing...'
     time.sleep(5 * 60)
