@@ -4,10 +4,12 @@
 
 # TODO: Use logging.
 # TODO: Compress InterfaceLIFT wallpapers after download.
+# TODO: Choose the highest available wallpaper resolution that most closely
+#       matches the running computer's.
 
 
 # Standard library:
-import abc, datetime, difflib, os.path, re, time, urllib2, urlparse
+import abc, datetime, os.path, re, time, urllib2, urlparse
 
 # External modules:
 import feedparser, lxml.html
@@ -15,10 +17,9 @@ import feedparser, lxml.html
 
 class Downloader (object):
     def open_url(self, url):
-        parsed_url = urlparse.urlparse(url)
         request = urllib2.Request(url)
         
-        if parsed_url.hostname == 'trailers.apple.com':
+        if urlparse.urlparse(url).hostname == u'trailers.apple.com':
             request.add_header(u'User-Agent', u'QuickTime')
         
         return urllib2.build_opener().open(request)
@@ -34,7 +35,7 @@ class DownloadManager (object):
     
     
     @abc.abstractmethod
-    def has_download(self, url):
+    def has_downloaded(self, source, url):
         pass
 
 
@@ -80,19 +81,14 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
         wg_url_receiver.AddDownload()
     
     
-    def has_download(self, url, fuzzy = False):
-        url = self.open_url(url).geturl()
-        found_url = url in self._list_downloads()
+    def has_downloaded(self, source, url):
+        redirected_url = self.open_url(url).geturl()
         
-        if found_url or not fuzzy:
-            return found_url
+        for downloaded_url in self._list_downloads():
+            if source.equal_urls(url, downloaded_url, redirected_url):
+                return True
         
-        # TODO: Warn about fuzzy matches.
-        matches = difflib.get_close_matches(url, self._list_downloads(),
-            cutoff = 0.9,
-            n = 1)
-        
-        return len(matches) > 0
+        return False
     
     
     def _list_downloads(self):
@@ -114,21 +110,26 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
                 yield url
 
 
-class Feed (object):
+class DownloadSource (object):
     __metaclass__ = abc.ABCMeta
     
     
+    def equal_urls(self, original, redirected, downloaded):
+        return redirected == downloaded
+    
+    
+    @abc.abstractmethod
+    def list_downloads(self):
+        pass
+
+
+class Feed (DownloadSource):
     def __init__(self, url):
         self._url = url
     
     
     def get_feed(self):
         return feedparser.parse(self._url)
-    
-    
-    @abc.abstractmethod
-    def list_downloads(self):
-        pass
 
 
 class IgnDailyFixFeed (Feed):
@@ -151,6 +152,15 @@ class HdTrailersFeed (Feed):
     def __init__(self):
         super(HdTrailersFeed, self).__init__(
             u'http://feeds.hd-trailers.net/hd-trailers/blog')
+    
+    
+    def equal_urls(self, original, redirected, downloaded):
+        if urlparse.urlparse(original).hostname == u'playlist.yahoo.com':
+            return urlparse.urlparse(redirected).path \
+                == urlparse.urlparse(downloaded).path
+        
+        return super(HdTrailersFeed, self).equal_urls(
+            original, redirected, downloaded)
     
     
     def list_downloads(self):
@@ -179,12 +189,12 @@ class HdTrailersFeed (Feed):
         return videos
     
     
-    def _find_highest_resolution(self, urls):
-        urls.sort(
+    def _find_highest_resolution(self, strings):
+        strings.sort(
             lambda x, y: cmp(self._get_resolution(x), self._get_resolution(y)),
             reverse = True)
         
-        return urls[0]
+        return strings[0]
     
     
     def _get_resolution(self, text):
@@ -208,8 +218,10 @@ class InterfaceLiftFeed (Feed, Downloader):
             self.BASE_URL + u'/wallpaper/rss/index.xml')
     
     
-    # TODO: Choose the highest available resolution that most closely matches
-    # the running computer's.
+    def equal_urls(self, original, redirected, downloaded):
+        return os.path.basename(redirected) == os.path.basename(downloaded)
+    
+    
     def list_downloads(self, resolution = u'1600x900'):
         download_code = self._get_download_code()
         wallpapers = set()
@@ -238,23 +250,14 @@ class InterfaceLiftFeed (Feed, Downloader):
 
 
 while True:
+    print datetime.datetime.now().isoformat(), u'Starting...'
     fdm = FreeDownloadManager()
     
-    for wallpaper in InterfaceLiftFeed().list_downloads():
-        if not fdm.has_download(wallpaper, fuzzy = True):
-            print u'\t' + wallpaper
-            fdm.download(wallpaper)
+    for source in [IgnDailyFixFeed(), InterfaceLiftFeed(), HdTrailersFeed()]:
+        for url in source.list_downloads():
+            if not fdm.has_downloaded(source, url):
+                print u'>', url
+                fdm.download(url)
     
-    for video in HdTrailersFeed().list_downloads():
-        if not fdm.has_download(video):
-            print u'\t' + video
-            fdm.download(video)
-    
-    for video in IgnDailyFixFeed().list_downloads():
-        if not fdm.has_download(video):
-            print u'\t' + video
-            fdm.download(video)
-    
-    print datetime.datetime.now().isoformat(), u'Waiting...'
+    print datetime.datetime.now().isoformat(), u'Pausing...'
     time.sleep(5 * 60)
-    print datetime.datetime.now().isoformat(), u'Resuming...'
