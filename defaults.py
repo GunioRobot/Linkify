@@ -4,7 +4,7 @@
 
 __author__ = u'Marcio Faustino'
 __doc__ = u'Sets some defaults and important fixes.'
-__version__ = u'2011-0515'
+__version__ = u'2011-05-15'
 
 
 # TODO: Implement a @fix decorator?
