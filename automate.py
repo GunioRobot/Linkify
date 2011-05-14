@@ -68,7 +68,8 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
         MsWindowsTypeLibrary.__init__(self, u'fdm.tlb')
         Downloader.__init__(self)
         
-        self._cached_downloads_list = None
+        self._downloads = set()
+        self._cached_downloads_stat = False
     
     
     def download(self, url):
@@ -81,6 +82,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
         wg_url_receiver.ForceSilentEx = True
         
         wg_url_receiver.AddDownload()
+        self._downloads.add(url)
     
     
     def has_downloaded(self, source, url):
@@ -94,22 +96,21 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
     
     
     def _list_downloads(self):
-        if self._cached_downloads_list is None:
+        if self._cached_downloads_stat:
+            for url in self._downloads:
+                yield url
+        else:
             downloads_stat = self.get_type(u'FDMDownloadsStat')
             downloads_stat.BuildListOfDownloads(True, True)
-            urls = set()
             
             # Don't start at the oldest URL to find newer downloads faster.
             for i in reversed(xrange(0, downloads_stat.DownloadCount)):
                 url = downloads_stat.Download(i).Url
+                self._downloads.add(url)
                 
-                urls.add(url)
                 yield url
             
-            self._cached_downloads_list = urls
-        else:
-            for url in self._cached_downloads_list:
-                yield url
+            self._cached_downloads_stat = True
 
 
 class DownloadSource (object):
@@ -251,9 +252,10 @@ class InterfaceLiftFeed (Feed, Downloader):
         return re.findall(u'"/wallpaper/([^/]+)/"', script).pop()
 
 
+fdm = FreeDownloadManager()
+
 while True:
     print datetime.datetime.now().isoformat(), u'Starting...'
-    fdm = FreeDownloadManager()
     
     for source in [IgnDailyFixFeed(), InterfaceLiftFeed(), HdTrailersFeed()]:
         for url in source.list_downloads():
