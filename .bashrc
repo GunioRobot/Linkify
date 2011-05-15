@@ -86,23 +86,13 @@ export PYTHONDONTWRITEBYTECODE=x
 # Remove bright colors.
 export LS_COLORS=$(echo $LS_COLORS | sed -e 's/=01;/=30;/g')
 
-# Save history session to file and set xterm title.
-export PROMPT_COMMAND='
-history -a
-echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"
-'
-
 ps1_user_host='\u@\h'
 
-if [ -n "$CYGWIN_ENV" ]; then
-    export CYGWIN=nodosfilewarning
-    export TERM=cygwin
-    export TEMP=/tmp
-    export TMP='$TMP'
-    
-    bind '"\e[2;2~": paste-from-clipboard'      # Shift + Insert
-    [ -n "$CD" ] && cd "$(cygpath "$CD")" && unset CD
-else
+if [ -z "$CYGWIN_ENV" ]; then
+    # Save history session to file and set xterm title.
+    export PROMPT_COMMAND='
+        history -a
+        echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"'
     export TERM=xterm
     
     if [ "$(stat --format=%i /)" != '2' ]; then
@@ -110,9 +100,17 @@ else
         export CHROOT=x
         [ -n "$INTERACTIVE" ] && echo "* chroot: $(uname -srmo)"
     fi
+else
+    export CYGWIN=nodosfilewarning
+    export TERM=cygwin
+    export TEMP=/tmp
+    export TMP='$TMP'
+    
+    bind '"\e[2;2~": paste-from-clipboard'      # Shift + Insert
+    [ -n "$CD" ] && cd "$(cygpath "$CD")" && unset CD
 fi
 
-if _have git; then
+if _have git && [ -z "$CYGWIN_ENV" ]; then
     _git_branch() {
         local path=$(git symbolic-ref HEAD 2> /dev/null)
         [ -n "$path" ] && echo -e "\033[00m:\033[0;33m${path#refs/heads/}"
