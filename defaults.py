@@ -11,6 +11,31 @@ __version__ = u'2011-05-15'
 import ConfigParser, email.feedparser, email.parser, imaplib
 
 
+def externals(*modules):
+    import __main__
+    missing = set()
+    
+    for module in modules:
+        package = module.split(u'.', 1).pop(0)
+        
+        if package != module:
+            try:
+                setattr(__main__, package, __import__(package))
+            except ImportError:
+                missing.add(package)
+                continue
+        
+        try:
+            setattr(__main__, module, __import__(module))
+        except ImportError:
+            missing.add(module)
+    
+    if len(missing) > 0:
+        import sys
+        error = [u'Module not found: %s' % module for module in sorted(missing)]
+        sys.exit(u'\n'.join(error))
+
+
 def fix(object = None, version = None, name = None, call = False):
     if not hasattr(fix, u'symbols'):
         setattr(fix, u'symbols', set())
