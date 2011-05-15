@@ -298,11 +298,38 @@ class InterfaceLiftFeed (Feed, Downloader):
         return re.findall(u'"/wallpaper/([^/]+)/"', script).pop(0)
 
 
+class ScrewAttackVideos (DownloadSource, Downloader):
+    BASE_URL = u'http://www.gametrailers.com'
+    BASE_VIDEO_URL = u'http://trailers-ak.gametrailers.com/gt_vault/3000/'
+    
+    
+    def list_urls(self):
+        main_url = self.BASE_URL + u'/screwattack'
+        main_html = lxml.html.fromstring(self.open_url(main_url).read())
+        
+        videos = main_html.xpath(
+            u'//div[@id="nerd"]//a[@class="gamepage_content_row_title"]/@href')
+        
+        for video in [self.BASE_URL + path for path in videos]:
+            html = lxml.html.fromstring(self.open_url(video).read())
+            
+            download_area = u'//span[@class="Downloads"]'
+            quicktime_links = u'a[starts-with(text(), "Quicktime")]/@href'
+            
+            url = html.xpath(download_area + u'/' + quicktime_links).pop(0)
+            yield self.BASE_VIDEO_URL + os.path.basename(url)
+
+
 dl_manager = FreeDownloadManager()
-sources = [IgnDailyFixFeed(), InterfaceLiftFeed(), HdTrailersFeed()]
+sources = [source() for source in [
+    IgnDailyFixFeed,
+    InterfaceLiftFeed,
+    HdTrailersFeed,
+    ScrewAttackVideos,
+]]
 
 while True:
-    dl_manager.logger.info(u'Resuming...')
+    dl_manager.logger.info(u'Starting...')
     
     for source in sources:
         for url in source.list_urls():
@@ -310,7 +337,7 @@ while True:
                 if not dl_manager.has_url(source, url):
                     dl_manager.download_url(url)
             except urllib2.HTTPError as error:
-                dl_manager.logger.error(u'%s: %s', error, url)
+                dl_manager.logger.error(u'%s: %s', str(error), url)
     
-    dl_manager.logger.info(u'Suspending...')
+    dl_manager.logger.info(u'Pausing...')
     time.sleep(5 * 60)
