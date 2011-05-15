@@ -77,7 +77,8 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
         Downloader.__init__(self)
         
         self._cached_downloads_stat = False
-        self._downloads = set()
+        self._urls = set()
+        self._urls_by_file_name = {}
     
     
     def download_url(self, url):
@@ -90,13 +91,13 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
         wg_url_receiver.ForceSilentEx = True
         
         wg_url_receiver.AddDownload()
-        self._downloads.add((url, None))
+        self._urls.add(url)
     
     
     def has_url(self, source, url):
         redirected_url = self.open_url(url).geturl()
         
-        for past_url, file_name in self._list_urls():
+        for past_url in self._list_urls():
             if source.equal_urls(url, redirected_url, past_url):
                 return True
         
@@ -104,15 +105,16 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
     
     
     def get_urls_by_file_name(self, name):
-        for url, file_name in self._list_urls():
-            if file_name == name:
-                yield url
+        # Cache URL's.
+        list(self._list_urls())
+        
+        return self._urls_by_file_name.get(name, [])
     
     
     def _list_urls(self):
         if self._cached_downloads_stat:
-            for download in self._downloads:
-                yield download
+            for url in self._urls:
+                yield url
         else:
             downloads_stat = self.get_data_type(u'FDMDownloadsStat')
             downloads_stat.BuildListOfDownloads(True, True)
@@ -122,8 +124,11 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
                 download = downloads_stat.Download(i)
                 file_name = download.DownloadText(self.FILE_NAME_DOWNLOAD_TEXT)
                 
-                self._downloads.add((download.Url, file_name))
-                yield (download.Url, file_name)
+                self._urls.add(download.Url)
+                self._urls_by_file_name.setdefault(file_name, set())
+                self._urls_by_file_name[file_name].add(download.Url)
+                
+                yield download.Url
             
             self._cached_downloads_stat = True
 
