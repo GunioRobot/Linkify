@@ -32,8 +32,7 @@ def externals(*modules):
     
     if len(missing) > 0:
         import sys
-        error = [u'Module not found: %s' % module for module in sorted(missing)]
-        sys.exit(u'\n'.join(error))
+        sys.exit(u'Modules not found: ' + u', '.join(sorted(missing)))
 
 
 def fix(object = None, version = None, name = None, call = False):
