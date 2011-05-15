@@ -9,12 +9,12 @@
 # TODO: Handle HTTP connection errors (off-line, not found, etc).
 # TODO: Create MS Win32 system service?
 # TODO: Cut the first few seconds of the IGN Daily Fix videos.
-# TODO: Choose the highest available InterfaceLIFT wallpaper resolution that 
+# TODO: Choose the highest available InterfaceLIFT wallpaper resolution that
 #       most closely matches the running computer's.
 
 
 # Standard library:
-import abc, datetime, os.path, re, sys, time, urllib2, urlparse
+import abc, datetime, os.path, re, sys, time, Tkinter, urllib2, urlparse
 
 # External modules:
 import feedparser, lxml.html, PIL.Image
@@ -245,8 +245,9 @@ class InterfaceLiftFeed (Feed, Downloader):
             image.save(file_path, quality = 85)
     
     
-    def list_urls(self, resolution = u'1600x900'):
-        code = self._get_session_code()
+    def list_urls(self):
+        code = self._session_code
+        resolution = self._screen_resolution
         
         for entry in self.get_feed().entries:
             html = lxml.html.fromstring(entry.summary)
@@ -261,7 +262,14 @@ class InterfaceLiftFeed (Feed, Downloader):
             yield urlparse.urlunparse(wallpaper_url)
     
     
-    def _get_session_code(self):
+    @property
+    def _screen_resolution(self):
+        tk = Tkinter.Tk()
+        return u'%dx%d' % (tk.winfo_screenwidth(), tk.winfo_screenheight())
+    
+    
+    @property
+    def _session_code(self):
         script_url = u'http://' + self.HOST_NAME + u'/inc_NEW/jscript.js'
         script = self.open_url(script_url).read()
         
