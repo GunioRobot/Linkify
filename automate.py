@@ -13,11 +13,13 @@
 #       most closely matches the running computer's.
 
 
+# Internal modules:
+import defaults
+
 # Standard library:
 import abc, datetime, os.path, re, sys, time, Tkinter, urllib2, urlparse
 
-# External modules:
-import feedparser, lxml.html, PIL.Image
+defaults.externals(u'feedparser', u'lxml.html', u'PIL.Image')
 
 
 class Downloader (object):
