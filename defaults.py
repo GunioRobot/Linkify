@@ -3,14 +3,13 @@
 
 
 __author__ = u'Marcio Faustino'
-__doc__ = u'Sets some defaults and important fixes.'
+__doc__ = u'Sets some defaults and implements important fixes.'
 __version__ = u'2011-05-15'
 
 
 # TODO: Implement constants?
 # TODO: Export Infinity constant?
 # TODO: Enable UTF-8 source text automatically?
-# TODO: Automate namespace cleanup to allow? from defaults import *
 
 
 # Standard library:
@@ -18,7 +17,11 @@ import ConfigParser, email.feedparser, email.parser, imaplib
 
 
 def fix(object = None, version = None, name = None, call = False):
-    # Namespace cleanup:
+    if not hasattr(fix, u'symbols'):
+        setattr(fix, u'symbols', set())
+    
+    
+    # Namespace cleanup.
     if object is None and version is None:
         symbols = globals()
         
@@ -37,12 +40,13 @@ def fix(object = None, version = None, name = None, call = False):
                 value.__name__ if name is None else name,
                 value(object) if call else value)
         
-        if not hasattr(fix, u'symbols'):
-            setattr(fix, u'symbols', set())
-        
         fix.symbols.add(value.__name__)
         return value
     
+    
+    import inspect
+    symbol = inspect.getmodule(object).__name__.split(u'.', 1).pop(0)
+    fix.symbols.add(symbol)
     
     return apply_fix
 
@@ -154,4 +158,3 @@ class RemoveDoublePercents (object):
 
 
 fix()
-del ConfigParser, email, imaplib
