@@ -110,7 +110,7 @@ else
     [ -n "$CD" ] && cd "$(cygpath "$CD")" && unset CD
 fi
 
-if _have git && [ -z "$CYGWIN_ENV" ]; then
+if [ -z "$CYGWIN_ENV" ] && _have git; then
     _git_branch() {
         local path=$(git symbolic-ref HEAD 2> /dev/null)
         [ -n "$path" ] && echo -e "\033[00m:\033[0;33m${path#refs/heads/}"
