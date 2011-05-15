@@ -280,24 +280,16 @@ class InterfaceLiftFeed (Feed, Downloader):
 
 dl_manager = FreeDownloadManager()
 sources = [IgnDailyFixFeed(), InterfaceLiftFeed(), HdTrailersFeed()]
-argv = sys.argv[1:]
 
-if len(argv) == 1:
-    [file_path] = argv
+while True:
+    print datetime.datetime.now().isoformat(), u'Starting...'
     
-    for url in dl_manager.get_urls_by_file_name(os.path.basename(file_path)):
-        for source in sources:
-            source.download_finished(url, file_path)
-else:
-    while True:
-        print datetime.datetime.now().isoformat(), u'Starting...'
-        
-        for source in sources:
-            for url in source.list_urls():
-                if not dl_manager.has_url(source, url):
-                    print u'>', url
-                    dl_manager.download_url(url)
-                    time.sleep(1)
-        
-        print datetime.datetime.now().isoformat(), u'Pausing...'
-        time.sleep(5 * 60)
+    for source in sources:
+        for url in source.list_urls():
+            if not dl_manager.has_url(source, url):
+                print u'>', url
+                dl_manager.download_url(url)
+                time.sleep(1)
+    
+    print datetime.datetime.now().isoformat(), u'Pausing...'
+    time.sleep(5 * 60)
