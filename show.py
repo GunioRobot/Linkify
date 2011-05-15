@@ -45,21 +45,21 @@ class InputType (argparse.FileType):
                 except IOError:
                     pass
                 
-                if path == 'self':
+                if path == u'self':
                     return file(__main__.__file__)
             
             raise error
     
     
     def _open_perldoc(self, module):
-        identifier = r'^[A-Z_a-z][0-9A-Z_a-z]*(?:::[0-9A-Z_a-z]+)*$'
-        error = 'Not a Perl module: '
+        identifier = ur'^[A-Z_a-z][0-9A-Z_a-z]*(?:::[0-9A-Z_a-z]+)*$'
+        error = u'Not a Perl module: '
         
         if not re.match(identifier, module):
             raise IOError(error + module)
         
         try:
-            process = subprocess.Popen(['perldoc', module],
+            process = subprocess.Popen([u'perldoc', module],
                 stderr = file(os.devnull),
                 stdout = subprocess.PIPE)
         except OSError as error:
@@ -75,64 +75,64 @@ class InputType (argparse.FileType):
     
     
     def _open_url(self, url):
-        url_like = (urlparse.urlparse(url).scheme == '') \
-            and re.match(r'^www\.', url, re.IGNORECASE)
+        url_like = (urlparse.urlparse(url).scheme == u'') \
+            and re.match(ur'^www\.', url, re.IGNORECASE)
         
         if url_like:
-            url = 'http://' + url
+            url = u'http://' + url
         
         try:
             stream = urllib2.urlopen(url)
         except ValueError as error:
-            if re.match(r'^unknown url type:', str(error), re.IGNORECASE):
+            if re.match(ur'^unknown url type:', str(error), re.IGNORECASE):
                 raise urllib2.URLError(str(error))
             else:
                 raise
         
-        setattr(stream, 'name', url)
+        setattr(stream, u'name', url)
         return stream
 
 
 class Arguments (argparse.ArgumentParser):
     def __init__(self):
         super(Arguments, self).__init__(
-            description = 'Automatic pager with syntax highlighting and diff\
+            description = u'Automatic pager with syntax highlighting and diff\
                 support.',
-            epilog = '''An input can be '-' for standard input (default), a\
+            epilog = u'''An input can be '-' for standard input (default), a\
                 file path, an URL, a Perl module name, or 'self' for the\
                 source code.''')
         
         arguments = [
-            ('-f', {
-                'dest': 'follow',
-                'action': 'store_true',
-                'default': False,
-                'help': 'follow file like tail',
+            (u'-f', {
+                u'dest': u'follow',
+                u'action': u'store_true',
+                u'default': False,
+                u'help': u'follow file like tail',
             }),
-            ('-L', {
-                'dest': 'label',
-                'action': 'append',
-                'help': 'diff labels',
+            (u'-L', {
+                u'dest': u'label',
+                u'action': u'append',
+                u'help': u'diff labels',
             }),
-            ('-u', {
-                'action': 'store_const',
-                'const': None,
-                'help': 'ignored for diff compatibility',
+            (u'-u', {
+                u'action': u'store_const',
+                u'const': None,
+                u'help': u'ignored for diff compatibility',
             }),
-            ('file', {
-                'nargs': '?',
-                'default': sys.stdin,
-                'type': InputType(),
-                'help': 'input to display',
+            (u'file', {
+                u'nargs': u'?',
+                u'default': sys.stdin,
+                u'type': InputType(),
+                u'help': u'input to display',
             }),
-            ('file2', {
-                'nargs': '?',
-                'type': InputType(),
-                'help': 'input to compare with, and switch to diff mode',
+            (u'file2', {
+                u'nargs': u'?',
+                u'type': InputType(),
+                u'help': u'input to compare with, and switch to diff mode',
             }),
-            ('git', {
-                'nargs': '*',
-                'help': 'assume git diff arguments, and switch to diff mode',
+            (u'git', {
+                u'nargs': u'*',
+                u'help': u'assume git diff arguments, and switch to diff mode',
             }),
         ]
         
@@ -166,8 +166,8 @@ class Arguments (argparse.ArgumentParser):
             args.label = [self._resolve_path(f) for f in args.file, args.file2]
         
         args.file = StringIO.StringIO(
-            'diff -u %s\n' % ' '.join(args.label)
-            + ''.join(difflib.unified_diff(
+            u'diff -u %s\n' % u' '.join(args.label)
+            + u''.join(difflib.unified_diff(
                 args.file.readlines(), args.file2.readlines(), *args.label)))
     
     
@@ -252,7 +252,7 @@ class ProgramReader (StreamReader):
 
 class DiffReader (ProgramReader):
     def __init__(self):
-        super(DiffReader, self).__init__(['kompare', '-o', '-'],
+        super(DiffReader, self).__init__([u'kompare', u'-o', u'-'],
             stderr = file(os.path.devnull))
     
     
@@ -263,7 +263,7 @@ class DiffReader (ProgramReader):
 
 class TextReader (ProgramReader):
     def __init__(self):
-        super(TextReader, self).__init__(['less'])
+        super(TextReader, self).__init__([u'less'])
 
 
 class Pager (Reader):
@@ -291,7 +291,7 @@ class Pager (Reader):
                     raise
                 
                 text = self._buffer.encode() + line
-                (detected, encoding) = (True, chardet.detect(text)['encoding'])
+                (detected, encoding) = (True, chardet.detect(text)[u'encoding'])
                 yield self._clean_input(line.decode(encoding))
         
         if self._follow:
@@ -368,8 +368,8 @@ class Pager (Reader):
     def _guess_terminal_height(self):
         def ioctl_GWINSZ(fd):
             import fcntl, termios
-            size_data = fcntl.ioctl(fd, termios.TIOCGWINSZ, '1234')
-            (rows, columns) = struct.unpack('hh', size_data)
+            size_data = fcntl.ioctl(fd, termios.TIOCGWINSZ, u'1234')
+            (rows, columns) = struct.unpack(u'hh', size_data)
             return rows
         
         for stream in sys.stdin, sys.stdout, sys.stderr:
@@ -388,7 +388,7 @@ class Pager (Reader):
             pass
         
         try:
-            stty = subprocess.Popen(['stty', 'size'], stdout = subprocess.PIPE)
+            stty = subprocess.Popen([u'stty', u'size'], stdout = subprocess.PIPE)
             (rows, columns) = stty.stdout.read().split()
             return rows
         except:
@@ -423,7 +423,7 @@ class Pager (Reader):
             self._lexer = pygments.lexers.TextLexer()
         else:
             self._lexer = lexer
-            self._lexer.add_filter('codetagify')
+            self._lexer.add_filter(u'codetagify')
         
         self._formatter = pygments.formatters.Terminal256Formatter()
 
