@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
+# TODO: Query download sources in parallel.
 # TODO: Hide terminal while executing download finished events.
 # TODO: Use command line options to choose the download manager, execute
 #       download finished events, etc.
@@ -298,7 +299,7 @@ class InterfaceLiftFeed (Feed, Downloader):
         return re.findall(u'"/wallpaper/([^/]+)/"', script).pop(0)
 
 
-class ScrewAttackVideos (DownloadSource, Downloader):
+class ScrewAttackEpisodes (DownloadSource, Downloader):
     BASE_URL = u'http://www.gametrailers.com'
     BASE_VIDEO_URL = u'http://trailers-ak.gametrailers.com/gt_vault/3000/'
     
@@ -325,7 +326,7 @@ sources = [source() for source in [
     IgnDailyFixFeed,
     InterfaceLiftFeed,
     HdTrailersFeed,
-    ScrewAttackVideos,
+    ScrewAttackEpisodes,
 ]]
 
 while True:
