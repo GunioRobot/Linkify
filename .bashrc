@@ -6,9 +6,8 @@ case "$-" in
 ;;
 esac
 
-[ "$(uname -o)" = 'Cygwin' ] && export CYGWIN_ENV=x
-
-if [ -n "$CYGWIN_ENV" -a -n "$WINDIR" -a -z "$INTERACTIVE" ]; then
+# Cygwin helper.
+if [ -n "$WINDIR" -a -z "$INTERACTIVE" ]; then
     ls > /dev/null 2>&1
     
     if [ "$?" = '127' ]; then
@@ -72,6 +71,8 @@ _have dircolors && eval "$($NAME -b)"
 _have kwrite nano && export EDITOR=$LOCATION
 _have setxkbmap && $NAME -option 'nbsp:none'    # Allow e.g. AltGr + Space.
 
+[ "$(uname -o)" = 'Cygwin' ] && export CYGWIN_ENV=x
+
 if [ -z "$CYGWIN_ENV" ]; then
     _have lesspipe && eval "$($NAME)"
     _have ksshaskpass ssh-askpass && export SSH_ASKPASS=$LOCATION
@@ -106,8 +107,10 @@ else
     export TEMP=/tmp
     export TMP='$TMP'
     
-    bind '"\e[2;2~": paste-from-clipboard'      # Shift + Insert
-    [ -n "$CD" ] && cd "$(cygpath "$CD")" && unset CD
+    if [ -n "$INTERACTIVE" ]; then
+        bind '"\e[2;2~": paste-from-clipboard'  # Shift + Insert
+        [ -n "$CD" ] && cd "$(cygpath "$CD")" && unset CD
+    fi
 fi
 
 if [ -z "$CYGWIN_ENV" ] && _have git; then
@@ -128,8 +131,8 @@ unset ps1_user_host
 nano_rc=~/.nanorc
 
 if [ -n "$HAVE_NANO" -a -n "$INTERACTIVE" -a ! -e "$nano_rc" ]; then
-    ls -1 /usr/share/nano/*.nanorc | sed -e 's/(.+)/include "\1"/' > $nano_rc
-    cat << 'TEXT' >> $nano_rc
+    ls -1 /usr/share/nano/*.nanorc | sed -e 's/(.+)/include "\1"/' > "$nano_rc"
+    cat << 'TEXT' >> "$nano_rc"
 set autoindent
 set const
 set morespace
@@ -151,7 +154,7 @@ if [ -z "$KDE_FULL_SESSION" -o ! -e "$kde_start_ssh_add" ]; then
     ssh-add < /dev/null 2> /dev/null
     
     if  [ -n "$KDE_FULL_SESSION" ]; then
-        cat << 'TEXT' > $kde_start_ssh_add && chmod +x $kde_start_ssh_add
+        cat << 'TEXT' > "$kde_start_ssh_add" && chmod +x "$kde_start_ssh_add"
 #!/bin/sh
 ssh-add
 TEXT
@@ -159,7 +162,7 @@ TEXT
 fi
 
 unset kde_start_ssh_add
-show_py="$(dirname "$(readlink $BASH_SOURCE)" 2> /dev/null)/show.py"
+show_py="$(dirname "$(readlink "$BASH_SOURCE")" 2> /dev/null)/show.py"
 
 if [ -e "$show_py" ]; then
     alias s=\"$show_py\"
@@ -174,8 +177,8 @@ fi
 
 unset show_py
 
-for bashrc_child in $(ls -1 $BASH_SOURCE.* 2> /dev/null); do
-    source $bashrc_child
+for bashrc_child in $(ls -1 "$BASH_SOURCE".* 2> /dev/null); do
+    source "$bashrc_child"
     [ -n "$INTERACTIVE" ] && echo "* Loaded: $bashrc_child"
 done
 
