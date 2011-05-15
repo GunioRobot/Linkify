@@ -6,8 +6,9 @@ case "$-" in
 ;;
 esac
 
-# Cygwin helper.
-if [ -n "$WINDIR" -a -z "$INTERACTIVE" ]; then
+[ "$(uname -o)" = 'Cygwin' ] && export CYGWIN_ENV=x
+
+if [ -n "$CYGWIN_ENV" -a -n "$WINDIR" -a -z "$INTERACTIVE" ]; then
     ls > /dev/null 2>&1
     
     if [ "$?" = '127' ]; then
@@ -93,7 +94,7 @@ echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"
 
 ps1_user_host='\u@\h'
 
-if [ "$(uname -o)" = 'Cygwin' ]; then
+if [ -n "$CYGWIN_ENV" ]; then
     export CYGWIN=nodosfilewarning
     export TERM=cygwin
     export TEMP=/tmp
