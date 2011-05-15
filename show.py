@@ -104,35 +104,35 @@ class Arguments (argparse.ArgumentParser):
         
         arguments = [
             (u'-f', {
-                u'dest': u'follow',
-                u'action': u'store_true',
-                u'default': False,
-                u'help': u'follow file like tail',
+                'dest': u'follow',
+                'action': u'store_true',
+                'default': False,
+                'help': u'follow file like tail',
             }),
             (u'-L', {
-                u'dest': u'label',
-                u'action': u'append',
-                u'help': u'diff labels',
+                'dest': u'label',
+                'action': u'append',
+                'help': u'diff labels',
             }),
             (u'-u', {
-                u'action': u'store_const',
-                u'const': None,
-                u'help': u'ignored for diff compatibility',
+                'action': u'store_const',
+                'const': None,
+                'help': u'ignored for diff compatibility',
             }),
             (u'file', {
-                u'nargs': u'?',
-                u'default': sys.stdin,
-                u'type': InputType(),
-                u'help': u'input to display',
+                'nargs': u'?',
+                'default': sys.stdin,
+                'type': InputType(),
+                'help': u'input to display',
             }),
             (u'file2', {
-                u'nargs': u'?',
-                u'type': InputType(),
-                u'help': u'input to compare with, and switch to diff mode',
+                'nargs': u'?',
+                'type': InputType(),
+                'help': u'input to compare with, and switch to diff mode',
             }),
             (u'git', {
-                u'nargs': u'*',
-                u'help': u'assume git diff arguments, and switch to diff mode',
+                'nargs': u'*',
+                'help': u'assume git diff arguments, and switch to diff mode',
             }),
         ]
         
