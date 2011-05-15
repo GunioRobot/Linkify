@@ -17,7 +17,18 @@ __version__ = u'2011-05-15'
 import ConfigParser, email.feedparser, email.parser, imaplib
 
 
-def fix(object, version, name = None, call = False):
+def fix(object = None, version = None, name = None, call = False):
+    # Namespace cleanup:
+    if object is None and version is None:
+        symbols = globals()
+        
+        for symbol in fix.symbols:
+            del symbols[symbol]
+        
+        fix.symbols.clear()
+        return
+    
+    
     def apply_fix(value):
         import sys
         
@@ -26,7 +37,12 @@ def fix(object, version, name = None, call = False):
                 value.__name__ if name is None else name,
                 value(object) if call else value)
         
+        if not hasattr(fix, u'symbols'):
+            setattr(fix, u'symbols', set())
+        
+        fix.symbols.add(value.__name__)
         return value
+    
     
     return apply_fix
 
@@ -137,6 +153,5 @@ class RemoveDoublePercents (object):
         return value.replace(u'%%', u'')
 
 
+fix()
 del ConfigParser, email, imaplib
-del fix
-del parsestr, CheckBadPercent, IMAP4_SSL, RemoveDoublePercents
