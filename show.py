@@ -55,19 +55,22 @@ class InputType (argparse.FileType):
     def _open_perldoc(self, module):
         identifier = ur'^[A-Z_a-z][0-9A-Z_a-z]*(?:::[0-9A-Z_a-z]+)*$'
         error = u'Not a Perl module: '
+        process = None
         
         if not re.match(identifier, module):
             raise IOError(error + module)
         
-        try:
-            process = subprocess.Popen([u'perldoc', module],
-                stderr = file(os.devnull),
-                stdout = subprocess.PIPE)
-        except OSError as error:
-            if error.errno == errno.ENOENT:
-                raise IOError(str(error))
-            else:
-                raise
+        for implementation in [u'perldoc', u'perldoc.bat']:
+            try:
+                process = subprocess.Popen([implementation, module],
+                    stderr = file(os.devnull),
+                    stdout = subprocess.PIPE)
+            except OSError as error:
+                if error.errno != errno.ENOENT:
+                    raise
+        
+        if process is None:
+            raise IOError(str(OSError(errno.ENOENT)))
         
         if process.wait() == 0:
             return process.stdout
