@@ -16,6 +16,7 @@
 # TODO: Show the Perl module names when doing a diff.
 # TODO: Take line width and wrapping into account when paging.
 # TODO: Profile speed execution.
+# TODO: Implement color support in on Windows.
 
 
 # Internal modules:
@@ -263,7 +264,17 @@ class DiffReader (ProgramReader):
 
 class TextReader (ProgramReader):
     def __init__(self):
-        super(TextReader, self).__init__([u'less'])
+        try:
+            super(TextReader, self).__init__([u'less'])
+            self._accepts_color = True
+        except NotImplementedError:
+            super(TextReader, self).__init__([u'cmd', u'/C', u'more'])
+            self._accepts_color = False
+    
+    
+    @property
+    def accepts_color(self):
+        return self._accepts_color
 
 
 class Pager (Reader):
