@@ -17,19 +17,21 @@ __version__ = u'2011-05-15'
 import ConfigParser, email.feedparser, email.parser, imaplib
 
 
-def fix(object, name, version, call = False):
+def fix(object, version, name = None, call = False):
     def apply_fix(value):
         import sys
         
         if sys.hexversion <= version:
-            setattr(object, name, value(object) if call else value)
+            setattr(object,
+                value.__name__ if name is None else name,
+                value(object) if call else value)
         
         return value
     
     return apply_fix
 
 
-@fix(email.parser.Parser, u'parsestr', 0x20604F0)
+@fix(email.parser.Parser, 0x20604F0)
 def parsestr(self, text, headersonly = False):
     '''
     Optimized version - decreases memory usage and speeds up parsing.
@@ -45,7 +47,7 @@ def parsestr(self, text, headersonly = False):
     return feed_parser.close()
 
 
-@fix(ConfigParser.SafeConfigParser, u'_badpercent_re', 0x20602F0, True)
+@fix(ConfigParser.SafeConfigParser, 0x20602F0, u'_badpercent_re', call = True)
 class CheckBadPercent (object):
     '''
     Fixes the regular expression that checks for invalid percent interpolations.
@@ -71,8 +73,8 @@ class CheckBadPercent (object):
         return False if index < 0 else CheckBadPercent.Result(index)
 
 
-@fix(imaplib, u'IMAP4_SSL', 0x20604F0)
-class Imap4Ssl (imaplib.IMAP4_SSL):
+@fix(imaplib, 0x20604F0)
+class IMAP4_SSL (imaplib.IMAP4_SSL):
     '''
     Fixes memory errors that sometimes occur when downloading a large e-mail
     message and adds a check for the SSL socket read function return value.
@@ -115,7 +117,7 @@ class Imap4Ssl (imaplib.IMAP4_SSL):
             data_buffer.close()
 
 
-@fix(ConfigParser.SafeConfigParser, u'_interpvar_re', 0x20602F0, True)
+@fix(ConfigParser.SafeConfigParser, 0x20602F0, u'_interpvar_re', call = True)
 class RemoveDoublePercents (object):
     '''
     Fixes the regular expression that removes double percent signs.
@@ -137,4 +139,4 @@ class RemoveDoublePercents (object):
 
 del ConfigParser, email, imaplib
 del fix
-del parsestr, CheckBadPercent, Imap4Ssl, RemoveDoublePercents
+del parsestr, CheckBadPercent, IMAP4_SSL, RemoveDoublePercents
