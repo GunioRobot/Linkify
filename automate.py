@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 
-# TODO: Use logging.
 # TODO: Hide terminal while executing download finished events.
 # TODO: Use command line options to choose the download manager, execute
 #       download finished events, etc.
@@ -17,9 +16,25 @@
 import defaults
 
 # Standard library:
-import abc, datetime, os.path, re, time, Tkinter, urllib2, urlparse
+import abc, logging, os.path, re, time, Tkinter, urllib2, urlparse
 
 defaults.externals(u'feedparser', u'lxml.html', u'PIL.Image')
+
+
+class Logger (object):
+    def __init__(self):
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter(
+            u'[%(levelname)s] [%(asctime)s] %(message)s'))
+        
+        self._logger = logging.getLogger(self.__class__.__name__)
+        self._logger.addHandler(handler)
+        self._logger.setLevel(logging.DEBUG)
+    
+    
+    @property
+    def logger(self):
+        return self._logger
 
 
 class Downloader (object):
@@ -32,7 +47,7 @@ class Downloader (object):
         return urllib2.build_opener().open(request)
 
 
-class DownloadManager (object):
+class DownloadManager (Logger):
     __metaclass__ = abc.ABCMeta
     
     
@@ -91,16 +106,21 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
         wg_url_receiver.ForceSilentEx = True
         
         wg_url_receiver.AddDownload()
+        self.logger.debug(u'Download: %s', url)
         self._urls.add(url)
     
     
     def has_url(self, source, url):
         redirected_url = self.open_url(url).geturl()
         
+        if redirected_url != url:
+            self.logger.debug(u'Redirect: %s', redirected_url)
+        
         for old_url in self._list_urls():
             if source.compare_urls(url, redirected_url, old_url) == 0:
                 return True
         
+        self.logger.debug(u'Download not found: %s', url)
         return False
     
     
@@ -282,14 +302,15 @@ dl_manager = FreeDownloadManager()
 sources = [IgnDailyFixFeed(), InterfaceLiftFeed(), HdTrailersFeed()]
 
 while True:
-    print datetime.datetime.now().isoformat(), u'Starting...'
+    dl_manager.logger.info(u'Resuming...')
     
     for source in sources:
         for url in source.list_urls():
-            if not dl_manager.has_url(source, url):
-                print u'>', url
-                dl_manager.download_url(url)
-                time.sleep(1)
+            try:
+                if not dl_manager.has_url(source, url):
+                    dl_manager.download_url(url)
+            except urllib2.HTTPError as error:
+                dl_manager.logger.error(u'%s: %s', error, url)
     
-    print datetime.datetime.now().isoformat(), u'Pausing...'
+    dl_manager.logger.info(u'Suspending...')
     time.sleep(5 * 60)
