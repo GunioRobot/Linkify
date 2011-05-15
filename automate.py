@@ -278,10 +278,10 @@ class InterfaceLiftFeed (Feed, Downloader):
 
 dl_manager = FreeDownloadManager()
 sources = [IgnDailyFixFeed(), InterfaceLiftFeed(), HdTrailersFeed()]
-sys.argv.pop(0)
+argv = sys.argv[1:]
 
-if len(sys.argv) == 1:
-    [file_path] = sys.argv
+if len(argv) == 1:
+    [file_path] = argv
     
     for url in dl_manager.get_urls_by_file_name(os.path.basename(file_path)):
         for source in sources:
