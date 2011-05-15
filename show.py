@@ -18,34 +18,15 @@
 # TODO: Profile speed execution.
 
 
+# Internal modules:
+import defaults
+
 # Standard library:
 import abc, codecs, difflib, errno, locale, os, re, StringIO, struct, \
     subprocess, sys, time, urllib2, urlparse
 
-
-dependencies = {
-    ('argparse',): 'http://code.google.com/p/argparse/',
-    ('chardet',): 'http://chardet.feedparser.org/',
-    ('pygments', 'pygments.formatters', 'pygments.lexers'):
-        'http://pygments.org/',
-}
-
-import __main__
-missing = []
-
-for modules in dependencies:
-    try:
-        for module in modules:
-            setattr(__main__, module, __import__(module))
-    except ImportError:
-        missing.append(modules)
-
-if len(missing) > 0:
-    for modules in missing:
-        print >> sys.stderr, '%s is required: %s' \
-            % (modules[0], dependencies[modules])
-    
-    sys.exit(1)
+defaults.externals(
+    u'argparse', u'chardet', u'pygments.formatters', u'pygments.lexers')
 
 
 class InputType (argparse.FileType):
