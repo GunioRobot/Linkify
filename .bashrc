@@ -66,16 +66,16 @@ alias dir='l -lA'
 alias sed='sed -r'
 alias grep='grep -E --color=auto'
 
-# Allow non-breakable spaces (e.g. AltGr + Space).
-_have setxkbmap && $NAME -option 'nbsp:none'
-
-_have dircolors && eval "$($NAME -b)"
-_have lesspipe && eval "$($NAME)"
-
 _have ack-grep ack && alias f="$NAME --sort-files"
 _have cpan && alias cpan="PERL_AUTOINSTALL=1 PERL_MM_USE_DEFAULT=1 FTP_PASSIVE=1 $NAME"
-_have ksshaskpass ssh-askpass && export SSH_ASKPASS=$LOCATION
+_have dircolors && eval "$($NAME -b)"
 _have kwrite nano && export EDITOR=$LOCATION
+_have setxkbmap && $NAME -option 'nbsp:none'    # Allow e.g. AltGr + Space.
+
+if [ -z "$CYGWIN_ENV" ]; then
+    _have lesspipe && eval "$($NAME)"
+    _have ksshaskpass ssh-askpass && export SSH_ASKPASS=$LOCATION
+fi
 
 export ACK_COLOR_FILENAME='dark blue'
 export DISPLAY=:0.0
