@@ -7,10 +7,6 @@ __doc__ = u'Sets some defaults and implements important fixes.'
 __version__ = u'2011-05-15'
 
 
-# TODO: Implement constants?
-# TODO: Enable UTF-8 source text automatically?
-
-
 # Standard library:
 import ConfigParser, email.feedparser, email.parser, imaplib
 
@@ -158,5 +154,5 @@ class RemoveDoublePercents (object):
 
 fix()
 
-NaN = float('NaN')
-Infinity = float('Infinity')
+NaN = float(u'NaN')
+Infinity = float(u'Infinity')
