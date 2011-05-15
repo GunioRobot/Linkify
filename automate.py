@@ -17,7 +17,7 @@
 import defaults
 
 # Standard library:
-import abc, datetime, os.path, re, sys, time, Tkinter, urllib2, urlparse
+import abc, datetime, os.path, re, time, Tkinter, urllib2, urlparse
 
 defaults.externals(u'feedparser', u'lxml.html', u'PIL.Image')
 
