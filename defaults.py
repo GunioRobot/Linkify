@@ -8,7 +8,6 @@ __version__ = u'2011-05-15'
 
 
 # TODO: Implement constants?
-# TODO: Export Infinity constant?
 # TODO: Enable UTF-8 source text automatically?
 
 
@@ -158,3 +157,6 @@ class RemoveDoublePercents (object):
 
 
 fix()
+
+NaN = float('NaN')
+Infinity = float('Infinity')
