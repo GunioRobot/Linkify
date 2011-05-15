@@ -97,8 +97,8 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
     def has_url(self, source, url):
         redirected_url = self.open_url(url).geturl()
         
-        for past_url in self._list_urls():
-            if source.equal_urls(url, redirected_url, past_url):
+        for old_url in self._list_urls():
+            if source.compare_urls(url, redirected_url, old_url) == 0:
                 return True
         
         return False
@@ -137,8 +137,8 @@ class DownloadSource (object):
     __metaclass__ = abc.ABCMeta
     
     
-    def equal_urls(self, original, redirected, past):
-        return redirected == past
+    def compare_urls(self, original, redirected, old):
+        return cmp(redirected, old)
     
     
     def download_finished(self, url, file_path):
@@ -177,13 +177,14 @@ class HdTrailersFeed (Feed):
             u'http://feeds.hd-trailers.net/hd-trailers/blog')
     
     
-    def equal_urls(self, original, redirected, past):
+    def compare_urls(self, original, redirected, old):
         if urlparse.urlparse(original).hostname == u'playlist.yahoo.com':
-            return urlparse.urlparse(redirected).path \
-                == urlparse.urlparse(past).path
+            return cmp(
+                urlparse.urlparse(redirected).path,
+                urlparse.urlparse(old).path)
         
-        return super(HdTrailersFeed, self).equal_urls(
-            original, redirected, past)
+        return super(HdTrailersFeed, self).compare_urls(
+            original, redirected, old)
     
     
     def list_urls(self):
@@ -236,14 +237,14 @@ class InterfaceLiftFeed (Feed, Downloader):
             u'http://' + self.HOST_NAME + u'/wallpaper/rss/index.xml')
     
     
+    def compare_urls(self, original, redirected, old):
+        return cmp(os.path.basename(redirected), os.path.basename(old))
+    
+    
     def download_finished(self, url, file_path):
         if urlparse.urlparse(url).hostname == self.HOST_NAME:
             image = PIL.Image.open(file_path)
             image.save(file_path, quality = 85)
-    
-    
-    def equal_urls(self, original, redirected, past):
-        return os.path.basename(redirected) == os.path.basename(past)
     
     
     def list_urls(self, resolution = u'1600x900'):
