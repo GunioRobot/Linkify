@@ -14,7 +14,7 @@ __version__ = u'2011-05-15'
 
 
 # Standard library:
-import ConfigParser, cStringIO, email.feedparser, email.parser, imaplib
+import ConfigParser, email.feedparser, email.parser, imaplib
 
 
 def fix(object, name, version, call = False):
@@ -81,6 +81,7 @@ class Imap4Ssl (imaplib.IMAP4_SSL):
     
     
     def read(self, size):
+        import cStringIO
         data_buffer = cStringIO.StringIO()
         size_read = 0
         
@@ -100,6 +101,7 @@ class Imap4Ssl (imaplib.IMAP4_SSL):
     
     
     def readline(self):
+        import cStringIO
         data_buffer = cStringIO.StringIO()
         char = u'\0'
         
@@ -133,6 +135,6 @@ class RemoveDoublePercents (object):
         return value.replace(u'%%', u'')
 
 
-del ConfigParser, cStringIO, email, imaplib
+del ConfigParser, email, imaplib
 del fix
 del parsestr, CheckBadPercent, Imap4Ssl, RemoveDoublePercents
