@@ -9,8 +9,6 @@
 # TODO: Handle HTTP connection errors (off-line, not found, etc).
 # TODO: Create MS Win32 system service?
 # TODO: Cut the first few seconds of the IGN Daily Fix videos.
-# TODO: When compressing InterfaceLIFT wallpapers, do a copy and then overwrite
-#       to prevent corruption while saving.
 # TODO: Choose the highest available InterfaceLIFT wallpaper resolution that 
 #       most closely matches the running computer's.
 
