@@ -90,11 +90,12 @@ export LS_COLORS=$(echo $LS_COLORS | sed -e 's/=01;/=30;/g')
 ps1_user_host='\u@\h'
 
 if [ -z "$CYGWIN_ENV" ]; then
-    # Save history session to file and set xterm title.
-    export PROMPT_COMMAND='
-        history -a
-        echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"'
-    export TERM=xterm
+    if [ "$TERM" = "xterm" ]; then
+        # Save history session to file and set terminal title.
+        export PROMPT_COMMAND='
+            history -a
+            echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"'
+    fi
     
     if [ "$(stat --format=%i /)" != '2' ]; then
         ps1_user_host="($ps1_user_host)"
