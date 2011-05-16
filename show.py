@@ -16,7 +16,7 @@
 # TODO: Show the Perl module names when doing a diff.
 # TODO: Take line width and wrapping into account when paging.
 # TODO: Profile speed execution.
-# TODO: Implement color support in on Windows.
+# TODO: Implement color support on Windows.
 
 
 # Internal modules:
