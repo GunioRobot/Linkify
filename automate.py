@@ -26,7 +26,7 @@ class Logger (object):
     def __init__(self):
         handler = logging.StreamHandler()
         handler.setFormatter(logging.Formatter(
-            u'[%(levelname)s] [%(asctime)s] %(message)s'))
+            u'[%(levelname)s] [%(asctime)s] [%(name)s] %(message)s'))
         
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.addHandler(handler)
