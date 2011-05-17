@@ -62,6 +62,14 @@ class Url (object):
         return unipath.Path(self._components.path)
     
     
+    @path.setter
+    def path(self, path):
+        components = self._components._asdict()
+        components[u'path'] = path
+        
+        self._components = urlparse.ParseResult(**components)
+    
+    
     def __str__(self):
         return unicode(self).encode(u'UTF-8')
     
@@ -220,7 +228,7 @@ class IgnDailyFix (Feed):
     def list_urls(self):
         for entry in self.get_feed().entries:
             if entry.title.startswith(self._TITLE + u':'):
-                yield entry.enclosures[0].href
+                yield Url(entry.enclosures[0].href)
     
     
     @property
@@ -248,7 +256,7 @@ class HdTrailers (Feed):
             if len(resolution) == 0:
                 return 0
         
-        return int(resolution.pop(0))
+        return int(resolution[0])
     
     
     def __init__(self):
@@ -271,7 +279,7 @@ class HdTrailers (Feed):
             if re.search(ur'\b(teaser|trailer)\b', entry.title, re.IGNORECASE):
                 if hasattr(entry, u'enclosures'):
                     urls = [enclosure.href for enclosure in entry.enclosures]
-                    yield self._find_highest_resolution(urls)
+                    yield Url(self._find_highest_resolution(urls))
                 else:
                     # Parse HTML to find movie links.
                     html = lxml.html.fromstring(entry.content[0].value)
@@ -284,7 +292,7 @@ class HdTrailers (Feed):
                             url = link.attrib[u'href']
                             highest_resolution = resolution
                     
-                    yield url
+                    yield Url(url)
     
     
     @property
@@ -318,20 +326,19 @@ class InterfaceLift (Feed):
     
     
     def list_urls(self):
-        code = self._session_code
+        session_code = self._session_code
         resolution = self._get_screen_resolution()
         
         for entry in self.get_feed().entries:
-            html = lxml.html.fromstring(entry.summary)
-            image_url = html.xpath(u'//img/@src')[0].replace(u'previews', code)
-            wallpaper_url = urlparse.urlparse(image_url)
+            url = Url(lxml.html.fromstring(entry.summary).xpath(u'//img/@src')[0])
+            (path, ext) = os.path.splitext(url.path)
             
-            # Build the final wallpaper URL for the intended resolution.
-            (path, ext) = os.path.splitext(wallpaper_url.path)
-            wallpaper_url = list(wallpaper_url)
-            wallpaper_url[2] = path + u'_' + resolution + ext
+            url.path = re.sub(
+                u'(?<=/)previews(?=/)',
+                session_code,
+                path + u'_' + resolution + ext)
             
-            yield urlparse.urlunparse(wallpaper_url)
+            yield url
     
     
     @property
@@ -342,7 +349,7 @@ class InterfaceLift (Feed):
     @property
     def _session_code(self):
         script = Url(u'http://' + self._HOST_NAME + u'/inc_NEW/jscript.js')
-        return re.findall(u'"/wallpaper/([^/]+)/"', script.open().read()).pop(0)
+        return re.findall(u'"/wallpaper/([^/]+)/"', script.open().read())[0]
 
 
 class ScrewAttack (DownloadSource):
@@ -360,10 +367,10 @@ class ScrewAttack (DownloadSource):
         
         for video_url in [Url(self._BASE_URL + path) for path in videos]:
             video_html = lxml.html.fromstring(video_url.open().read())
-            url = Url(video_html.xpath(self._QUICKTIME_VIDEO_HREF).pop(0))
+            url = Url(video_html.xpath(self._QUICKTIME_VIDEO_HREF)[0])
             
-            yield u'http://trailers-ak.gametrailers.com/gt_vault/3000/' \
-                + url.path.components()[-1]
+            yield Url(u'http://trailers-ak.gametrailers.com/gt_vault/3000/' \
+                + url.path.components()[-1])
     
     
     @property
