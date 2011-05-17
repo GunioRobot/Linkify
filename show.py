@@ -20,14 +20,13 @@
 
 
 # Internal modules:
-import defaults
+from defaults import *
 
 # Standard library:
-import abc, codecs, difflib, errno, inspect, locale, os, re, StringIO, struct, \
+import codecs, difflib, errno, inspect, locale, os, re, StringIO, struct, \
     subprocess, sys, time, urllib2, urlparse
 
-defaults.externals(
-    u'argparse', u'chardet', u'pygments.formatters', u'pygments.lexers')
+externals(u'argparse', u'chardet', u'pygments.formatters', u'pygments.lexers')
 
 
 class InputType (argparse.FileType):
@@ -194,7 +193,7 @@ class Arguments (argparse.ArgumentParser):
 
 
 class Reader (object):
-    __metaclass__ = abc.ABCMeta
+    __metaclass__ = ABCMeta
     ansi_color_escape = ur'\x1B\[(\d+(;\d+)*)?m'
     
     
@@ -203,12 +202,12 @@ class Reader (object):
         return True
     
     
-    @abc.abstractmethod
+    @abstractmethod
     def close(self):
         pass
     
     
-    @abc.abstractmethod
+    @abstractmethod
     def write(self, text):
         pass
 
@@ -416,7 +415,7 @@ class Pager (Reader):
     @property
     def _max_inline_lines(self):
         if not sys.stdout.isatty():
-            return defaults.Infinity
+            return Infinity
         
         height = self._guess_terminal_height()
         return int(round(height * self._inline_lines_threshold))

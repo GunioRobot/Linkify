@@ -14,12 +14,12 @@
 
 
 # Internal modules:
-import defaults
+from defaults import *
 
 # Standard library:
-import abc, logging, os.path, re, time, Tkinter, urllib2, urlparse
+import logging, os.path, re, time, Tkinter, urllib2, urlparse
 
-defaults.externals(u'feedparser', u'lxml.html', u'PIL.Image')
+externals(u'feedparser', u'lxml.html', u'PIL.Image')
 
 
 class Logger (object):
@@ -49,15 +49,15 @@ class Downloader (object):
 
 
 class DownloadManager (Logger):
-    __metaclass__ = abc.ABCMeta
+    __metaclass__ = ABCMeta
     
     
-    @abc.abstractmethod
+    @abstractmethod
     def download_url(self, url):
         pass
     
     
-    @abc.abstractmethod
+    @abstractmethod
     def has_url(self, source, url):
         pass
 
@@ -157,7 +157,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
 
 
 class DownloadSource (object):
-    __metaclass__ = abc.ABCMeta
+    __metaclass__ = ABCMeta
     
     
     def compare_urls(self, original, redirected, old):
@@ -168,12 +168,12 @@ class DownloadSource (object):
         pass
     
     
-    @abc.abstractmethod
+    @abstractmethod
     def list_urls(self):
         pass
     
     
-    @abc.abstractproperty
+    @abstractproperty
     def name(self):
         pass
 
@@ -364,7 +364,7 @@ while True:
     dl_manager.logger.info(u'Starting...')
     
     for source in sources:
-        dl_manager.logger.info(u'Checking source %s...', source.name)
+        dl_manager.logger.info(u'Checking source: %s', source.name)
         
         for url in source.list_urls():
             try:
