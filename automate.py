@@ -187,12 +187,12 @@ class Feed (DownloadSource):
         return feedparser.parse(self._url)
 
 
-class IgnDailyFixFeed (Feed):
+class IgnDailyFix (Feed):
     _TITLE = u'IGN Daily Fix'
     
     
     def __init__(self):
-        super(IgnDailyFixFeed, self).__init__(
+        super(IgnDailyFix, self).__init__(
             u'http://feeds.ign.com/ignfeeds/podcasts/games/')
     
     
@@ -207,9 +207,9 @@ class IgnDailyFixFeed (Feed):
         return self._TITLE
 
 
-class HdTrailersFeed (Feed):
+class HdTrailers (Feed):
     def __init__(self):
-        super(HdTrailersFeed, self).__init__(
+        super(HdTrailers, self).__init__(
             u'http://feeds.hd-trailers.net/hd-trailers/blog')
     
     
@@ -219,7 +219,7 @@ class HdTrailersFeed (Feed):
                 urlparse.urlparse(redirected).path,
                 urlparse.urlparse(old).path)
         
-        return super(HdTrailersFeed, self).compare_urls(
+        return super(HdTrailers, self).compare_urls(
             original, redirected, old)
     
     
@@ -269,12 +269,12 @@ class HdTrailersFeed (Feed):
         return int(resolution.pop(0))
 
 
-class InterfaceLiftFeed (Feed, Downloader):
+class InterfaceLift (Feed, Downloader):
     _HOST_NAME = u'interfacelift.com'
     
     
     def __init__(self):
-        super(InterfaceLiftFeed, self).__init__(
+        super(InterfaceLift, self).__init__(
             u'http://' + self._HOST_NAME + u'/wallpaper/rss/index.xml')
     
     
@@ -354,9 +354,9 @@ class ScrewAttack (DownloadSource, Downloader):
 
 dl_manager = FreeDownloadManager()
 sources = [source() for source in [
-    IgnDailyFixFeed,
-    InterfaceLiftFeed,
-    HdTrailersFeed,
+    IgnDailyFix,
+    InterfaceLift,
+    HdTrailers,
     ScrewAttack,
 ]]
 
