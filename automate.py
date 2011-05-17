@@ -19,7 +19,7 @@ from defaults import *
 # Standard library:
 import logging, os.path, re, time, Tkinter, urllib2, urlparse
 
-externals(u'feedparser', u'lxml.html', u'PIL.Image')
+externals(u'feedparser', u'lxml.html', u'PIL.Image', u'unipath')
 
 
 class Logger (object):
@@ -38,14 +38,36 @@ class Logger (object):
         return self._logger
 
 
-class Downloader (object):
-    def open_url(self, url):
-        request = urllib2.Request(url)
+class Url (object):
+    def __init__(self, url):
+        self._components = urlparse.urlparse(url)
+    
+    
+    @property
+    def host_name(self):
+        return self._components.hostname
+    
+    
+    def open(self):
+        request = urllib2.Request(unicode(self))
         
-        if urlparse.urlparse(url).hostname == u'trailers.apple.com':
+        if self.host_name == u'trailers.apple.com':
             request.add_header(u'User-Agent', u'QuickTime')
         
         return urllib2.build_opener().open(request)
+    
+    
+    @property
+    def path(self):
+        return unipath.Path(self._components.path)
+    
+    
+    def __str__(self):
+        return unicode(self).encode(u'UTF-8')
+    
+    
+    def __unicode__(self):
+        return urlparse.urlunparse(self._components)
 
 
 class DownloadManager (Logger):
@@ -83,14 +105,13 @@ class MsWindowsTypeLibrary (object):
             % (name, self._path))
 
 
-class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
+class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary):
     FILE_NAME_DOWNLOAD_TEXT = 0
     
     
     def __init__(self):
         DownloadManager.__init__(self)
         MsWindowsTypeLibrary.__init__(self, u'fdm.tlb')
-        Downloader.__init__(self)
         
         self._cached_downloads_stat = False
         self._urls = set()
@@ -110,11 +131,11 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
         self.logger.debug(u'Download: %s', url)
         
         self._urls.add(url)
-        self._urls.add(self.open_url(url).geturl())
+        self._urls.add(Url(url).open().geturl())
     
     
     def has_url(self, source, url):
-        redirected_url = self.open_url(url).geturl()
+        redirected_url = Url(url).open().geturl()
         
         for old_url in self._list_urls():
             if source.compare_urls(url, redirected_url, old_url) == 0:
@@ -271,7 +292,7 @@ class HdTrailers (Feed):
         return u'HD Trailers'
 
 
-class InterfaceLift (Feed, Downloader):
+class InterfaceLift (Feed):
     _HOST_NAME = u'interfacelift.com'
     
     
@@ -320,33 +341,29 @@ class InterfaceLift (Feed, Downloader):
     
     @property
     def _session_code(self):
-        script_url = u'http://' + self._HOST_NAME + u'/inc_NEW/jscript.js'
-        script = self.open_url(script_url).read()
-        
-        return re.findall(u'"/wallpaper/([^/]+)/"', script).pop(0)
+        script = Url(u'http://' + self._HOST_NAME + u'/inc_NEW/jscript.js')
+        return re.findall(u'"/wallpaper/([^/]+)/"', script.open().read()).pop(0)
 
 
-class ScrewAttack (DownloadSource, Downloader):
+class ScrewAttack (DownloadSource):
     _BASE_URL = u'http://www.gametrailers.com'
+    _QUICKTIME_VIDEO_HREF = u'//span[@class="Downloads"]' \
+        + u'/a[starts-with(text(), "Quicktime")]/@href'
     
     
     def list_urls(self):
         main_url = self._BASE_URL + u'/screwattack'
-        main_html = lxml.html.fromstring(self.open_url(main_url).read())
+        main_html = lxml.html.fromstring(Url(main_url).open().read())
         
         videos = main_html.xpath(
             u'//div[@id="nerd"]//a[@class="gamepage_content_row_title"]/@href')
         
-        for video in [self._BASE_URL + path for path in videos]:
-            html = lxml.html.fromstring(self.open_url(video).read())
+        for video_url in [Url(self._BASE_URL + path) for path in videos]:
+            video_html = lxml.html.fromstring(video_url.open().read())
+            url = Url(video_html.xpath(self._QUICKTIME_VIDEO_HREF).pop(0))
             
-            download_area = u'//span[@class="Downloads"]'
-            quicktime_links = u'a[starts-with(text(), "Quicktime")]/@href'
-            
-            url = html.xpath(download_area + u'/' + quicktime_links).pop(0)
-            base_url = u'http://trailers-ak.gametrailers.com/gt_vault/3000/'
-            
-            yield base_url + os.path.basename(url)
+            yield u'http://trailers-ak.gametrailers.com/gt_vault/3000/' \
+                + url.path.components()[-1]
     
     
     @property
@@ -373,7 +390,7 @@ while True:
                 if not dl_manager.has_url(source, url):
                     dl_manager.download_url(url)
             except urllib2.HTTPError as error:
-                dl_manager.logger.error(u'%s: %s', str(error), url)
+                dl_manager.logger.error(u'%s: %s', unicode(error), url)
     
     dl_manager.logger.info(u'Pausing...')
     time.sleep(5 * 60)
