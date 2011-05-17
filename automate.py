@@ -171,6 +171,11 @@ class DownloadSource (object):
     @abc.abstractmethod
     def list_urls(self):
         pass
+    
+    
+    @abc.abstractproperty
+    def name(self):
+        pass
 
 
 class Feed (DownloadSource):
@@ -183,6 +188,9 @@ class Feed (DownloadSource):
 
 
 class IgnDailyFixFeed (Feed):
+    _TITLE = u'IGN Daily Fix'
+    
+    
     def __init__(self):
         super(IgnDailyFixFeed, self).__init__(
             u'http://feeds.ign.com/ignfeeds/podcasts/games/')
@@ -190,8 +198,13 @@ class IgnDailyFixFeed (Feed):
     
     def list_urls(self):
         for entry in self.get_feed().entries:
-            if entry.title.startswith(u'IGN Daily Fix:'):
+            if entry.title.startswith(self._TITLE + u':'):
                 yield entry.enclosures[0].href
+    
+    
+    @property
+    def name(self):
+        return self._TITLE
 
 
 class HdTrailersFeed (Feed):
@@ -231,6 +244,11 @@ class HdTrailersFeed (Feed):
                     yield url
     
     
+    @property
+    def name(self):
+        return u'HD Trailers'
+    
+    
     def _find_highest_resolution(self, strings):
         strings.sort(
             lambda x, y: cmp(self._get_resolution(x), self._get_resolution(y)),
@@ -252,12 +270,12 @@ class HdTrailersFeed (Feed):
 
 
 class InterfaceLiftFeed (Feed, Downloader):
-    HOST_NAME = u'interfacelift.com'
+    _HOST_NAME = u'interfacelift.com'
     
     
     def __init__(self):
         super(InterfaceLiftFeed, self).__init__(
-            u'http://' + self.HOST_NAME + u'/wallpaper/rss/index.xml')
+            u'http://' + self._HOST_NAME + u'/wallpaper/rss/index.xml')
     
     
     def compare_urls(self, original, redirected, old):
@@ -265,7 +283,7 @@ class InterfaceLiftFeed (Feed, Downloader):
     
     
     def download_finished(self, url, file_path):
-        if urlparse.urlparse(url).hostname == self.HOST_NAME:
+        if urlparse.urlparse(url).hostname == self._HOST_NAME:
             image = PIL.Image.open(file_path)
             image.save(file_path, quality = 85)
     
@@ -288,6 +306,11 @@ class InterfaceLiftFeed (Feed, Downloader):
     
     
     @property
+    def name(self):
+        return u'InterfaceLIFT'
+    
+    
+    @property
     def _screen_resolution(self):
         tk = Tkinter.Tk()
         return u'%dx%d' % (tk.winfo_screenwidth(), tk.winfo_screenheight())
@@ -295,32 +318,38 @@ class InterfaceLiftFeed (Feed, Downloader):
     
     @property
     def _session_code(self):
-        script_url = u'http://' + self.HOST_NAME + u'/inc_NEW/jscript.js'
+        script_url = u'http://' + self._HOST_NAME + u'/inc_NEW/jscript.js'
         script = self.open_url(script_url).read()
         
         return re.findall(u'"/wallpaper/([^/]+)/"', script).pop(0)
 
 
-class ScrewAttackEpisodes (DownloadSource, Downloader):
-    BASE_URL = u'http://www.gametrailers.com'
-    BASE_VIDEO_URL = u'http://trailers-ak.gametrailers.com/gt_vault/3000/'
+class ScrewAttack (DownloadSource, Downloader):
+    _BASE_URL = u'http://www.gametrailers.com'
     
     
     def list_urls(self):
-        main_url = self.BASE_URL + u'/screwattack'
+        main_url = self._BASE_URL + u'/screwattack'
         main_html = lxml.html.fromstring(self.open_url(main_url).read())
         
         videos = main_html.xpath(
             u'//div[@id="nerd"]//a[@class="gamepage_content_row_title"]/@href')
         
-        for video in [self.BASE_URL + path for path in videos]:
+        for video in [self._BASE_URL + path for path in videos]:
             html = lxml.html.fromstring(self.open_url(video).read())
             
             download_area = u'//span[@class="Downloads"]'
             quicktime_links = u'a[starts-with(text(), "Quicktime")]/@href'
             
             url = html.xpath(download_area + u'/' + quicktime_links).pop(0)
-            yield self.BASE_VIDEO_URL + os.path.basename(url)
+            base_url = u'http://trailers-ak.gametrailers.com/gt_vault/3000/'
+            
+            yield base_url + os.path.basename(url)
+    
+    
+    @property
+    def name(self):
+        return u'ScrewAttack'
 
 
 dl_manager = FreeDownloadManager()
@@ -328,13 +357,15 @@ sources = [source() for source in [
     IgnDailyFixFeed,
     InterfaceLiftFeed,
     HdTrailersFeed,
-    ScrewAttackEpisodes,
+    ScrewAttack,
 ]]
 
 while True:
     dl_manager.logger.info(u'Starting...')
     
     for source in sources:
+        dl_manager.logger.info(u'Checking source %s...', source.name)
+        
         for url in source.list_urls():
             try:
                 if not dl_manager.has_url(source, url):
