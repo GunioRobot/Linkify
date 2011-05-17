@@ -45,6 +45,16 @@ class Logger (object):
         return self._logger
 
 
+class Path (unipath.Path):
+    @property
+    def components(self):
+        return super(Path, self).components()
+    
+    
+    def split_ext(self):
+        return os.path.splitext(self)
+
+
 class Url (object):
     def __init__(self, url):
         self._components = urlparse.urlparse(url)
@@ -66,7 +76,7 @@ class Url (object):
     
     @property
     def path(self):
-        return unipath.Path(self._components.path)
+        return Path(self._components.path)
     
     
     @path.setter
@@ -352,7 +362,7 @@ class InterfaceLift (Feed):
         
         for entry in self.get_feed().entries:
             url = Url(lxml.html.fromstring(entry.summary).xpath(u'//img/@src')[0])
-            (path, ext) = os.path.splitext(url.path)
+            (path, ext) = url.path.split_ext()
             
             url.path = re.sub(
                 u'(?<=/)previews(?=/)',
@@ -393,7 +403,7 @@ class ScrewAttack (DownloadSource, Logger):
             url = Url(video_html.xpath(self._QUICKTIME_VIDEO_HREF)[0])
             
             yield Url(u'http://trailers-ak.gametrailers.com/gt_vault/3000/' \
-                + url.path.components()[-1])
+                + url.path.components[-1])
     
     
     @property
