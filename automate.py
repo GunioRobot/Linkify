@@ -106,7 +106,7 @@ class MsWindowsTypeLibrary (object):
 
 
 class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary):
-    FILE_NAME_DOWNLOAD_TEXT = 0
+    _FILE_NAME_DOWNLOAD_TEXT = 0
     
     
     def __init__(self):
@@ -166,7 +166,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary):
             # Don't start at the oldest URL to find newer downloads faster.
             for i in reversed(xrange(0, downloads_stat.DownloadCount)):
                 download = downloads_stat.Download(i)
-                file_name = download.DownloadText(self.FILE_NAME_DOWNLOAD_TEXT)
+                file_name = download.DownloadText(self._FILE_NAME_DOWNLOAD_TEXT)
                 
                 self._urls.add(download.Url)
                 self._urls_by_file_name.setdefault(file_name, set())
