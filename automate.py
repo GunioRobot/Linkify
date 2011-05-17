@@ -116,12 +116,12 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
     def has_url(self, source, url):
         redirected_url = self.open_url(url).geturl()
         
-        if redirected_url != url:
-            self.logger.debug(u'Redirect: %s', redirected_url)
-        
         for old_url in self._list_urls():
             if source.compare_urls(url, redirected_url, old_url) == 0:
                 return True
+        
+        if redirected_url != url:
+            self.logger.debug(u'Redirect: %s', redirected_url)
         
         self.logger.debug(u'Download not found: %s', url)
         return False
