@@ -18,6 +18,7 @@
 # TODO: Create sources for GameTrailers videos (and Pop-Fiction, GT Countdown).
 # TODO: Create source for TV shows and automatic backup of watched episodes.
 # TODO: Use the movie name for HD-Trailers files when required, e.g. Yahoo.
+# TODO: Refresh FDM's cached list of URL's every X seconds?
 
 
 # Internal modules:
