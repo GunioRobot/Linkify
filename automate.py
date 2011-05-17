@@ -208,6 +208,28 @@ class IgnDailyFix (Feed):
 
 
 class HdTrailers (Feed):
+    @classmethod
+    def _find_highest_resolution(cls, strings):
+        strings.sort(
+            lambda x, y: cmp(cls._get_resolution(x), cls._get_resolution(y)),
+            reverse = True)
+        
+        return strings[0]
+    
+    
+    @classmethod
+    def _get_resolution(cls, text):
+        resolution = re.findall(ur'(\d{3,4})p', text)
+        
+        if len(resolution) == 0:
+            resolution = re.findall(ur'(480|720|1080)', text)
+            
+            if len(resolution) == 0:
+                return 0
+        
+        return int(resolution.pop(0))
+    
+    
     def __init__(self):
         super(HdTrailers, self).__init__(
             u'http://feeds.hd-trailers.net/hd-trailers/blog')
@@ -247,30 +269,16 @@ class HdTrailers (Feed):
     @property
     def name(self):
         return u'HD Trailers'
-    
-    
-    def _find_highest_resolution(self, strings):
-        strings.sort(
-            lambda x, y: cmp(self._get_resolution(x), self._get_resolution(y)),
-            reverse = True)
-        
-        return strings[0]
-    
-    
-    def _get_resolution(self, text):
-        resolution = re.findall(ur'(\d{3,4})p', text)
-        
-        if len(resolution) == 0:
-            resolution = re.findall(ur'(480|720|1080)', text)
-            
-            if len(resolution) == 0:
-                return 0
-        
-        return int(resolution.pop(0))
 
 
 class InterfaceLift (Feed, Downloader):
     _HOST_NAME = u'interfacelift.com'
+    
+    
+    @classmethod
+    def _get_screen_resolution(cls):
+        tk = Tkinter.Tk()
+        return u'%dx%d' % (tk.winfo_screenwidth(), tk.winfo_screenheight())
     
     
     def __init__(self):
@@ -290,7 +298,7 @@ class InterfaceLift (Feed, Downloader):
     
     def list_urls(self):
         code = self._session_code
-        resolution = self._screen_resolution
+        resolution = self._get_screen_resolution()
         
         for entry in self.get_feed().entries:
             html = lxml.html.fromstring(entry.summary)
@@ -308,12 +316,6 @@ class InterfaceLift (Feed, Downloader):
     @property
     def name(self):
         return u'InterfaceLIFT'
-    
-    
-    @property
-    def _screen_resolution(self):
-        tk = Tkinter.Tk()
-        return u'%dx%d' % (tk.winfo_screenwidth(), tk.winfo_screenheight())
     
     
     @property
