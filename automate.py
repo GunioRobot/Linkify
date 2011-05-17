@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 
+# TODO: Compare URL's using the URL class? Include redirection and comparison
+#       specific logic in sub-classes?
 # TODO: Query download sources in parallel.
 # TODO: Hide terminal while executing download finished events.
 # TODO: Use command line options to choose the download manager, execute
@@ -70,6 +72,22 @@ class Url (object):
         self._components = urlparse.ParseResult(**components)
     
     
+    def resolve(self):
+        connection = self.open()
+        url = Url(connection.geturl())
+        
+        connection.close()
+        return url
+    
+    
+    def __cmp__(self, url):
+        return cmp(unicode(self), unicode(url))
+    
+    
+    def __hash__(self):
+        return hash(unicode(self))
+    
+    
     def __str__(self):
         return unicode(self).encode(u'UTF-8')
     
@@ -129,28 +147,28 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary):
     def download_url(self, url):
         wg_url_receiver = self.get_data_type(u'WGUrlReceiver')
         
-        wg_url_receiver.Url = url
+        wg_url_receiver.Url = unicode(url)
         wg_url_receiver.DisableURLExistsCheck = False
         wg_url_receiver.ForceDownloadAutoStart = True
         wg_url_receiver.ForceSilent = True
         wg_url_receiver.ForceSilentEx = True
         
         wg_url_receiver.AddDownload()
-        self.logger.debug(u'Download: %s', url)
-        
         self._urls.add(url)
-        self._urls.add(Url(url).open().geturl())
+        self._urls.add(url.resolve())
+        
+        self.logger.debug(u'Download: %s', url)
     
     
     def has_url(self, source, url):
-        redirected_url = Url(url).open().geturl()
+        resolved_url = url.resolve()
         
         for old_url in self._list_urls():
-            if source.compare_urls(url, redirected_url, old_url) == 0:
+            if source.compare_urls(url, resolved_url, old_url) == 0:
                 return True
         
-        if redirected_url != url:
-            self.logger.debug(u'Redirect: %s', redirected_url)
+        if resolved_url != url:
+            self.logger.debug(u'Redirect: %s', resolved_url)
         
         self.logger.debug(u'Download not found: %s', url)
         return False
@@ -175,12 +193,13 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary):
             for i in reversed(xrange(0, downloads_stat.DownloadCount)):
                 download = downloads_stat.Download(i)
                 file_name = download.DownloadText(self._FILE_NAME_DOWNLOAD_TEXT)
+                url = Url(download.Url)
                 
-                self._urls.add(download.Url)
+                self._urls.add(url)
                 self._urls_by_file_name.setdefault(file_name, set())
-                self._urls_by_file_name[file_name].add(download.Url)
+                self._urls_by_file_name[file_name].add(url)
                 
-                yield download.Url
+                yield url
             
             self._cached_downloads_stat = True
 
@@ -189,8 +208,8 @@ class DownloadSource (object):
     __metaclass__ = ABCMeta
     
     
-    def compare_urls(self, original, redirected, old):
-        return cmp(redirected, old)
+    def compare_urls(self, original, resolved, old):
+        return cmp(resolved, old)
     
     
     def download_finished(self, url, file_path):
@@ -264,14 +283,11 @@ class HdTrailers (Feed):
             u'http://feeds.hd-trailers.net/hd-trailers/blog')
     
     
-    def compare_urls(self, original, redirected, old):
-        if urlparse.urlparse(original).hostname == u'playlist.yahoo.com':
-            return cmp(
-                urlparse.urlparse(redirected).path,
-                urlparse.urlparse(old).path)
-        
-        return super(HdTrailers, self).compare_urls(
-            original, redirected, old)
+    def compare_urls(self, original, resolved, old):
+        if original.host_name == u'playlist.yahoo.com':
+            return cmp(resolved.path, old.path)
+        else:
+            return super(HdTrailers, self).compare_urls(original, resolved, old)
     
     
     def list_urls(self):
@@ -315,12 +331,12 @@ class InterfaceLift (Feed):
             u'http://' + self._HOST_NAME + u'/wallpaper/rss/index.xml')
     
     
-    def compare_urls(self, original, redirected, old):
-        return cmp(os.path.basename(redirected), os.path.basename(old))
+    def compare_urls(self, original, resolved, old):
+        return cmp(resolved.path.name, old.path.name)
     
     
     def download_finished(self, url, file_path):
-        if urlparse.urlparse(url).hostname == self._HOST_NAME:
+        if url.host_name == self._HOST_NAME:
             image = PIL.Image.open(file_path)
             image.save(file_path, quality = 85)
     
@@ -359,8 +375,8 @@ class ScrewAttack (DownloadSource):
     
     
     def list_urls(self):
-        main_url = self._BASE_URL + u'/screwattack'
-        main_html = lxml.html.fromstring(Url(main_url).open().read())
+        main_url = Url(self._BASE_URL + u'/screwattack')
+        main_html = lxml.html.fromstring(main_url.open().read())
         
         videos = main_html.xpath(
             u'//div[@id="nerd"]//a[@class="gamepage_content_row_title"]/@href')
