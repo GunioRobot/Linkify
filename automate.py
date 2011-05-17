@@ -108,7 +108,9 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Downloader):
         
         wg_url_receiver.AddDownload()
         self.logger.debug(u'Download: %s', url)
+        
         self._urls.add(url)
+        self._urls.add(self.open_url(url).geturl())
     
     
     def has_url(self, source, url):
