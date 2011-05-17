@@ -7,12 +7,17 @@
 # TODO: Query download sources in parallel.
 # TODO: Hide terminal while executing download finished events.
 # TODO: Use command line options to choose the download manager, execute
-#       download finished events, etc.
+#       download finished events (both automatically and manually via command
+#       line), etc.
 # TODO: Handle HTTP connection errors (off-line, not found, etc).
 # TODO: Create MS Win32 system service?
 # TODO: Cut the first few seconds of the IGN Daily Fix videos.
 # TODO: Choose the highest available InterfaceLIFT wallpaper resolution that
 #       most closely matches the running computer's.
+# TODO: Fix ScrewAttack 404 errors. Use default browser's cookies (e.g. Opera)?
+# TODO: Create sources for GameTrailers videos (and Pop-Fiction, GT Countdown).
+# TODO: Create source for TV shows and automatic backup of watched episodes.
+# TODO: Use the movie name for HD-Trailers files when required, e.g. Yahoo.
 
 
 # Internal modules:
@@ -368,7 +373,7 @@ class InterfaceLift (Feed):
         return re.findall(u'"/wallpaper/([^/]+)/"', script.open().read())[0]
 
 
-class ScrewAttack (DownloadSource):
+class ScrewAttack (DownloadSource, Logger):
     _BASE_URL = u'http://www.gametrailers.com'
     _QUICKTIME_VIDEO_HREF = u'//span[@class="Downloads"]' \
         + u'/a[starts-with(text(), "Quicktime")]/@href'
@@ -382,6 +387,8 @@ class ScrewAttack (DownloadSource):
             u'//div[@id="nerd"]//a[@class="gamepage_content_row_title"]/@href')
         
         for video_url in [Url(self._BASE_URL + path) for path in videos]:
+            self.logger.debug(u'Parse video page: %s', video_url)
+            
             video_html = lxml.html.fromstring(video_url.open().read())
             url = Url(video_html.xpath(self._QUICKTIME_VIDEO_HREF)[0])
             
@@ -413,7 +420,7 @@ while True:
                 if not dl_manager.has_url(source, url):
                     dl_manager.download_url(url)
             except urllib2.HTTPError as error:
-                dl_manager.logger.error(u'%s: %s', unicode(error), url)
+                dl_manager.logger.error(u'%s: %s', str(error), url)
     
     dl_manager.logger.info(u'Pausing...')
     time.sleep(5 * 60)
