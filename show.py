@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
+# TODO: Don't page if following a file? Toggle via command line option?
 # TODO: Support Git diff file add/removal.
 # TODO: Follow file automatically if it changes size?
 # TODO: Clean up exception handling.
