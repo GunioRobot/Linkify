@@ -186,7 +186,7 @@ done
 unset bashrc_child
 
 _in_git() {
-    git symbolic-ref HEAD > /dev/null 2>&1
+    git rev-parse --is-inside-work-tree > /dev/null 2>&1
 }
 
 _in_scm() {
