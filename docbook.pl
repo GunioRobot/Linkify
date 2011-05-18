@@ -10,7 +10,6 @@ use Archive::Extract ();
 use Crypt::SSLeay ();
 use Cwd ();
 use File::Path ();
-use File::Slurp ();
 use File::Spec ();
 use LWP::UserAgent ();
 use Path::Class ();
@@ -23,25 +22,25 @@ my $PUBLIC_ID = qr{-//OASIS//DTD \s+ DocBook \s+ XML \s+ V ([\d.]+)//EN}x;
 
 sub detect_version {
     my ($file) = @ARG;
-    my $doc = eval {XML::DOM::Parser->new()->parsefile($file)};
+    my $doc = eval {XML::DOM::Parser->new()->parsefile($file)} // return;
     
-    if ($EVAL_ERROR) {
-        my $xml = File::Slurp::read_file($file, scalar_ref => $true);
-        
-        if ($$xml =~ m/\bxmlns\s*=\s*"\Q$NAMESPACE\E"/) {
-            my @versions = ($$xml =~ m/<[^<>?]*\bversion\s*=\s*"([^"]+)"/g);
-            return pop @versions if @versions == 1;
-        }
-        elsif ($$xml =~ m/"$PUBLIC_ID"/) {
-            return $1;
-        }
-    }
-    else {
+    if (defined $doc) {
         if ($doc->getDocumentElement()->getAttribute('xmlns') eq $NAMESPACE) {
             return $doc->getDocumentElement()->getAttribute('version');
         }
         elsif (my $doctype = $doc->getDoctype()) {
             return $1 if $doctype->getPubId() =~ m/^$PUBLIC_ID$/;
+        }
+    }
+    else {
+        my $xml = $file->slurp();
+        
+        if ($xml =~ m/\b xmlns \s* = \s* " \Q$NAMESPACE\E "/x) {
+            my @versions = ($xml =~ m/<[^<>?]*\bversion\s*=\s*"([^"]+)"/g);
+            return pop @versions if @versions == 1;
+        }
+        elsif ($xml =~ m/"$PUBLIC_ID"/) {
+            return $1;
         }
     }
     
