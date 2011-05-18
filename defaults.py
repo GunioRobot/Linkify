@@ -4,11 +4,12 @@
 
 __author__ = u'Marcio Faustino'
 __doc__ = u'Sets some defaults and implements important fixes.'
-__version__ = u'2011-05-15'
+__version__ = u'2011-05-17'
 
 
 # Standard library:
 import ConfigParser, email.feedparser, email.parser, imaplib
+from abc import *
 
 
 def externals(*modules):
