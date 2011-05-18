@@ -210,7 +210,6 @@ sub publish {
     my $publish = sprintf 'publish_v%u', $version;
     my ($validate, $compile) = __PACKAGE__->can($publish)->($file);
     
-    print "\n";
     system @$validate;
     system @$compile;
     
