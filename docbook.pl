@@ -212,7 +212,6 @@ sub publish {
     
     print "\n";
     system @$validate;
-    print "\n";
     system @$compile;
     
     return;
