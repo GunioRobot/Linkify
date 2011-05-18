@@ -17,7 +17,7 @@ use XML::DOM::XPath ();
 
 
 my $NAMESPACE = 'http://docbook.org/ns/docbook';
-my $PUBLIC_ID = qr{-//OASIS//DTD \s+ DocBook \s+ XML \s+ V ([\d.]+)//EN}x;
+my $PUB_ID_VERSION = qr{-//OASIS//DTD \s+ DocBook \s+ XML \s+ V ([\d.]+)//EN}x;
 
 
 sub detect_version {
@@ -29,7 +29,7 @@ sub detect_version {
             return $version;
         }
         elsif (defined(my $doctype = $doc->getDoctype())) {
-            return $1 if $doctype->getPubId() =~ m/^$PUBLIC_ID$/;
+            return $1 if $doctype->getPubId() =~ m/^$PUB_ID_VERSION$/;
         }
     }
     else {
@@ -39,7 +39,7 @@ sub detect_version {
             my @versions = ($xml =~ m/<[^<>?]*\bversion\s*=\s*"([^"]+)"/g);
             return pop @versions if @versions == 1;
         }
-        elsif ($xml =~ m/"$PUBLIC_ID"/) {
+        elsif ($xml =~ m/"$PUB_ID_VERSION"/) {
             return $1;
         }
     }
