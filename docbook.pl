@@ -16,7 +16,6 @@ use Path::Class ();
 use XML::DOM::XPath ();
 
 
-my $NAMESPACE = 'http://docbook.org/ns/docbook';
 my $PUB_ID_VERSION = qr{-//OASIS//DTD \s+ DocBook \s+ XML \s+ V ([\d.]+)//EN}x;
 
 
@@ -35,9 +34,8 @@ sub detect_version {
     else {
         my $xml = $file->slurp();
         
-        if ($xml =~ m/\b xmlns \s* = \s* " \Q$NAMESPACE\E "/x) {
-            my @versions = ($xml =~ m/<[^<>?]*\bversion\s*=\s*"([^"]+)"/g);
-            return pop @versions if @versions == 1;
+        if ($xml =~ m/< [^<>?]* \b version \s* = \s* " ([^"]+) "/gx) {
+            return $1;
         }
         elsif ($xml =~ m/"$PUB_ID_VERSION"/) {
             return $1;
