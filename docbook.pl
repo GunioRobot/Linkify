@@ -219,8 +219,8 @@ sub publish {
 
 sub publish_v4 {
     my ($file) = @ARG;
-    my $validate = ['xmllint', '--noout', '--valid', $file];
-    my $compile = ['xmlto', 'html-nochunks', $file];
+    my $validate = [qw(xmllint --noout --valid), $file];
+    my $compile = [qw(xmlto html-nochunks), $file];
     
     return ($validate, $compile);
 }
@@ -242,8 +242,8 @@ sub publish_v5 {
     $out =~ s/\.xml$/.html/i;
     
     my ($msvs, $rng, $saxon, $xsl) = @data{qw(msvs rng saxon xsl)};
-    my $validate = ['java', '-jar', $msvs, "file://localhost/$rng", $file];
-    my $compile = ['java', '-jar', $saxon, "-s:$file", "-xsl:$xsl", "-o:$out"];
+    my $validate = [qw(java -jar), $msvs, "file://localhost/$rng", $file];
+    my $compile = [qw(java -jar), $saxon, "-s:$file", "-xsl:$xsl", "-o:$out"];
     
     return ($validate, $compile);
 }
