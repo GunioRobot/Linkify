@@ -13,6 +13,7 @@ use File::Path ();
 use File::Slurp ();
 use File::Spec ();
 use LWP::UserAgent ();
+use Path::Class ();
 use XML::DOM ();
 
 
@@ -180,12 +181,12 @@ sub main {
         $version = detect_version($file);
     }
     else {
-        foreach my $xml_file (grep m/\.xml$/i, ls()) {
+        foreach my $xml_file (grep m/\.xml$/i, Path::Class::dir()->children) {
             $version = detect_version($xml_file);
             
             if (defined $version) {
                 $file = $xml_file;
-                print "Automatic detection: DocBook v$version: $file\n";
+                print "Automatic detection of DocBook v$version: $file\n";
                 last;
             }
         }
@@ -197,7 +198,8 @@ sub main {
     else {
         print << 'USAGE';
 Compiles documents in DocBook format to HTML.
-Usage: [file]
+
+Options: [file]
 USAGE
     }
     
