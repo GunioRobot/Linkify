@@ -17,7 +17,7 @@ use XML::DOM ();
 
 
 my $NAMESPACE = 'http://docbook.org/ns/docbook';
-my $PUBLIC_ID = qr{-//OASIS//DTD\s+DocBook\s+XML\s+V([\d.]+)//EN};
+my $PUBLIC_ID = qr{-//OASIS//DTD \s+ DocBook \s+ XML \s+ V ([\d.]+)//EN}x;
 
 
 sub detect_version {
@@ -71,11 +71,9 @@ sub get_msvs {
     unless (-e $cache) {
         print "Downloading Multi-Schema Validator Schematron add-on...\n";
         
-        my $base_url = 'https://msv.dev.java.net';
-        my $list = "$base_url/servlets/ProjectDocumentList?folderID=101";
-        my ($leaf_url) = (download($list) =~ m/"([^"]+relames[^"]+\.zip)"/);
-        my $url = $base_url . $leaf_url;
-        my $file = File::Basename::fileparse($url);
+        my $base_url = 'http://java.net/downloads/msv/nightly/';
+        my ($file) = (download($base_url) =~ m/" (relames [^"]* \.zip) "/x);
+        my $url = $base_url . $file;
         
         File::Path::mkpath($cache);
         
