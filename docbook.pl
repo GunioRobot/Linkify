@@ -13,7 +13,7 @@ use File::Path ();
 use File::Spec ();
 use LWP::UserAgent ();
 use Path::Class ();
-use XML::DOM ();
+use XML::DOM::XPath ();
 
 
 my $NAMESPACE = 'http://docbook.org/ns/docbook';
@@ -25,10 +25,10 @@ sub detect_version {
     my $doc = eval {XML::DOM::Parser->new()->parsefile($file)} // return;
     
     if (defined $doc) {
-        if ($doc->getDocumentElement()->getAttribute('xmlns') eq $NAMESPACE) {
-            return $doc->getDocumentElement()->getAttribute('version');
+        if ((my $version = $doc->findvalue('/*/@version')) ne '') {
+            return $version;
         }
-        elsif (my $doctype = $doc->getDoctype()) {
+        elsif (defined(my $doctype = $doc->getDoctype())) {
             return $1 if $doctype->getPubId() =~ m/^$PUBLIC_ID$/;
         }
     }
