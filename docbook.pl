@@ -228,7 +228,7 @@ sub publish_v4 {
 
 sub publish_v5 {
     my ($file) = @ARG;
-    my $cache = File::Spec->catdir($ENV{USERPROFILE} || $ENV{HOME}, '.DocBook~');
+    my $cache = File::Spec->catdir($ENV{USERPROFILE} // $ENV{HOME}, '.DocBook~');
     my $out = $file;
     
     my %data = (
