@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
+# TODO: Check HTTP timeouts.
 # TODO: Compare URL's using the URL class? Include redirection and comparison
 #       specific logic in sub-classes?
 # TODO: Query download sources in parallel.
