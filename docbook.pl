@@ -229,19 +229,12 @@ sub publish_v4 {
 sub publish_v5 {
     my ($file) = @ARG;
     my $cache = File::Spec->catdir($ENV{USERPROFILE} // $ENV{HOME}, '.DocBook~');
+    my ($msvs, $rng, $saxon, $xsl) = map {$ARG->($cache)}
+        \&get_msvs, \&get_rng, \&get_saxon, \&get_xsl;
+    
     my $out = $file;
-    
-    my %data = (
-        msvs => \&get_msvs,
-        rng => \&get_rng,
-        saxon => \&get_saxon,
-        xsl => \&get_xsl,
-    );
-    
-    $data{$ARG} = $data{$ARG}->($cache) for sort keys %data;
     $out =~ s/\.xml$/.html/i;
     
-    my ($msvs, $rng, $saxon, $xsl) = @data{qw(msvs rng saxon xsl)};
     my $validate = [qw(java -jar), $msvs, "file://localhost/$rng", $file];
     my $compile = [qw(java -jar), $saxon, "-s:$file", "-xsl:$xsl", "-o:$out"];
     
