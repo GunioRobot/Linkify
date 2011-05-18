@@ -10,37 +10,36 @@ use Archive::Extract ();
 use Crypt::SSLeay ();
 use Cwd ();
 use File::Path ();
-use File::Slurp ();
 use File::Spec ();
 use LWP::UserAgent ();
-use XML::DOM ();
-
-
-my $NAMESPACE = 'http://docbook.org/ns/docbook';
-my $PUBLIC_ID = qr{-//OASIS//DTD\s+DocBook\s+XML\s+V([\d.]+)//EN};
+use Path::Class ();
+use XML::DOM::XPath ();
 
 
 sub detect_version {
     my ($file) = @ARG;
     my $doc = eval {XML::DOM::Parser->new()->parsefile($file)};
     
-    if ($EVAL_ERROR) {
-        my $xml = File::Slurp::read_file($file, scalar_ref => $true);
-        
-        if ($$xml =~ m/\bxmlns\s*=\s*"\Q$NAMESPACE\E"/) {
-            my @versions = ($$xml =~ m/<[^<>?]*\bversion\s*=\s*"([^"]+)"/g);
-            return pop @versions if @versions == 1;
+    const my $PUB_ID_VERSION = qr{
+        -//OASIS//DTD \s+ DocBook \s+ XML \s+ V ([\d.]+)//EN
+    }x;
+    
+    if (defined $doc) {
+        if ((my $version = $doc->findvalue('/*/@version')) ne '') {
+            return $version;
         }
-        elsif ($$xml =~ m/"$PUBLIC_ID"/) {
-            return $1;
+        elsif (defined(my $doctype = $doc->getDoctype())) {
+            return $1 if $doctype->getPubId() =~ m/^$PUB_ID_VERSION$/;
         }
     }
     else {
-        if ($doc->getDocumentElement()->getAttribute('xmlns') eq $NAMESPACE) {
-            return $doc->getDocumentElement()->getAttribute('version');
+        my $xml = $file->slurp();
+        
+        if ($xml =~ m/< [^<>?]* \b version \s* = \s* " ([^"]+) "/gx) {
+            return $1;
         }
-        elsif (my $doctype = $doc->getDoctype()) {
-            return $1 if $doctype->getPubId() =~ m/^$PUBLIC_ID$/;
+        elsif ($xml =~ m/"$PUB_ID_VERSION"/) {
+            return $1;
         }
     }
     
@@ -71,11 +70,9 @@ sub get_msvs {
     unless (-e $cache) {
         print "Downloading Multi-Schema Validator Schematron add-on...\n";
         
-        my $base_url = 'https://msv.dev.java.net';
-        my $list = "$base_url/servlets/ProjectDocumentList?folderID=101";
-        my ($leaf_url) = (download($list) =~ m/"([^"]+relames[^"]+\.zip)"/);
-        my $url = $base_url . $leaf_url;
-        my $file = File::Basename::fileparse($url);
+        my $base_url = 'http://java.net/downloads/msv/nightly/';
+        my ($file) = (download($base_url) =~ m/" (relames [^"]* \.zip) "/x);
+        my $url = $base_url . $file;
         
         File::Path::mkpath($cache);
         
@@ -182,12 +179,12 @@ sub main {
         $version = detect_version($file);
     }
     else {
-        foreach my $xml_file (grep m/\.xml$/i, ls()) {
+        foreach my $xml_file (grep m/\.xml$/i, Path::Class::dir()->children) {
             $version = detect_version($xml_file);
             
             if (defined $version) {
                 $file = $xml_file;
-                print "Automatic detection: DocBook v$version: $file\n";
+                print "Automatic detection of DocBook v$version: $file\n";
                 last;
             }
         }
@@ -199,7 +196,8 @@ sub main {
     else {
         print << 'USAGE';
 Compiles documents in DocBook format to HTML.
-Usage: [file]
+
+Options: [file]
 USAGE
     }
     
@@ -212,9 +210,7 @@ sub publish {
     my $publish = sprintf 'publish_v%u', $version;
     my ($validate, $compile) = __PACKAGE__->can($publish)->($file);
     
-    print "\n";
     system @$validate;
-    print "\n";
     system @$compile;
     
     return;
@@ -223,8 +219,8 @@ sub publish {
 
 sub publish_v4 {
     my ($file) = @ARG;
-    my $validate = ['xmllint', '--noout', '--valid', $file];
-    my $compile = ['xmlto', 'html-nochunks', $file];
+    my $validate = [qw(xmllint --noout --valid), $file];
+    my $compile = [qw(xmlto html-nochunks), $file];
     
     return ($validate, $compile);
 }
@@ -232,22 +228,15 @@ sub publish_v4 {
 
 sub publish_v5 {
     my ($file) = @ARG;
-    my $cache = File::Spec->catdir($ENV{USERPROFILE} || $ENV{HOME}, '.DocBook~');
+    my $cache = File::Spec->catdir($ENV{USERPROFILE} // $ENV{HOME}, '.DocBook~');
+    my ($msvs, $rng, $saxon, $xsl) = map {$ARG->($cache)}
+        \&get_msvs, \&get_rng, \&get_saxon, \&get_xsl;
+    
     my $out = $file;
-    
-    my %data = (
-        msvs => \&get_msvs,
-        rng => \&get_rng,
-        saxon => \&get_saxon,
-        xsl => \&get_xsl,
-    );
-    
-    $data{$ARG} = $data{$ARG}->($cache) for sort keys %data;
     $out =~ s/\.xml$/.html/i;
     
-    my ($msvs, $rng, $saxon, $xsl) = @data{qw(msvs rng saxon xsl)};
-    my $validate = ['java', '-jar', $msvs, "file://localhost/$rng", $file];
-    my $compile = ['java', '-jar', $saxon, "-s:$file", "-xsl:$xsl", "-o:$out"];
+    my $validate = [qw(java -jar), $msvs, "file://localhost/$rng", $file];
+    my $compile = [qw(java -jar), $saxon, "-s:$file", "-xsl:$xsl", "-o:$out"];
     
     return ($validate, $compile);
 }
