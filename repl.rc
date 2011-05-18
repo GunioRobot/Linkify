@@ -1,0 +1,28 @@
+# Current Devel::REPL package:
+package main;
+
+$_REPL->load_plugin($_) for qw(
+    Colors
+    Completion
+    CompletionDriver::Globals
+    CompletionDriver::INC
+    CompletionDriver::Keywords
+    CompletionDriver::LexEnv
+    CompletionDriver::Methods
+    FancyPrompt
+    Interrupt
+    OutputCache
+    ReadLineHistory
+    Refresh
+);
+
+$_REPL->fancy_prompt(sub {
+    my ($self) = @_;
+    return sprintf '%s%s> ',
+        $self->current_package,
+        $self->line_depth > 0 ? (':' . $self->line_depth) : '';
+});
+
+$_REPL->fancy_continuation_prompt($_REPL->fancy_prompt);
+$_REPL->normal_color('yellow');
+$_REPL->term->Attribs->{history_expansion_char} = 0;
