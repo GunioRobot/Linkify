@@ -1,7 +1,11 @@
+#!/usr/bin/env perl
+
 # Current Devel::REPL package.
 package main;
 
-$_REPL->load_plugin($_) for qw(
+use English qw(-no_match_vars);
+
+$_REPL->load_plugin($ARG) for qw(
     Colors
     Completion
     CompletionDriver::Globals
@@ -16,13 +20,23 @@ $_REPL->load_plugin($_) for qw(
     Refresh
 );
 
+
 $_REPL->fancy_prompt(sub {
-    my ($self) = @_;
+    my ($self) = @ARG;
     
     return sprintf '%s%s> ',
         $self->current_package,
         $self->line_depth > 0 ? (':' . $self->line_depth) : '';
 });
+
+
+$_REPL->term->Attribs->{history_inhibit_expansion_function} = sub {
+    my ($line, $index) = @ARG;
+    
+    # Allow only the TAB character for history expansion.
+    return $line !~ m/\t/;
+};
+
 
 $_REPL->fancy_continuation_prompt($_REPL->fancy_prompt);
 $_REPL->normal_color('yellow');
