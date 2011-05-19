@@ -2,6 +2,7 @@
 
 package Term::ReadLine::NoDuplicates;
 
+use English qw(-no_match_vars);
 use Moose;
 use MooseX::NonMoose;
 use Set::Object ();
@@ -20,14 +21,14 @@ has last_read_line =>
 
 sub new {
     my $class = shift;
-    my $self = bless $class->SUPER::new(@_), $class;
+    my $self = bless $class->SUPER::new(@ARG), $class;
     
     return $class->meta->new_object(__INSTANCE__ => $self);
 }
 
 # Seems like Term::ReadLine::Gnu uses this one instead.
 sub add_history {
-    my ($self, @lines) = @_;
+    my ($self, @lines) = @ARG;
     my $new_lines = Set::Object->new(@lines) - $self->history_set;
     
     if ($new_lines->size > 0) {
@@ -39,8 +40,8 @@ sub add_history {
 }
 
 around readline => sub {
-    my ($super, $self) = splice @_, 0, 2;
-    my $line = $self->$super(@_);
+    my ($super, $self) = splice @ARG, 0, 2;
+    my $line = $self->$super(@ARG);
     
     $self->last_read_line($line);
     return $line;
@@ -50,21 +51,24 @@ around readline => sub {
 package Devel::REPL::Plugin::NoHistoryExpansion;
 
 use Devel::REPL::Plugin;
+use English qw(-no_match_vars);
 
 around history_call => sub {
     return;
 };
 
 around read => sub {
-    my ($super, $self) = splice @_, 0, 2;
+    my ($super, $self) = splice @ARG, 0, 2;
     
-    $self->$super(@_);
+    $self->$super(@ARG);
     return $self->term->last_read_line;
 };
 
 
 # Current Devel::REPL package.
 package main;
+
+use English qw(-no_match_vars);
 
 $_REPL->term(Term::ReadLine::NoDuplicates->new($_REPL->term->{readline_name}));
 
@@ -86,7 +90,7 @@ $_REPL->load_plugins(qw(
 ));
 
 $_REPL->fancy_prompt(sub {
-    my ($self) = @_;
+    my ($self) = @ARG;
     
     return sprintf '%s%s> ',
         $self->current_package,
@@ -94,7 +98,7 @@ $_REPL->fancy_prompt(sub {
 });
 
 $_REPL->term->Attribs->{history_inhibit_expansion_function} = sub {
-    my ($line, $index) = @_;
+    my ($line) = @ARG;
     return $line !~ m/\t/;
 };
 
