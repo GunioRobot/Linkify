@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 # External programs:
-# - Java: <http://java.sun.com/javase/downloads/>
+# - Java: <http://www.oracle.com/technetwork/java/javase/downloads/>
 # - xmllint: <http://xmlsoft.org/xmldtd.html#validate1>
 # - xmlto: <http://cyberelk.net/tim/software/xmlto/>
 
