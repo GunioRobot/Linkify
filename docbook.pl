@@ -8,9 +8,6 @@
 use defaults;
 use Archive::Extract ();
 use Crypt::SSLeay ();
-use Cwd ();
-use File::Path ();
-use File::Spec ();
 use LWP::UserAgent ();
 use Path::Class ();
 use XML::DOM::XPath ();
@@ -53,7 +50,7 @@ sub download {
     my %options = ('User-Agent' => 'Mozilla');
     
     if (defined $output) {
-        $options{':content_file'} = $output;
+        $options{':content_file'} = $output->stringify;
     }
     
     my $response = $browser->get($link, %options);
@@ -65,7 +62,7 @@ sub download {
 
 sub get_msvs {
     my ($cache_root) = @ARG;
-    my $cache = File::Spec->catdir($cache_root, 'MSVS');
+    my $cache = $cache_root->subdir('MSVS');
     
     unless (-e $cache) {
         print "Downloading Multi-Schema Validator Schematron add-on...\n";
@@ -74,23 +71,22 @@ sub get_msvs {
         my ($file) = (download($base_url) =~ m/" (relames [^"]* \.zip) "/x);
         my $url = $base_url . $file;
         
-        File::Path::mkpath($cache);
+        $cache->mkpath;
         
-        my $path = download($url, File::Spec->catfile($cache, $file));
-        my $archive = Archive::Extract->new(archive => $path);
+        my $path = download($url, $cache->file($file));
+        my $archive = Archive::Extract->new(archive => $path->stringify);
         
         $archive->extract(to => $cache) or die $archive->error() . "\n";
         unlink $path;
     }
     
-    my $root = File::Spec->catdir($cache, ls($cache));
-    return File::Spec->catfile($root, 'relames.jar');
+    return [$cache->children]->[0]->file('relames.jar');
 }
 
 
 sub get_rng {
     my ($cache_root) = @ARG;
-    my $cache = File::Spec->catdir($cache_root, 'RNG');
+    my $cache = $cache_root->subdir('RNG');
     
     unless (-e $cache) {
         print "Downloading DocBook RELAX NG schema...\n";
@@ -98,17 +94,17 @@ sub get_rng {
         my $url = 'http://www.docbook.org/xml/5.0/rng/docbook.rng';
         my $file = File::Basename::fileparse($url);
         
-        File::Path::mkpath($cache);
-        download($url, File::Spec->catfile($cache, $file));
+        $cache->mkpath;
+        download($url, $cache->file($file));
     }
     
-    return File::Spec->catfile($cache, ls($cache));
+    return [$cache->children]->[0];
 }
 
 
 sub get_saxon {
     my ($cache_root) = @ARG;
-    my $cache = File::Spec->catdir($cache_root, 'Saxon');
+    my $cache = $cache_root->subdir('Saxon');
     
     unless (-e $cache) {
         print "Downloading Saxon XSLT processor...\n";
@@ -117,22 +113,22 @@ sub get_saxon {
         my ($file) = (download($list) =~ m/(saxonhe[^j"]+j\.zip)/);
         my $url = "http://prdownloads.sourceforge.net/saxon/$file?download";
         
-        File::Path::mkpath($cache);
+        $cache->mkpath;
         
-        my $path = download($url, File::Spec->catfile($cache, $file));
-        my $archive = Archive::Extract->new(archive => $path);
+        my $path = download($url, $cache->file($file));
+        my $archive = Archive::Extract->new(archive => $path->stringify);
         
         $archive->extract(to => $cache) or die $archive->error() . "\n";
         unlink $path;
     }
     
-    return File::Spec->catfile($cache, 'saxon9he.jar');
+    return $cache->file('saxon9he.jar');
 }
 
 
 sub get_xsl {
     my ($cache_root) = @ARG;
-    my $cache = File::Spec->catdir($cache_root, 'XSL');
+    my $cache = $cache_root->subdir('XSL');
     
     unless (-e $cache) {
         print "Downloading DocBook XSL-NS style sheets...\n";
@@ -143,31 +139,16 @@ sub get_xsl {
         my $file = "docbook-xsl-ns-$version.tar.bz2";
         my $url = "http://prdownloads.sourceforge.net/docbook/$file?download";
         
-        File::Path::mkpath($cache);
+        $cache->mkpath;
         
-        my $path = download($url, File::Spec->catfile($cache, $file));
-        my $archive = Archive::Extract->new(archive => $path);
+        my $path = download($url, $cache->file($file));
+        my $archive = Archive::Extract->new(archive => $path->stringify);
         
         $archive->extract(to => $cache) or die $archive->error() . "\n";
         unlink $path;
     }
     
-    my $root = File::Spec->catdir($cache, ls($cache));
-    my $xhtml = File::Spec->catdir($root, 'xhtml');
-    
-    return File::Spec->catfile($xhtml, 'docbook.xsl');
-}
-
-
-sub ls {
-    my ($path) = @ARG;
-    $path = Cwd::getcwd() unless defined $path;
-    
-    opendir my ($directory), $path;
-    my @files = File::Spec->no_upwards(readdir $directory);
-    closedir $directory;
-    
-    return ((@files == 1) && !wantarray) ? pop @files : @files;
+    return [$cache->children]->[0]->subdir('xhtml')->file('docbook.xsl');
 }
 
 
@@ -176,6 +157,7 @@ sub main {
     my $version;
     
     if (defined $file) {
+        $file = Path::Class::file($file);
         $version = detect_version($file);
     }
     else {
@@ -228,7 +210,7 @@ sub publish_v4 {
 
 sub publish_v5 {
     my ($file) = @ARG;
-    my $cache = File::Spec->catdir($ENV{USERPROFILE} // $ENV{HOME}, '.DocBook~');
+    my $cache = Path::Class::dir($ENV{USERPROFILE} // $ENV{HOME}, '.DocBook~');
     my ($msvs, $rng, $saxon, $xsl) = map {$ARG->($cache)}
         \&get_msvs, \&get_rng, \&get_saxon, \&get_xsl;
     
