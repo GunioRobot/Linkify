@@ -1,10 +1,36 @@
 #!/usr/bin/env perl
 
+package Term::ReadLine::LineCache;
+
+use base qw(Term::ReadLine);
+use strict;
+use warnings;
+
+sub readline {
+    my $self = shift @_;
+    my $line = $self->SUPER::readline(@_);
+    
+    $self->{_last_read_line} = $line;
+    return $line;
+}
+
+
+package Devel::REPL::Plugin::NoHistoryExpansion;
+
+use Devel::REPL::Plugin;
+
+around 'read' => sub {
+    my ($orig, $self) = splice @_, 0, 2;
+    
+    $self->$orig(@_);
+    return $self->term->{_last_read_line};
+};
+
+
 # Current Devel::REPL package.
 package main;
 
-use English qw(-no_match_vars);
-
+$_REPL->term(Term::ReadLine::LineCache->new($_REPL->term->{readline_name}));
 
 $_REPL->load_plugins(qw(
     Colors
@@ -17,28 +43,24 @@ $_REPL->load_plugins(qw(
     DumpHistory
     FancyPrompt
     Interrupt
+    NoHistoryExpansion
     OutputCache
     ReadLineHistory
     Refresh
 ));
 
-
 $_REPL->fancy_prompt(sub {
-    my ($self) = @ARG;
+    my ($self) = @_;
     
     return sprintf '%s%s> ',
         $self->current_package,
         $self->line_depth > 0 ? (':' . $self->line_depth) : '';
 });
 
-
 $_REPL->term->Attribs->{history_inhibit_expansion_function} = sub {
-    my ($line, $index) = @ARG;
-    
-    # Allow only the TAB character for history expansion.
+    my ($line, $index) = @_;
     return $line !~ m/\t/;
 };
-
 
 $_REPL->fancy_continuation_prompt($_REPL->fancy_prompt);
 $_REPL->normal_color('yellow');
