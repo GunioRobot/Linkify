@@ -7,7 +7,6 @@
 
 use defaults;
 use Archive::Extract ();
-use Crypt::SSLeay ();
 use Path::Class ();
 use URI ();
 use WWW::Mechanize ();
