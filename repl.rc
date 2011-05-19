@@ -61,7 +61,7 @@ around read => sub {
     my ($super, $self) = splice @ARG, 0, 2;
     my $line = $self->$super(@ARG);
     
-    if (defined $line) {
+    if (defined($line) && ($line ne '')) {
         my $index = substr $self->term->last_read_line, 1;
         
         if ($line eq "'Unable to find $index in history'") {
