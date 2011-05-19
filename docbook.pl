@@ -148,13 +148,11 @@ sub main {
     }
     else {
         foreach my $xml_file (grep m/\.xml$/i, Path::Class::dir->children) {
-            $version = detect_version($xml_file);
+            $version = detect_version($xml_file) // next;
+            $file = $xml_file;
             
-            if (defined $version) {
-                $file = $xml_file;
-                print "Automatic detection of DocBook v$version: $file\n";
-                last;
-            }
+            print "Automatic detection of DocBook v$version: $file\n";
+            last;
         }
     }
     
