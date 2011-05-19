@@ -10,6 +10,7 @@ use Archive::Extract ();
 use Crypt::SSLeay ();
 use LWP::UserAgent ();
 use Path::Class ();
+use URI ();
 use XML::DOM::XPath ();
 
 
@@ -90,12 +91,10 @@ sub get_rng {
     
     unless (-e $cache) {
         print "Downloading DocBook RELAX NG schema...\n";
-        
-        my $url = 'http://www.docbook.org/xml/5.0/rng/docbook.rng';
-        my $file = File::Basename::fileparse($url);
+        my $url = URI->new('http://www.docbook.org/xml/5.0/rng/docbook.rng');
         
         $cache->mkpath;
-        download($url, $cache->file($file));
+        download($url, $cache->file(Path::Class::file($url->path)->basename));
     }
     
     return [$cache->children]->[0];
