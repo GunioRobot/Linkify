@@ -6,7 +6,7 @@ package main;
 use English qw(-no_match_vars);
 
 
-$_REPL->load_plugin($ARG) for qw(
+$_REPL->load_plugins(qw(
     Colors
     Completion
     CompletionDriver::Globals
@@ -20,7 +20,7 @@ $_REPL->load_plugin($ARG) for qw(
     OutputCache
     ReadLineHistory
     Refresh
-);
+));
 
 
 $_REPL->fancy_prompt(sub {
