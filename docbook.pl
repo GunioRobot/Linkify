@@ -8,15 +8,15 @@
 use defaults;
 use Archive::Extract ();
 use Crypt::SSLeay ();
-use LWP::UserAgent ();
 use Path::Class ();
 use URI ();
+use WWW::Mechanize ();
 use XML::DOM::XPath ();
 
 
 sub detect_version {
     my ($file) = @ARG;
-    my $doc = eval {XML::DOM::Parser->new()->parsefile($file)};
+    my $doc = eval {XML::DOM::Parser->new->parsefile($file)};
     
     const my $PUB_ID_VERSION = qr{
         -//OASIS//DTD \s+ DocBook \s+ XML \s+ V ([\d.]+)//EN
@@ -26,12 +26,12 @@ sub detect_version {
         if ((my $version = $doc->findvalue('/*/@version')) ne '') {
             return $version;
         }
-        elsif (defined(my $doctype = $doc->getDoctype())) {
-            return $1 if $doctype->getPubId() =~ m/^$PUB_ID_VERSION$/;
+        elsif (defined(my $doctype = $doc->getDoctype)) {
+            return $1 if $doctype->getPubId =~ m/^$PUB_ID_VERSION$/;
         }
     }
     else {
-        my $xml = $file->slurp();
+        my $xml = $file->slurp;
         
         if ($xml =~ m/< [^<>?]* \b version \s* = \s* " ([^"]+) "/gx) {
             return $1;
@@ -45,22 +45,6 @@ sub detect_version {
 }
 
 
-sub download {
-    my ($link, $output) = @ARG;
-    my $browser = LWP::UserAgent->new();
-    my %options = ('User-Agent' => 'Mozilla');
-    
-    if (defined $output) {
-        $options{':content_file'} = $output->stringify;
-    }
-    
-    my $response = $browser->get($link, %options);
-    die $response->status_line() . "\n" unless $response->is_success();
-    
-    return defined $output ? $output : $response->decoded_content();
-}
-
-
 sub get_msvs {
     my ($cache_root) = @ARG;
     my $cache = $cache_root->subdir('MSVS');
@@ -68,17 +52,18 @@ sub get_msvs {
     unless (-e $cache) {
         print "Downloading Multi-Schema Validator Schematron add-on...\n";
         
-        my $base_url = 'http://java.net/downloads/msv/nightly/';
-        my ($file) = (download($base_url) =~ m/" (relames [^"]* \.zip) "/x);
-        my $url = $base_url . $file;
+        my $mechanize = WWW::Mechanize->new;
+        $mechanize->get('http://java.net/downloads/msv/nightly/');
+        
+        my $link = $mechanize->find_link(text_regex => qr/\b relames \b/x);
+        my $file = $cache->file([$link->URI->path_segments]->[-1]);
         
         $cache->mkpath;
+        $mechanize->get($link, ':content_file' => $file->stringify);
         
-        my $path = download($url, $cache->file($file));
-        my $archive = Archive::Extract->new(archive => $path->stringify);
-        
-        $archive->extract(to => $cache) or die $archive->error() . "\n";
-        unlink $path;
+        my $archive = Archive::Extract->new(archive => $file);
+        $archive->extract(to => $cache) or die $archive->error;
+        $file->remove;
     }
     
     return [$cache->children]->[0]->file('relames.jar');
@@ -92,9 +77,10 @@ sub get_rng {
     unless (-e $cache) {
         print "Downloading DocBook RELAX NG schema...\n";
         my $url = URI->new('http://www.docbook.org/xml/5.0/rng/docbook.rng');
+        my $file = $cache->file([$url->path_segments]->[-1]);
         
         $cache->mkpath;
-        download($url, $cache->file(Path::Class::file($url->path)->basename));
+        WWW::Mechanize->new->get($url, ':content_file' => $file->stringify);
     }
     
     return [$cache->children]->[0];
@@ -108,20 +94,23 @@ sub get_saxon {
     unless (-e $cache) {
         print "Downloading Saxon XSLT processor...\n";
         
-        my $list = 'http://saxon.sourceforge.net/';
-        my ($file) = (download($list) =~ m/(saxonhe[^j"]+j\.zip)/);
-        my $url = "http://prdownloads.sourceforge.net/saxon/$file?download";
+        my $mechanize = WWW::Mechanize->new;
+        $mechanize->get('http://saxon.sourceforge.net/');
+        
+        my $link = $mechanize->find_link(url_regex => qr/\b saxonhe .+ j\.zip/x);
+        my $file = $cache->file([$link->URI->path_segments]->[-2]);
+        my $file_url = 'http://prdownloads.sourceforge.net/saxon/%s?download';
         
         $cache->mkpath;
+        $mechanize->get(sprintf($file_url, $file->basename),
+            ':content_file' => $file->stringify);
         
-        my $path = download($url, $cache->file($file));
-        my $archive = Archive::Extract->new(archive => $path->stringify);
-        
-        $archive->extract(to => $cache) or die $archive->error() . "\n";
-        unlink $path;
+        my $archive = Archive::Extract->new(archive => $file);
+        $archive->extract(to => $cache) or die $archive->error;
+        $file->remove;
     }
     
-    return $cache->file('saxon9he.jar');
+    return [$cache->children]->[0];
 }
 
 
@@ -132,19 +121,19 @@ sub get_xsl {
     unless (-e $cache) {
         print "Downloading DocBook XSL-NS style sheets...\n";
         
-        my $base = 'http://docbook.sourceforge.net/release/xsl-ns';
-        my $info = "$base/current/VERSION";
-        my ($version) = (download("$base/current/VERSION") =~ m/<fm:Version>([^<]+)/);
-        my $file = "docbook-xsl-ns-$version.tar.bz2";
-        my $url = "http://prdownloads.sourceforge.net/docbook/$file?download";
+        my $version = XML::DOM::Parser->new->parsefile(
+            'http://docbook.sourceforge.net/release/xsl-ns/current/VERSION');
+        my $file = $cache->file(sprintf 'docbook-xsl-ns-%s.tar.bz2',
+            $version->findvalue('//fm:Version'));
+        my $file_url = 'http://prdownloads.sourceforge.net/docbook/%s?download';
         
         $cache->mkpath;
+        WWW::Mechanize->new->get(sprintf($file_url, $file->basename),
+            ':content_file' => $file->stringify);
         
-        my $path = download($url, $cache->file($file));
-        my $archive = Archive::Extract->new(archive => $path->stringify);
-        
-        $archive->extract(to => $cache) or die $archive->error() . "\n";
-        unlink $path;
+        my $archive = Archive::Extract->new(archive => $file);
+        $archive->extract(to => $cache) or die $archive->error;
+        $file->remove;
     }
     
     return [$cache->children]->[0]->subdir('xhtml')->file('docbook.xsl');
@@ -160,7 +149,7 @@ sub main {
         $version = detect_version($file);
     }
     else {
-        foreach my $xml_file (grep m/\.xml$/i, Path::Class::dir()->children) {
+        foreach my $xml_file (grep m/\.xml$/i, Path::Class::dir->children) {
             $version = detect_version($xml_file);
             
             if (defined $version) {
