@@ -2,17 +2,29 @@
 
 package Term::ReadLine::LineCache;
 
-use base qw(Term::ReadLine);
-use strict;
-use warnings;
+use Moose;
+use MooseX::NonMoose;
 
-sub readline {
-    my $self = shift @_;
-    my $line = $self->SUPER::readline(@_);
+extends 'Term::ReadLine';
+
+has last_read_line =>
+    is => 'rw',
+    isa => 'Maybe[Str]';
+
+sub new {
+    my $class = shift;
+    my $self = bless $class->SUPER::new(@_), $class;
     
-    $self->{_last_read_line} = $line;
-    return $line;
+    return $class->meta()->new_object(__INSTANCE__ => $self);
 }
+
+around readline => sub {
+    my ($super, $self) = splice @_, 0, 2;
+    my $line = $self->$super(@_);
+    
+    $self->last_read_line($line);
+    return $line;
+};
 
 
 package Devel::REPL::Plugin::NoHistoryExpansion;
@@ -24,10 +36,10 @@ around history_call => sub {
 };
 
 around read => sub {
-    my ($orig, $self) = splice @_, 0, 2;
+    my ($super, $self) = splice @_, 0, 2;
     
-    $self->$orig(@_);
-    return $self->term->{_last_read_line};
+    $self->$super(@_);
+    return $self->term->last_read_line;
 };
 
 
