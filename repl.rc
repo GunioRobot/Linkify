@@ -13,6 +13,7 @@ $_REPL->load_plugin($ARG) for qw(
     CompletionDriver::Keywords
     CompletionDriver::LexEnv
     CompletionDriver::Methods
+    DumpHistory
     FancyPrompt
     Interrupt
     OutputCache
