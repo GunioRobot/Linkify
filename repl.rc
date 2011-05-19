@@ -5,6 +5,7 @@ package main;
 
 use English qw(-no_match_vars);
 
+
 $_REPL->load_plugin($ARG) for qw(
     Colors
     Completion
