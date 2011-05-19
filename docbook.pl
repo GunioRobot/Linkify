@@ -17,9 +17,8 @@ sub detect_version {
     my ($file) = @ARG;
     my $doc = eval {XML::DOM::Parser->new->parsefile($file)};
     
-    const my $PUB_ID_VERSION = qr{
-        -//OASIS//DTD \s+ DocBook \s+ XML \s+ V ([\d.]+)//EN
-    }x;
+    const my $PUB_ID_VERSION
+        = qr{-//OASIS//DTD \s+ DocBook \s+ XML \s+ V ([\d.]+) //EN}x;
     
     if (defined $doc) {
         if ((my $version = $doc->findvalue('/*/@version')) ne '') {
