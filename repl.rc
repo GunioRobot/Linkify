@@ -19,7 +19,11 @@ package Devel::REPL::Plugin::NoHistoryExpansion;
 
 use Devel::REPL::Plugin;
 
-around 'read' => sub {
+around history_call => sub {
+    return;
+};
+
+around read => sub {
     my ($orig, $self) = splice @_, 0, 2;
     
     $self->$orig(@_);
