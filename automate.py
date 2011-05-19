@@ -435,4 +435,4 @@ while True:
                 dl_manager.logger.error(u'%s: %s', str(error), url)
     
     dl_manager.logger.info(u'Pausing...')
-    time.sleep(5 * 60)
+    time.sleep(10 * 60)
