@@ -1,11 +1,18 @@
 #!/usr/bin/env perl
 
-package Term::ReadLine::LineCache;
+package Term::ReadLine::NoDuplicates;
 
 use Moose;
 use MooseX::NonMoose;
+use Set::Object ();
 
 extends 'Term::ReadLine';
+
+has history_set =>
+    is => 'rw',
+    isa => Set::Object::,
+    lazy => 1,
+    default => sub {Set::Object->new(shift->GetHistory)};
 
 has last_read_line =>
     is => 'rw',
@@ -15,7 +22,20 @@ sub new {
     my $class = shift;
     my $self = bless $class->SUPER::new(@_), $class;
     
-    return $class->meta()->new_object(__INSTANCE__ => $self);
+    return $class->meta->new_object(__INSTANCE__ => $self);
+}
+
+# Seems like Term::ReadLine::Gnu uses this one instead.
+sub add_history {
+    my ($self, @lines) = @_;
+    my $new_lines = Set::Object->new(@lines) - $self->history_set;
+    
+    if ($new_lines->size > 0) {
+        $self->history_set->insert($new_lines->elements);
+        $self->SUPER::add_history($new_lines->elements);
+    }
+    
+    return;
 }
 
 around readline => sub {
@@ -46,7 +66,7 @@ around read => sub {
 # Current Devel::REPL package.
 package main;
 
-$_REPL->term(Term::ReadLine::LineCache->new($_REPL->term->{readline_name}));
+$_REPL->term(Term::ReadLine::NoDuplicates->new($_REPL->term->{readline_name}));
 
 $_REPL->load_plugins(qw(
     Colors
