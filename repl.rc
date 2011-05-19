@@ -10,7 +10,7 @@ use Set::Object ();
 extends 'Term::ReadLine';
 
 has history_set =>
-    is => 'rw',
+    is => 'ro',
     isa => Set::Object::,
     lazy => 1,
     default => sub {Set::Object->new(shift->GetHistory)};
