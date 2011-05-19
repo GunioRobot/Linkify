@@ -59,9 +59,17 @@ around history_call => sub {
 
 around read => sub {
     my ($super, $self) = splice @ARG, 0, 2;
+    my $line = $self->$super(@ARG);
     
-    $self->$super(@ARG);
-    return $self->term->last_read_line;
+    if (defined $line) {
+        my $index = substr $self->term->last_read_line, 1;
+        
+        if ($line eq "'Unable to find $index in history'") {
+            return $self->term->last_read_line;
+        }
+    }
+    
+    return $line;
 };
 
 
