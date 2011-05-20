@@ -363,12 +363,12 @@ class Pager (Reader):
     
     def _guess_lexer(self, text):
         if self._diff_mode:
-            return pygments.lexers.DiffLexer()
+            return pygments.lexers.DiffLexer(stripnl = False)
         else:
             clean_text = re.sub(self.ansi_color_escape, u'', text)
             
             try:
-                return pygments.lexers.guess_lexer(clean_text)
+                return pygments.lexers.guess_lexer(clean_text, stripnl = False)
             except TypeError:
                 # See <http://bitbucket.org/birkenfeld/pygments-main/issue/618/>
                 # $ echo .text | pygmentize -g
@@ -376,9 +376,9 @@ class Pager (Reader):
             
             try:
                 return pygments.lexers.guess_lexer_for_filename(
-                    self._input.name, clean_text)
+                    self._input.name, clean_text, stripnl = False)
             except pygments.util.ClassNotFound:
-                return pygments.lexers.TextLexer()
+                return pygments.lexers.TextLexer(stripnl = False)
     
     
     def _guess_terminal_height(self):
@@ -436,7 +436,7 @@ class Pager (Reader):
             self._output = TextReader()
         
         if re.search(self.ansi_color_escape, text):
-            self._lexer = pygments.lexers.TextLexer()
+            self._lexer = pygments.lexers.TextLexer(stripnl = False)
         else:
             self._lexer = lexer
             self._lexer.add_filter(u'codetagify')
