@@ -405,7 +405,9 @@ class Pager (Reader):
             pass
         
         try:
-            stty = subprocess.Popen([u'stty', u'size'], stdout = subprocess.PIPE)
+            stty = subprocess.Popen([u'stty', u'size'],
+                stdout = subprocess.PIPE)
+            
             (rows, columns) = stty.stdout.read().split()
             return rows
         except:
