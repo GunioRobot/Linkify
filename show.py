@@ -59,11 +59,11 @@ class InputType (argparse.FileType):
     
     def _open_perldoc(self, module):
         identifier = ur'^[A-Z_a-z][0-9A-Z_a-z]*(?:::[0-9A-Z_a-z]+)*$'
-        error = u'Not a Perl module: '
+        error_message = u'Not a Perl module: '
         process = None
         
         if not re.match(identifier, module):
-            raise IOError(error + module)
+            raise IOError(error_message + module)
         
         for implementation in [u'perldoc', u'perldoc.bat']:
             try:
@@ -84,7 +84,7 @@ class InputType (argparse.FileType):
             output.name = module
             return output
         else:
-            raise IOError(error + module)
+            raise IOError(error_message + module)
 
 
 class Arguments (argparse.ArgumentParser):
