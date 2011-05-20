@@ -33,6 +33,11 @@ externals(u'argparse', u'chardet', u'filelike',
 class InputType (argparse.FileType):
     def __call__(self, path, *args):
         try:
+            return filelike.open(path)
+        except IOError:
+            pass
+        
+        try:
             return super(InputType, self).__call__(path, *args)
         except IOError as error:
             if error.errno == errno.ENOENT:
