@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 
-# TODO: Don't page if following a file? Toggle via command line option?
 # TODO: Support Git diff file add/removal.
 # TODO: Follow file automatically if it changes size?
 # TODO: Clean up exception handling.
@@ -114,7 +113,7 @@ class Arguments (argparse.ArgumentParser):
                 'dest': u'follow',
                 'action': u'store_true',
                 'default': False,
-                'help': u'follow file like tail',
+                'help': u'follow file like tail, and disable paging',
             }),
             (u'-L', {
                 'dest': u'label',
@@ -312,6 +311,10 @@ class Pager (Reader):
                 yield self._clean_input(line.decode(encoding))
         
         if self._follow:
+            (text, self._buffer) = (self._buffer, u'')
+            self._setup_output(text)
+            self._display(text)
+            
             while True:
                 line = self._input.readline()
                 
@@ -418,7 +421,7 @@ class Pager (Reader):
     
     @property
     def _max_inline_lines(self):
-        if not sys.stdout.isatty():
+        if not sys.stdout.isatty() or self._follow:
             return Infinity
         
         height = self._guess_terminal_height()
