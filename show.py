@@ -13,7 +13,6 @@
 #       $ ./show.py '\d+' ~
 # TODO: Do a file search if given a directory as the fist file (e.g. find).
 #       $ ./show.py . '*.txt'
-# TODO: Show the Perl module names when doing a diff.
 # TODO: Take line width and wrapping into account when paging.
 # TODO: Profile speed execution.
 # TODO: Implement color support on Windows.
@@ -81,7 +80,9 @@ class InputType (argparse.FileType):
             raise IOError(str(OSError(errno.ENOENT)))
         
         if process.wait() == 0:
-            return process.stdout
+            output = filelike.wrappers.FileWrapper(process.stdout)
+            output.name = module
+            return output
         else:
             raise IOError(error + module)
 
