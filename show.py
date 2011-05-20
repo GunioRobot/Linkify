@@ -27,7 +27,8 @@ from defaults import *
 import codecs, difflib, errno, inspect, locale, os, re, StringIO, struct, \
     subprocess, sys, time, urllib2, urlparse
 
-externals(u'argparse', u'chardet', u'pygments.formatters', u'pygments.lexers')
+externals(u'argparse', u'chardet',
+    u'pygments', u'pygments.formatters', u'pygments.lexers')
 
 
 class InputType (argparse.FileType):
