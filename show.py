@@ -24,9 +24,9 @@ from defaults import *
 
 # Standard library:
 import codecs, difflib, errno, inspect, locale, os, re, StringIO, struct, \
-    subprocess, sys, time, urllib2, urlparse
+    subprocess, sys, time
 
-externals(u'argparse', u'chardet',
+externals(u'argparse', u'chardet', u'filelike',
     u'pygments', u'pygments.formatters', u'pygments.lexers')
 
 
@@ -36,10 +36,11 @@ class InputType (argparse.FileType):
             return super(InputType, self).__call__(path, *args)
         except IOError as error:
             if error.errno == errno.ENOENT:
-                try:
-                    return self._open_url(path)
-                except urllib2.URLError:
-                    pass
+                for url in [path, u'http://' + path]:
+                    try:
+                        return filelike.open(url)
+                    except IOError:
+                        pass
                 
                 try:
                     return self._open_perldoc(path)
@@ -78,25 +79,6 @@ class InputType (argparse.FileType):
             return process.stdout
         else:
             raise IOError(error + module)
-    
-    
-    def _open_url(self, url):
-        url_like = (urlparse.urlparse(url).scheme == u'') \
-            and re.match(ur'^www\.', url, re.IGNORECASE)
-        
-        if url_like:
-            url = u'http://' + url
-        
-        try:
-            stream = urllib2.urlopen(url)
-        except ValueError as error:
-            if re.match(ur'^unknown url type:', str(error), re.IGNORECASE):
-                raise urllib2.URLError(str(error))
-            else:
-                raise
-        
-        setattr(stream, u'name', url)
-        return stream
 
 
 class Arguments (argparse.ArgumentParser):
