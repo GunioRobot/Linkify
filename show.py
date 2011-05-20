@@ -373,12 +373,12 @@ class Pager (Reader):
                 return pygments.lexers.TextLexer(stripnl = False)
     
     
-    def _guess_terminal_height(self):
+    def _guess_terminal_size(self):
         def ioctl_GWINSZ(fd):
             import fcntl, termios
             size_data = fcntl.ioctl(fd, termios.TIOCGWINSZ, '1234')
             (rows, columns) = struct.unpack('hh', size_data)
-            return rows
+            return (rows, columns)
         
         for stream in sys.stdin, sys.stdout, sys.stderr:
             try:
@@ -400,11 +400,11 @@ class Pager (Reader):
                 stdout = subprocess.PIPE)
             
             (rows, columns) = stty.stdout.read().split()
-            return rows
+            return (rows, columns)
         except:
             pass
         
-        return 0
+        return (0, 0)
     
     
     @property
@@ -412,8 +412,8 @@ class Pager (Reader):
         if not sys.stdout.isatty() or self._follow:
             return Infinity
         
-        height = self._guess_terminal_height()
-        return int(round(height * self._inline_lines_threshold))
+        (rows, columns) = self._guess_terminal_size()
+        return int(round(rows * self._inline_lines_threshold))
     
     
     def _setup_output(self, text):
