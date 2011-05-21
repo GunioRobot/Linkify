@@ -17,14 +17,15 @@
 # TODO: Refresh FDM's cached list of URL's every X seconds?
 
 
-# Internal modules:
-from __future__ import division
-from defaults import *
-
 # Standard library:
+from __future__ import division, print_function, unicode_literals
 import logging, os.path, re, time, Tkinter, urllib2, urlparse
 
-externals(u'feedparser', u'lxml.html', u'PIL.Image', u'unipath')
+# Internal modules:
+from defaults import *
+
+
+externals('feedparser', 'lxml.html', 'PIL.Image', 'unipath')
 
 
 class Path (unipath.Path):
@@ -53,8 +54,8 @@ class Url (object):
     def open(self):
         request = urllib2.Request(unicode(self))
         
-        if self.host_name == u'trailers.apple.com':
-            request.add_header(u'User-Agent', u'QuickTime')
+        if self.host_name == 'trailers.apple.com':
+            request.add_header('User-Agent', 'QuickTime')
         
         return urllib2.build_opener().open(request)
     
@@ -67,7 +68,7 @@ class Url (object):
     @path.setter
     def path(self, path):
         components = self._components._asdict()
-        components[u'path'] = path
+        components['path'] = path
         
         self._components = urlparse.ParseResult(**components)
     
@@ -94,7 +95,7 @@ class Url (object):
     
     
     def __str__(self):
-        return unicode(self).encode(u'UTF-8')
+        return unicode(self).encode('UTF-8')
     
     
     def __unicode__(self):
@@ -136,7 +137,7 @@ class MsWindowsTypeLibrary (object):
                 iid = self._lib.GetTypeInfo(i).GetTypeAttr().iid
                 return win32com.client.Dispatch(iid)
         
-        raise Exception(u'Type "%s" not found in type library "%s".'
+        raise Exception('Type "%s" not found in type library "%s".'
             % (name, self._path))
 
 
@@ -144,7 +145,7 @@ class Logger (object):
     def __init__(self):
         handler = logging.StreamHandler()
         handler.setFormatter(logging.Formatter(
-            u'[%(levelname)s] [%(asctime)s] [%(name)s] %(message)s'))
+            '[%(levelname)s] [%(asctime)s] [%(name)s] %(message)s'))
         
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.addHandler(handler)
@@ -176,7 +177,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary):
     
     def __init__(self):
         DownloadManager.__init__(self)
-        MsWindowsTypeLibrary.__init__(self, u'fdm.tlb')
+        MsWindowsTypeLibrary.__init__(self, 'fdm.tlb')
         
         self._cached_downloads_stat = False
         self._urls = set()
@@ -184,7 +185,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary):
     
     
     def download_url(self, url, to = None):
-        wg_url_receiver = self.get_data_type(u'WGUrlReceiver')
+        wg_url_receiver = self.get_data_type('WGUrlReceiver')
         
         wg_url_receiver.Url = unicode(url)
         wg_url_receiver.DisableURLExistsCheck = False
@@ -199,7 +200,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary):
         self._urls.add(url)
         self._urls.add(url.resolve())
         
-        self.logger.debug(u'Download: %s', url)
+        self.logger.debug('Download: %s', url)
     
     
     def has_url(self, url):
@@ -209,9 +210,9 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary):
             return True
         
         if resolved_url != url:
-            self.logger.debug(u'Redirect: %s', resolved_url)
+            self.logger.debug('Redirect: %s', resolved_url)
         
-        self.logger.debug(u'Download not found: %s', url)
+        self.logger.debug('Download not found: %s', url)
         return False
     
     
@@ -227,7 +228,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary):
             for url in self._urls:
                 yield url
         else:
-            downloads_stat = self.get_data_type(u'FDMDownloadsStat')
+            downloads_stat = self.get_data_type('FDMDownloadsStat')
             downloads_stat.BuildListOfDownloads(True, True)
             
             # Don't start at the oldest URL to find newer downloads faster.
@@ -273,17 +274,17 @@ class Feed (DownloadSource):
 
 
 class IgnDailyFix (Feed):
-    _TITLE = u'IGN Daily Fix'
+    _TITLE = 'IGN Daily Fix'
     
     
     def __init__(self):
         super(IgnDailyFix, self).__init__(
-            u'http://feeds.ign.com/ignfeeds/podcasts/games/')
+            'http://feeds.ign.com/ignfeeds/podcasts/games/')
     
     
     def list_urls(self):
         for entry in self.get_feed().entries:
-            if entry.title.startswith(self._TITLE + u':'):
+            if entry.title.startswith(self._TITLE + ':'):
                 yield (Url(entry.enclosures[0].href), None)
     
     
@@ -304,10 +305,10 @@ class HdTrailers (Feed):
     
     @classmethod
     def _get_resolution(cls, text):
-        resolution = re.findall(ur'(\d{3,4})p', text)
+        resolution = re.findall(r'(\d{3,4})p', text)
         
         if len(resolution) == 0:
-            resolution = re.findall(ur'(480|720|1080)', text)
+            resolution = re.findall(r'(480|720|1080)', text)
             
             if len(resolution) == 0:
                 return 0
@@ -317,15 +318,15 @@ class HdTrailers (Feed):
     
     def __init__(self):
         super(HdTrailers, self).__init__(
-            u'http://feeds.hd-trailers.net/hd-trailers/blog')
+            'http://feeds.hd-trailers.net/hd-trailers/blog')
     
     
     def list_urls(self):
         for entry in self.get_feed().entries:
-            if not re.search(ur'\b(teaser|trailer)\b', entry.title, re.I):
+            if not re.search(r'\b(teaser|trailer)\b', entry.title, re.I):
                 continue
             
-            if hasattr(entry, u'enclosures'):
+            if hasattr(entry, 'enclosures'):
                 url = Url(self._find_highest_resolution(
                     [enclosure.href for enclosure in entry.enclosures]))
             else:
@@ -333,17 +334,17 @@ class HdTrailers (Feed):
                 html = lxml.html.fromstring(entry.content[0].value)
                 (url, highest_resolution) = (None, 0)
                 
-                for link in html.xpath(u'//a[text() != ""]'):
+                for link in html.xpath('//a[text() != ""]'):
                     resolution = self._get_resolution(link.text)
                     
                     if resolution > highest_resolution:
-                        url = Url(link.attrib[u'href'])
+                        url = Url(link.attrib['href'])
                         highest_resolution = resolution
             
-            if url.host_name == u'playlist.yahoo.com':
-                file_name = u'%s (%s).mov' \
+            if url.host_name == 'playlist.yahoo.com':
+                file_name = '%s (%s).mov' \
                     % (Url(entry.feedburner_origlink).path.components[-1],
-                        url.query[u'sid'][0])
+                        url.query['sid'][0])
                 
                 yield (PathUrl(url), file_name)
             else:
@@ -352,16 +353,16 @@ class HdTrailers (Feed):
     
     @property
     def name(self):
-        return u'HD Trailers'
+        return 'HD Trailers'
 
 
 class InterfaceLift (Feed):
-    _HOST_NAME = u'interfacelift.com'
+    _HOST_NAME = 'interfacelift.com'
     
     
     def __init__(self):
         super(InterfaceLift, self).__init__(
-            u'http://' + self._HOST_NAME + u'/wallpaper/rss/index.xml')
+            'http://' + self._HOST_NAME + '/wallpaper/rss/index.xml')
         
         tk = Tkinter.Tk()
         self._screen_ratio = tk.winfo_screenwidth() / tk.winfo_screenheight()
@@ -378,29 +379,29 @@ class InterfaceLift (Feed):
         
         for entry in self.get_feed().entries:
             html = lxml.html.fromstring(entry.summary)
-            url = FileUrl(html.xpath(u'//img/@src')[0])
+            url = FileUrl(html.xpath('//img/@src')[0])
             (path, ext) = url.path.split_ext()
             
             url.path = re.sub(
-                u'(?<=/)previews(?=/)',
+                '(?<=/)previews(?=/)',
                 session_code,
-                path + u'_' + self._find_best_resolution(html) + ext)
+                path + '_' + self._find_best_resolution(html) + ext)
             
             yield (url, None)
     
     
     @property
     def name(self):
-        return u'InterfaceLIFT'
+        return 'InterfaceLIFT'
     
     
     def _find_best_resolution(self, entry_html):
-        resolutions = re.findall(ur'\d+x\d+',
-            entry_html.xpath(u'//p[b/text() = "Resolutions:"]/text()')[0])
+        resolutions = re.findall(r'\d+x\d+',
+            entry_html.xpath('//p[b/text() = "Resolutions:"]/text()')[0])
         
         # Should be already sorted in descending order.
         for resolution in resolutions:
-            (width, height) = map(int, resolution.split(u'x'))
+            (width, height) = map(int, resolution.split('x'))
             
             if self._screen_ratio == (width / height):
                 return resolution
@@ -408,28 +409,28 @@ class InterfaceLift (Feed):
     
     @property
     def _session_code(self):
-        script = Url(u'http://' + self._HOST_NAME + u'/inc_NEW/jscript.js')
-        return re.findall(u'"/wallpaper/([^/]+)/"', script.open().read())[0]
+        script = Url('http://' + self._HOST_NAME + '/inc_NEW/jscript.js')
+        return re.findall('"/wallpaper/([^/]+)/"', script.open().read())[0]
 
 
 class ScrewAttack (DownloadSource):
-    _BASE_URL = u'http://www.gametrailers.com'
-    _QUICKTIME_VIDEO_HREF = u'//span[@class="Downloads"]' \
-        + u'/a[starts-with(text(), "Quicktime")]/@href'
+    _BASE_URL = 'http://www.gametrailers.com'
+    _QUICKTIME_VIDEO_HREF = '//span[@class="Downloads"]' \
+        + '/a[starts-with(text(), "Quicktime")]/@href'
     
     
     def list_urls(self):
-        main_url = Url(self._BASE_URL + u'/screwattack')
+        main_url = Url(self._BASE_URL + '/screwattack')
         main_html = lxml.html.fromstring(main_url.open().read())
         
         videos = main_html.xpath(
-            u'//div[@id="nerd"]//a[@class="gamepage_content_row_title"]/@href')
+            '//div[@id="nerd"]//a[@class="gamepage_content_row_title"]/@href')
         
         for page_url in [Url(self._BASE_URL + path) for path in videos]:
             video_html = lxml.html.fromstring(page_url.open().read())
             video_url = Url(video_html.xpath(self._QUICKTIME_VIDEO_HREF)[0])
             
-            url = Url(u'http://trailers-ak.gametrailers.com/gt_vault/3000/' \
+            url = Url('http://trailers-ak.gametrailers.com/gt_vault/3000/' \
                 + video_url.path.components[-1])
             
             yield (url, None)
@@ -437,7 +438,7 @@ class ScrewAttack (DownloadSource):
     
     @property
     def name(self):
-        return u'ScrewAttack'
+        return 'ScrewAttack'
 
 
 dl_manager = FreeDownloadManager()
@@ -450,17 +451,17 @@ sources = [source() for source in [
 ]]
 
 while True:
-    dl_manager.logger.info(u'Starting...')
+    dl_manager.logger.info('Starting...')
     
     for source in sources:
-        dl_manager.logger.info(u'Checking source: %s', source.name)
+        dl_manager.logger.info('Checking source: %s', source.name)
         
         for (url, file_name) in source.list_urls():
             try:
                 if not dl_manager.has_url(url):
                     dl_manager.download_url(url, to = file_name)
             except urllib2.HTTPError as error:
-                dl_manager.logger.error(u'%s: %s', str(error), url)
+                dl_manager.logger.error('%s: %s', str(error), url)
     
-    dl_manager.logger.info(u'Pausing...')
+    dl_manager.logger.info('Pausing...')
     time.sleep(10 * 60)
