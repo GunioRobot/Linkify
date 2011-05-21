@@ -116,20 +116,20 @@ class Url (object):
 
 class PathUrl (Url):
     def __cmp__(self, url):
-        return cmp(unicode(self.path), unicode(url.path))
+        return cmp(self.path, url.path)
     
     
     def __hash__(self):
-        return hash(unicode(self.path))
+        return hash(self.path)
 
 
 class FileUrl (PathUrl):
     def __cmp__(self, url):
-        return cmp(unicode(self.path.name), unicode(url.path.name))
+        return cmp(self.path.name, url.path.name)
     
     
     def __hash__(self):
-        return hash(unicode(self.path.name))
+        return hash(self.path.name)
 
 
 class DownloadManager (Logger):
