@@ -11,8 +11,6 @@
 # TODO: Handle HTTP connection errors (off-line, not found, etc).
 # TODO: Create MS Win32 system service?
 # TODO: Cut the first few seconds of the IGN Daily Fix videos.
-# TODO: Choose the highest available InterfaceLIFT wallpaper resolution that
-#       most closely matches the running computer's.
 # TODO: Fix ScrewAttack 404 errors. Use default browser's cookies (e.g. Opera)?
 # TODO: Create sources for GameTrailers videos (and Pop-Fiction, GT Countdown).
 # TODO: Create source for TV shows and automatic backup of watched episodes.
@@ -20,6 +18,7 @@
 
 
 # Internal modules:
+from __future__ import division
 from defaults import *
 
 # Standard library:
@@ -360,15 +359,12 @@ class InterfaceLift (Feed):
     _HOST_NAME = u'interfacelift.com'
     
     
-    @classmethod
-    def _get_screen_resolution(cls):
-        tk = Tkinter.Tk()
-        return u'%dx%d' % (tk.winfo_screenwidth(), tk.winfo_screenheight())
-    
-    
     def __init__(self):
         super(InterfaceLift, self).__init__(
             u'http://' + self._HOST_NAME + u'/wallpaper/rss/index.xml')
+        
+        tk = Tkinter.Tk()
+        self._screen_ratio = tk.winfo_screenwidth() / tk.winfo_screenheight()
     
     
     def download_finished(self, url, file_path):
@@ -379,17 +375,16 @@ class InterfaceLift (Feed):
     
     def list_urls(self):
         session_code = self._session_code
-        resolution = self._get_screen_resolution()
         
         for entry in self.get_feed().entries:
-            url = FileUrl(
-                lxml.html.fromstring(entry.summary).xpath(u'//img/@src')[0])
+            html = lxml.html.fromstring(entry.summary)
+            url = FileUrl(html.xpath(u'//img/@src')[0])
             (path, ext) = url.path.split_ext()
             
             url.path = re.sub(
                 u'(?<=/)previews(?=/)',
                 session_code,
-                path + u'_' + resolution + ext)
+                path + u'_' + self._find_best_resolution(html) + ext)
             
             yield (url, None)
     
@@ -397,6 +392,18 @@ class InterfaceLift (Feed):
     @property
     def name(self):
         return u'InterfaceLIFT'
+    
+    
+    def _find_best_resolution(self, entry_html):
+        resolutions = re.findall(ur'\d+x\d+',
+            entry_html.xpath(u'//p[b/text() = "Resolutions:"]/text()')[0])
+        
+        # Should be already sorted in descending order.
+        for resolution in resolutions:
+            (width, height) = map(int, resolution.split(u'x'))
+            
+            if self._screen_ratio == (width / height):
+                return resolution
     
     
     @property
