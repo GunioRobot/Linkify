@@ -16,7 +16,7 @@
 #       $ ./show.py '\d+' ~
 # TODO: Do a file search if given a directory as the fist file (e.g. find).
 #       $ ./show.py . '*.txt'
-# TODO: Profile speed execution.
+# TODO: Profile time execution.
 # TODO: Implement color support on Windows.
 # TODO: Simplify logic (e.g. Pager.run, etc), add documentation.
 
