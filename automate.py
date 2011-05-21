@@ -412,7 +412,7 @@ class InterfaceLift (Feed):
         return re.findall(u'"/wallpaper/([^/]+)/"', script.open().read())[0]
 
 
-class ScrewAttack (DownloadSource, Logger):
+class ScrewAttack (DownloadSource):
     _BASE_URL = u'http://www.gametrailers.com'
     _QUICKTIME_VIDEO_HREF = u'//span[@class="Downloads"]' \
         + u'/a[starts-with(text(), "Quicktime")]/@href'
@@ -425,11 +425,10 @@ class ScrewAttack (DownloadSource, Logger):
         videos = main_html.xpath(
             u'//div[@id="nerd"]//a[@class="gamepage_content_row_title"]/@href')
         
-        for video_url in [Url(self._BASE_URL + path) for path in videos]:
-            self.logger.debug(u'Parse video page: %s', video_url)
-            
-            video_html = lxml.html.fromstring(video_url.open().read())
+        for page_url in [Url(self._BASE_URL + path) for path in videos]:
+            video_html = lxml.html.fromstring(page_url.open().read())
             video_url = Url(video_html.xpath(self._QUICKTIME_VIDEO_HREF)[0])
+            
             url = Url(u'http://trailers-ak.gametrailers.com/gt_vault/3000/' \
                 + video_url.path.components[-1])
             
