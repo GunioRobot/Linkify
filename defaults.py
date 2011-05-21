@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 
 
+# TODO: Set default source code file encoding to UTF-8.
+# TODO: Import default __future__ features.
+
+
 # Standard library:
 from __future__ import division, print_function, unicode_literals
 import ConfigParser, email.feedparser, email.parser, imaplib
