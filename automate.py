@@ -20,7 +20,7 @@
 
 # Standard library:
 from __future__ import division, print_function, unicode_literals
-import logging, os.path, re, time, Tkinter, urllib2, urlparse
+import logging, os.path, re, time, Tkinter, urllib, urllib2, urlparse
 
 # Internal modules:
 from defaults import *
@@ -77,6 +77,14 @@ class Url (object):
     @property
     def query(self):
         return urlparse.parse_qs(self._components.query)
+    
+    
+    @query.setter
+    def query(self, query):
+        components = self._components._asdict()
+        components['query'] = urllib.unquote(urllib.urlencode(query))
+        
+        self._components = urlparse.ParseResult(**components)
     
     
     def resolve(self):
@@ -324,8 +332,10 @@ class HdTrailers (Feed):
     
     
     def list_urls(self):
+        keywords_re = r'\b(%s)\b' % '|'.join(['teaser', 'trailer'])
+        
         for entry in self.get_feed().entries:
-            if not re.search(r'\b(teaser|trailer)\b', entry.title, re.I):
+            if not re.search(keywords_re, entry.title, re.IGNORECASE):
                 continue
             
             url = self._find_best_url(entry)
@@ -426,30 +436,32 @@ class InterfaceLift (Feed):
         return re.findall('"/wallpaper/([^/]+)/"', script.open().read())[0]
 
 
-class ScrewAttack (DownloadSource):
-    _BASE_URL = 'http://www.gametrailers.com'
-    _QUICKTIME_VIDEO_HREF = '//span[@class="Downloads"]' \
-        + '/a[starts-with(text(), "Quicktime")]/@href'
+class GameTrailersVideos (DownloadSource):
+    BASE_URL = 'http://www.gametrailers.com'
     
     
-    def list_urls(self):
-        main_url = Url(self._BASE_URL + '/screwattack')
-        main_html = lxml.html.fromstring(main_url.open().read())
+    def get_video_url(self, page_url):
+        page_html = page_url.open().read()
+        quicktime_video_href = '//span[@class="Downloads"]' \
+            + '/a[starts-with(text(), "Quicktime")]/@href'
         
+        [video_id] = re.findall(r'mov_game_id\s*=\s*(\d+)', page_html)
+        video_url = Url(lxml.html.fromstring(page_html).xpath(
+            quicktime_video_href)[0])
+        
+        return Url('http://trailers-ak.gametrailers.com/gt_vault/%s/%s' \
+            % (video_id, video_url.path.components[-1]))
+
+
+class ScrewAttack (GameTrailersVideos):
+    def list_urls(self):
+        main_html = lxml.html.fromstring(
+            Url(self.BASE_URL + '/screwattack').open().read())
         videos = main_html.xpath(
             '//div[@id="nerd"]//a[@class="gamepage_content_row_title"]/@href')
         
-        for page_url in [Url(self._BASE_URL + path) for path in videos]:
-            page_html = page_url.open().read()
-            
-            [video_id] = re.findall(r'mov_game_id\s*=\s*(\d+)', page_html)
-            video_url = Url(lxml.html.fromstring(page_html).xpath(
-                self._QUICKTIME_VIDEO_HREF)[0])
-            
-            url = Url('http://trailers-ak.gametrailers.com/gt_vault/%s/%s' \
-                % (video_id, video_url.path.components[-1]))
-            
-            yield (url, None)
+        for page_url in [Url(self.BASE_URL + path) for path in videos]:
+            yield (self.get_video_url(page_url), None)
     
     
     @property
@@ -457,14 +469,45 @@ class ScrewAttack (DownloadSource):
         return 'ScrewAttack'
 
 
+class GameTrailers (GameTrailersVideos, Feed):
+    def __init__(self):
+        query = {
+            'limit': 100,
+            'orderby': 'newest',
+            'quality[hd]': 'on',
+        }
+        
+        for system in ['pc', 'ps3', 'xb360']:
+            query['favplats[%s]' % system] = system
+        
+        url = Url(self.BASE_URL + '/rssgenerate.php')
+        url.query = query
+        super(GameTrailers, self).__init__(unicode(url))
+    
+    
+    def list_urls(self):
+        keywords_re = r'\b(%s)\b' % '|'.join(
+            ['gameplay', 'preview', 'review', 'teaser', 'trailer'])
+        
+        for entry in self.get_feed().entries:
+            if re.search(keywords_re, entry.title, re.IGNORECASE):
+                yield (self.get_video_url(Url(entry.link)), None)
+    
+    
+    @property
+    def name(self):
+        return 'GameTrailers'
+
+
 dl_manager = FreeDownloadManager()
 
-sources = [source() for source in [
-    IgnDailyFix,
-    InterfaceLift,
-    HdTrailers,
-    ScrewAttack,
-]]
+sources = [
+    GameTrailers(),
+    HdTrailers(),
+    IgnDailyFix(),
+    InterfaceLift(),
+    ScrewAttack(),
+]
 
 while True:
     dl_manager.logger.info('Starting...')
