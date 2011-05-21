@@ -16,7 +16,6 @@
 # TODO: Fix ScrewAttack 404 errors. Use default browser's cookies (e.g. Opera)?
 # TODO: Create sources for GameTrailers videos (and Pop-Fiction, GT Countdown).
 # TODO: Create source for TV shows and automatic backup of watched episodes.
-# TODO: Use the movie name for HD-Trailers files when required, e.g. Yahoo.
 # TODO: Refresh FDM's cached list of URL's every X seconds?
 
 
@@ -72,6 +71,11 @@ class Url (object):
         components[u'path'] = path
         
         self._components = urlparse.ParseResult(**components)
+    
+    
+    @property
+    def query(self):
+        return urlparse.parse_qs(self._components.query)
     
     
     def resolve(self):
@@ -158,7 +162,7 @@ class DownloadManager (Logger):
     
     
     @abstractmethod
-    def download_url(self, url):
+    def download_url(self, url, to = None):
         pass
     
     
@@ -180,7 +184,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary):
         self._urls_by_file_name = {}
     
     
-    def download_url(self, url):
+    def download_url(self, url, to = None):
         wg_url_receiver = self.get_data_type(u'WGUrlReceiver')
         
         wg_url_receiver.Url = unicode(url)
@@ -188,6 +192,9 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary):
         wg_url_receiver.ForceDownloadAutoStart = True
         wg_url_receiver.ForceSilent = True
         wg_url_receiver.ForceSilentEx = True
+        
+        if to is not None:
+            wg_url_receiver.FileName = to
         
         wg_url_receiver.AddDownload()
         self._urls.add(url)
@@ -278,7 +285,7 @@ class IgnDailyFix (Feed):
     def list_urls(self):
         for entry in self.get_feed().entries:
             if entry.title.startswith(self._TITLE + u':'):
-                yield Url(entry.enclosures[0].href)
+                yield (Url(entry.enclosures[0].href), None)
     
     
     @property
@@ -318,7 +325,7 @@ class HdTrailers (Feed):
         for entry in self.get_feed().entries:
             if not re.search(ur'\b(teaser|trailer)\b', entry.title, re.I):
                 continue
-
+            
             if hasattr(entry, u'enclosures'):
                 url = Url(self._find_highest_resolution(
                     [enclosure.href for enclosure in entry.enclosures]))
@@ -335,9 +342,13 @@ class HdTrailers (Feed):
                         highest_resolution = resolution
             
             if url.host_name == u'playlist.yahoo.com':
-                yield PathUrl(url)
+                file_name = u'%s (%s).mov' \
+                    % (Url(entry.feedburner_origlink).path.components[-1],
+                        url.query[u'sid'][0])
+                
+                yield (PathUrl(url), file_name)
             else:
-                yield url
+                yield (url, None)
     
     
     @property
@@ -380,7 +391,7 @@ class InterfaceLift (Feed):
                 session_code,
                 path + u'_' + resolution + ext)
             
-            yield url
+            yield (url, None)
     
     
     @property
@@ -411,10 +422,11 @@ class ScrewAttack (DownloadSource, Logger):
             self.logger.debug(u'Parse video page: %s', video_url)
             
             video_html = lxml.html.fromstring(video_url.open().read())
-            url = Url(video_html.xpath(self._QUICKTIME_VIDEO_HREF)[0])
+            video_url = Url(video_html.xpath(self._QUICKTIME_VIDEO_HREF)[0])
+            url = Url(u'http://trailers-ak.gametrailers.com/gt_vault/3000/' \
+                + video_url.path.components[-1])
             
-            yield Url(u'http://trailers-ak.gametrailers.com/gt_vault/3000/' \
-                + url.path.components[-1])
+            yield (url, None)
     
     
     @property
@@ -437,10 +449,10 @@ while True:
     for source in sources:
         dl_manager.logger.info(u'Checking source: %s', source.name)
         
-        for url in source.list_urls():
+        for (url, file_name) in source.list_urls():
             try:
                 if not dl_manager.has_url(url):
-                    dl_manager.download_url(url)
+                    dl_manager.download_url(url, to = file_name)
             except urllib2.HTTPError as error:
                 dl_manager.logger.error(u'%s: %s', str(error), url)
     
