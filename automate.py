@@ -273,9 +273,8 @@ class DownloadSource (Logger):
         pass
 
 
-class Feed (DownloadSource):
+class Feed (object):
     def __init__(self, url):
-        super(Feed, self).__init__()
         self._url = url
     
     
@@ -283,13 +282,13 @@ class Feed (DownloadSource):
         return feedparser.parse(self._url)
 
 
-class IgnDailyFix (Feed):
+class IgnDailyFix (DownloadSource, Feed):
     _TITLE = 'IGN Daily Fix'
     
     
     def __init__(self):
-        super(IgnDailyFix, self).__init__(
-            'http://feeds.ign.com/ignfeeds/podcasts/games/')
+        DownloadSource.__init__(self)
+        Feed.__init__(self, 'http://feeds.ign.com/ignfeeds/podcasts/games/')
     
     
     def list_urls(self):
@@ -303,7 +302,7 @@ class IgnDailyFix (Feed):
         return self._TITLE
 
 
-class HdTrailers (Feed):
+class HdTrailers (DownloadSource, Feed):
     @classmethod
     def _find_highest_resolution(cls, strings):
         strings.sort(
@@ -327,8 +326,8 @@ class HdTrailers (Feed):
     
     
     def __init__(self):
-        super(HdTrailers, self).__init__(
-            'http://feeds.hd-trailers.net/hd-trailers/blog')
+        DownloadSource.__init__(self)
+        Feed.__init__(self, 'http://feeds.hd-trailers.net/hd-trailers/blog')
     
     
     def list_urls(self):
@@ -379,12 +378,13 @@ class HdTrailers (Feed):
             return Url(url)
 
 
-class InterfaceLift (Feed):
+class InterfaceLift (DownloadSource, Feed):
     _HOST_NAME = 'interfacelift.com'
     
     
     def __init__(self):
-        super(InterfaceLift, self).__init__(
+        DownloadSource.__init__(self)
+        Feed.__init__(self,
             'http://' + self._HOST_NAME + '/wallpaper/rss/index.xml')
         
         tk = Tkinter.Tk()
@@ -436,7 +436,7 @@ class InterfaceLift (Feed):
         return re.findall('"/wallpaper/([^/]+)/"', script.open().read())[0]
 
 
-class GameTrailersVideos (DownloadSource):
+class GameTrailersVideos (object):
     BASE_URL = 'http://www.gametrailers.com'
     
     
@@ -453,7 +453,7 @@ class GameTrailersVideos (DownloadSource):
             % (video_id, video_url.path.components[-1]))
 
 
-class ScrewAttack (GameTrailersVideos):
+class ScrewAttack (DownloadSource, GameTrailersVideos):
     def list_urls(self):
         main_html = lxml.html.fromstring(
             Url(self.BASE_URL + '/screwattack').open().read())
@@ -469,7 +469,7 @@ class ScrewAttack (GameTrailersVideos):
         return 'ScrewAttack'
 
 
-class GameTrailers (GameTrailersVideos, Feed):
+class GameTrailers (DownloadSource, GameTrailersVideos, Feed):
     def __init__(self):
         query = {
             'limit': 100,
@@ -482,7 +482,10 @@ class GameTrailers (GameTrailersVideos, Feed):
         
         url = Url(self.BASE_URL + '/rssgenerate.php')
         url.query = query
-        super(GameTrailers, self).__init__(unicode(url))
+        
+        DownloadSource.__init__(self)
+        GameTrailersVideos.__init__(self)
+        Feed.__init__(self, unicode(url))
     
     
     def list_urls(self):
