@@ -2,14 +2,15 @@
 # -*- coding: utf-8 -*-
 
 
-__author__ = u'Marcio Faustino'
-__doc__ = u'Sets some defaults and implements important fixes.'
-__version__ = u'2011-05-17'
-
-
 # Standard library:
+from __future__ import division, print_function, unicode_literals
 import ConfigParser, email.feedparser, email.parser, imaplib
 from abc import *
+
+
+__author__ = 'Marcio Faustino'
+__doc__ = 'Sets some defaults and implements important fixes.'
+__version__ = '2011-05-17'
 
 
 def externals(*modules):
@@ -17,7 +18,7 @@ def externals(*modules):
     missing = set()
     
     for module in modules:
-        package = module.split(u'.', 1).pop(0)
+        package = module.split('.', 1).pop(0)
         
         if package != module:
             try:
@@ -33,12 +34,12 @@ def externals(*modules):
     
     if len(missing) > 0:
         import sys
-        sys.exit(u'Modules not found: ' + u', '.join(sorted(missing)))
+        sys.exit('Modules not found: ' + ', '.join(sorted(missing)))
 
 
 def fix(object = None, version = None, name = None, call = False):
-    if not hasattr(fix, u'symbols'):
-        setattr(fix, u'symbols', set())
+    if not hasattr(fix, 'symbols'):
+        setattr(fix, 'symbols', set())
     
     
     # Namespace cleanup.
@@ -65,7 +66,7 @@ def fix(object = None, version = None, name = None, call = False):
     
     
     import inspect
-    symbol = inspect.getmodule(object).__name__.split(u'.', 1).pop(0)
+    symbol = inspect.getmodule(object).__name__.split('.', 1).pop(0)
     fix.symbols.add(symbol)
     
     return apply_fix
@@ -87,7 +88,7 @@ def parsestr(self, text, headersonly = False):
     return feed_parser.close()
 
 
-@fix(ConfigParser.SafeConfigParser, 0x20602F0, u'_badpercent_re', call = True)
+@fix(ConfigParser.SafeConfigParser, 0x20602F0, '_badpercent_re', call = True)
 class CheckBadPercent (object):
     '''
     Fixes the regular expression that checks for invalid percent interpolations.
@@ -109,7 +110,7 @@ class CheckBadPercent (object):
     
     
     def search(self, value, *args, **kargs):
-        index = self._interpvar_re.sub(u'', value).find(u'%')
+        index = self._interpvar_re.sub('', value).find('%')
         return False if index < 0 else CheckBadPercent.Result(index)
 
 
@@ -131,7 +132,7 @@ class IMAP4_SSL (imaplib.IMAP4_SSL):
             data = self.ssl().read(min(size - size_read, 2 ** 14))
             size_read += len(data)
             
-            if data == u'':
+            if data == '':
                 break
             else:
                 data_buffer.write(data)
@@ -145,9 +146,9 @@ class IMAP4_SSL (imaplib.IMAP4_SSL):
     def readline(self):
         import cStringIO
         data_buffer = cStringIO.StringIO()
-        char = u'\0'
+        char = '\0'
         
-        while (char != u'\n') and (char != u''):
+        while (char != '\n') and (char != ''):
             char = self.ssl().read(1)
             data_buffer.write(char)
         
@@ -157,7 +158,7 @@ class IMAP4_SSL (imaplib.IMAP4_SSL):
             data_buffer.close()
 
 
-@fix(ConfigParser.SafeConfigParser, 0x20602F0, u'_interpvar_re', call = True)
+@fix(ConfigParser.SafeConfigParser, 0x20602F0, '_interpvar_re', call = True)
 class RemoveDoublePercents (object):
     '''
     Fixes the regular expression that removes double percent signs.
@@ -174,10 +175,10 @@ class RemoveDoublePercents (object):
     
     
     def sub(self, replacement, value, *args, **kargs):
-        return value.replace(u'%%', u'')
+        return value.replace('%%', '')
 
 
 fix()
 
-NaN = float(u'NaN')
-Infinity = float(u'Infinity')
+NaN = float('NaN')
+Infinity = float('Infinity')
