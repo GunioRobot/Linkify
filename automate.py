@@ -247,7 +247,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary):
             self._cached_downloads_stat = True
 
 
-class DownloadSource (object):
+class DownloadSource (Logger):
     __metaclass__ = ABCMeta
     
     
@@ -267,6 +267,7 @@ class DownloadSource (object):
 
 class Feed (DownloadSource):
     def __init__(self, url):
+        super(Feed, self).__init__()
         self._url = url
     
     
@@ -327,34 +328,47 @@ class HdTrailers (Feed):
             if not re.search(r'\b(teaser|trailer)\b', entry.title, re.I):
                 continue
             
-            if hasattr(entry, 'enclosures'):
-                url = Url(self._find_highest_resolution(
-                    [enclosure.href for enclosure in entry.enclosures]))
-            else:
-                # Parse HTML to find movie links.
-                html = lxml.html.fromstring(entry.content[0].value)
-                (url, highest_resolution) = (None, 0)
-                
-                for link in html.xpath('//a[text() != ""]'):
-                    resolution = self._get_resolution(link.text)
-                    
-                    if resolution > highest_resolution:
-                        url = Url(link.attrib['href'])
-                        highest_resolution = resolution
+            url = self._find_best_url(entry)
             
-            if url.host_name == 'playlist.yahoo.com':
-                file_name = '%s (%s).mov' \
-                    % (Url(entry.feedburner_origlink).path.components[-1],
-                        url.query['sid'][0])
-                
-                yield (PathUrl(url), file_name)
-            else:
+            if url.host_name != 'playlist.yahoo.com':
                 yield (url, None)
+            else:
+                file = url.resolve().path.name
+                
+                if re.match(r'^\d+$', file.stem):
+                    title = Url(entry.feedburner_origlink).path.components[-1]
+                    file = '%s (%s)%s' % (title, file.stem, file.ext)
+                    
+                    self.logger.debug('File name rewrite: %r from %s',
+                        file, url)
+                else:
+                    file = None
+                
+                yield (PathUrl(url), file)
     
     
     @property
     def name(self):
         return 'HD Trailers'
+    
+    
+    def _find_best_url(self, entry):
+        if hasattr(entry, 'enclosures'):
+            return Url(self._find_highest_resolution(
+                [enclosure.href for enclosure in entry.enclosures]))
+        else:
+            # Parse HTML to find movie links.
+            html = lxml.html.fromstring(entry.content[0].value)
+            (url, highest_resolution) = (None, 0)
+            
+            for link in html.xpath('//a[text() != ""]'):
+                resolution = self._get_resolution(link.text)
+                
+                if resolution > highest_resolution:
+                    url = link.attrib['href']
+                    highest_resolution = resolution
+            
+            return Url(url)
 
 
 class InterfaceLift (Feed):
