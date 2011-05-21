@@ -110,7 +110,7 @@ class Arguments (argparse.ArgumentParser):
                 'action': 'append',
                 'help': 'diff labels',
             }),
-            ('-', {
+            ('-u', {
                 'action': 'store_const',
                 'const': None,
                 'help': 'ignored for diff compatibility',
@@ -378,8 +378,8 @@ class Pager (Reader):
     def _guess_terminal_size(self):
         def ioctl_GWINSZ(fd):
             import fcntl, termios
-            size_data = fcntl.ioctl(fd, termios.TIOCGWINSZ, '1234')
-            (rows, columns) = struct.unpack('hh', size_data)
+            size_data = fcntl.ioctl(fd, termios.TIOCGWINSZ, b'1234')
+            (rows, columns) = struct.unpack(b'hh', size_data)
             return (rows, columns)
         
         for stream in sys.stdin, sys.stdout, sys.stderr:
