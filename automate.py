@@ -146,7 +146,7 @@ class Logger (object):
     def __init__(self):
         handler = logging.StreamHandler()
         handler.setFormatter(logging.Formatter(
-            '[%(levelname)s] [%(asctime)s] [%(name)s] %(message)s'))
+            '[%(asctime)s] [%(levelname)s] %(message)s'))
         
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.addHandler(handler)
@@ -338,9 +338,7 @@ class HdTrailers (Feed):
                 if re.match(r'^\d+$', file.stem):
                     title = Url(entry.feedburner_origlink).path.components[-1]
                     file = '%s (%s)%s' % (title, file.stem, file.ext)
-                    
-                    self.logger.debug('File name rewrite: %r from %s',
-                        file, url)
+                    self.logger.debug('File name rewrite: %s', file)
                 else:
                     file = None
                 
@@ -469,14 +467,14 @@ while True:
     dl_manager.logger.info('Starting...')
     
     for source in sources:
-        dl_manager.logger.info('Checking source: %s', source.name)
+        dl_manager.logger.info('Source check: %s', source.name)
         
         for (url, file_name) in source.list_urls():
             try:
                 if not dl_manager.has_url(url):
                     dl_manager.download_url(url, to = file_name)
             except urllib2.HTTPError as error:
-                dl_manager.logger.error('%s: %s', str(error), url)
+                dl_manager.logger.error('%s: %s', error, url)
     
-    dl_manager.logger.info('Pausing...')
+    dl_manager.logger.info('Stopping...')
     time.sleep(10 * 60)
