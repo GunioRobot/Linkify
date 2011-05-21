@@ -18,6 +18,7 @@
 #       $ ./show.py . '*.txt'
 # TODO: Profile speed execution.
 # TODO: Implement color support on Windows.
+# TODO: Simplify logic (e.g. Pager.run, etc), add documentation.
 
 
 # Standard library:
