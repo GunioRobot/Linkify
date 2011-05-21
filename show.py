@@ -18,15 +18,17 @@
 # TODO: Implement color support on Windows.
 
 
-# Internal modules:
-from defaults import *
-
 # Standard library:
+from __future__ import division, print_function, unicode_literals
 import codecs, difflib, errno, inspect, locale, os, re, StringIO, struct, \
     subprocess, sys, time
 
-externals(u'argparse', u'chardet', u'filelike',
-    u'pygments', u'pygments.formatters', u'pygments.lexers')
+# Internal modules:
+from defaults import *
+
+
+externals('argparse', 'chardet', 'filelike',
+    'pygments', 'pygments.formatters', 'pygments.lexers')
 
 
 class InputType (argparse.FileType):
@@ -40,7 +42,7 @@ class InputType (argparse.FileType):
             return super(InputType, self).__call__(path, *args)
         except IOError as error:
             if error.errno == errno.ENOENT:
-                for url in [path, u'http://' + path]:
+                for url in [path, 'http://' + path]:
                     try:
                         return filelike.open(url)
                     except IOError:
@@ -51,21 +53,21 @@ class InputType (argparse.FileType):
                 except IOError:
                     pass
                 
-                if path == u'self':
+                if path == 'self':
                     return file(inspect.getfile(InputType))
             
             raise error
     
     
     def _open_perldoc(self, module):
-        identifier = ur'^[A-Z_a-z][0-9A-Z_a-z]*(?:::[0-9A-Z_a-z]+)*$'
-        error_message = u'Not a Perl module: '
+        identifier = r'^[A-Z_a-z][0-9A-Z_a-z]*(?:::[0-9A-Z_a-z]+)*$'
+        error_message = 'Not a Perl module: '
         process = None
         
         if not re.match(identifier, module):
             raise IOError(error_message + module)
         
-        for implementation in [u'perldoc', u'perldoc.bat']:
+        for implementation in ['perldoc', 'perldoc.bat']:
             try:
                 process = subprocess.Popen([implementation, module],
                     stderr = file(os.devnull),
@@ -90,43 +92,43 @@ class InputType (argparse.FileType):
 class Arguments (argparse.ArgumentParser):
     def __init__(self):
         super(Arguments, self).__init__(
-            description = u'Automatic pager with syntax highlighting and diff\
+            description = 'Automatic pager with syntax highlighting and diff\
                 support.',
-            epilog = u'''An input can be '-' for standard input (default), a\
+            epilog = '''An input can be '-' for standard input (default), a\
                 file path, an URL, a Perl module name, or 'self' for the\
                 source code.''')
         
         arguments = [
-            (u'-f', {
-                'dest': u'follow',
-                'action': u'store_true',
+            ('-f', {
+                'dest': 'follow',
+                'action': 'store_true',
                 'default': False,
-                'help': u'follow file like tail, and disable paging',
+                'help': 'follow file like tail, and disable paging',
             }),
-            (u'-L', {
-                'dest': u'label',
-                'action': u'append',
-                'help': u'diff labels',
+            ('-L', {
+                'dest': 'label',
+                'action': 'append',
+                'help': 'diff labels',
             }),
-            (u'-u', {
-                'action': u'store_const',
+            ('-', {
+                'action': 'store_const',
                 'const': None,
-                'help': u'ignored for diff compatibility',
+                'help': 'ignored for diff compatibility',
             }),
-            (u'file', {
-                'nargs': u'?',
+            ('file', {
+                'nargs': '?',
                 'default': sys.stdin,
                 'type': InputType(),
-                'help': u'input to display',
+                'help': 'input to display',
             }),
-            (u'file2', {
-                'nargs': u'?',
+            ('file2', {
+                'nargs': '?',
                 'type': InputType(),
-                'help': u'input to compare with, and switch to diff mode',
+                'help': 'input to compare with, and switch to diff mode',
             }),
-            (u'git', {
-                'nargs': u'*',
-                'help': u'assume git diff arguments, and switch to diff mode',
+            ('git', {
+                'nargs': '*',
+                'help': 'assume git diff arguments, and switch to diff mode',
             }),
         ]
         
@@ -160,8 +162,8 @@ class Arguments (argparse.ArgumentParser):
             args.label = [self._resolve_path(f) for f in args.file, args.file2]
         
         args.file = StringIO.StringIO(
-            u'diff -u %s\n' % u' '.join(args.label)
-            + u''.join(difflib.unified_diff(
+            'diff -u %s\n' % ' '.join(args.label)
+            + ''.join(difflib.unified_diff(
                 args.file.readlines(), args.file2.readlines(), *args.label)))
     
     
@@ -183,7 +185,7 @@ class Arguments (argparse.ArgumentParser):
 
 class Reader (object):
     __metaclass__ = ABCMeta
-    ansi_color_escape = ur'\x1B\[(\d+(;\d+)*)?m'
+    ansi_color_escape = r'\x1B\[(\d+(;\d+)*)?m'
     
     
     @property
@@ -213,7 +215,7 @@ class StreamReader (Reader):
     
     def write(self, text):
         if not self.accepts_color:
-            text = re.sub(self.ansi_color_escape, u'', text)
+            text = re.sub(self.ansi_color_escape, '', text)
         
         try:
             self._stream.write(text)
@@ -246,7 +248,7 @@ class ProgramReader (StreamReader):
 
 class DiffReader (ProgramReader):
     def __init__(self):
-        super(DiffReader, self).__init__([u'kompare', u'-o', u'-'],
+        super(DiffReader, self).__init__(['kompare', '-o', '-'],
             stderr = file(os.path.devnull))
     
     
@@ -258,10 +260,10 @@ class DiffReader (ProgramReader):
 class TextReader (ProgramReader):
     def __init__(self):
         try:
-            super(TextReader, self).__init__([u'less'])
+            super(TextReader, self).__init__(['less'])
             self._accepts_color = True
         except NotImplementedError:
-            super(TextReader, self).__init__([u'cmd', u'/C', u'more'])
+            super(TextReader, self).__init__(['cmd', '/C', 'more'])
             self._accepts_color = False
     
     
@@ -276,11 +278,11 @@ class Pager (Reader):
         self._diff_mode = diff_mode
         self._follow = follow
         
-        self._buffer = u''
+        self._buffer = ''
         self._buffered_lines = 0
         self._output = None
         
-        self._line_separator = u'\n'
+        self._line_separator = '\n'
         self._inline_lines_threshold = 0.375
     
     
@@ -295,11 +297,11 @@ class Pager (Reader):
                     raise
                 
                 text = self._buffer.encode() + line
-                (detected, encoding) = (True, chardet.detect(text)[u'encoding'])
+                (detected, encoding) = (True, chardet.detect(text)['encoding'])
                 yield self._clean_input(line.decode(encoding))
         
         if self._follow:
-            (text, self._buffer) = (self._buffer, u'')
+            (text, self._buffer) = (self._buffer, '')
             self._setup_output(text)
             self._display(text)
             
@@ -321,7 +323,7 @@ class Pager (Reader):
     def close(self):
         self._input.close()
         
-        if self._buffer != u'':
+        if self._buffer != '':
             self._setup_output(self._buffer)
             self._display(self._buffer)
         
@@ -337,7 +339,7 @@ class Pager (Reader):
             if self._buffered_lines <= self._max_inline_lines:
                 return
             
-            (text, self._buffer) = (self._buffer, u'')
+            (text, self._buffer) = (self._buffer, '')
             self._setup_output(text)
         
         self._display(text)
@@ -345,7 +347,7 @@ class Pager (Reader):
     
     def _clean_input(self, text):
         # Clean up the backspace control character.
-        return re.sub(ur'.\x08', u'', text)
+        return re.sub(r'.\x08', '', text)
     
     
     def _display(self, text):
@@ -357,7 +359,7 @@ class Pager (Reader):
         if self._diff_mode:
             return pygments.lexers.DiffLexer(stripnl = False)
         else:
-            clean_text = re.sub(self.ansi_color_escape, u'', text)
+            clean_text = re.sub(self.ansi_color_escape, '', text)
             
             try:
                 return pygments.lexers.guess_lexer(clean_text, stripnl = False)
@@ -396,7 +398,7 @@ class Pager (Reader):
             pass
         
         try:
-            stty = subprocess.Popen([u'stty', u'size'],
+            stty = subprocess.Popen(['stty', 'size'],
                 stdout = subprocess.PIPE)
             
             (rows, columns) = stty.stdout.read().split()
@@ -433,7 +435,7 @@ class Pager (Reader):
             self._lexer = pygments.lexers.TextLexer(stripnl = False)
         else:
             self._lexer = lexer
-            self._lexer.add_filter(u'codetagify')
+            self._lexer.add_filter('codetagify')
         
         self._formatter = pygments.formatters.Terminal256Formatter()
 
@@ -445,7 +447,7 @@ try:
     for line in pager:
         pager.write(line)
 except KeyboardInterrupt:
-    print
+    print()
 except EOFError:
     pass
 
