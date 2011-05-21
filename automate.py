@@ -11,8 +11,7 @@
 # TODO: Handle HTTP connection errors (off-line, not found, etc).
 # TODO: Create MS Win32 system service?
 # TODO: Cut the first few seconds of the IGN Daily Fix videos.
-# TODO: Fix ScrewAttack 404 errors. Use default browser's cookies (e.g. Opera)?
-# TODO: Create sources for GameTrailers videos (and Pop-Fiction, GT Countdown).
+# TODO: Create sources for GameTrailers videos (Pop-Fiction, GT Countdown, etc).
 # TODO: Create source for TV shows and automatic backup of watched episodes.
 # TODO: Refresh FDM's cached list of URL's every X seconds?
 # TODO: Add documentation.
@@ -440,11 +439,14 @@ class ScrewAttack (DownloadSource):
             '//div[@id="nerd"]//a[@class="gamepage_content_row_title"]/@href')
         
         for page_url in [Url(self._BASE_URL + path) for path in videos]:
-            video_html = lxml.html.fromstring(page_url.open().read())
-            video_url = Url(video_html.xpath(self._QUICKTIME_VIDEO_HREF)[0])
+            page_html = page_url.open().read()
             
-            url = Url('http://trailers-ak.gametrailers.com/gt_vault/3000/' \
-                + video_url.path.components[-1])
+            [video_id] = re.findall(r'mov_game_id\s*=\s*(\d+)', page_html)
+            video_url = Url(lxml.html.fromstring(page_html).xpath(
+                self._QUICKTIME_VIDEO_HREF)[0])
+            
+            url = Url('http://trailers-ak.gametrailers.com/gt_vault/%s/%s' \
+                % (video_id, video_url.path.components[-1]))
             
             yield (url, None)
     
