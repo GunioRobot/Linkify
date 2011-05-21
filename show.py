@@ -2,8 +2,11 @@
 # -*- coding: utf-8 -*-
 
 
+# TODO: Take line width and wrapping into account when paging.
 # TODO: Support Git diff file add/removal.
 # TODO: Follow file automatically if it changes size?
+# TODO: Fix encoding issues when comparing content.
+#       $ ./show.py www.opera.com my.opera.com
 # TODO: Clean up exception handling.
 #       $ ./show.py -f file ^C ^C
 #       $ ./show.py long-file ^C
@@ -13,7 +16,6 @@
 #       $ ./show.py '\d+' ~
 # TODO: Do a file search if given a directory as the fist file (e.g. find).
 #       $ ./show.py . '*.txt'
-# TODO: Take line width and wrapping into account when paging.
 # TODO: Profile speed execution.
 # TODO: Implement color support on Windows.
 
