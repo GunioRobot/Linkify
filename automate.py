@@ -29,22 +29,6 @@ import logging, os.path, re, time, Tkinter, urllib2, urlparse
 externals(u'feedparser', u'lxml.html', u'PIL.Image', u'unipath')
 
 
-class Logger (object):
-    def __init__(self):
-        handler = logging.StreamHandler()
-        handler.setFormatter(logging.Formatter(
-            u'[%(levelname)s] [%(asctime)s] [%(name)s] %(message)s'))
-        
-        self._logger = logging.getLogger(self.__class__.__name__)
-        self._logger.addHandler(handler)
-        self._logger.setLevel(logging.DEBUG)
-    
-    
-    @property
-    def logger(self):
-        return self._logger
-
-
 class Path (unipath.Path):
     @property
     def components(self):
@@ -132,20 +116,6 @@ class FileUrl (PathUrl):
         return hash(self.path.name)
 
 
-class DownloadManager (Logger):
-    __metaclass__ = ABCMeta
-    
-    
-    @abstractmethod
-    def download_url(self, url):
-        pass
-    
-    
-    @abstractmethod
-    def has_url(self, url):
-        pass
-
-
 class MsWindowsTypeLibrary (object):
     def __init__(self, path):
         import pythoncom, win32com.client
@@ -165,6 +135,36 @@ class MsWindowsTypeLibrary (object):
         
         raise Exception(u'Type "%s" not found in type library "%s".'
             % (name, self._path))
+
+
+class Logger (object):
+    def __init__(self):
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter(
+            u'[%(levelname)s] [%(asctime)s] [%(name)s] %(message)s'))
+        
+        self._logger = logging.getLogger(self.__class__.__name__)
+        self._logger.addHandler(handler)
+        self._logger.setLevel(logging.DEBUG)
+    
+    
+    @property
+    def logger(self):
+        return self._logger
+
+
+class DownloadManager (Logger):
+    __metaclass__ = ABCMeta
+    
+    
+    @abstractmethod
+    def download_url(self, url):
+        pass
+    
+    
+    @abstractmethod
+    def has_url(self, url):
+        pass
 
 
 class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary):
@@ -423,6 +423,7 @@ class ScrewAttack (DownloadSource, Logger):
 
 
 dl_manager = FreeDownloadManager()
+
 sources = [source() for source in [
     IgnDailyFix,
     InterfaceLift,
