@@ -3,8 +3,6 @@
 
 
 # TODO: Check HTTP timeouts.
-# TODO: Compare URL's using the URL class? Include redirection and comparison
-#       specific logic in sub-classes?
 # TODO: Query download sources in parallel.
 # TODO: Hide terminal while executing download finished events.
 # TODO: Use command line options to choose the download manager, execute
@@ -59,7 +57,10 @@ class Path (unipath.Path):
 
 class Url (object):
     def __init__(self, url):
-        self._components = urlparse.urlparse(url)
+        if isinstance(url, Url):
+            self._components = url._components
+        else:
+            self._components = urlparse.urlparse(url)
     
     
     @property
@@ -91,7 +92,7 @@ class Url (object):
     
     def resolve(self):
         connection = self.open()
-        url = Url(connection.geturl())
+        url = type(self)(connection.geturl())
         
         connection.close()
         return url
@@ -113,6 +114,24 @@ class Url (object):
         return urlparse.urlunparse(self._components)
 
 
+class PathUrl (Url):
+    def __cmp__(self, url):
+        return cmp(unicode(self.path), unicode(url.path))
+    
+    
+    def __hash__(self):
+        return hash(unicode(self.path))
+
+
+class FileUrl (PathUrl):
+    def __cmp__(self, url):
+        return cmp(unicode(self.path.name), unicode(url.path.name))
+    
+    
+    def __hash__(self):
+        return hash(unicode(self.path.name))
+
+
 class DownloadManager (Logger):
     __metaclass__ = ABCMeta
     
@@ -123,7 +142,7 @@ class DownloadManager (Logger):
     
     
     @abstractmethod
-    def has_url(self, source, url):
+    def has_url(self, url):
         pass
 
 
@@ -177,12 +196,11 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary):
         self.logger.debug(u'Download: %s', url)
     
     
-    def has_url(self, source, url):
+    def has_url(self, url):
         resolved_url = url.resolve()
         
-        for old_url in self._list_urls():
-            if source.compare_urls(url, resolved_url, old_url) == 0:
-                return True
+        if resolved_url in self._list_urls():
+            return True
         
         if resolved_url != url:
             self.logger.debug(u'Redirect: %s', resolved_url)
@@ -223,10 +241,6 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary):
 
 class DownloadSource (object):
     __metaclass__ = ABCMeta
-    
-    
-    def compare_urls(self, original, resolved, old):
-        return cmp(resolved, old)
     
     
     def download_finished(self, url, file_path):
@@ -300,32 +314,30 @@ class HdTrailers (Feed):
             u'http://feeds.hd-trailers.net/hd-trailers/blog')
     
     
-    def compare_urls(self, original, resolved, old):
-        if original.host_name == u'playlist.yahoo.com':
-            return cmp(resolved.path, old.path)
-        else:
-            return super(HdTrailers, self).compare_urls(original, resolved, old)
-    
-    
     def list_urls(self):
         for entry in self.get_feed().entries:
-            if re.search(ur'\b(teaser|trailer)\b', entry.title, re.IGNORECASE):
-                if hasattr(entry, u'enclosures'):
-                    urls = [enclosure.href for enclosure in entry.enclosures]
-                    yield Url(self._find_highest_resolution(urls))
-                else:
-                    # Parse HTML to find movie links.
-                    html = lxml.html.fromstring(entry.content[0].value)
-                    (url, highest_resolution) = (None, 0)
+            if not re.search(ur'\b(teaser|trailer)\b', entry.title, re.I):
+                continue
+
+            if hasattr(entry, u'enclosures'):
+                url = Url(self._find_highest_resolution(
+                    [enclosure.href for enclosure in entry.enclosures]))
+            else:
+                # Parse HTML to find movie links.
+                html = lxml.html.fromstring(entry.content[0].value)
+                (url, highest_resolution) = (None, 0)
+                
+                for link in html.xpath(u'//a[text() != ""]'):
+                    resolution = self._get_resolution(link.text)
                     
-                    for link in html.xpath(u'//a[text() != ""]'):
-                        resolution = self._get_resolution(link.text)
-                        
-                        if resolution > highest_resolution:
-                            url = link.attrib[u'href']
-                            highest_resolution = resolution
-                    
-                    yield Url(url)
+                    if resolution > highest_resolution:
+                        url = Url(link.attrib[u'href'])
+                        highest_resolution = resolution
+            
+            if url.host_name == u'playlist.yahoo.com':
+                yield PathUrl(url)
+            else:
+                yield url
     
     
     @property
@@ -348,10 +360,6 @@ class InterfaceLift (Feed):
             u'http://' + self._HOST_NAME + u'/wallpaper/rss/index.xml')
     
     
-    def compare_urls(self, original, resolved, old):
-        return cmp(resolved.path.name, old.path.name)
-    
-    
     def download_finished(self, url, file_path):
         if url.host_name == self._HOST_NAME:
             image = PIL.Image.open(file_path)
@@ -363,7 +371,8 @@ class InterfaceLift (Feed):
         resolution = self._get_screen_resolution()
         
         for entry in self.get_feed().entries:
-            url = Url(lxml.html.fromstring(entry.summary).xpath(u'//img/@src')[0])
+            url = FileUrl(
+                lxml.html.fromstring(entry.summary).xpath(u'//img/@src')[0])
             (path, ext) = url.path.split_ext()
             
             url.path = re.sub(
@@ -429,7 +438,7 @@ while True:
         
         for url in source.list_urls():
             try:
-                if not dl_manager.has_url(source, url):
+                if not dl_manager.has_url(url):
                     dl_manager.download_url(url)
             except urllib2.HTTPError as error:
                 dl_manager.logger.error(u'%s: %s', str(error), url)
