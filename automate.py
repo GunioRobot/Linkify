@@ -14,6 +14,7 @@
 # TODO: Create sources for GameTrailers videos (Pop-Fiction, GT Countdown, etc).
 # TODO: Create source for TV shows and automatic backup of watched episodes.
 # TODO: Refresh FDM's cached list of URL's every X seconds?
+# TODO: Refactor into separate modules.
 # TODO: Add documentation.
 # TODO: Profile time execution.
 
