@@ -538,7 +538,7 @@ while True:
             try:
                 if not dl_manager.has_url(url):
                     dl_manager.download_url(url, to = file_name)
-            except urllib2.HTTPError as error:
+            except urllib2.URLError as error:
                 dl_manager.logger.error('%s: %s', str(error), url)
     
     dl_manager.logger.info('Stopping...')
