@@ -531,8 +531,6 @@ sources = [
 ]
 
 while True:
-    dl_manager.logger.info('Starting...')
-    
     for source in sources:
         dl_manager.logger.info('Source check: %s', source.name)
         
@@ -543,5 +541,5 @@ while True:
             except urllib2.URLError as error:
                 dl_manager.logger.error('%s: %s', str(error), url)
     
-    dl_manager.logger.info('Stopping...')
+    dl_manager.logger.info('Paused')
     time.sleep(10 * 60)
