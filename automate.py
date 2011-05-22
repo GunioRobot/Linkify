@@ -444,21 +444,26 @@ class InterfaceLift (DownloadSource, Feed):
         return re.findall('"/wallpaper/([^/]+)/"', script.open().read())[0]
 
 
-class GameTrailersVideos (object):
+class GameTrailersVideos (Logger):
     BASE_URL = 'http://www.gametrailers.com'
     
     
     def get_video_url(self, page_url):
         page_html = page_url.open().read()
+        video_id = re.findall(r'mov_game_id\s*=\s*(\d+)', page_html)
+        
+        # Not all videos are available for download, e.g. Bonus Round episodes.
+        if len(video_id) == 0:
+            self.logger.error('Movie ID not found: %s', page_url)
+            return
+        
         quicktime_video_href = '//span[@class="Downloads"]' \
             + '/a[starts-with(text(), "Quicktime")]/@href'
-        
-        [video_id] = re.findall(r'mov_game_id\s*=\s*(\d+)', page_html)
         video_url = Url(lxml.html.fromstring(page_html).xpath(
             quicktime_video_href)[0])
         
         return Url('http://trailers-ak.gametrailers.com/gt_vault/%s/%s' \
-            % (video_id, video_url.path.components[-1]))
+            % (video_id[0], video_url.path.components[-1]))
 
 
 class ScrewAttack (DownloadSource, GameTrailersVideos):
@@ -502,7 +507,10 @@ class GameTrailers (DownloadSource, GameTrailersVideos, Feed):
         
         for entry in self.get_feed().entries:
             if re.search(keywords_re, entry.title, re.IGNORECASE):
-                yield (self.get_video_url(Url(entry.link)), None)
+                url = self.get_video_url(Url(entry.link))
+                
+                if url is not None:
+                    yield (url, None)
     
     
     @property
@@ -531,7 +539,7 @@ while True:
                 if not dl_manager.has_url(url):
                     dl_manager.download_url(url, to = file_name)
             except urllib2.HTTPError as error:
-                dl_manager.logger.error('%s: %s', error, url)
+                dl_manager.logger.error('%s: %s', str(error), url)
     
     dl_manager.logger.info('Stopping...')
     time.sleep(10 * 60)
