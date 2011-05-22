@@ -135,16 +135,21 @@ class MsWindowsTypeLibrary (object):
         import pythoncom, win32com.client
         global pythoncom, win32com
         
-        self._path = path
+        self._iid_by_type_name = {}
         self._lib = pythoncom.LoadTypeLib(self._path)
+        self._path = path
     
     
     def get_data_type(self, type_name):
+        if type_name in self._iid_by_type_name:
+            return win32com.client.Dispatch(self._iid_by_type_name[type_name])
+        
         for i in xrange(0, self._lib.GetTypeInfoCount()):
             (name, doc, help_ctxt, help_file) = self._lib.GetDocumentation(i)
             
-            if name == type_name:
+            if type_name == name:
                 iid = self._lib.GetTypeInfo(i).GetTypeAttr().iid
+                self._iid_by_type_name[type_name] = iid
                 return win32com.client.Dispatch(iid)
         
         raise Exception('Type "%s" not found in type library "%s".'
