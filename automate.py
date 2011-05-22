@@ -262,7 +262,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Logger):
             self._cached_downloads_stat = True
 
 
-class DownloadSource (Logger):
+class DownloadSource (object):
     __metaclass__ = ABCMeta
     
     
@@ -309,7 +309,7 @@ class IgnDailyFix (DownloadSource, Feed):
         return self._TITLE
 
 
-class HdTrailers (DownloadSource, Feed):
+class HdTrailers (DownloadSource, Feed, Logger):
     @classmethod
     def _find_highest_resolution(cls, strings):
         strings.sort(
@@ -335,6 +335,7 @@ class HdTrailers (DownloadSource, Feed):
     def __init__(self):
         DownloadSource.__init__(self)
         Feed.__init__(self, 'http://feeds.hd-trailers.net/hd-trailers/blog')
+        Logger.__init__(self)
     
     
     def list_urls(self):
