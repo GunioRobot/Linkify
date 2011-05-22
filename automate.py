@@ -136,7 +136,7 @@ class MsWindowsTypeLibrary (object):
         global pythoncom, win32com
         
         self._iid_by_type_name = {}
-        self._lib = pythoncom.LoadTypeLib(self._path)
+        self._lib = pythoncom.LoadTypeLib(path)
         self._path = path
     
     
@@ -172,7 +172,7 @@ class Logger (object):
         return self._logger
 
 
-class DownloadManager (Logger):
+class DownloadManager (object):
     __metaclass__ = ABCMeta
     
     
@@ -186,13 +186,14 @@ class DownloadManager (Logger):
         pass
 
 
-class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary):
+class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Logger):
     _FILE_NAME_DOWNLOAD_TEXT = 0
     
     
     def __init__(self):
         DownloadManager.__init__(self)
         MsWindowsTypeLibrary.__init__(self, 'fdm.tlb')
+        Logger.__init__(self)
         
         self._cached_downloads_stat = False
         self._urls = set()
