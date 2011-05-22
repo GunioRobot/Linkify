@@ -444,7 +444,7 @@ class InterfaceLift (DownloadSource, Feed):
         return re.findall('"/wallpaper/([^/]+)/"', script.open().read())[0]
 
 
-class GameTrailersVideos (Logger):
+class GameTrailersVideos (object):
     BASE_URL = 'http://www.gametrailers.com'
     
     
@@ -452,9 +452,7 @@ class GameTrailersVideos (Logger):
         page_html = page_url.open().read()
         video_id = re.findall(r'mov_game_id\s*=\s*(\d+)', page_html)
         
-        # Not all videos are available for download, e.g. Bonus Round episodes.
         if len(video_id) == 0:
-            self.logger.error('Movie ID not found: %s', page_url)
             return
         
         quicktime_video_href = '//span[@class="Downloads"]' \
@@ -482,7 +480,7 @@ class ScrewAttack (DownloadSource, GameTrailersVideos):
         return 'ScrewAttack'
 
 
-class GameTrailers (DownloadSource, GameTrailersVideos, Feed):
+class GameTrailers (DownloadSource, GameTrailersVideos, Feed, Logger):
     def __init__(self):
         query = {
             'limit': 100,
@@ -499,6 +497,7 @@ class GameTrailers (DownloadSource, GameTrailersVideos, Feed):
         DownloadSource.__init__(self)
         GameTrailersVideos.__init__(self)
         Feed.__init__(self, unicode(url))
+        Logger.__init__(self)
     
     
     def list_urls(self):
@@ -509,7 +508,10 @@ class GameTrailers (DownloadSource, GameTrailersVideos, Feed):
             if re.search(keywords_re, entry.title, re.IGNORECASE):
                 url = self.get_video_url(Url(entry.link))
                 
-                if url is not None:
+                if url is None:
+                    # Not all videos are available for download.
+                    self.logger.error('Movie ID not found: %s', entry.link)
+                else:
                     yield (url, None)
     
     
