@@ -130,20 +130,44 @@ class Arguments (argparse.ArgumentParser):
                 b'type': InputType(),
                 b'help': 'input to compare with, and switch to diff mode',
             }),
-            ('git', {
-                b'nargs': '*',
-                b'help': 'assume git diff arguments, and switch to diff mode',
+        ]
+        
+        git_arguments = [
+            ('old_hex', {
+                b'nargs': '?',
+                b'help': 'current Git file commit',
+            }),
+            ('old_mode', {
+                b'nargs': '?',
+                b'help': 'current Git file mode',
+            }),
+            ('new_file', {
+                b'nargs': '?',
+                b'type': InputType(),
+                b'help': 'working copy Git file version',
+            }),
+            ('new_hex', {
+                b'nargs': '?',
+                b'help': 'working copy Git file commit',
+            }),
+            ('new_mode', {
+                b'nargs': '?',
+                b'help': 'working copy Git file mode',
             }),
         ]
         
-        for name, options in arguments:
-            self.add_argument(name, **options)
+        git_group = self.add_argument_group(
+            title = 'Git external diff arguments')
+        
+        for (group, args) in [(self, arguments), (git_group, git_arguments)]:
+            for name, options in args:
+                group.add_argument(name, **options)
     
     
     def parse_args(self):
         args = super(Arguments, self).parse_args()
         
-        if len(args.git) == 5:
+        if args.new_file is not None:
             self._parse_git_diff_arguments(args)
         
         if args.file2 is None:
@@ -166,11 +190,9 @@ class Arguments (argparse.ArgumentParser):
     
     
     def _parse_git_diff_arguments(self, args):
-        (stream, old_file) = (args.file, args.file2)
-        (args.file, args.file2) = (old_file, stream)
-        
-        path = self._resolve_path(stream)
+        path = self._resolve_path(args.file)
         args.label = [path, path]
+        (args.file, args.file2) = (args.file2, args.new_file)
     
     
     def _resolve_path(self, stream):
