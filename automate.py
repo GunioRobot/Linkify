@@ -505,7 +505,11 @@ class GameTrailers (DownloadSource, GameTrailersVideos, Feed, Logger):
         
         for entry in self.get_feed().entries:
             if re.search(keywords_re, entry.title, re.IGNORECASE):
-                url = self.get_video_url(Url(entry.link))
+                try:
+                    url = self.get_video_url(Url(entry.link))
+                except urllib2.URLError as error:
+                    self.logger.error('%s: %s', str(error), entry.link)
+                    continue
                 
                 if url is None:
                     # Not all videos are available for download.
