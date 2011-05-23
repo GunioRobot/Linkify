@@ -7,6 +7,7 @@
 # TODO: Follow file automatically if it changes size?
 # TODO: Fix encoding issues when comparing content.
 #       $ ./show.py www.opera.com my.opera.com
+#       $ ./show.py defaults utf8
 # TODO: Clean up exception handling.
 #       $ ./show.py -f file ^C ^C
 #       $ ./show.py long-file ^C
@@ -23,8 +24,8 @@
 
 # Standard library:
 from __future__ import division, print_function, unicode_literals
-import codecs, difflib, errno, inspect, locale, os, re, StringIO, struct, \
-    subprocess, sys, time
+import codecs, difflib, errno, httplib, inspect, locale, os, re, StringIO, \
+    struct, subprocess, sys, time
 
 # Internal modules:
 from defaults import *
@@ -48,7 +49,7 @@ class InputType (argparse.FileType):
                 for url in [path, 'http://' + path]:
                     try:
                         return filelike.open(url)
-                    except IOError:
+                    except (IOError, httplib.InvalidURL):
                         pass
                 
                 try:
@@ -140,13 +141,7 @@ class Arguments (argparse.ArgumentParser):
     
     
     def parse_args(self):
-        try:
-            args = super(Arguments, self).parse_args()
-        except IOError as error:
-            if error.errno in (errno.ENOENT, errno.EISDIR):
-                sys.exit(str(error))
-            else:
-                raise
+        args = super(Arguments, self).parse_args()
         
         if len(args.git) == 5:
             self._parse_git_diff_arguments(args)
@@ -443,7 +438,14 @@ class Pager (Reader):
         self._formatter = pygments.formatters.Terminal256Formatter()
 
 
-args = Arguments().parse_args()
+try:
+    args = Arguments().parse_args()
+except IOError as error:
+    if error.errno in (errno.ENOENT, errno.EISDIR):
+        sys.exit(str(error))
+    else:
+        raise
+
 pager = Pager(args.file, args.diff_mode, args.follow)
 
 try:
