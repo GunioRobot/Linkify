@@ -23,8 +23,8 @@
 
 # Standard library:
 from __future__ import division, print_function, unicode_literals
-import codecs, difflib, errno, inspect, locale, os, re, StringIO, struct, \
-    subprocess, sys, time
+import codecs, difflib, errno, httplib, inspect, locale, os, re, StringIO, \
+    struct, subprocess, sys, time
 
 # Internal modules:
 from defaults import *
@@ -48,7 +48,7 @@ class InputType (argparse.FileType):
                 for url in [path, 'http://' + path]:
                     try:
                         return filelike.open(url)
-                    except IOError:
+                    except (IOError, httplib.InvalidURL):
                         pass
                 
                 try:
