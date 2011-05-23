@@ -141,13 +141,7 @@ class Arguments (argparse.ArgumentParser):
     
     
     def parse_args(self):
-        try:
-            args = super(Arguments, self).parse_args()
-        except IOError as error:
-            if error.errno in (errno.ENOENT, errno.EISDIR):
-                sys.exit(str(error))
-            else:
-                raise
+        args = super(Arguments, self).parse_args()
         
         if len(args.git) == 5:
             self._parse_git_diff_arguments(args)
@@ -444,7 +438,14 @@ class Pager (Reader):
         self._formatter = pygments.formatters.Terminal256Formatter()
 
 
-args = Arguments().parse_args()
+try:
+    args = Arguments().parse_args()
+except IOError as error:
+    if error.errno in (errno.ENOENT, errno.EISDIR):
+        sys.exit(str(error))
+    else:
+        raise
+
 pager = Pager(args.file, args.diff_mode, args.follow)
 
 try:
