@@ -9,6 +9,7 @@
 # TODO: Fix encoding issues when comparing content.
 #       $ ./show.py www.opera.com my.opera.com
 #       $ ./show.py defaults utf8
+# TODO: Support other comparison tools, like Meld and KDiff3?
 # TODO: Clean up exception handling.
 #       $ ./show.py -f file ^C ^C
 #       $ ./show.py long-file ^C
