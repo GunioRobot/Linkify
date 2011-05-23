@@ -20,6 +20,7 @@
 # TODO: Profile time execution.
 # TODO: Implement color support on Windows.
 # TODO: Simplify logic (e.g. Pager.run, etc), add documentation.
+# TODO: Detect missing programs and provide fallbacks (e.g. KDiff3, Meld).
 
 
 # Standard library:
