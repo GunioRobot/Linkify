@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 
 
+# TODO: Support Git diff file add/removal (fix GIT_EXTERNAL_DIFF arguments).
+# TODO: Don't display diff for removed files.
 # TODO: Take line width and wrapping into account when paging.
-# TODO: Support Git diff file add/removal.
 # TODO: Follow file automatically if it changes size?
 # TODO: Fix encoding issues when comparing content.
 #       $ ./show.py www.opera.com my.opera.com
