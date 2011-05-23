@@ -455,7 +455,7 @@ class GameTrailersVideos (object):
         if len(video_id) == 0:
             return
         
-        quicktime_video_href = '//span[@class="Downloads"]' \
+        quicktime_video_href = '//span[@class = "Downloads"]' \
             + '/a[starts-with(text(), "Quicktime")]/@href'
         video_url = Url(lxml.html.fromstring(page_html).xpath(
             quicktime_video_href)[0])
@@ -469,7 +469,7 @@ class ScrewAttack (DownloadSource, GameTrailersVideos):
         main_html = lxml.html.fromstring(
             Url(self.BASE_URL + '/screwattack').open().read())
         videos = main_html.xpath(
-            '//div[@id="nerd"]//a[@class="gamepage_content_row_title"]/@href')
+            '//div[@id = "nerd"]//a[@class = "gamepage_content_row_title"]/@href')
         
         for page_url in [Url(self.BASE_URL + path) for path in videos]:
             yield (self.get_video_url(page_url), None)
@@ -520,6 +520,23 @@ class GameTrailers (DownloadSource, GameTrailersVideos, Feed, Logger):
         return 'GameTrailers'
 
 
+class PopFiction (DownloadSource, GameTrailersVideos):
+    def list_urls(self):
+        main_html = lxml.html.fromstring(
+            Url(self.BASE_URL + '/game/pop-fiction/13123').open().read())
+        
+        videos = main_html.xpath(
+            '//*[@id = "GamepageMedialistFeatures"]' \
+            + '//*[@class = "newestlist_movie_format_SDHD"]/a[1]/@href')
+        
+        for page_url in [Url(self.BASE_URL + path) for path in videos]:
+            yield (self.get_video_url(page_url), None)    
+    
+    @property
+    def name(self):
+        return 'Pop-Fiction'
+
+
 dl_manager = FreeDownloadManager()
 
 sources = [
@@ -527,6 +544,7 @@ sources = [
     HdTrailers(),
     IgnDailyFix(),
     InterfaceLift(),
+    PopFiction(),
     ScrewAttack(),
 ]
 
