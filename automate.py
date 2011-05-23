@@ -11,8 +11,7 @@
 # TODO: Handle HTTP connection errors (off-line, not found, etc).
 # TODO: Create MS Win32 system service?
 # TODO: Cut the first few seconds of the IGN Daily Fix videos.
-# TODO: Create sources for GameTrailers videos (Pop-Fiction, GT Countdown, etc).
-# TODO: Create source for TV shows and automatic backup of watched episodes.
+# TODO: Create sources for GT Countdown and TV shows (with list backup).
 # TODO: Refresh FDM's cached list of URL's every X seconds?
 # TODO: Refactor into separate modules.
 # TODO: Add documentation.
