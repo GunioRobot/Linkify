@@ -1,6 +1,5 @@
 // ==UserScript==
 // @include http://my.opera.com/*
-// @include http://my.*.opera.com*
 // ==/UserScript==
 
 
