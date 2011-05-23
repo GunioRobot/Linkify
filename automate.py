@@ -455,7 +455,7 @@ class GameTrailersVideos (object):
         if len(video_id) == 0:
             return
         
-        quicktime_video_href = '//span[@class = "Downloads"]' \
+        quicktime_video_href = '//*[@class = "Downloads"]' \
             + '/a[starts-with(text(), "Quicktime")]/@href'
         video_url = Url(lxml.html.fromstring(page_html).xpath(
             quicktime_video_href)[0])
@@ -469,7 +469,7 @@ class ScrewAttack (DownloadSource, GameTrailersVideos):
         main_html = lxml.html.fromstring(
             Url(self.BASE_URL + '/screwattack').open().read())
         videos = main_html.xpath(
-            '//div[@id = "nerd"]//a[@class = "gamepage_content_row_title"]/@href')
+            '//*[@id = "nerd"]//a[@class = "gamepage_content_row_title"]/@href')
         
         for page_url in [Url(self.BASE_URL + path) for path in videos]:
             yield (self.get_video_url(page_url), None)
