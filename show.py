@@ -22,6 +22,7 @@
 # TODO: Profile time execution.
 # TODO: Implement color support on Windows.
 # TODO: Simplify logic (e.g. Pager.run, etc), add documentation.
+# TODO: Detect missing programs and provide fallbacks (e.g. KDiff3, Meld).
 
 
 # Standard library:
@@ -121,34 +122,58 @@ class Arguments (argparse.ArgumentParser):
                 b'const': None,
                 b'help': 'ignored for diff compatibility',
             }),
-            ('file', {
+            ('input', {
                 b'nargs': '?',
                 b'default': sys.stdin,
                 b'type': InputType(),
                 b'help': 'input to display',
             }),
-            ('file2', {
+            ('input2', {
                 b'nargs': '?',
                 b'type': InputType(),
                 b'help': 'input to compare with, and switch to diff mode',
             }),
-            ('git', {
-                b'nargs': '*',
-                b'help': 'assume git diff arguments, and switch to diff mode',
+        ]
+        
+        git_arguments = [
+            ('old_hex', {
+                b'nargs': '?',
+                b'help': 'current Git file commit',
+            }),
+            ('old_mode', {
+                b'nargs': '?',
+                b'help': 'current Git file mode',
+            }),
+            ('new_file', {
+                b'nargs': '?',
+                b'type': InputType(),
+                b'help': 'working copy Git file version',
+            }),
+            ('new_hex', {
+                b'nargs': '?',
+                b'help': 'working copy Git file commit',
+            }),
+            ('new_mode', {
+                b'nargs': '?',
+                b'help': 'working copy Git file mode',
             }),
         ]
         
-        for name, options in arguments:
-            self.add_argument(name, **options)
+        git_group = self.add_argument_group(
+            title = 'Git external diff arguments')
+        
+        for (group, args) in [(self, arguments), (git_group, git_arguments)]:
+            for name, options in args:
+                group.add_argument(name, **options)
     
     
     def parse_args(self):
         args = super(Arguments, self).parse_args()
         
-        if len(args.git) == 5:
+        if args.new_file is not None:
             self._parse_git_diff_arguments(args)
         
-        if args.file2 is None:
+        if args.input2 is None:
             args.diff_mode = False
         else:
             args.diff_mode = True
@@ -159,20 +184,20 @@ class Arguments (argparse.ArgumentParser):
     
     def _parse_diff_arguments(self, args):
         if args.label is None:
-            args.label = [self._resolve_path(f) for f in args.file, args.file2]
+            args.label = [
+                self._resolve_path(input) for input in args.input, args.input2
+            ]
         
-        args.file = StringIO.StringIO(
+        args.input = StringIO.StringIO(
             'diff -u %s\n' % ' '.join(args.label)
             + ''.join(difflib.unified_diff(
-                args.file.readlines(), args.file2.readlines(), *args.label)))
+                args.input.readlines(), args.input2.readlines(), *args.label)))
     
     
     def _parse_git_diff_arguments(self, args):
-        (stream, old_file) = (args.file, args.file2)
-        (args.file, args.file2) = (old_file, stream)
-        
-        path = self._resolve_path(stream)
+        path = self._resolve_path(args.input)
         args.label = [path, path]
+        (args.input, args.input2) = (args.input2, args.new_file)
     
     
     def _resolve_path(self, stream):
@@ -448,7 +473,7 @@ except IOError as error:
     else:
         raise
 
-pager = Pager(args.file, args.diff_mode, args.follow)
+pager = Pager(args.input, args.diff_mode, args.follow)
 
 try:
     for line in pager:

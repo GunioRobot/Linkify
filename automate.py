@@ -11,8 +11,7 @@
 # TODO: Handle HTTP connection errors (off-line, not found, etc).
 # TODO: Create MS Win32 system service?
 # TODO: Cut the first few seconds of the IGN Daily Fix videos.
-# TODO: Create sources for GameTrailers videos (Pop-Fiction, GT Countdown, etc).
-# TODO: Create source for TV shows and automatic backup of watched episodes.
+# TODO: Create sources for GT Countdown and TV shows (with list backup).
 # TODO: Refresh FDM's cached list of URL's every X seconds?
 # TODO: Refactor into separate modules.
 # TODO: Add documentation.
@@ -455,7 +454,7 @@ class GameTrailersVideos (object):
         if len(video_id) == 0:
             return
         
-        quicktime_video_href = '//span[@class="Downloads"]' \
+        quicktime_video_href = '//*[@class = "Downloads"]' \
             + '/a[starts-with(text(), "Quicktime")]/@href'
         video_url = Url(lxml.html.fromstring(page_html).xpath(
             quicktime_video_href)[0])
@@ -469,7 +468,7 @@ class ScrewAttack (DownloadSource, GameTrailersVideos):
         main_html = lxml.html.fromstring(
             Url(self.BASE_URL + '/screwattack').open().read())
         videos = main_html.xpath(
-            '//div[@id="nerd"]//a[@class="gamepage_content_row_title"]/@href')
+            '//*[@id = "nerd"]//a[@class = "gamepage_content_row_title"]/@href')
         
         for page_url in [Url(self.BASE_URL + path) for path in videos]:
             yield (self.get_video_url(page_url), None)
@@ -506,7 +505,11 @@ class GameTrailers (DownloadSource, GameTrailersVideos, Feed, Logger):
         
         for entry in self.get_feed().entries:
             if re.search(keywords_re, entry.title, re.IGNORECASE):
-                url = self.get_video_url(Url(entry.link))
+                try:
+                    url = self.get_video_url(Url(entry.link))
+                except urllib2.URLError as error:
+                    self.logger.error('%s: %s', str(error), entry.link)
+                    continue
                 
                 if url is None:
                     # Not all videos are available for download.
@@ -520,6 +523,23 @@ class GameTrailers (DownloadSource, GameTrailersVideos, Feed, Logger):
         return 'GameTrailers'
 
 
+class PopFiction (DownloadSource, GameTrailersVideos):
+    def list_urls(self):
+        main_html = lxml.html.fromstring(
+            Url(self.BASE_URL + '/game/pop-fiction/13123').open().read())
+        
+        videos = main_html.xpath(
+            '//*[@id = "GamepageMedialistFeatures"]' \
+            + '//*[@class = "newestlist_movie_format_SDHD"]/a[1]/@href')
+        
+        for page_url in [Url(self.BASE_URL + path) for path in videos]:
+            yield (self.get_video_url(page_url), None)    
+    
+    @property
+    def name(self):
+        return 'Pop-Fiction'
+
+
 dl_manager = FreeDownloadManager()
 
 sources = [
@@ -527,12 +547,11 @@ sources = [
     HdTrailers(),
     IgnDailyFix(),
     InterfaceLift(),
+    PopFiction(),
     ScrewAttack(),
 ]
 
 while True:
-    dl_manager.logger.info('Starting...')
-    
     for source in sources:
         dl_manager.logger.info('Source check: %s', source.name)
         
@@ -543,5 +562,5 @@ while True:
             except urllib2.URLError as error:
                 dl_manager.logger.error('%s: %s', str(error), url)
     
-    dl_manager.logger.info('Stopping...')
+    dl_manager.logger.info('Paused')
     time.sleep(10 * 60)
