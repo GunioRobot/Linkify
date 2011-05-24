@@ -2,14 +2,12 @@
 # -*- coding: utf-8 -*-
 
 
-# TODO: Support Git diff file add/removal (fix GIT_EXTERNAL_DIFF arguments).
 # TODO: Don't display diff for removed files.
 # TODO: Take line width and wrapping into account when paging.
 # TODO: Follow file automatically if it changes size?
 # TODO: Fix encoding issues when comparing content.
 #       $ ./show.py www.opera.com my.opera.com
 #       $ ./show.py defaults utf8
-# TODO: Support other comparison tools, like Meld and KDiff3?
 # TODO: Clean up exception handling.
 #       $ ./show.py -f file ^C ^C
 #       $ ./show.py long-file ^C
