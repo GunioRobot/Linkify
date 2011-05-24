@@ -117,6 +117,11 @@ fi
 if [ -z "$CYGWIN_ENV" ] && _have git; then
     git config --global color.ui auto
     git config --global push.default tracking
+    
+    export GIT_PS1_SHOWDIRTYSTATE=x
+    export GIT_PS1_SHOWSTASHSTATE=x
+    export GIT_PS1_SHOWUNTRACKEDFILES=x
+    
     ps1_user_host="$ps1_user_host\033[00m:\033[0;33m\$(__git_ps1 "%s")"
 fi
 
