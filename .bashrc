@@ -115,15 +115,9 @@ else
 fi
 
 if [ -z "$CYGWIN_ENV" ] && _have git; then
-    _git_branch() {
-        local path=$(git symbolic-ref HEAD 2> /dev/null)
-        [ -n "$path" ] && echo -e "\033[00m:\033[0;33m${path#refs/heads/}"
-    }
-    
     git config --global color.ui auto
     git config --global push.default tracking
-    
-    ps1_user_host="$ps1_user_host\$(_git_branch)"
+    ps1_user_host="$ps1_user_host\033[00m:\033[0;33m\$(__git_ps1 "%s")"
 fi
 
 export PS1="\[\033[4;30;32m\]$ps1_user_host\[\033[00m\]:\[\033[01;34m\]\w\n\\$\[\033[00m\] "
