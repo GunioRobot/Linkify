@@ -115,6 +115,11 @@ else
 fi
 
 if [ -z "$CYGWIN_ENV" ] && _have git; then
+    _color_git_ps1() {
+        local ps1=$(__git_ps1 "%s")
+        [ -n "$ps1" ] && echo -e "\033[00m:\033[0;33m$ps1"
+    }
+    
     git config --global color.ui auto
     git config --global push.default tracking
     
@@ -122,7 +127,7 @@ if [ -z "$CYGWIN_ENV" ] && _have git; then
     export GIT_PS1_SHOWSTASHSTATE=x
     export GIT_PS1_SHOWUNTRACKEDFILES=x
     
-    ps1_user_host="$ps1_user_host\033[00m:\033[0;33m\$(__git_ps1 "%s")"
+    ps1_user_host="$ps1_user_host\$(_color_git_ps1)"
 fi
 
 export PS1="\[\033[4;30;32m\]$ps1_user_host\[\033[00m\]:\[\033[01;34m\]\w\n\\$\[\033[00m\] "
