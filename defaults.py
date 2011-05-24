@@ -4,6 +4,7 @@
 
 # TODO: Set default source code file encoding to UTF-8.
 # TODO: Import default __future__ features.
+# TODO: Use final fix for issue 1441530.
 
 
 # Standard library:
