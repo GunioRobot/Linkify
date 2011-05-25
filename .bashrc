@@ -121,6 +121,8 @@ if [ -z "$CYGWIN_ENV" ]; then
             [ -n "$ps1" ] && echo -e "\033[00m:\033[0;33m$ps1"
         }
         
+        git config --global alias.co checkout
+        git config --global alias.br 'branch -vv'
         git config --global color.ui auto
         git config --global push.default tracking
         
