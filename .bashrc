@@ -133,7 +133,7 @@ if [ -z "$CYGWIN_ENV" ]; then
         ps1_user_host="$ps1_user_host\$(_color_git_ps1)"
     fi
     
-    if _have svn; then
+    if [ -n "$SVN_PS1" ] && _have svn; then
         _color_svn_ps1() {
             local rev=$(svn info 2> /dev/null | awk '/^Revision/ {print $2}')
             
