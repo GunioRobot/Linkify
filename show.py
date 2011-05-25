@@ -123,13 +123,12 @@ class Arguments (argparse.ArgumentParser):
             ('input', {
                 b'nargs': '?',
                 b'default': sys.stdin,
-                b'type': InputType(),
-                b'help': 'input to display',
+                b'help': 'input to display, or Git diff file path',
             }),
             ('input2', {
                 b'nargs': '?',
                 b'type': InputType(),
-                b'help': 'input to compare with, and switch to diff mode',
+                b'help': 'input to compare with, or current Git file version',
             }),
         ]
         
@@ -170,6 +169,8 @@ class Arguments (argparse.ArgumentParser):
         
         if args.new_file is not None:
             self._parse_git_diff_arguments(args)
+        elif isinstance(args.input, basestring):
+            args.input = InputType()(args.input)
         
         if args.input2 is None:
             args.diff_mode = False
@@ -199,7 +200,9 @@ class Arguments (argparse.ArgumentParser):
     
     
     def _resolve_path(self, stream):
-        if stream is sys.stdin:
+        if isinstance(stream, basestring):
+            return os.path.realpath(stream)
+        elif stream is sys.stdin:
             return stream.name
         else:
             path = os.path.realpath(stream.name)
