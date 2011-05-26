@@ -118,6 +118,11 @@ class InputType (argparse.FileType):
             stream.name = url
             
             return stream
+        except ValueError as (error,):
+            if error.startswith('unknown url type: '):
+                raise httplib.InvalidURL(url)
+            else:
+                raise
 
 
 class Arguments (argparse.ArgumentParser):
