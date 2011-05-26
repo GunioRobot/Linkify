@@ -19,7 +19,7 @@
 #       $ ./show.py . '*.txt'
 # TODO: Profile time execution.
 # TODO: Implement color support on Windows.
-# TODO: Simplify logic (e.g. Pager.run, etc), add documentation.
+# TODO: Simplify logic (e.g. Pager.run, encoding, etc), add documentation.
 # TODO: Detect missing programs and provide fallbacks (e.g. KDiff3, Meld).
 
 
@@ -43,11 +43,6 @@ class InputType (argparse.FileType):
     
     
     def __call__(self, path, *args):
-        try:
-            return filelike.open(path)
-        except IOError:
-            pass
-        
         try:
             return super(InputType, self).__call__(path, *args)
         except IOError as error:
@@ -236,15 +231,16 @@ class Arguments (argparse.ArgumentParser):
     
     
     def _parse_diff_arguments(self, args):
-        if args.label is None:
-            args.label = [
-                self._resolve_path(input) for input in args.input, args.input2
-            ]
+        labels = args.label if args.label is not None else \
+            [self._resolve_path(input) for input in args.input, args.input2]
+        
+        diff = ''.join(difflib.unified_diff(
+            [self._to_unicode(line) for line in args.input.readlines()],
+            [self._to_unicode(line) for line in args.input2.readlines()],
+            *labels))
         
         args.input = StringIO.StringIO(
-            'diff -u %s\n' % ' '.join(args.label)
-            + ''.join(difflib.unified_diff(
-                args.input.readlines(), args.input2.readlines(), *args.label)))
+            'diff -u %s %s\n' % tuple(labels) + diff)
     
     
     def _parse_git_diff_arguments(self, args):
@@ -261,6 +257,19 @@ class Arguments (argparse.ArgumentParser):
         else:
             path = os.path.realpath(stream.name)
             return path if os.path.exists(path) else stream.name
+    
+    
+    def _to_unicode(self, string):
+        if isinstance(string, unicode):
+            return string
+        
+        try:
+            return unicode(string, locale.getpreferredencoding())
+        except UnicodeDecodeError:
+            pass
+        
+        encoding = chardet.detect(string)['encoding']
+        return unicode(string, encoding, 'replace')
 
 
 class Reader (object):
@@ -371,7 +380,10 @@ class Pager (Reader):
         
         for line in self._input:
             try:
-                yield self._clean_input(line.decode(encoding))
+                if not isinstance(line, unicode):
+                    line = line.decode(encoding)
+                
+                yield self._clean_input(line)
             except UnicodeDecodeError:
                 if detected:
                     raise
