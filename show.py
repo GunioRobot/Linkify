@@ -101,17 +101,25 @@ class InputType (argparse.FileType):
     
     def _open_auth_url(self, url, error):
         while True:
-            print(str(error) + ': ' + url, file = sys.stderr)
-            user = raw_input('User: ')
-            password = getpass.getpass()
+            password_manager = self._password_manager
+            (user, password) = password_manager.find_user_password(
+                None, url)
             
-            self._password_manager.add_password(None, url, user, password)
-            handler = urllib2.HTTPBasicAuthHandler(self._password_manager)
+            if (user is None) and (password is None):
+                print(str(error) + ': ' + url, file = sys.stderr)
+                user = raw_input('User: ')
+                password = getpass.getpass()
+                password_manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
+                password_manager.add_password(None, url, user, password)
+            
+            handler = urllib2.HTTPBasicAuthHandler(password_manager)
             request = urllib2.Request(url)
             
             try:
                 stream = urllib2.build_opener(handler).open(request)
                 stream.name = url
+                
+                self._password_manager.add_password(None, url, user, password)
                 return stream
             except urllib2.HTTPError as error:
                 if error.code != httplib.UNAUTHORIZED:
