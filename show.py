@@ -106,7 +106,7 @@ class InputType (argparse.FileType):
             if error.code != httplib.UNAUTHORIZED:
                 raise error
             
-            print(str(error), file = sys.stderr)
+            print(str(error) + ': ' + url, file = sys.stderr)
             user = raw_input('User: ')
             password = getpass.getpass()
             
