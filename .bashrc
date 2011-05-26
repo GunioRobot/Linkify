@@ -123,6 +123,12 @@ if [ -z "$CYGWIN_ENV" ]; then
         
         git config --global alias.co checkout
         git config --global alias.br 'branch -vv'
+        git config --global alias.pub '!bash -c '"'"'\
+            COMMAND="git push origin HEAD:refs/heads/$0 ${@:1}" \
+            && echo $COMMAND \
+            && $COMMAND\
+        '"'"
+        
         git config --global color.ui auto
         git config --global push.default tracking
         
