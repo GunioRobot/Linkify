@@ -114,45 +114,44 @@ else
     fi
 fi
 
-if [ -z "$CYGWIN_ENV" ]; then
-    if _have git; then
-        _color_git_ps1() {
-            local ps1=$(__git_ps1 "%s")
-            [ -n "$ps1" ] && echo -e "\033[00m:\033[0;33m$ps1"
-        }
-        
-        git config --global alias.co checkout
-        git config --global alias.br 'branch -vv'
-        git config --global alias.pub '!bash -c '"'"'\
-            COMMAND="git push origin HEAD:refs/heads/$0 ${@:1}" \
-            && echo $COMMAND \
-            && $COMMAND\
-        '"'"
-        
-        git config --global color.ui auto
-        git config --global push.default tracking
-        
-        export GIT_PS1_SHOWDIRTYSTATE=x
-        export GIT_PS1_SHOWSTASHSTATE=x
-        export GIT_PS1_SHOWUNTRACKEDFILES=x
-        
-        ps1_user_host="$ps1_user_host\$(_color_git_ps1)"
-    fi
+if _have git; then
+    _color_git_ps1() {
+        local ps1=$(__git_ps1 "%s")
+        [ -n "$ps1" ] && echo -e "\033[00m:\033[0;33m$ps1"
+    }
     
-    if [ -n "$SVN_PS1" ] && _have svn; then
-        _color_svn_ps1() {
-            local rev=$(svn info 2> /dev/null | awk '/^Revision/ {print $2}')
-            
-            if [ -n "$rev" ]; then
-                local suffix=''
-                
-                [ $(svn status | egrep -c "[^MA]") -gt 0 ] && suffix=' *'
-                echo -e "\033[00m:\033[0;33mr$rev$suffix"
-            fi
-        }
+    git config --global alias.co checkout
+    git config --global alias.br 'branch -vv'
+    git config --global alias.pub '!bash -c '"'"'\
+        COMMAND="git push origin HEAD:refs/heads/$0 ${@:1}" \
+        && echo $COMMAND \
+        && $COMMAND\
+    '"'"
+    
+    git config --global color.ui auto
+    git config --global push.default tracking
+    
+    export GIT_EDITOR=nano
+    export GIT_PS1_SHOWDIRTYSTATE=x
+    export GIT_PS1_SHOWSTASHSTATE=x
+    export GIT_PS1_SHOWUNTRACKEDFILES=x
+    
+    [ -z "$CYGWIN_ENV" ] && ps1_user_host="$ps1_user_host\$(_color_git_ps1)"
+fi
+
+if [ -z "$CYGWIN_ENV" -a -n "$SVN_PS1" ] && _have svn; then
+    _color_svn_ps1() {
+        local rev=$(svn info 2> /dev/null | awk '/^Revision/ {print $2}')
         
-        ps1_user_host="$ps1_user_host\$(_color_svn_ps1)"
-    fi
+        if [ -n "$rev" ]; then
+            local suffix=''
+            
+            [ $(svn status | egrep -c "[^MA]") -gt 0 ] && suffix=' *'
+            echo -e "\033[00m:\033[0;33mr$rev$suffix"
+        fi
+    }
+    
+    ps1_user_host="$ps1_user_host\$(_color_svn_ps1)"
 fi
 
 export PS1="\[\033[4;30;32m\]$ps1_user_host\[\033[00m\]:\[\033[01;34m\]\w\n\\$\[\033[00m\] "
