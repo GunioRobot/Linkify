@@ -114,7 +114,10 @@ class InputType (argparse.FileType):
             manager.add_password(None, url, user, password)
             
             handler = urllib2.HTTPBasicAuthHandler(manager)
-            return urllib2.build_opener(handler).open(urllib2.Request(url))
+            stream = urllib2.build_opener(handler).open(urllib2.Request(url))
+            stream.name = url
+            
+            return stream
 
 
 class Arguments (argparse.ArgumentParser):
