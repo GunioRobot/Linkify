@@ -329,7 +329,14 @@ class ProgramReader (StreamReader):
     
     def close(self):
         super(ProgramReader, self).close()
-        self._process.communicate()
+        
+        if not self.detached:
+            self._process.communicate()
+    
+    
+    @property
+    def detached(self):
+        return False
 
 
 class DiffReader (ProgramReader):
@@ -341,6 +348,11 @@ class DiffReader (ProgramReader):
     @property
     def accepts_color(self):
         return False
+    
+    
+    @property
+    def detached(self):
+        return True
 
 
 class TextReader (ProgramReader):
