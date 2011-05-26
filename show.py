@@ -37,6 +37,11 @@ externals('argparse', 'chardet', 'filelike',
 
 
 class InputType (argparse.FileType):
+    def __init__(self):
+        super(InputType, self).__init__()
+        self._password_manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
+    
+    
     def __call__(self, path, *args):
         try:
             return filelike.open(path)
@@ -94,6 +99,25 @@ class InputType (argparse.FileType):
             raise IOError(error_message + module)
     
     
+    def _open_auth_url(self, url, error):
+        while True:
+            print(str(error) + ': ' + url, file = sys.stderr)
+            user = raw_input('User: ')
+            password = getpass.getpass()
+            
+            self._password_manager.add_password(None, url, user, password)
+            handler = urllib2.HTTPBasicAuthHandler(self._password_manager)
+            request = urllib2.Request(url)
+            
+            try:
+                stream = urllib2.build_opener(handler).open(request)
+                stream.name = url
+                return stream
+            except urllib2.HTTPError as error:
+                if error.code != httplib.UNAUTHORIZED:
+                    raise
+    
+    
     def _open_url(self, url):
         try:
             return filelike.open(url)
@@ -103,21 +127,10 @@ class InputType (argparse.FileType):
         try:
             return urllib2.urlopen(url)
         except urllib2.HTTPError as error:
-            if error.code != httplib.UNAUTHORIZED:
-                raise error
-            
-            print(str(error) + ': ' + url, file = sys.stderr)
-            user = raw_input('User: ')
-            password = getpass.getpass()
-            
-            manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
-            manager.add_password(None, url, user, password)
-            
-            handler = urllib2.HTTPBasicAuthHandler(manager)
-            stream = urllib2.build_opener(handler).open(urllib2.Request(url))
-            stream.name = url
-            
-            return stream
+            if error.code == httplib.UNAUTHORIZED:
+                return self._open_auth_url(url, error)
+            else:
+                raise
         except ValueError as (error,):
             if error.startswith('unknown url type: '):
                 raise httplib.InvalidURL(url)
@@ -133,6 +146,8 @@ class Arguments (argparse.ArgumentParser):
             epilog = '''An input can be '-' for standard input (default), a\
                 file path, an URL, a Perl module name, or 'self' for the\
                 source code.''')
+        
+        self._input_type = InputType()
         
         arguments = [
             ('-f', {
@@ -158,7 +173,7 @@ class Arguments (argparse.ArgumentParser):
             }),
             ('input2', {
                 b'nargs': '?',
-                b'type': InputType(),
+                b'type': self._input_type,
                 b'help': 'input to compare with, or current Git file version',
             }),
         ]
@@ -174,7 +189,7 @@ class Arguments (argparse.ArgumentParser):
             }),
             ('new_file', {
                 b'nargs': '?',
-                b'type': InputType(),
+                b'type': self._input_type,
                 b'help': 'working copy Git file version',
             }),
             ('new_hex', {
@@ -201,7 +216,7 @@ class Arguments (argparse.ArgumentParser):
         if args.new_file is not None:
             self._parse_git_diff_arguments(args)
         elif isinstance(args.input, basestring):
-            args.input = InputType()(args.input)
+            args.input = self._input_type(args.input)
         
         if args.input2 is None:
             args.diff_mode = False
@@ -499,6 +514,9 @@ class Pager (Reader):
 
 try:
     args = Arguments().parse_args()
+except KeyboardInterrupt:
+    print()
+    sys.exit()
 except IOError as error:
     if error.errno in (errno.ENOENT, errno.EISDIR):
         sys.exit(str(error))
