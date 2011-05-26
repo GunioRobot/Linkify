@@ -5,6 +5,7 @@
 # TODO: Don't display diff for removed files.
 # TODO: Take line width and wrapping into account when paging.
 # TODO: Follow file automatically if it changes size?
+# TODO: Only ask for HTTP basic auth credentials in interactive mode.
 # TODO: Clean up exception handling.
 #       $ ./show.py -f file ^C ^C
 #       $ ./show.py long-file ^C
@@ -263,10 +264,8 @@ class Arguments (argparse.ArgumentParser):
         try:
             return unicode(string, locale.getpreferredencoding())
         except UnicodeDecodeError:
-            pass
-        
-        encoding = chardet.detect(string)['encoding']
-        return unicode(string, encoding, 'replace')
+            encoding = chardet.detect(string)['encoding']
+            return unicode(string, encoding, 'replace')
 
 
 class Reader (object):
