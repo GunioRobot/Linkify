@@ -25,8 +25,8 @@
 
 # Standard library:
 from __future__ import division, print_function, unicode_literals
-import codecs, difflib, errno, httplib, inspect, locale, os, re, StringIO, \
-    struct, subprocess, sys, time
+import codecs, difflib, errno, getpass, httplib, inspect, locale, os, re, \
+    StringIO, struct, subprocess, sys, time, urllib2
 
 # Internal modules:
 from defaults import *
@@ -49,7 +49,7 @@ class InputType (argparse.FileType):
             if error.errno == errno.ENOENT:
                 for url in [path, 'http://' + path]:
                     try:
-                        return filelike.open(url)
+                        return self._open_url(url)
                     except (IOError, httplib.InvalidURL):
                         pass
                 
@@ -92,6 +92,29 @@ class InputType (argparse.FileType):
             return output
         else:
             raise IOError(error_message + module)
+    
+    
+    def _open_url(self, url):
+        try:
+            return filelike.open(url)
+        except IOError:
+            pass
+        
+        try:
+            return urllib2.urlopen(url)
+        except urllib2.HTTPError as error:
+            if error.code != httplib.UNAUTHORIZED:
+                raise error
+            
+            print(str(error), file = sys.stderr)
+            user = raw_input('User: ')
+            password = getpass.getpass()
+            
+            manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
+            manager.add_password(None, url, user, password)
+            
+            handler = urllib2.HTTPBasicAuthHandler(manager)
+            return urllib2.build_opener(handler).open(urllib2.Request(url))
 
 
 class Arguments (argparse.ArgumentParser):
