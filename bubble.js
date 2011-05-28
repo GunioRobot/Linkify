@@ -104,7 +104,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    var previousClosest;
+    var prevClosest;
+    var prevStyle = {};
     
     document.addEventListener('mousemove', function(event) {
         var closestDistance = 9999;
@@ -120,18 +121,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        if (closest !== previousClosest) {
+        if (closest !== prevClosest) {
             if (options.showOutline) {
-                if (previousClosest != undefined) {
-                    previousClosest.anchor.style.outline = '';
+                if (prevClosest != undefined) {
+                    for (style in prevStyle) {
+                        prevClosest.anchor.style[style] = prevStyle[style];
+                    }
+                    prevStyle = {};
                 }
                 
                 for (var style in options.outlineStyle) {
+                    prevStyle[style] = closest.anchor.style[style];
                     closest.anchor.style[style] = options.outlineStyle[style];
                 }
             }
             
-            previousClosest = closest;
+            prevClosest = closest;
         }
         
         bubble.style.width = 2 * closestDistance + 'px';
