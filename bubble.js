@@ -76,7 +76,8 @@ document.addEventListener('DOMContentLoaded', function() {
             outline: '3px solid #529DFF'
         },
         showBubble: true,
-        showOutline: true
+        showOutline: true,
+        toggleBubbleKeys: ['b', 'B']
     };
     
     var bubble = document.createElement('div');
@@ -87,6 +88,20 @@ document.addEventListener('DOMContentLoaded', function() {
     
     bubble.style.display = options.showBubble ? 'block' : 'none';
     document.body.appendChild(bubble);
+    
+    document.addEventListener('keypress', function(event) {
+        var key = String.fromCharCode((event.keyCode != undefined)
+            ? event.keyCode
+            : event.which);
+        
+        for (var i = 0; i < options.toggleBubbleKeys.length; ++i) {
+            if (key == options.toggleBubbleKeys[i]) {
+                options.showBubble = !options.showBubble;
+                bubble.style.display = options.showBubble ? 'block' : 'none';
+                break;
+            }
+        }
+    }, false);
     
     var anchors = document.getElementsByTagName('a');
     var links = [];
@@ -143,15 +158,5 @@ document.addEventListener('DOMContentLoaded', function() {
         bubble.style.height = 2 * closestDistance + 'px';
         bubble.style.top = event.pageY - closestDistance + 'px';
         bubble.style.left = event.pageX - closestDistance + 'px';
-    }, false);
-    
-    document.addEventListener('keypress', function(event) {
-        var code = (event.keyCode != undefined) ? event.keyCode : event.which;
-        
-        if ((code == 66) || (code == 98)) {
-            options.showBubble = !options.showBubble;
-            bubble.style.display = options.showBubble ? 'block' : 'none';
-            return false;
-        }
     }, false);
 }, false);
