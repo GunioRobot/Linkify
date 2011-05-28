@@ -4,15 +4,23 @@
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Stolen from jQuery
-    var getElemOffset = function(elem) {
-        var box = elem.getBoundingClientRect(), doc = elem.ownerDocument, body = doc.body, docElem = doc.documentElement,
-        clientTop = docElem.clientTop || body.clientTop || 0, clientLeft = docElem.clientLeft || body.clientLeft || 0,
-        top  = box.top  + (docElem.scrollTop  || body.scrollTop ) - clientTop,
-        left = box.left + (docElem.scrollLeft || body.scrollLeft) - clientLeft;
-
-        return { top: top, left: left };
-    };
+    // Stolen from jQuery (version?).
+    function getElementOffset(element) {
+        var box = element.getBoundingClientRect();
+        var document = element.ownerDocument;
+        var body = document.body;
+        var documentElement = document.documentElement;
+        
+        var clientTop = documentElement.clientTop || body.clientTop || 0;
+        var clientLeft = documentElement.clientLeft || body.clientLeft || 0;
+        
+        var top = box.top - clientTop
+            + (documentElement.scrollTop || body.scrollTop);
+        var left = box.left - clientLeft
+            + (documentElement.scrollLeft || body.scrollLeft);
+        
+        return {top: top, left: left};
+    }
 
     var pointPointDist = function(x1, y1, x2, y2) {
         var x = x1 - x2;
@@ -72,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
     for (var i = 0; i < as.length; i++)
     {
         var a = as[i];
-        var offset = getElemOffset(a);
+        var offset = getElementOffset(a);
 
         var link = {
                 a: a,
