@@ -65,30 +65,29 @@ document.addEventListener('DOMContentLoaded', function() {
     
     
     var options = {
+        bubbleStyle: {
+            position: 'absolute',
+            borderRadius: '999px',
+            MozBorderRadius: '999px',
+            WebkitBorderRadius: '999px',
+            backgroundColor: 'rgba(128,128,128,0.4)'
+        },
         showBubble: true
     };
     
-    // Setup
     var bubble = document.createElement('div');
-    var props = {
-        position: 'absolute',
-        borderRadius: '999px',
-        MozBorderRadius: '999px',
-        WebkitBorderRadius: '999px',
-        backgroundColor: 'rgba(128,128,128,0.4)',
-        display: options.showBubble ? 'block' : 'none'
-    };
     
-    for (var prop in props) {
-        bubble.style[prop] = props[prop];
+    for (var style in options.bubbleStyle) {
+        bubble.style[style] = options.bubbleStyle[style];
     }
-
+    
+    bubble.style.display = options.showBubble ? 'block' : 'none';
     document.body.appendChild(bubble);
-
+    
     // [{top:0, left:0, right:0, bottom:0, a:<anchor>}, ...]
     var links = [];
-
     var as = document.getElementsByTagName('a');
+    
     for (var i = 0; i < as.length; ++i) {
         var a = as[i];
         var offset = getElementOffset(a);
@@ -100,12 +99,12 @@ document.addEventListener('DOMContentLoaded', function() {
             right: offset.left + a.offsetWidth,
             bottom: offset.top + a.offsetHeight
         };
-
+        
         links.push(link);
     }
-
+    
     var prevClosest = links[0];
-
+    
     document.addEventListener('mousemove', function(event) {
         var closest;
         var closeDist = 9999;
