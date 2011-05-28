@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         fixLinkHashScroll: true,
         outlineStyle: '0.3em solid rgba(82, 157, 255, 0.4)',
-        prefetchInterval: 1 * 1000,
+        prefetchInterval: 500,
         toggleBubbleKeys: ['b', 'B']
     };
     
