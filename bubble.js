@@ -135,9 +135,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (options.fixLinkHashScroll) {
             var hash = link.hash;
-            link.hash = '';
-            url = link.href;
-            link.hash = hash;
+            
+            if (hash.length > 0) {
+                link.hash = '';
+                url = link.href;
+                link.hash = hash;
+            }
         }
         
         iframe.src = url;
