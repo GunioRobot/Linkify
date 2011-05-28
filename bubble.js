@@ -21,28 +21,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         else if (horizontal) {
             // Edges are closest.
-            return (y < rect.top) ? rect.top - y : y - rect.bottom;
+            return (y < rect.top) ? (rect.top - y) : (y - rect.bottom);
         }
         else if (vertical) {
-            return (x < rect.left) ? rect.left - x : x - rect.right;
+            return (x < rect.left) ? (rect.left - x) : (x - rect.right);
         }
         
         // Corners.
         if ((y < rect.top) && (x < rect.left)) {
-            // Top left.
-            return distance(rect.left, rect.top, x, y);
+            return distance(rect.left, rect.top, x, y);         // Top left.
         }
         else if ((y < rect.top) && (x > rect.right)) {
-            // Top right.
-            return distance(rect.right, rect.top, x, y);
+            return distance(rect.right, rect.top, x, y);        // Top right.
         }
         else if ((y > rect.bottom) && (x > rect.right)) {
-            // Bottom right.
-            return distance(rect.right, rect.bottom, x, y);
+            return distance(rect.right, rect.bottom, x, y);     // Bottom right.
         }
         else if ((y > rect.bottom) && (x < rect.left)) {
-            // Bottom left.
-            return distance(rect.left, rect.bottom, x, y);
+            return distance(rect.left, rect.bottom, x, y);      // Bottom left.
         }
         
         throw Error('Distance to rectangle.');
