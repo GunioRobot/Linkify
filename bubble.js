@@ -3,6 +3,11 @@
 // ==/UserScript==
 
 
+// TODO: Add documentation.
+// TODO: Check rel="nofollow"?
+// TODO: Prevent frame detection? E.g. opera.defineMagicVariable
+
+
 document.addEventListener('DOMContentLoaded', function() {
     var options = {
         bubbleStyle: {
@@ -13,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
             backgroundColor: 'rgba(82, 157, 255, 0.2)'
         },
         exceptions: {
-            hostname: /^my\.opera\.com$/i,
+            hostname: /^(my\.opera\.com|stackoverflow\.com)$/i,
             pathname: /\.(aspx?|cgi|php|pl|py)$/i,
             protocol: /^(data|https|javascript|mailto):$/i
         },
