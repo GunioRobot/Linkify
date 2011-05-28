@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return distance(rect.left, rect.bottom, x, y);
         }
         
-        return 'ERROR';
+        throw Error('Distance to rectangle.');
     }
     
     // Setup
