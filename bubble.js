@@ -23,9 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
             pathname: /\.(aspx?|cgi|php|pl|py)$/i,
             protocol: /^(data|https|javascript|mailto):$/i
         },
-        outlineStyle: {
-            outline: '0.3em solid rgba(82, 157, 255, 0.4)'
-        },
+        outlineStyle: '0.3em solid rgba(82, 157, 255, 0.4)',
         prefetchInterval: 1 * 1000,
         toggleBubbleKeys: ['b', 'B']
     };
@@ -35,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
         cachedUrls: undefined,
         closest: undefined,
         links: [],
-        style: {}
+        outlineStyle: {}
     };
     
     
@@ -209,20 +207,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (closest !== state.closest) {
-            if (options.enableBubbleCursor) {
-                if (state.closest != undefined) {
-                    for (style in state.style) {
-                        state.closest.link.style[style] = state.style[style];
-                    }
-                    state.style = {};
-                }
-                
-                for (var style in options.outlineStyle) {
-                    state.style[style] = closest.link.style[style];
-                    closest.link.style[style] = options.outlineStyle[style];
-                }
+            if (state.closest != undefined) {
+                state.closest.link.style.outline = state.outlineStyle;
             }
             
+            state.outlineStyle = closest.link.style.outline;
+            closest.link.style.outline = options.outlineStyle;
             state.closest = closest;
         }
         
