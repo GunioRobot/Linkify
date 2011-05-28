@@ -116,15 +116,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	    }
 	}, false);
 	
-	var clicked = false;
-	document.addEventListener('click', function(e){
-	    if (!clicked)
-	    {
-	        //clicked = true;
-	        location.href = prevClosest.a.href;
-	    }
-	}, false);
-	
 	document.addEventListener('keypress', function(e){
 	    var code = (e.keyCode ? e.keyCode : e.which);
 	    if (code == 66 || code == 98)
