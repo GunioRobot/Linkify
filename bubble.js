@@ -13,8 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
             backgroundColor: 'rgba(82, 157, 255, 0.2)'
         },
         exceptions: {
+            hostname: /^my\.opera\.com$/i,
             pathname: /\.(aspx?|cgi|php|pl|py)$/i,
-            protocol: /^(data|ftp|https|javascript):$/i
+            protocol: /^(data|https|javascript|mailto):$/i
         },
         outlineStyle: {
             outline: '0.3em solid rgba(82, 157, 255, 0.4)'
