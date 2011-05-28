@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
             WebkitBorderRadius: '999px',
             backgroundColor: 'rgba(82, 157, 255, 0.2)'
         },
+        enableBubbleCursor: false,
         exceptions: {
             hostname: /^(my\.opera\.com|stackoverflow\.com)$/i,
             pathname: /\.(aspx?|cgi|php|pl|py)$/i,
@@ -26,8 +27,6 @@ document.addEventListener('DOMContentLoaded', function() {
             outline: '0.3em solid rgba(82, 157, 255, 0.4)'
         },
         prefetchInterval: 1 * 1000,
-        showBubble: false,
-        showOutline: false,
         toggleBubbleKeys: ['b', 'B']
     };
     
@@ -65,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     
     function clickBubbleCursor(event) {
-        if ((state.closest != undefined) && options.showBubble) {
+        if ((state.closest != undefined) && options.enableBubbleCursor) {
             location.href = state.closest.link.href;
         }
     }
@@ -185,8 +184,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         for (var i = 0; i < options.toggleBubbleKeys.length; ++i) {
             if (key == options.toggleBubbleKeys[i]) {
-                options.showBubble = !options.showBubble;
-                state.bubble.style.display = options.showBubble
+                options.enableBubbleCursor = !options.enableBubbleCursor;
+                state.bubble.style.display = options.enableBubbleCursor
                     ? 'block' : 'none';
                 
                 break;
@@ -210,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (closest !== state.closest) {
-            if (options.showOutline) {
+            if (options.enableBubbleCursor) {
                 if (state.closest != undefined) {
                     for (style in state.style) {
                         state.closest.link.style[style] = state.style[style];
@@ -267,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
         state.bubble.style[style] = options.bubbleStyle[style];
     }
     
-    state.bubble.style.display = options.showBubble ? 'block' : 'none';
+    state.bubble.style.display = options.enableBubbleCursor ? 'block' : 'none';
     state.cachedUrls = new Storage();
     
     document.body.appendChild(state.bubble);
