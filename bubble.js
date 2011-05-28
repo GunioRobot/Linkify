@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
         enableBubbleCursor: false,
         exceptions: {
             hostname: /^(my\.opera\.com|stackoverflow\.com)$/i,
-            pathname: /\.(aspx?|cgi|php|pl|py)$/i,
+            pathname: /\.(aspx?|cgi|exe|php|pl|py)$/i,
             protocol: /^(data|https|javascript|mailto):$/i
         },
         fixLinkHashScroll: true,
