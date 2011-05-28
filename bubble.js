@@ -255,13 +255,15 @@ document.addEventListener('DOMContentLoaded', function() {
         var anchor = anchors[i];
         var offset = getElementOffset(anchor);
         
-        state.links.push({
-            link: anchor,
-            bottom: offset.top + anchor.offsetHeight,
-            left: offset.left,
-            right: offset.left + anchor.offsetWidth,
-            top: offset.top
-        });
+        if (anchor.href.length > 0) {
+            state.links.push({
+                link: anchor,
+                bottom: offset.top + anchor.offsetHeight,
+                left: offset.left,
+                right: offset.left + anchor.offsetWidth,
+                top: offset.top
+            });
+        }
     }
     
     for (var style in options.bubbleStyle) {
