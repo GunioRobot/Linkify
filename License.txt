@@ -1,6 +1,7 @@
 ﻿The MIT License
 
-Stuart Knightley <http://stuartk.co.uk/>
+Original author: Stuart Knightley <http://stuartk.co.uk/>
+Changes author: Márcio Faustino
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
