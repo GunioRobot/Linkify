@@ -59,6 +59,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     
+    function clickBubbleCursor(event) {
+        if ((state.closest != undefined) && options.showBubble) {
+            location.href = state.closest.link.href;
+        }
+    }
+    
     function distance(x1, y1, x2, y2) {
         var x = x1 - x2;
         var y = y1 - y2;
@@ -261,5 +267,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.appendChild(state.bubble);
     document.addEventListener('keypress', toggleBubble, false);
     document.addEventListener('mousemove', updateBubble, false);
+    document.addEventListener('click', clickBubbleCursor, false);
+    
     setInterval(prefetch, options.prefetchInterval);
 }, false);
