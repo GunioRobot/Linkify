@@ -12,6 +12,10 @@ document.addEventListener('DOMContentLoaded', function() {
             WebkitBorderRadius: '999px',
             backgroundColor: 'rgba(82, 157, 255, 0.2)'
         },
+        exceptions: {
+            pathname: /\.(aspx?|cgi|php|pl|py)$/i,
+            protocol: /^(data|ftp|https|javascript):$/i
+        },
         outlineStyle: {
             outline: '0.3em solid rgba(82, 157, 255, 0.4)'
         },
@@ -95,19 +99,35 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     
+    function urlToLink(url) {
+        var anchor = document.createElement('a');
+        
+        anchor.href = url;
+        return anchor;
+    }
+    
+    
     function prefetch() {
         if ((window !== window.parent) || (state.closest == undefined)) {
             return;
         }
         
-        var url = state.closest.link.href;
+        var link = state.closest.link;
         
-        if (url in state.cachedUrls) {
+        if (link.href in state.cachedUrls) {
             return;
         }
         
-        state.cachedUrls[url] = true;
-        log('Prefetch:', url);
+        state.cachedUrls[link.href] = true;
+        
+        for (component in options.exceptions) {
+            if (options.exceptions[component].test(link[component])) {
+                log('Skip:', link.href);
+                return;
+            }
+        }
+        
+        log('Prefetch:', link.href);
     }
     
     
