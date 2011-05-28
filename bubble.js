@@ -64,34 +64,41 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     
+    var options = {
+        showBubble: true
+    };
+    
     // Setup
     var bubble = document.createElement('div');
-    var props =  {position: 'absolute', borderRadius: '999px',
-            MozBorderRadius: '999px', WebkitBorderRadius: '999px',
-            backgroundColor: 'rgba(128,128,128,0.4)', display: 'none'};
+    var props = {
+        position: 'absolute',
+        borderRadius: '999px',
+        MozBorderRadius: '999px',
+        WebkitBorderRadius: '999px',
+        backgroundColor: 'rgba(128,128,128,0.4)',
+        display: options.showBubble ? 'block' : 'none'
+    };
     
     for (var prop in props) {
         bubble.style[prop] = props[prop];
     }
 
     document.body.appendChild(bubble);
-    var showCirc = false;
 
     // [{top:0, left:0, right:0, bottom:0, a:<anchor>}, ...]
     var links = [];
 
     var as = document.getElementsByTagName('a');
-    for (var i = 0; i < as.length; i++)
-    {
+    for (var i = 0; i < as.length; ++i) {
         var a = as[i];
         var offset = getElementOffset(a);
-
+        
         var link = {
-                a: a,
-                left: offset.left,
-                top: offset.top,
-                right: offset.left+a.offsetWidth,
-                bottom: offset.top+a.offsetHeight
+            a: a,
+            left: offset.left,
+            top: offset.top,
+            right: offset.left + a.offsetWidth,
+            bottom: offset.top + a.offsetHeight
         };
 
         links.push(link);
@@ -99,13 +106,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var prevClosest = links[0];
 
-    document.addEventListener('mousemove', function(e){
+    document.addEventListener('mousemove', function(event) {
         var closest;
         var closeDist = 9999;
         
-        for (var i=0; i < links.length; i++) {
+        for (var i = 0; i < links.length; ++i) {
             var l = links[i];
-            var dist = distanceToRect(e.pageX, e.pageY, l);
+            var dist = distanceToRect(event.pageX, event.pageY, l);
             
             if (dist < closeDist) {
                 closest = links[i];
@@ -119,18 +126,18 @@ document.addEventListener('DOMContentLoaded', function() {
             prevClosest = closest;
         }
         
-        bubble.style.width = closeDist*2+'px';
-        bubble.style.height = closeDist*2+'px';
-        bubble.style.top = e.pageY-closeDist+'px';
-        bubble.style.left = e.pageX-closeDist+'px';
+        bubble.style.width = 2 * closeDist + 'px';
+        bubble.style.height = 2 * closeDist + 'px';
+        bubble.style.top = event.pageY - closeDist + 'px';
+        bubble.style.left = event.pageX - closeDist + 'px';
     }, false);
     
-    document.addEventListener('keypress', function(e){
-        var code = (e.keyCode ? e.keyCode : e.which);
+    document.addEventListener('keypress', function(event) {
+        var code = event.keyCode != undefined ? event.keyCode : event.which;
         
-        if (code == 66 || code == 98) {
-            showCirc = !showCirc;
-            bubble.style.display = showCirc ? 'block' : 'none';
+        if ((code == 66) || (code == 98)) {
+            options.showBubble = !options.showBubble;
+            bubble.style.display = options.showBubble ? 'block' : 'none';
             return false;
         }
     }, false);
