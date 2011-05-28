@@ -65,16 +65,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
     
     // Setup
-    var circ = document.createElement('div');
+    var bubble = document.createElement('div');
     var props =  {position: 'absolute', borderRadius: '999px',
             MozBorderRadius: '999px', WebkitBorderRadius: '999px',
             backgroundColor: 'rgba(128,128,128,0.4)', display: 'none'};
-    for (var prop in props)
-    {
-        circ.style[prop] = props[prop];
+    
+    for (var prop in props) {
+        bubble.style[prop] = props[prop];
     }
 
-    document.body.appendChild(circ);
+    document.body.appendChild(bubble);
     var showCirc = false;
 
     // [{top:0, left:0, right:0, bottom:0, a:<anchor>}, ...]
@@ -102,39 +102,35 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('mousemove', function(e){
         var closest;
         var closeDist = 9999;
-
-        for (var i=0; i < links.length; i++)
-        {
+        
+        for (var i=0; i < links.length; i++) {
             var l = links[i];
             var dist = distanceToRect(e.pageX, e.pageY, l);
-            if (dist < closeDist)
-            {
+            
+            if (dist < closeDist) {
                 closest = links[i];
                 closeDist = dist;
             }
         }
-        if (closest !== prevClosest)
-        {
+        
+        if (closest !== prevClosest) {
             prevClosest.a.style.outline = '';
             closest.a.style.outline = '3px solid #529DFF';
             prevClosest = closest;
         }
-        if (showCirc)
-        {
-            circ.style.width = closeDist*2+'px';
-            circ.style.height = closeDist*2+'px';
-            circ.style.top = e.pageY-closeDist+'px';
-            circ.style.left = e.pageX-closeDist+'px';
-        }
+        
+        bubble.style.width = closeDist*2+'px';
+        bubble.style.height = closeDist*2+'px';
+        bubble.style.top = e.pageY-closeDist+'px';
+        bubble.style.left = e.pageX-closeDist+'px';
     }, false);
-
+    
     document.addEventListener('keypress', function(e){
         var code = (e.keyCode ? e.keyCode : e.which);
-        if (code == 66 || code == 98)
-        {
+        
+        if (code == 66 || code == 98) {
             showCirc = !showCirc;
-            if (!showCirc) circ.style.display = 'none';
-            else circ.style.display = 'block';
+            bubble.style.display = showCirc ? 'block' : 'none';
             return false;
         }
     }, false);
