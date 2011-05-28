@@ -120,6 +120,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         state.cachedUrls[link.href] = true;
         
+        if ((link.href.length == 0) || (link.pathname == location.pathname)) {
+            return;
+        }
+        
         for (component in options.exceptions) {
             if (options.exceptions[component].test(link[component])) {
                 log('Skip:', link.href);
