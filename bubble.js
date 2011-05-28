@@ -10,10 +10,10 @@ document.addEventListener('DOMContentLoaded', function() {
             borderRadius: '999px',
             MozBorderRadius: '999px',
             WebkitBorderRadius: '999px',
-            backgroundColor: 'rgba(128, 128, 128, 0.4)'
+            backgroundColor: 'rgba(82, 157, 255, 0.2)'
         },
         outlineStyle: {
-            outline: '3px solid #529DFF'
+            outline: '0.3em solid rgba(82, 157, 255, 0.4)'
         },
         showBubble: false,
         showOutline: true,
