@@ -4,6 +4,30 @@
 
 
 document.addEventListener('DOMContentLoaded', function() {
+    var options = {
+        bubbleStyle: {
+            position: 'absolute',
+            borderRadius: '999px',
+            MozBorderRadius: '999px',
+            WebkitBorderRadius: '999px',
+            backgroundColor: 'rgba(128, 128, 128, 0.4)'
+        },
+        outlineStyle: {
+            outline: '3px solid #529DFF'
+        },
+        showBubble: false,
+        showOutline: true,
+        toggleBubbleKeys: ['b', 'B']
+    };
+    
+    var state = {
+        bubble: document.createElement('div'),
+        closest: undefined,
+        links: [],
+        style: {}
+    };
+    
+    
     function distance(x1, y1, x2, y2) {
         var x = x1 - x2;
         var y = y1 - y2;
@@ -64,32 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     
-    var options = {
-        bubbleStyle: {
-            position: 'absolute',
-            borderRadius: '999px',
-            MozBorderRadius: '999px',
-            WebkitBorderRadius: '999px',
-            backgroundColor: 'rgba(128, 128, 128, 0.4)'
-        },
-        outlineStyle: {
-            outline: '3px solid #529DFF'
-        },
-        showBubble: false,
-        showOutline: true,
-        toggleBubbleKeys: ['b', 'B']
-    };
-    
-    var bubble = document.createElement('div');
-    
-    for (var style in options.bubbleStyle) {
-        bubble.style[style] = options.bubbleStyle[style];
-    }
-    
-    bubble.style.display = options.showBubble ? 'block' : 'none';
-    document.body.appendChild(bubble);
-    
-    document.addEventListener('keypress', function(event) {
+    function toggleBubble(event) {
         var key = String.fromCharCode((event.keyCode != undefined)
             ? event.keyCode
             : event.which);
@@ -97,37 +96,21 @@ document.addEventListener('DOMContentLoaded', function() {
         for (var i = 0; i < options.toggleBubbleKeys.length; ++i) {
             if (key == options.toggleBubbleKeys[i]) {
                 options.showBubble = !options.showBubble;
-                bubble.style.display = options.showBubble ? 'block' : 'none';
+                state.bubble.style.display = options.showBubble
+                    ? 'block' : 'none';
+                
                 break;
             }
         }
-    }, false);
-    
-    var anchors = document.getElementsByTagName('a');
-    var links = [];
-    
-    for (var i = 0; i < anchors.length; ++i) {
-        var anchor = anchors[i];
-        var offset = getElementOffset(anchor);
-        
-        links.push({
-            anchor: anchor,
-            bottom: offset.top + anchor.offsetHeight,
-            left: offset.left,
-            right: offset.left + anchor.offsetWidth,
-            top: offset.top
-        });
     }
     
-    var prevClosest;
-    var prevStyle = {};
     
-    document.addEventListener('mousemove', function(event) {
+    function updateBubble(event) {
         var closestDistance = 9999;
         var closest;
         
-        for (var i = 0; i < links.length; ++i) {
-            var link = links[i];
+        for (var i = 0; i < state.links.length; ++i) {
+            var link = state.links[i];
             var distance = distanceToRect(event.pageX, event.pageY, link);
             
             if (distance < closestDistance) {
@@ -136,27 +119,52 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        if (closest !== prevClosest) {
+        if (closest !== state.closest) {
             if (options.showOutline) {
-                if (prevClosest != undefined) {
-                    for (style in prevStyle) {
-                        prevClosest.anchor.style[style] = prevStyle[style];
+                if (state.closest != undefined) {
+                    for (style in state.style) {
+                        state.closest.anchor.style[style] = state.style[style];
                     }
-                    prevStyle = {};
+                    state.style = {};
                 }
                 
                 for (var style in options.outlineStyle) {
-                    prevStyle[style] = closest.anchor.style[style];
+                    state.style[style] = closest.anchor.style[style];
                     closest.anchor.style[style] = options.outlineStyle[style];
                 }
             }
             
-            prevClosest = closest;
+            state.closest = closest;
         }
         
-        bubble.style.width = 2 * closestDistance + 'px';
-        bubble.style.height = 2 * closestDistance + 'px';
-        bubble.style.top = event.pageY - closestDistance + 'px';
-        bubble.style.left = event.pageX - closestDistance + 'px';
-    }, false);
+        state.bubble.style.width = 2 * closestDistance + 'px';
+        state.bubble.style.height = 2 * closestDistance + 'px';
+        state.bubble.style.top = event.pageY - closestDistance + 'px';
+        state.bubble.style.left = event.pageX - closestDistance + 'px';
+    }
+    
+    
+    var anchors = document.getElementsByTagName('a');
+    
+    for (var i = 0; i < anchors.length; ++i) {
+        var anchor = anchors[i];
+        var offset = getElementOffset(anchor);
+        
+        state.links.push({
+            anchor: anchor,
+            bottom: offset.top + anchor.offsetHeight,
+            left: offset.left,
+            right: offset.left + anchor.offsetWidth,
+            top: offset.top
+        });
+    }
+    
+    for (var style in options.bubbleStyle) {
+        state.bubble.style[style] = options.bubbleStyle[style];
+    }
+    
+    state.bubble.style.display = options.showBubble ? 'block' : 'none';
+    document.body.appendChild(state.bubble);
+    document.addEventListener('keypress', toggleBubble, false);
+    document.addEventListener('mousemove', updateBubble, false);
 }, false);
