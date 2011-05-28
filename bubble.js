@@ -96,7 +96,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     
     function log(/* ... */) {
-        opera.postError(Array.prototype.join.call(arguments, ' '));
+        if (typeof opera != 'undefined') {
+            opera.postError(Array.prototype.join.call(arguments, ' '));
+        }
     }
     
     
@@ -114,13 +116,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         var link = state.closest.link;
-        
         if (link.href in state.cachedUrls) {
             return;
         }
         
         state.cachedUrls[link.href] = true;
-        
         if ((link.href.length == 0) || (link.pathname == location.pathname)) {
             return;
         }
