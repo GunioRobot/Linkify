@@ -21,13 +21,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         return {top: top, left: left};
     }
-
-    var pointPointDist = function(x1, y1, x2, y2) {
+    
+    function distance(x1, y1, x2, y2) {
         var x = x1 - x2;
         var y = y1 - y2;
-        return Math.sqrt(x*x + y*y);
-    };
-
+        return Math.sqrt(x * x + y * y);
+    }
+    
     var pointRectDist = function(x, y, box) {
         var hori = (x >= box.left && x <= box.right);
         var vert = (y >= box.top && y <= box.bottom);
@@ -49,13 +49,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // corners
         if (y < box.top && x < box.left) //top left
-            return pointPointDist(box.left, box.top, x, y);
+            return distance(box.left, box.top, x, y);
         else if (y < box.top && x > box.right) // top right
-            return pointPointDist(box.right, box.top, x, y);
+            return distance(box.right, box.top, x, y);
         else if (y > box.bottom && x > box.right) // bottom right
-            return pointPointDist(box.right, box.bottom, x, y);
+            return distance(box.right, box.bottom, x, y);
         else if (y > box.bottom && x < box.left) // bottom left
-            return pointPointDist(box.left, box.bottom, x, y);
+            return distance(box.left, box.bottom, x, y);
 
         return "ERROR";
     };
