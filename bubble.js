@@ -4,29 +4,12 @@
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Stolen from jQuery (version?).
-    function getElementOffset(element) {
-        var box = element.getBoundingClientRect();
-        var document = element.ownerDocument;
-        var body = document.body;
-        var documentElement = document.documentElement;
-        
-        var clientTop = documentElement.clientTop || body.clientTop || 0;
-        var clientLeft = documentElement.clientLeft || body.clientLeft || 0;
-        
-        var top = box.top - clientTop
-            + (documentElement.scrollTop || body.scrollTop);
-        var left = box.left - clientLeft
-            + (documentElement.scrollLeft || body.scrollLeft);
-        
-        return {top: top, left: left};
-    }
-    
     function distance(x1, y1, x2, y2) {
         var x = x1 - x2;
         var y = y1 - y2;
         return Math.sqrt(x * x + y * y);
     }
+    
     
     function distanceToRect(x, y, rect) {
         var horizontal = (x >= rect.left) && (x <= rect.right);
@@ -64,6 +47,26 @@ document.addEventListener('DOMContentLoaded', function() {
         
         throw Error('Distance to rectangle.');
     }
+    
+    
+    // Stolen from jQuery (version?).
+    function getElementOffset(element) {
+        var box = element.getBoundingClientRect();
+        var document = element.ownerDocument;
+        var body = document.body;
+        var documentElement = document.documentElement;
+        
+        var clientTop = documentElement.clientTop || body.clientTop || 0;
+        var clientLeft = documentElement.clientLeft || body.clientLeft || 0;
+        
+        var top = box.top - clientTop
+            + (documentElement.scrollTop || body.scrollTop);
+        var left = box.left - clientLeft
+            + (documentElement.scrollLeft || body.scrollLeft);
+        
+        return {top: top, left: left};
+    }
+    
     
     // Setup
     var circ = document.createElement('div');
