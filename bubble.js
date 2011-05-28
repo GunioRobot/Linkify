@@ -95,6 +95,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     
+    function loadLink(link) {
+        var iframe = document.createElement('iframe');
+        
+        iframe.src = link.href;
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        
+        iframe.addEventListener('readystatechange', function() {
+            document.body.removeChild(iframe);
+        }, false);
+    }
+    
+    
     function log(/* ... */) {
         if (typeof opera != 'undefined') {
             opera.postError(Array.prototype.join.call(arguments, ' '));
@@ -125,6 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         log('Prefetch:', link.href);
+        loadLink(link);
     }
     
     
