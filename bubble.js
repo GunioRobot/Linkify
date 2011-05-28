@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
         outlineStyle: {
             outline: '0.3em solid rgba(82, 157, 255, 0.4)'
         },
+        prefetchInterval: 1 * 1000,
         showBubble: false,
         showOutline: true,
         toggleBubbleKeys: ['b', 'B']
@@ -22,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     var state = {
         bubble: document.createElement('div'),
+        cachedUrls: {},
         closest: undefined,
         links: [],
         style: {}
@@ -88,6 +90,27 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     
+    function log(/* ... */) {
+        opera.postError(Array.prototype.join.call(arguments, ' '));
+    }
+    
+    
+    function prefetch() {
+        if ((window !== window.parent) || (state.closest == undefined)) {
+            return;
+        }
+        
+        var url = state.closest.link.href;
+        
+        if (url in state.cachedUrls) {
+            return;
+        }
+        
+        state.cachedUrls[url] = true;
+        log('Prefetch:', url);
+    }
+    
+    
     function toggleBubble(event) {
         var key = String.fromCharCode((event.keyCode != undefined)
             ? event.keyCode
@@ -123,14 +146,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if (options.showOutline) {
                 if (state.closest != undefined) {
                     for (style in state.style) {
-                        state.closest.anchor.style[style] = state.style[style];
+                        state.closest.link.style[style] = state.style[style];
                     }
                     state.style = {};
                 }
                 
                 for (var style in options.outlineStyle) {
-                    state.style[style] = closest.anchor.style[style];
-                    closest.anchor.style[style] = options.outlineStyle[style];
+                    state.style[style] = closest.link.style[style];
+                    closest.link.style[style] = options.outlineStyle[style];
                 }
             }
             
@@ -144,6 +167,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     
+    var metas = document.getElementsByTagName('meta');
+    
+    for (var i = 0; i < metas.length; ++i) {
+        var meta = metas[i];
+        
+        // http://www.w3.org/TR/html4/appendix/notes.html#h-B.4.1.2
+        if ((meta.name.toLowerCase() == 'robots')
+            && /nofollow/i.test(meta.getAttribute('content')))
+        {
+            log('Prefetch disabled.');
+            return;
+        }
+    }
+    
     var anchors = document.getElementsByTagName('a');
     
     for (var i = 0; i < anchors.length; ++i) {
@@ -151,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var offset = getElementOffset(anchor);
         
         state.links.push({
-            anchor: anchor,
+            link: anchor,
             bottom: offset.top + anchor.offsetHeight,
             left: offset.left,
             right: offset.left + anchor.offsetWidth,
@@ -167,4 +204,5 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.appendChild(state.bubble);
     document.addEventListener('keypress', toggleBubble, false);
     document.addEventListener('mousemove', updateBubble, false);
+    setInterval(prefetch, options.prefetchInterval);
 }, false);
