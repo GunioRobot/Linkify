@@ -72,7 +72,11 @@ document.addEventListener('DOMContentLoaded', function() {
             WebkitBorderRadius: '999px',
             backgroundColor: 'rgba(128, 128, 128, 0.4)'
         },
-        showBubble: true
+        outlineStyle: {
+            outline: '3px solid #529DFF'
+        },
+        showBubble: true,
+        showOutline: true
     };
     
     var bubble = document.createElement('div');
@@ -87,8 +91,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var anchors = document.getElementsByTagName('a');
     var links = [];
     
-    while (anchors.length > 0) {
-        var anchor = anchors.shift();
+    for (var i = 0; i < anchors.length; ++i) {
+        var anchor = anchors[i];
         var offset = getElementOffset(anchor);
         
         links.push({
@@ -100,36 +104,44 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    var prevClosest = links[0];
+    var previousClosest;
     
     document.addEventListener('mousemove', function(event) {
+        var closestDistance = 9999;
         var closest;
-        var closeDist = 9999;
         
         for (var i = 0; i < links.length; ++i) {
-            var l = links[i];
-            var dist = distanceToRect(event.pageX, event.pageY, l);
+            var link = links[i];
+            var distance = distanceToRect(event.pageX, event.pageY, link);
             
-            if (dist < closeDist) {
-                closest = links[i];
-                closeDist = dist;
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closest = link;
             }
         }
         
-        if (closest !== prevClosest) {
-            prevClosest.anchor.style.outline = '';
-            closest.anchor.style.outline = '3px solid #529DFF';
-            prevClosest = closest;
+        if (closest !== previousClosest) {
+            if (options.showOutline) {
+                if (previousClosest != undefined) {
+                    previousClosest.anchor.style.outline = '';
+                }
+                
+                for (var style in options.outlineStyle) {
+                    closest.anchor.style[style] = options.outlineStyle[style];
+                }
+            }
+            
+            previousClosest = closest;
         }
         
-        bubble.style.width = 2 * closeDist + 'px';
-        bubble.style.height = 2 * closeDist + 'px';
-        bubble.style.top = event.pageY - closeDist + 'px';
-        bubble.style.left = event.pageX - closeDist + 'px';
+        bubble.style.width = 2 * closestDistance + 'px';
+        bubble.style.height = 2 * closestDistance + 'px';
+        bubble.style.top = event.pageY - closestDistance + 'px';
+        bubble.style.left = event.pageX - closestDistance + 'px';
     }, false);
     
     document.addEventListener('keypress', function(event) {
-        var code = event.keyCode != undefined ? event.keyCode : event.which;
+        var code = (event.keyCode != undefined) ? event.keyCode : event.which;
         
         if ((code == 66) || (code == 98)) {
             options.showBubble = !options.showBubble;
