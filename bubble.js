@@ -28,38 +28,43 @@ document.addEventListener('DOMContentLoaded', function() {
         return Math.sqrt(x * x + y * y);
     }
     
-    var pointRectDist = function(x, y, box) {
-        var hori = (x >= box.left && x <= box.right);
-        var vert = (y >= box.top && y <= box.bottom);
-
-        // inside
-        if (hori && vert) return 0;
-
-        // edges are closest
-        if (hori)
-        {
-            if (y < box.top) return box.top - y;
-            else return y - box.bottom;
+    function distanceToRect(x, y, rect) {
+        var horizontal = (x >= rect.left) && (x <= rect.right);
+        var vertical = (y >= rect.top) && (y <= rect.bottom);
+        
+        if (horizontal && vertical) {
+            // Inside.
+            return 0;
         }
-        if (vert)
-        {
-            if (x < box.left) return box.left - x;
-            else return x - box.right;
+        else if (horizontal) {
+            // Edges are closest.
+            return (y < rect.top) ? rect.top - y : y - rect.bottom;
         }
-
-        // corners
-        if (y < box.top && x < box.left) //top left
-            return distance(box.left, box.top, x, y);
-        else if (y < box.top && x > box.right) // top right
-            return distance(box.right, box.top, x, y);
-        else if (y > box.bottom && x > box.right) // bottom right
-            return distance(box.right, box.bottom, x, y);
-        else if (y > box.bottom && x < box.left) // bottom left
-            return distance(box.left, box.bottom, x, y);
-
-        return "ERROR";
-    };
-
+        else if (vertical) {
+            return (x < rect.left) ? rect.left - x : x - rect.right;
+        }
+        
+        // Corners.
+        if ((y < rect.top) && (x < rect.left)) {
+            // Top left.
+            return distance(rect.left, rect.top, x, y);
+        }
+        else if ((y < rect.top) && (x > rect.right)) {
+            // Top right.
+            return distance(rect.right, rect.top, x, y);
+        }
+        else if ((y > rect.bottom) && (x > rect.right)) {
+            // Bottom right.
+            return distance(rect.right, rect.bottom, x, y);
+        }
+        else if ((y > rect.bottom) && (x < rect.left)) {
+            // Bottom left.
+            return distance(rect.left, rect.bottom, x, y);
+        }
+        
+        return 'ERROR';
+    }
+    
     // Setup
     var circ = document.createElement('div');
     var props =  {position: 'absolute', borderRadius: '999px',
@@ -102,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
         for (var i=0; i < links.length; i++)
         {
             var l = links[i];
-            var dist = pointRectDist(e.pageX, e.pageY, l);
+            var dist = distanceToRect(e.pageX, e.pageY, l);
             if (dist < closeDist)
             {
                 closest = links[i];
@@ -117,10 +122,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         if (showCirc)
         {
-            circ.style.width = closeDist*2+"px";
-            circ.style.height = closeDist*2+"px";
-            circ.style.top = e.pageY-closeDist+"px";
-            circ.style.left = e.pageX-closeDist+"px";
+            circ.style.width = closeDist*2+'px';
+            circ.style.height = closeDist*2+'px';
+            circ.style.top = e.pageY-closeDist+'px';
+            circ.style.left = e.pageX-closeDist+'px';
         }
     }, false);
 
