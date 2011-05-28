@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         prefetchInterval: 1 * 1000,
         showBubble: false,
-        showOutline: true,
+        showOutline: false,
         toggleBubbleKeys: ['b', 'B']
     };
     
