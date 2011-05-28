@@ -102,14 +102,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     
-    function urlToLink(url) {
-        var anchor = document.createElement('a');
-        
-        anchor.href = url;
-        return anchor;
-    }
-    
-    
     function prefetch() {
         if ((window !== window.parent) || (state.closest == undefined)) {
             return;
