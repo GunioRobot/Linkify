@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
         outlineStyle: {
             outline: '3px solid #529DFF'
         },
-        showBubble: true,
+        showBubble: false,
         showOutline: true,
         toggleBubbleKeys: ['b', 'B']
     };
