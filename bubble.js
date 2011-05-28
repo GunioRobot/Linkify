@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
             pathname: /\.(aspx?|cgi|php|pl|py)$/i,
             protocol: /^(data|https|javascript|mailto):$/i
         },
+        fixLinkHashScroll: true,
         outlineStyle: '0.3em solid rgba(82, 157, 255, 0.4)',
         prefetchInterval: 1 * 1000,
         toggleBubbleKeys: ['b', 'B']
@@ -130,8 +131,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function loadLink(link) {
         var iframe = document.createElement('iframe');
+        var url = link.href;
         
-        iframe.src = link.href;
+        if (options.fixLinkHashScroll) {
+            var hash = link.hash;
+            link.hash = '';
+            url = link.href;
+            link.hash = hash;
+        }
+        
+        iframe.src = url;
         iframe.style.display = 'none';
         document.body.appendChild(iframe);
         
