@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
             borderRadius: '999px',
             MozBorderRadius: '999px',
             WebkitBorderRadius: '999px',
-            backgroundColor: 'rgba(128,128,128,0.4)'
+            backgroundColor: 'rgba(128, 128, 128, 0.4)'
         },
         showBubble: true
     };
@@ -84,23 +84,20 @@ document.addEventListener('DOMContentLoaded', function() {
     bubble.style.display = options.showBubble ? 'block' : 'none';
     document.body.appendChild(bubble);
     
-    // [{top:0, left:0, right:0, bottom:0, a:<anchor>}, ...]
+    var anchors = document.getElementsByTagName('a');
     var links = [];
-    var as = document.getElementsByTagName('a');
     
-    for (var i = 0; i < as.length; ++i) {
-        var a = as[i];
-        var offset = getElementOffset(a);
+    while (anchors.length > 0) {
+        var anchor = anchors.shift();
+        var offset = getElementOffset(anchor);
         
-        var link = {
-            a: a,
+        links.push({
+            anchor: anchor,
+            bottom: offset.top + anchor.offsetHeight,
             left: offset.left,
-            top: offset.top,
-            right: offset.left + a.offsetWidth,
-            bottom: offset.top + a.offsetHeight
-        };
-        
-        links.push(link);
+            right: offset.left + anchor.offsetWidth,
+            top: offset.top
+        });
     }
     
     var prevClosest = links[0];
@@ -120,8 +117,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (closest !== prevClosest) {
-            prevClosest.a.style.outline = '';
-            closest.a.style.outline = '3px solid #529DFF';
+            prevClosest.anchor.style.outline = '';
+            closest.anchor.style.outline = '3px solid #529DFF';
             prevClosest = closest;
         }
         
