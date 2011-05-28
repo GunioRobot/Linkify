@@ -28,11 +28,35 @@ document.addEventListener('DOMContentLoaded', function() {
     
     var state = {
         bubble: document.createElement('div'),
-        cachedUrls: {},
+        cachedUrls: undefined,
         closest: undefined,
         links: [],
         style: {}
     };
+    
+    
+    function Storage() {
+        if (typeof sessionStorage != 'undefined') {
+            this.get = function(key) {
+                return sessionStorage.getItem(key);
+            };
+            
+            this.set = function(key, value) {
+                sessionStorage.setItem(key, value);
+            };
+        }
+        else {
+            this.cache = {};
+            
+            this.get = function(key) {
+                return this.cache[key];
+            };
+            
+            this.set = function(key, value) {
+                this.cache[key] = value;
+            };
+        }
+    }
     
     
     function distance(x1, y1, x2, y2) {
@@ -121,11 +145,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         var link = state.closest.link;
-        if (link.href in state.cachedUrls) {
+        if (state.cachedUrls.get(link) != undefined) {
             return;
         }
         
-        state.cachedUrls[link.href] = true;
+        state.cachedUrls.set(link.href, true);
         if ((link.href.length == 0) || (link.pathname == location.pathname)) {
             return;
         }
@@ -232,6 +256,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     state.bubble.style.display = options.showBubble ? 'block' : 'none';
+    state.cachedUrls = new Storage();
+    
     document.body.appendChild(state.bubble);
     document.addEventListener('keypress', toggleBubble, false);
     document.addEventListener('mousemove', updateBubble, false);
