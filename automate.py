@@ -11,7 +11,7 @@
 # TODO: Handle HTTP connection errors (off-line, not found, etc).
 # TODO: Create MS Win32 system service?
 # TODO: Cut the first few seconds of the IGN Daily Fix videos.
-# TODO: Create sources for GT Countdown and TV shows (with list backup).
+# TODO: Create source TV shows with automatic backup.
 # TODO: Refactor into separate modules.
 # TODO: Add documentation.
 # TODO: Profile time execution.
@@ -533,10 +533,17 @@ class GameTrailers (DownloadSource, GameTrailersVideos, Feed, Logger):
         return 'GameTrailers'
 
 
-class PopFiction (DownloadSource, GameTrailersVideos):
+class GameTrailersVideosNewest (DownloadSource, GameTrailersVideos):
+    def __init__(self, game):
+        DownloadSource.__init__(self)
+        GameTrailersVideos.__init__(self)
+        
+        self._game = game
+    
+    
     def list_urls(self):
         main_html = lxml.html.fromstring(
-            Url(self.BASE_URL + '/game/pop-fiction/13123').open().read())
+            Url(self.BASE_URL + '/game/' + self._game).open().read())
         
         videos = main_html.xpath(
             '//*[@id = "GamepageMedialistFeatures"]' \
@@ -544,16 +551,33 @@ class PopFiction (DownloadSource, GameTrailersVideos):
         
         for page_url in [Url(self.BASE_URL + path) for path in videos]:
             yield (self.get_video_url(page_url), None)    
+
+
+class PopFiction (GameTrailersVideosNewest):
+    def __init__(self):
+        GameTrailersVideosNewest.__init__(self, 'pop-fiction/13123')
+    
     
     @property
     def name(self):
         return 'Pop-Fiction'
 
 
+class GtCountdown (GameTrailersVideosNewest):
+    def __init__(self):
+        GameTrailersVideosNewest.__init__(self, 'gt-countdown/2111')
+    
+    
+    @property
+    def name(self):
+        return 'GT Countdown'
+
+
 dl_manager = FreeDownloadManager()
 
 sources = [
     GameTrailers(),
+    GtCountdown(),
     HdTrailers(),
     IgnDailyFix(),
     InterfaceLift(),
