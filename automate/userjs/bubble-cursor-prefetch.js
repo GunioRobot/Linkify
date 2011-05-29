@@ -1,6 +1,13 @@
 // ==UserScript==
-// @include *
+// @exclude *
 // ==/UserScript==
+
+
+/**
+ * @license MIT License
+ * @author Stuart Knightley <http://stuartk.co.uk/>
+ * @author Márcio Faustino
+ */
 
 
 // TODO: Add documentation.
