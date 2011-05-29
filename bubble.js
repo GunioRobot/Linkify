@@ -7,6 +7,7 @@
 // TODO: Check rel="nofollow"?
 // TODO: Prevent frame detection? E.g. opera.defineMagicVariable
 // TODO: Show spinner beside link being loaded?
+// TODO: Enable/disable prefetch key.
 
 
 document.addEventListener('DOMContentLoaded', function() {
