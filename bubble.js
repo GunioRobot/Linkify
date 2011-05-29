@@ -8,6 +8,7 @@
 // TODO: Prevent frame detection? E.g. opera.defineMagicVariable
 // TODO: Show spinner beside link being loaded?
 // TODO: Enable/disable prefetch key.
+// TODO: Limit amount of parallel iframes.
 
 
 document.addEventListener('DOMContentLoaded', function() {
