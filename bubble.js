@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // http://www.w3.org/TR/html4/appendix/notes.html#h-B.4.1.2
         if ((meta.name.toLowerCase() == 'robots')
-            && /nofollow/i.test(meta.getAttribute('content')))
+            && /nofollow/i.test(meta.content))
         {
             log('Prefetch disabled.');
             return;
