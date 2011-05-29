@@ -2,17 +2,14 @@
 # -*- coding: utf-8 -*-
 
 
-# TODO: Check HTTP timeouts.
-# TODO: Query download sources in parallel.
-# TODO: Hide terminal while executing download finished events.
+# TODO: Create source TV shows with automatic backup.
 # TODO: Use command line options to choose the download manager, execute
 #       download finished events (both automatically and manually via command
 #       line), etc.
-# TODO: Handle HTTP connection errors (off-line, not found, etc).
-# TODO: Create MS Win32 system service?
-# TODO: Cut the first few seconds of the IGN Daily Fix videos.
-# TODO: Create source TV shows with automatic backup.
+# TODO: Query download sources in parallel.
 # TODO: Refactor into separate modules.
+# TODO: Cut the first few seconds of the IGN Daily Fix videos.
+# TODO: Create MS Win32 system service?
 # TODO: Add documentation.
 # TODO: Profile time execution.
 
