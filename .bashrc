@@ -131,7 +131,7 @@ if _have git; then
     git config --global color.ui auto
     git config --global push.default tracking
     
-    export GIT_EDITOR=nano
+    _have nano && export GIT_EDITOR=nano
     export GIT_PS1_SHOWDIRTYSTATE=x
     export GIT_PS1_SHOWSTASHSTATE=x
     export GIT_PS1_SHOWUNTRACKEDFILES=x
