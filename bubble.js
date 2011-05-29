@@ -12,11 +12,11 @@
 document.addEventListener('DOMContentLoaded', function() {
     var options = {
         bubbleStyle: {
-            position: 'absolute',
+            backgroundColor: 'rgba(82, 157, 255, 0.2)',
             borderRadius: '999px',
             MozBorderRadius: '999px',
-            WebkitBorderRadius: '999px',
-            backgroundColor: 'rgba(82, 157, 255, 0.2)'
+            position: 'absolute',
+            WebkitBorderRadius: '999px'
         },
         enableBubbleCursor: false,
         exceptions: {
