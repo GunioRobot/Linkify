@@ -489,7 +489,7 @@ class ScrewAttack (DownloadSource, GameTrailersVideos):
 class GameTrailers (DownloadSource, GameTrailersVideos, Feed, Logger):
     def __init__(self):
         query = {
-            'limit': 100,
+            'limit': 50,
             'orderby': 'newest',
             'quality[hd]': 'on',
         }
