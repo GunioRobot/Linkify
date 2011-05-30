@@ -136,7 +136,9 @@ if _have git; then
     export GIT_PS1_SHOWSTASHSTATE=x
     export GIT_PS1_SHOWUNTRACKEDFILES=x
     
-    [ -z "$CYGWIN_ENV" ] && ps1_user_host="$ps1_user_host\$(_color_git_ps1)"
+    if [ -z "$CYGWIN_ENV" -a "$(type -t __git_ps1)" = 'function' ]; then
+        ps1_user_host="$ps1_user_host\$(_color_git_ps1)"
+    fi
 fi
 
 if [ -z "$CYGWIN_ENV" -a -n "$SVN_PS1" ] && _have svn; then
