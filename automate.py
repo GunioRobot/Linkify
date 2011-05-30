@@ -488,17 +488,17 @@ class ScrewAttack (DownloadSource, GameTrailersVideos):
 
 class GameTrailers (DownloadSource, GameTrailersVideos, Feed, Logger):
     def __init__(self):
-        query = {
+        options = {
             'limit': 50,
             'orderby': 'newest',
             'quality[hd]': 'on',
         }
         
         for system in ['pc', 'ps3', 'xb360']:
-            query['favplats[%s]' % system] = system
+            options['favplats[%s]' % system] = system
         
         url = Url(self.BASE_URL + '/rssgenerate.php')
-        url.query = query
+        url.query = options
         
         DownloadSource.__init__(self)
         GameTrailersVideos.__init__(self)
