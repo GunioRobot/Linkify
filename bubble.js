@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         var link = state.closest.link;
-        if (state.cachedUrls.get(link) != undefined) {
+        if (state.cachedUrls.get(link.href) != undefined) {
             return;
         }
         
