@@ -267,6 +267,16 @@ sdi() {
     fi
 }
 
+sl() {
+    if _in_git; then
+        git log $@
+    elif _in_svn; then
+        svn log $@
+    else
+        _in_scm
+    fi
+}
+
 sre() {
     if _in_git; then
         git checkout $@
