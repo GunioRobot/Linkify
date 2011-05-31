@@ -5,7 +5,6 @@
 # TODO: Don't display diff for removed files.
 # TODO: Take line width and wrapping into account when paging.
 # TODO: Follow file automatically if it changes size?
-# TODO: Only ask for HTTP basic auth credentials in interactive mode.
 # TODO: Clean up exception handling.
 #       $ ./show.py -f file ^C ^C
 #       $ ./show.py long-file ^C
@@ -93,6 +92,9 @@ class InputType (argparse.FileType):
     
     
     def _open_auth_url(self, url, error):
+        if not sys.stdout.isatty():
+            raise error
+        
         while True:
             password_manager = self._password_manager
             (user, password) = password_manager.find_user_password(
