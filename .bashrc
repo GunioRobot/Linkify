@@ -299,7 +299,7 @@ sst() {
 
 sup() {
     if _in_git; then
-        git fetch && git rebase -p @{u}
+        git pull $@
     elif _in_svn; then
         svn update $@
     else
