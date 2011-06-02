@@ -159,7 +159,7 @@ class Logger (object):
         
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.addHandler(handler)
-        self._logger.setLevel(logging.DEBUG)
+        self._logger.setLevel(logging.INFO)
     
     
     @property
