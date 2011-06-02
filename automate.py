@@ -338,12 +338,13 @@ class HdTrailers (DownloadSource, Feed, Logger):
         return int(resolution[0])
     
     
-    def __init__(self, skip_documentaries = True):
+    def __init__(self, skip_documentaries = True, skip_foreign = True):
         DownloadSource.__init__(self)
         Feed.__init__(self, 'http://feeds.hd-trailers.net/hd-trailers/blog')
         Logger.__init__(self)
         
         self._skip_documentaries = skip_documentaries
+        self._skip_foreign = skip_foreign
     
     
     def list_urls(self):
@@ -388,6 +389,13 @@ class HdTrailers (DownloadSource, Feed, Logger):
             
             if genre == 'Documentary':
                 self.logger.warning('Skip documentary: %s', entry.title)
+                return
+        
+        if self._skip_foreign:
+            genre = entry.tags[1].term
+            
+            if genre == 'Foreign':
+                self.logger.warning('Skip foreign movie: %s', entry.title)
                 return
         
         if hasattr(entry, 'enclosures'):
