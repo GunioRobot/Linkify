@@ -355,17 +355,22 @@ class HdTrailers (DownloadSource, Feed, Logger):
             
             if url.host_name != 'playlist.yahoo.com':
                 yield (url, None)
-            else:
+                continue
+            
+            try:
                 file = url.resolve().path.name
-                
-                if re.match(r'^\d+$', file.stem):
-                    title = Url(entry.feedburner_origlink).path.components[-1]
-                    file = '%s (%s)%s' % (title, file.stem, file.ext)
-                    self.logger.debug('File name rewrite: %s', file)
-                else:
-                    file = None
-                
-                yield (PathUrl(url), file)
+            except urllib2.URLError:
+                self.logger.error('%s: %s', str(error), url)
+                continue
+            
+            if re.match(r'^\d+$', file.stem):
+                title = Url(entry.feedburner_origlink).path.components[-1]
+                file = '%s (%s)%s' % (title, file.stem, file.ext)
+                self.logger.debug('File name rewrite: %s', file)
+            else:
+                file = None
+            
+            yield (PathUrl(url), file)
     
     
     @property
