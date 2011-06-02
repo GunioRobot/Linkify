@@ -455,8 +455,13 @@ class InterfaceLift (DownloadSource, Feed):
         return re.findall('"/wallpaper/([^/]+)/"', script.open().read())[0]
 
 
-class GameTrailersVideos (object):
+class GameTrailersVideos (Logger):
     BASE_URL = 'http://www.gametrailers.com'
+    
+    
+    def __init__(self, skip_indies = False):
+        Logger.__init__(self)
+        self._skip_indies = skip_indies
     
     
     def get_video_url(self, page_url):
@@ -464,12 +469,21 @@ class GameTrailersVideos (object):
         video_id = re.findall(r'mov_game_id\s*=\s*(\d+)', page_html)
         
         if len(video_id) == 0:
+            # Not all videos are available for download.
+            self.logger.error('Movie ID not found: %s', page_url)
             return
         
-        quicktime_video_href = '//*[@class = "Downloads"]' \
-            + '/a[starts-with(text(), "Quicktime")]/@href'
-        video_url = Url(lxml.html.fromstring(page_html).xpath(
-            quicktime_video_href)[0])
+        page = lxml.html.fromstring(page_html)
+        
+        if self._skip_indies:
+            [publisher] = page.xpath('//*[@class = "publisher"]/text()')
+            
+            if publisher.strip() == 'N/A':
+                self.logger.warning('Skip indie game: %s', page_url)
+                return
+        
+        video_url = Url(page.xpath('//*[@class = "Downloads"]' \
+            + '/a[starts-with(text(), "Quicktime")]/@href')[0])
         
         return Url('http://trailers-ak.gametrailers.com/gt_vault/%s/%s' \
             % (video_id[0], video_url.path.components[-1]))
@@ -491,7 +505,7 @@ class ScrewAttack (DownloadSource, GameTrailersVideos):
         return 'ScrewAttack'
 
 
-class GameTrailers (DownloadSource, GameTrailersVideos, Feed, Logger):
+class GameTrailers (DownloadSource, GameTrailersVideos, Feed):
     def __init__(self):
         options = {
             'limit': 50,
@@ -506,9 +520,8 @@ class GameTrailers (DownloadSource, GameTrailersVideos, Feed, Logger):
         url.query = options
         
         DownloadSource.__init__(self)
-        GameTrailersVideos.__init__(self)
+        GameTrailersVideos.__init__(self, skip_indies = True)
         Feed.__init__(self, unicode(url))
-        Logger.__init__(self)
     
     
     def list_urls(self):
@@ -523,10 +536,7 @@ class GameTrailers (DownloadSource, GameTrailersVideos, Feed, Logger):
                     self.logger.error('%s: %s', str(error), entry.link)
                     continue
                 
-                if url is None:
-                    # Not all videos are available for download.
-                    self.logger.error('Movie ID not found: %s', entry.link)
-                else:
+                if url is not None:
                     yield (url, None)
     
     
