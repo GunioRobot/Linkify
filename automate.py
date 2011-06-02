@@ -338,10 +338,12 @@ class HdTrailers (DownloadSource, Feed, Logger):
         return int(resolution[0])
     
     
-    def __init__(self):
+    def __init__(self, skip_documentaries = True):
         DownloadSource.__init__(self)
         Feed.__init__(self, 'http://feeds.hd-trailers.net/hd-trailers/blog')
         Logger.__init__(self)
+        
+        self._skip_documentaries = skip_documentaries
     
     
     def list_urls(self):
@@ -353,7 +355,9 @@ class HdTrailers (DownloadSource, Feed, Logger):
             
             url = self._find_best_url(entry)
             
-            if url.host_name != 'playlist.yahoo.com':
+            if url is None:
+                continue
+            elif url.host_name != 'playlist.yahoo.com':
                 yield (url, None)
                 continue
             
@@ -379,6 +383,13 @@ class HdTrailers (DownloadSource, Feed, Logger):
     
     
     def _find_best_url(self, entry):
+        if self._skip_documentaries:
+            genre = entry.tags[0].term
+            
+            if genre == 'Documentary':
+                self.logger.warning('Skip documentary: %s', entry.title)
+                return
+        
         if hasattr(entry, 'enclosures'):
             return Url(self._find_highest_resolution(
                 [enclosure.href for enclosure in entry.enclosures]))
