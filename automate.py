@@ -16,7 +16,8 @@
 
 # Standard library:
 from __future__ import division, print_function, unicode_literals
-import datetime, logging, os.path, re, time, Tkinter, urllib, urllib2, urlparse
+import codecs, datetime, locale, logging, os.path, re, sys, time, Tkinter, \
+    urllib, urllib2, urlparse
 
 # Internal modules:
 from defaults import *
@@ -153,7 +154,9 @@ class MsWindowsTypeLibrary (object):
 
 class Logger (object):
     def __init__(self):
-        handler = logging.StreamHandler()
+        stream = codecs.getwriter(locale.getpreferredencoding())(sys.stderr)
+        
+        handler = logging.StreamHandler(stream)
         handler.setFormatter(logging.Formatter(
             '[%(asctime)s] [%(levelname)s] %(message)s'))
         
