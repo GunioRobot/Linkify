@@ -48,11 +48,11 @@ class Logger (object):
         
         handler = logging.StreamHandler(stream)
         handler.setFormatter(logging.Formatter(
-            '[%(asctime)s] [%(levelname)s] %(message)s'))
+            '[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s'))
         
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.addHandler(handler)
-        self._logger.setLevel(logging.DEBUG)
+        self._logger.setLevel(logging.INFO)
     
     
     @property
@@ -445,7 +445,7 @@ class HdTrailers (DownloadSource, Feed, Logger):
             
             try:
                 file = url.resolve().path.name
-            except urllib2.URLError as (error,):
+            except urllib2.URLError as error:
                 self.logger.error('%s: %s', str(error), url)
                 continue
             
@@ -523,7 +523,7 @@ class InterfaceLift (DownloadSource, Feed, Logger):
     def list_urls(self):
         try:
             session_code = self._session_code
-        except urllib2.URLError as (error,):
+        except urllib2.URLError as error:
             self.logger.error('%s: %s\'s session code', str(error), self.name)
             return
         
@@ -644,7 +644,7 @@ class GameTrailers (DownloadSource, GameTrailersVideos, Feed):
             if re.search(keywords_re, entry.title, re.IGNORECASE):
                 try:
                     url = self.get_video_url(Url(entry.link))
-                except urllib2.URLError as (error,):
+                except urllib2.URLError as error:
                     self.logger.error('%s: %s', str(error), entry.link)
                     continue
                 
@@ -718,7 +718,7 @@ class PeriodicTask (threading.Thread, Logger):
     
     def run(self):
         while True:
-            self.logger.debug('Task start: %s', self.name)
+            self.logger.info('Task start')
             self.process()
             time.sleep(10 * 60)
 
@@ -844,13 +844,11 @@ dl_sources = [
 
 def query_source(dl_manager, dl_source):
     while True:
-        print('Source check: %s\n' % dl_source.name, end = '')
-        
         for url in dl_source.list_urls():
             try:
                 if not dl_manager.has_url(url):
                     dl_manager.download_url(url)
-            except urllib2.URLError as (error,):
+            except urllib2.URLError as error:
                 dl_manager.logger.error('%s: %s', str(error), url)
         
         time.sleep(10 * 60)
