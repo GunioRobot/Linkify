@@ -712,10 +712,10 @@ class PeriodicTask (threading.Thread, Logger):
     
     def run(self):
         while True:
-            self.logger.info('Start task')
+            self.logger.info('Start')
             self.process()
             
-            self.logger.info('Suspend task')
+            self.logger.info('Suspend')
             time.sleep(10 * 60)
 
 
@@ -840,7 +840,7 @@ dl_sources = [
 
 def query_source(dl_manager, dl_source):
     while True:
-        dl_source.logger.info('Start download source check')
+        dl_source.logger.info('Start')
         
         for url in dl_source.list_urls():
             try:
@@ -849,7 +849,7 @@ def query_source(dl_manager, dl_source):
             except urllib2.URLError as error:
                 dl_source.logger.error('%s: %s\n', str(error), url)
         
-        dl_source.logger.info('Suspend download source check')
+        dl_source.logger.info('Suspend')
         time.sleep(10 * 60)
 
 for task in [Dropbox(), GnuCash(), Opera(), Windows()]:
