@@ -52,7 +52,8 @@ class ColorStreamHandler (logging.StreamHandler):
             codecs.getwriter(locale.getpreferredencoding())(sys.stderr))
         
         self.setFormatter(logging.Formatter(
-            '[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s'))
+            fmt = '[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s',
+            datefmt = '%Y-%m-%d %H:%M:%S'))
         
         if sys.stderr.isatty():
             self._terminal = colorconsole.terminal.get_terminal()
