@@ -371,7 +371,7 @@ class HdTrailers (DownloadSource, Feed, Logger):
                 self.logger.error('%s: %s', str(error), url)
                 continue
             
-            if re.match(r'^\d+$', file.stem):
+            if re.search(r'^\d+$', file.stem):
                 title = Url(entry.feedburner_origlink).path.components[-1]
                 file = '%s (%s)%s' % (title, file.stem, file.ext)
                 self.logger.debug('File name rewrite: %s', file)
