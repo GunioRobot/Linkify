@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 
-# TODO: Colorize logger output.
 # TODO: Create source TV shows with automatic backup.
 # TODO: Use command line options to choose the download manager, execute
 #       download finished events (both automatically and manually via command
@@ -23,7 +22,8 @@ import codecs, datetime, locale, logging, os.path, Queue, re, sys, threading, \
 from defaults import *
 
 
-externals('feedparser', 'lxml.html', 'PIL.Image', 'unipath')
+externals('colorconsole.terminal', 'feedparser', 'lxml.html', 'PIL.Image',
+    'unipath')
 
 
 class Path (unipath.Path):
@@ -42,16 +42,46 @@ class Path (unipath.Path):
         return os.path.splitext(self)
 
 
-class Logger (object):
+class ColorStreamHandler (logging.StreamHandler):
+    (BLACK, BLUE, GREEN, CYAN, RED, PURPLE, BROWN, LGREY) = range(8)
+    (DGRAY, LBLUE, LGREEN, LCYAN, LRED, LPURPLE, YELLOW, WHITE) = range(8, 16)
+    
+    
     def __init__(self):
-        stream = codecs.getwriter(locale.getpreferredencoding())(sys.stderr)
+        logging.StreamHandler.__init__(self,
+            codecs.getwriter(locale.getpreferredencoding())(sys.stderr))
         
-        handler = logging.StreamHandler(stream)
-        handler.setFormatter(logging.Formatter(
+        self.setFormatter(logging.Formatter(
             '[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s'))
         
+        if sys.stderr.isatty():
+            self._terminal = colorconsole.terminal.get_terminal()
+        else:
+            self._terminal = None
+    
+    
+    def emit(self, record):
+        if self._terminal is not None:
+            if record.levelno == logging.INFO:
+                self._terminal.set_color(self.BLUE)
+            elif record.levelno == logging.WARNING:
+                self._terminal.set_color(self.BROWN)
+            elif record.levelno == logging.ERROR:
+                self._terminal.set_color(self.RED)
+        
+        logging.StreamHandler.emit(self, record)
+        
+        if self._terminal is not None: 
+            self._terminal.reset()
+
+
+class Logger (object):
+    _HANDLER = ColorStreamHandler()
+    
+    
+    def __init__(self):
         self._logger = logging.getLogger(self.__class__.__name__)
-        self._logger.addHandler(handler)
+        self._logger.addHandler(self._HANDLER)
         self._logger.setLevel(logging.INFO)
     
     
@@ -717,7 +747,7 @@ class PeriodicTask (threading.Thread, Logger):
             self.logger.info('Start')
             self.process()
             
-            self.logger.info('Suspend')
+            self.logger.info('Pause')
             time.sleep(10 * 60)
 
 
@@ -838,7 +868,7 @@ def query_source(dl_manager, dl_source):
             except urllib2.URLError as error:
                 dl_source.logger.error('%s: %s\n', str(error), url)
         
-        dl_source.logger.info('Suspend')
+        dl_source.logger.info('Pause')
         time.sleep(10 * 60)
 
 
