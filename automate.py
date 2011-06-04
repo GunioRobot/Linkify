@@ -419,7 +419,7 @@ class HdTrailers (DownloadSource, Feed, Logger):
             return Url(url)
 
 
-class InterfaceLift (DownloadSource, Feed):
+class InterfaceLift (DownloadSource, Feed, Logger):
     _HOST_NAME = 'interfacelift.com'
     
     
@@ -427,6 +427,7 @@ class InterfaceLift (DownloadSource, Feed):
         DownloadSource.__init__(self)
         Feed.__init__(self,
             'http://' + self._HOST_NAME + '/wallpaper/rss/index.xml')
+        Logger.__init__(self)
         
         tk = Tkinter.Tk()
         self._screen_ratio = tk.winfo_screenwidth() / tk.winfo_screenheight()
