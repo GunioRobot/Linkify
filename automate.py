@@ -6,7 +6,6 @@
 # TODO: Use command line options to choose the download manager, execute
 #       download finished events (both automatically and manually via command
 #       line), etc.
-# TODO: Query download sources in parallel.
 # TODO: Refactor into separate modules.
 # TODO: Cut the first few seconds of the IGN Daily Fix videos.
 # TODO: Create MS Win32 system service?
@@ -849,8 +848,11 @@ def query_source(dl_manager, dl_source):
                 if not dl_manager.has_url(url):
                     dl_manager.download_url(url)
             except urllib2.URLError as error:
-                dl_manager.logger.error('%s: %s', str(error), url)
+                print('%s: %s\n' % (str(error), url),
+                    end = '',
+                    file = sys.stderr)
         
+        print('Paused: %s\n' % dl_source.name, end = '')
         time.sleep(10 * 60)
 
 for task in [Dropbox(), GnuCash(), Opera(), Windows()]:
