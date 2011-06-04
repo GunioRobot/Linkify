@@ -40,10 +40,14 @@ class Url (object):
     def __init__(self, url):
         if isinstance(url, Url):
             self._components = url._components
+            
+            self.comment = url.comment
+            self.save_as = url.save_as
         else:
             self._components = urlparse.urlparse(url)
-        
-        self.save_as = None
+            
+            self.comment = None
+            self.save_as = None
     
     
     @property
@@ -202,7 +206,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Logger):
         self._urls_by_file_name = {}
     
     
-    def download_url(self, url, comment = None):
+    def download_url(self, url):
         wg_url_receiver = self.get_data_type('WGUrlReceiver')
         
         wg_url_receiver.Url = unicode(url)
@@ -214,8 +218,8 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Logger):
         if url.save_as is not None:
             wg_url_receiver.FileName = url.save_as
         
-        if comment is not None:
-            wg_url_receiver.Comment = comment
+        if url.comment is not None:
+            wg_url_receiver.Comment = url.comment
         
         wg_url_receiver.AddDownload()
         self._urls.add(url)
@@ -315,7 +319,10 @@ class IgnDailyFix (DownloadSource, Feed):
     def list_urls(self):
         for entry in self.get_feed().entries:
             if entry.title.startswith(self._TITLE + ':'):
-                yield Url(entry.enclosures[0].href)
+                url = Url(entry.enclosures[0].href)
+                url.comment = entry.link
+                
+                yield url
     
     
     @property
@@ -366,7 +373,10 @@ class HdTrailers (DownloadSource, Feed, Logger):
             
             if url is None:
                 continue
-            elif url.host_name != 'playlist.yahoo.com':
+            
+            url.comment = entry.link
+            
+            if url.host_name != 'playlist.yahoo.com':
                 yield url
                 continue
             
@@ -459,6 +469,7 @@ class InterfaceLift (DownloadSource, Feed, Logger):
             url = FileUrl(html.xpath('//img/@src')[0])
             (path, ext) = url.path.split_ext()
             
+            url.comment = entry.link
             url.path = re.sub(
                 '(?<=/)previews(?=/)',
                 session_code,
@@ -520,8 +531,11 @@ class GameTrailersVideos (Logger):
         video_url = Url(page.xpath('//*[@class = "Downloads"]' \
             + '/a[starts-with(text(), "Quicktime")]/@href')[0])
         
-        return Url('http://trailers-ak.gametrailers.com/gt_vault/%s/%s' \
+        url = Url('http://trailers-ak.gametrailers.com/gt_vault/%s/%s' \
             % (video_id[0], video_url.path.components[-1]))
+        url.comment = page_url
+        
+        return url
 
 
 class ScrewAttack (DownloadSource, GameTrailersVideos):
@@ -572,6 +586,7 @@ class GameTrailers (DownloadSource, GameTrailersVideos, Feed):
                     continue
                 
                 if url is not None:
+                    url.comment = entry.link
                     yield url
     
     
