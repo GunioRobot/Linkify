@@ -719,15 +719,15 @@ class Opera (PeriodicTask):
                 path = Path(root, file)
                 
                 with open(path) as bookmark:
-                    is_bookmark = (bookmark.readline() == bookmark_header)
+                    if bookmark.readline() != bookmark_header:
+                        continue
                 
-                if is_bookmark:
-                    self.logger.warning('Remove backup bookmark: %s', path)
-                    
-                    try:
-                        path.remove()
-                    except OSError as (code, message):
-                        self.logger.debug('%s: %s', message, path)
+                self.logger.warning('Remove backup bookmark: %s', path)
+                
+                try:
+                    path.remove()
+                except OSError as (code, message):
+                    self.logger.debug('%s: %s', message, path)
 
 
 class Dropbox (PeriodicTask):
@@ -748,6 +748,30 @@ class Dropbox (PeriodicTask):
                 self.logger.debug('%s: %s', message, cache)
 
 
+class Windows (PeriodicTask):
+    @property
+    def name(self):
+        return 'Windows'
+    
+    
+    def process(self):
+        config_file = Path.documents().child('desktop.ini')
+        
+        if not config_file.exists():
+            return
+        
+        with open(config_file) as config:
+            if config.readline() != '[.ShellClassInfo]\n':
+                return
+        
+        self.logger.warning('Remove configuration file: %s', config_file)
+        
+        try:
+            config_file.remove()
+        except OSError as (code, message):
+            self.logger.debug('%s: %s', message, config_file)
+
+
 dl_manager = FreeDownloadManager()
 
 sources = [
@@ -760,7 +784,7 @@ sources = [
     ScrewAttack(),
 ]
 
-for task in [Dropbox(), GnuCash(), Opera()]:
+for task in [Dropbox(), GnuCash(), Opera(), Windows()]:
     task.start()
 
 while True:
