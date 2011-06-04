@@ -174,7 +174,7 @@ class Logger (object):
         
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.addHandler(handler)
-        self._logger.setLevel(logging.INFO)
+        self._logger.setLevel(logging.DEBUG)
     
     
     @property
@@ -831,7 +831,7 @@ class Windows (PeriodicTask):
 dl_manager = ThreadSafeDownloadManager(FreeDownloadManager)
 dl_manager.start()
 
-sources = [
+dl_sources = [
     GameTrailers(),
     GtCountdown(),
     HdTrailers(),
@@ -841,19 +841,30 @@ sources = [
     ScrewAttack(),
 ]
 
-for task in [Dropbox(), GnuCash(), Opera(), Windows()]:
-    task.start()
-
-while True:
-    for source in sources:
-        print('Source check: %s' % source.name)
+def query_source(dl_manager, dl_source):
+    while True:
+        print('Source check: %s\n' % dl_source.name, end = '')
         
-        for url in source.list_urls():
+        for url in dl_source.list_urls():
             try:
                 if not dl_manager.has_url(url):
                     dl_manager.download_url(url)
             except urllib2.URLError as (error,):
                 dl_manager.logger.error('%s: %s', str(error), url)
+        
+        time.sleep(10 * 60)
+
+for task in [Dropbox(), GnuCash(), Opera(), Windows()]:
+    task.start()
+
+for dl_source in dl_sources:
+    thread = threading.Thread(
+        args = (dl_manager, dl_source),
+        name = dl_source.name,
+        target = query_source)
     
-    print('Paused')
-    time.sleep(10 * 60)
+    thread.daemon = True
+    thread.start()
+
+while True:
+    time.sleep(1 * 60 * 60)
