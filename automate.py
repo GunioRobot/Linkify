@@ -826,19 +826,6 @@ class Windows (PeriodicTask):
             self.logger.debug('%s: %s', message, config_file)
 
 
-dl_manager = ThreadSafeDownloadManager(FreeDownloadManager)
-dl_manager.start()
-
-dl_sources = [
-    GameTrailers(),
-    GtCountdown(),
-    HdTrailers(),
-    IgnDailyFix(),
-    InterfaceLift(),
-    PopFiction(),
-    ScrewAttack(),
-]
-
 def query_source(dl_manager, dl_source):
     while True:
         dl_source.logger.info('Start')
@@ -852,6 +839,20 @@ def query_source(dl_manager, dl_source):
         
         dl_source.logger.info('Suspend')
         time.sleep(10 * 60)
+
+
+dl_manager = ThreadSafeDownloadManager(FreeDownloadManager)
+dl_manager.start()
+
+dl_sources = [
+    GameTrailers(),
+    GtCountdown(),
+    HdTrailers(),
+    IgnDailyFix(),
+    InterfaceLift(),
+    PopFiction(),
+    ScrewAttack(),
+]
 
 for task in [Dropbox(), GnuCash(), Opera(), Windows()]:
     task.start()
