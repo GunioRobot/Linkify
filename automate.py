@@ -655,7 +655,7 @@ class PeriodicTask (threading.Thread, Logger):
     
     def run(self):
         while True:
-            self.logger.info('Task start: %s', self.name)
+            self.logger.debug('Task start: %s', self.name)
             self.do_task()
             time.sleep(10 * 60)
 
