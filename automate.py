@@ -730,6 +730,24 @@ class Opera (PeriodicTask):
                         self.logger.debug('%s: %s', message, path)
 
 
+class Dropbox (PeriodicTask):
+    @property
+    def name(self):
+        return 'Dropbox'
+    
+    
+    def process(self):
+        cache = Path.documents().child('.dropbox.cache')
+        
+        if cache.exists():
+            self.logger.warning('Remove cache folder: %s', cache)
+            
+            try:
+                cache.rmtree()
+            except OSError as (code, message):
+                self.logger.debug('%s: %s', message, cache)
+
+
 dl_manager = FreeDownloadManager()
 
 sources = [
@@ -742,7 +760,7 @@ sources = [
     ScrewAttack(),
 ]
 
-for task in [GnuCash(), Opera()]:
+for task in [Dropbox(), GnuCash(), Opera()]:
     task.start()
 
 while True:
