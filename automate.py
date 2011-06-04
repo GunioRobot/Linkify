@@ -42,6 +42,8 @@ class Url (object):
             self._components = url._components
         else:
             self._components = urlparse.urlparse(url)
+        
+        self.save_as = None
     
     
     @property
@@ -175,7 +177,7 @@ class DownloadManager (object):
     
     
     @abstractmethod
-    def download_url(self, url, to = None):
+    def download_url(self, url):
         pass
     
     
@@ -200,7 +202,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Logger):
         self._urls_by_file_name = {}
     
     
-    def download_url(self, url, to = None, comment = None):
+    def download_url(self, url, comment = None):
         wg_url_receiver = self.get_data_type('WGUrlReceiver')
         
         wg_url_receiver.Url = unicode(url)
@@ -209,8 +211,8 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Logger):
         wg_url_receiver.ForceSilent = True
         wg_url_receiver.ForceSilentEx = True
         
-        if to is not None:
-            wg_url_receiver.FileName = to
+        if url.save_as is not None:
+            wg_url_receiver.FileName = url.save_as
         
         if comment is not None:
             wg_url_receiver.Comment = comment
@@ -313,7 +315,7 @@ class IgnDailyFix (DownloadSource, Feed):
     def list_urls(self):
         for entry in self.get_feed().entries:
             if entry.title.startswith(self._TITLE + ':'):
-                yield (Url(entry.enclosures[0].href), None)
+                yield Url(entry.enclosures[0].href)
     
     
     @property
@@ -365,7 +367,7 @@ class HdTrailers (DownloadSource, Feed, Logger):
             if url is None:
                 continue
             elif url.host_name != 'playlist.yahoo.com':
-                yield (url, None)
+                yield url
                 continue
             
             try:
@@ -381,7 +383,10 @@ class HdTrailers (DownloadSource, Feed, Logger):
             else:
                 file = None
             
-            yield (PathUrl(url), file)
+            url = PathUrl(url)
+            url.save_as = file
+            
+            yield url
     
     
     @property
@@ -459,7 +464,7 @@ class InterfaceLift (DownloadSource, Feed, Logger):
                 session_code,
                 path + '_' + self._find_best_resolution(html) + ext)
             
-            yield (url, None)
+            yield url
     
     
     @property
@@ -527,7 +532,7 @@ class ScrewAttack (DownloadSource, GameTrailersVideos):
             '//*[@id = "nerd"]//a[@class = "gamepage_content_row_title"]/@href')
         
         for page_url in [Url(self.BASE_URL + path) for path in videos]:
-            yield (self.get_video_url(page_url), None)
+            yield self.get_video_url(page_url)
     
     
     @property
@@ -567,7 +572,7 @@ class GameTrailers (DownloadSource, GameTrailersVideos, Feed):
                     continue
                 
                 if url is not None:
-                    yield (url, None)
+                    yield url
     
     
     @property
@@ -592,7 +597,7 @@ class GameTrailersVideosNewest (DownloadSource, GameTrailersVideos):
             + '//*[@class = "newestlist_movie_format_SDHD"]/a[1]/@href')
         
         for page_url in [Url(self.BASE_URL + path) for path in videos]:
-            yield (self.get_video_url(page_url), None)    
+            yield self.get_video_url(page_url)    
 
 
 class PopFiction (GameTrailersVideosNewest):
@@ -702,10 +707,10 @@ while True:
     for source in sources:
         dl_manager.logger.info('Source check: %s', source.name)
         
-        for (url, file_name) in source.list_urls():
+        for url in source.list_urls():
             try:
                 if not dl_manager.has_url(url):
-                    dl_manager.download_url(url, to = file_name)
+                    dl_manager.download_url(url)
             except urllib2.URLError as (error,):
                 dl_manager.logger.error('%s: %s', str(error), url)
     
