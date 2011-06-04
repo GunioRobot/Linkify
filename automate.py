@@ -632,12 +632,39 @@ class PeriodicTask (threading.Thread, Logger):
             time.sleep(10 * 60)
 
 
-class GnuCashLogs (PeriodicTask):
+class GnuCash (PeriodicTask):
     def do_task(self):
         from win32com.shell import shell, shellcon
-        
         docs = Path(shell.SHGetFolderPath(0, shellcon.CSIDL_PERSONAL, 0, 0))
-        webkit = docs.child('webkit')
+        
+        self._clean_webkit_folder(docs)
+        self._clean_logs(docs)
+    
+    
+    @property
+    def name(self):
+        return 'GnuCash'
+    
+    
+    def _clean_logs(self, documents):
+        # http://wiki.gnucash.org/wiki/FAQ
+        log_file = r'\.gnucash\.\d{14}\.log$'
+        
+        for (root, dirs, files) in os.walk(documents):
+            for file in filter(lambda f: re.search(log_file, f), files):
+                path = Path(root, file)
+                
+                if path.exists():
+                    self.logger.warning('Remove file: %s', path)
+                    
+                    try:
+                        path.remove()
+                    except OSError as (code, message):
+                        self.logger.debug('%s: %s', message, path)
+    
+    
+    def _clean_webkit_folder(self, documents):
+        webkit = documents.child('webkit')
         
         if webkit.exists():
             self.logger.warning('Remove folder: %s', webkit)
@@ -645,12 +672,7 @@ class GnuCashLogs (PeriodicTask):
             try:
                 webkit.rmtree()
             except OSError as (code, message):
-                self.logger.error('%s: %s', message, webkit)
-    
-    
-    @property
-    def name(self):
-        return 'GnuCash'
+                self.logger.debug('%s: %s', message, webkit)
 
 
 dl_manager = FreeDownloadManager()
@@ -665,7 +687,7 @@ sources = [
     ScrewAttack(),
 ]
 
-for task in [GnuCashLogs()]:
+for task in [GnuCash()]:
     task.start()
 
 while True:
