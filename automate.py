@@ -16,8 +16,8 @@
 
 # Standard library:
 from __future__ import division, print_function, unicode_literals
-import codecs, datetime, locale, logging, os.path, re, sys, time, Tkinter, \
-    urllib, urllib2, urlparse
+import codecs, datetime, locale, logging, os.path, re, sys, threading, time, \
+    Tkinter, urllib, urllib2, urlparse
 
 # Internal modules:
 from defaults import *
@@ -607,6 +607,52 @@ class GtCountdown (GameTrailersVideosNewest):
         return 'GT Countdown'
 
 
+class PeriodicTask (threading.Thread, Logger):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        Logger.__init__(self)
+        
+        self.daemon = True
+    
+    
+    @abstractmethod
+    def do_task(self):
+        pass
+    
+    
+    @abstractproperty
+    def name(self):
+        pass
+    
+    
+    def run(self):
+        while True:
+            self.logger.info('Task start: %s', self.name)
+            self.do_task()
+            time.sleep(10 * 60)
+
+
+class GnuCashLogs (PeriodicTask):
+    def do_task(self):
+        from win32com.shell import shell, shellcon
+        
+        docs = Path(shell.SHGetFolderPath(0, shellcon.CSIDL_PERSONAL, 0, 0))
+        webkit = docs.child('webkit')
+        
+        if webkit.exists():
+            self.logger.warning('Remove folder: %s', webkit)
+            
+            try:
+                webkit.rmtree()
+            except OSError as (code, message):
+                self.logger.error('%s: %s', message, webkit)
+    
+    
+    @property
+    def name(self):
+        return 'GnuCash'
+
+
 dl_manager = FreeDownloadManager()
 
 sources = [
@@ -618,6 +664,9 @@ sources = [
     PopFiction(),
     ScrewAttack(),
 ]
+
+for task in [GnuCashLogs()]:
+    task.start()
 
 while True:
     for source in sources:
