@@ -367,7 +367,7 @@ class HdTrailers (DownloadSource, Feed, Logger):
             
             try:
                 file = url.resolve().path.name
-            except urllib2.URLError:
+            except urllib2.URLError as error:
                 self.logger.error('%s: %s', str(error), url)
                 continue
             
@@ -439,7 +439,11 @@ class InterfaceLift (DownloadSource, Feed):
     
     
     def list_urls(self):
-        session_code = self._session_code
+        try:
+            session_code = self._session_code
+        except urllib2.URLError as error:
+            self.logger.error('%s: %s\'s session code', str(error), self.name)
+            return
         
         for entry in self.get_feed().entries:
             html = lxml.html.fromstring(entry.summary)
