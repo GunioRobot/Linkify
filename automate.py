@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
+# TODO: Colorize logger output.
 # TODO: Create source TV shows with automatic backup.
 # TODO: Use command line options to choose the download manager, execute
 #       download finished events (both automatically and manually via command
