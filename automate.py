@@ -42,6 +42,24 @@ class Path (unipath.Path):
         return os.path.splitext(self)
 
 
+class Logger (object):
+    def __init__(self):
+        stream = codecs.getwriter(locale.getpreferredencoding())(sys.stderr)
+        
+        handler = logging.StreamHandler(stream)
+        handler.setFormatter(logging.Formatter(
+            '[%(asctime)s] [%(levelname)s] %(message)s'))
+        
+        self._logger = logging.getLogger(self.__class__.__name__)
+        self._logger.addHandler(handler)
+        self._logger.setLevel(logging.DEBUG)
+    
+    
+    @property
+    def logger(self):
+        return self._logger
+
+
 class Url (object):
     def __init__(self, url):
         if isinstance(url, Url):
@@ -164,24 +182,6 @@ class MsWindowsTypeLibrary (object):
             % (name, self._path))
 
 
-class Logger (object):
-    def __init__(self):
-        stream = codecs.getwriter(locale.getpreferredencoding())(sys.stderr)
-        
-        handler = logging.StreamHandler(stream)
-        handler.setFormatter(logging.Formatter(
-            '[%(asctime)s] [%(levelname)s] %(message)s'))
-        
-        self._logger = logging.getLogger(self.__class__.__name__)
-        self._logger.addHandler(handler)
-        self._logger.setLevel(logging.DEBUG)
-    
-    
-    @property
-    def logger(self):
-        return self._logger
-
-
 class DownloadManager (object):
     __metaclass__ = ABCMeta
     
@@ -292,6 +292,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Logger):
     
     def has_url(self, url):
         resolved_url = url.resolve()
+        self.logger.debug('Check for download: %s', url)
         
         if resolved_url in self._list_urls():
             return True
