@@ -342,7 +342,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Logger):
             self._last_cache_completed = datetime.datetime.now()
 
 
-class DownloadSource (object):
+class DownloadSource (Logger):
     __metaclass__ = ABCMeta
     
     
@@ -392,7 +392,7 @@ class IgnDailyFix (DownloadSource, Feed):
         return self._TITLE
 
 
-class HdTrailers (DownloadSource, Feed, Logger):
+class HdTrailers (DownloadSource, Feed):
     @classmethod
     def _find_highest_resolution(cls, strings):
         strings.sort(
@@ -418,7 +418,6 @@ class HdTrailers (DownloadSource, Feed, Logger):
     def __init__(self, skip_documentaries = True, skip_foreign = True):
         DownloadSource.__init__(self)
         Feed.__init__(self, 'http://feeds.hd-trailers.net/hd-trailers/blog')
-        Logger.__init__(self)
         
         self._skip_documentaries = skip_documentaries
         self._skip_foreign = skip_foreign
@@ -499,7 +498,7 @@ class HdTrailers (DownloadSource, Feed, Logger):
             return Url(url)
 
 
-class InterfaceLift (DownloadSource, Feed, Logger):
+class InterfaceLift (DownloadSource, Feed):
     _HOST_NAME = 'interfacelift.com'
     
     
@@ -507,7 +506,6 @@ class InterfaceLift (DownloadSource, Feed, Logger):
         DownloadSource.__init__(self)
         Feed.__init__(self,
             'http://' + self._HOST_NAME + '/wallpaper/rss/index.xml')
-        Logger.__init__(self)
         
         tk = Tkinter.Tk()
         self._screen_ratio = tk.winfo_screenwidth() / tk.winfo_screenheight()
@@ -563,12 +561,12 @@ class InterfaceLift (DownloadSource, Feed, Logger):
         return re.findall('"/wallpaper/([^/]+)/"', script.open().read())[0]
 
 
-class GameTrailersVideos (Logger):
+class GameTrailersVideos (DownloadSource):
     BASE_URL = 'http://www.gametrailers.com'
     
     
     def __init__(self, skip_indies = False):
-        Logger.__init__(self)
+        DownloadSource.__init__(self)
         self._skip_indies = skip_indies
     
     
@@ -600,7 +598,7 @@ class GameTrailersVideos (Logger):
         return url
 
 
-class ScrewAttack (DownloadSource, GameTrailersVideos):
+class ScrewAttack (GameTrailersVideos):
     def list_urls(self):
         main_html = lxml.html.fromstring(
             Url(self.BASE_URL + '/screwattack').open().read())
@@ -616,7 +614,7 @@ class ScrewAttack (DownloadSource, GameTrailersVideos):
         return 'ScrewAttack'
 
 
-class GameTrailers (DownloadSource, GameTrailersVideos, Feed):
+class GameTrailers (GameTrailersVideos, Feed):
     def __init__(self):
         options = {
             'limit': 50,
@@ -630,7 +628,6 @@ class GameTrailers (DownloadSource, GameTrailersVideos, Feed):
         url = Url(self.BASE_URL + '/rssgenerate.php')
         url.query = options
         
-        DownloadSource.__init__(self)
         GameTrailersVideos.__init__(self, skip_indies = True)
         Feed.__init__(self, unicode(url))
     
@@ -657,11 +654,9 @@ class GameTrailers (DownloadSource, GameTrailersVideos, Feed):
         return 'GameTrailers'
 
 
-class GameTrailersVideosNewest (DownloadSource, GameTrailersVideos):
+class GameTrailersVideosNewest (GameTrailersVideos):
     def __init__(self, game):
-        DownloadSource.__init__(self)
         GameTrailersVideos.__init__(self)
-        
         self._game = game
     
     
