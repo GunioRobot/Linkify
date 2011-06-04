@@ -27,6 +27,12 @@ externals('feedparser', 'lxml.html', 'PIL.Image', 'unipath')
 
 
 class Path (unipath.Path):
+    @staticmethod
+    def documents():
+        from win32com.shell import shell, shellcon
+        return Path(shell.SHGetFolderPath(0, shellcon.CSIDL_PERSONAL, 0, 0))
+    
+    
     @property
     def components(self):
         return super(Path, self).components()
@@ -643,56 +649,51 @@ class PeriodicTask (threading.Thread, Logger):
         self.daemon = True
     
     
-    @abstractmethod
-    def do_task(self):
+    @abstractproperty
+    def name(self):
         pass
     
     
-    @abstractproperty
-    def name(self):
+    @abstractmethod
+    def process(self):
         pass
     
     
     def run(self):
         while True:
             self.logger.debug('Task start: %s', self.name)
-            self.do_task()
+            self.process()
             time.sleep(10 * 60)
 
 
 class GnuCash (PeriodicTask):
-    def do_task(self):
-        from win32com.shell import shell, shellcon
-        docs = Path(shell.SHGetFolderPath(0, shellcon.CSIDL_PERSONAL, 0, 0))
-        
-        self._clean_webkit_folder(docs)
-        self._clean_logs(docs)
-    
-    
     @property
     def name(self):
         return 'GnuCash'
     
     
-    def _clean_logs(self, documents):
+    def process(self):
+        self._clean_webkit_folder()
+        self._clean_logs()
+    
+    
+    def _clean_logs(self):
         # http://wiki.gnucash.org/wiki/FAQ
         log_file = r'\.gnucash\.\d{14}\.log$'
         
-        for (root, dirs, files) in os.walk(documents):
+        for (root, dirs, files) in os.walk(Path.documents()):
             for file in filter(lambda f: re.search(log_file, f), files):
                 path = Path(root, file)
+                self.logger.warning('Remove backup data log: %s', path)
                 
-                if path.exists():
-                    self.logger.warning('Remove file: %s', path)
-                    
-                    try:
-                        path.remove()
-                    except OSError as (code, message):
-                        self.logger.debug('%s: %s', message, path)
+                try:
+                    path.remove()
+                except OSError as (code, message):
+                    self.logger.debug('%s: %s', message, path)
     
     
-    def _clean_webkit_folder(self, documents):
-        webkit = documents.child('webkit')
+    def _clean_webkit_folder(self):
+        webkit = Path.documents().child('webkit')
         
         if webkit.exists():
             self.logger.warning('Remove folder: %s', webkit)
@@ -701,6 +702,32 @@ class GnuCash (PeriodicTask):
                 webkit.rmtree()
             except OSError as (code, message):
                 self.logger.debug('%s: %s', message, webkit)
+
+
+class Opera (PeriodicTask):
+    @property
+    def name(self):
+        return 'Opera'
+    
+    
+    def process(self):
+        bookmark_header = 'Opera Hotlist version 2.0\n'
+        bookmarks = r'^opr[\dA-F]{3,4}\.tmp$'
+        
+        for (root, dirs, files) in os.walk(Path.documents()):
+            for file in filter(lambda f: re.search(bookmarks, f), files):
+                path = Path(root, file)
+                
+                with open(path) as bookmark:
+                    is_bookmark = (bookmark.readline() == bookmark_header)
+                
+                if is_bookmark:
+                    self.logger.warning('Remove backup bookmark: %s', path)
+                    
+                    try:
+                        path.remove()
+                    except OSError as (code, message):
+                        self.logger.debug('%s: %s', message, path)
 
 
 dl_manager = FreeDownloadManager()
@@ -715,7 +742,7 @@ sources = [
     ScrewAttack(),
 ]
 
-for task in [GnuCash()]:
+for task in [GnuCash(), Opera()]:
     task.start()
 
 while True:
