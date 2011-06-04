@@ -317,6 +317,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Logger):
             urls = self._urls
             
             if elapsed >= self._CACHE_REFRESH_FREQUENCY:
+                self.logger.info('Reset downloads list cache')
                 self._cached_downloads_stat = False
                 self._urls = set()
                 self._urls_by_file_name = {}
