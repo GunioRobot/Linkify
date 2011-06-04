@@ -200,7 +200,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Logger):
         self._urls_by_file_name = {}
     
     
-    def download_url(self, url, to = None):
+    def download_url(self, url, to = None, comment = None):
         wg_url_receiver = self.get_data_type('WGUrlReceiver')
         
         wg_url_receiver.Url = unicode(url)
@@ -211,6 +211,9 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Logger):
         
         if to is not None:
             wg_url_receiver.FileName = to
+        
+        if comment is not None:
+            wg_url_receiver.Comment = comment
         
         wg_url_receiver.AddDownload()
         self._urls.add(url)
