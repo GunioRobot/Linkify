@@ -16,8 +16,8 @@
 
 # Standard library:
 from __future__ import division, print_function, unicode_literals
-import codecs, datetime, locale, logging, os.path, re, sys, threading, time, \
-    Tkinter, urllib, urllib2, urlparse
+import codecs, datetime, locale, logging, os.path, Queue, re, sys, threading, \
+    time, Tkinter, urllib, urllib2, urlparse
 
 # Internal modules:
 from defaults import *
@@ -194,6 +194,62 @@ class DownloadManager (object):
     @abstractmethod
     def has_url(self, url):
         pass
+
+
+class ThreadSafeDownloadManager (DownloadManager, threading.Thread):
+    def __init__(self, create_instance):
+        DownloadManager.__init__(self)
+        threading.Thread.__init__(self)
+        
+        self.daemon = True
+        self._call_error = None
+        self._call_input = Queue.Queue(maxsize = 1)
+        self._call_output = Queue.Queue(maxsize = 1)
+        self._in_call = threading.Lock()
+        self._create_instance = create_instance
+    
+    
+    def download_url(self, url):
+        self._thread_call(url)
+    
+    
+    def has_url(self, url):
+        return self._thread_call(url)
+    
+    
+    def run(self):
+        download_manager = self._create_instance()
+        
+        while True:
+            (method_name, args) = self._call_input.get()
+            method = getattr(download_manager, method_name)
+            
+            try:
+                result = method(*args)
+                self._call_error = False
+            except Exception as error:
+                self._call_error = True
+                result = sys.exc_info()
+            
+            self._call_output.put(result)
+    
+    
+    def _thread_call(self, *args):
+        if not self.is_alive():
+            raise RuntimeError('Thread safe download manager not running.')
+        
+        self._in_call.acquire()
+        self._call_input.put([sys._getframe(1).f_code.co_name, args])
+        
+        result = self._call_output.get()
+        error = self._call_error
+        self._in_call.release()
+        
+        if error:
+            # Keep proper traceback across threads.
+            raise result[0], result[1], result[2]
+        
+        return result
 
 
 class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Logger):
@@ -772,7 +828,8 @@ class Windows (PeriodicTask):
             self.logger.debug('%s: %s', message, config_file)
 
 
-dl_manager = FreeDownloadManager()
+dl_manager = ThreadSafeDownloadManager(FreeDownloadManager)
+dl_manager.start()
 
 sources = [
     GameTrailers(),
@@ -789,7 +846,7 @@ for task in [Dropbox(), GnuCash(), Opera(), Windows()]:
 
 while True:
     for source in sources:
-        dl_manager.logger.info('Source check: %s', source.name)
+        print('Source check: %s' % source.name)
         
         for url in source.list_urls():
             try:
@@ -798,5 +855,5 @@ while True:
             except urllib2.URLError as (error,):
                 dl_manager.logger.error('%s: %s', str(error), url)
     
-    dl_manager.logger.info('Paused')
+    print('Paused')
     time.sleep(10 * 60)
