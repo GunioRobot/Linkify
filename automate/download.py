@@ -59,12 +59,16 @@ class ThreadSafeDownloadManager (DownloadManager, threading.Thread):
             
             try:
                 result = method(*args)
-                self._call_error = False
+                call_error = self._call_error = False
             except Exception as error:
-                self._call_error = True
                 result = sys.exc_info()
+                call_error = self._call_error = True
             
             self._call_output.put(result)
+            
+            if call_error:
+                # Propagate exception.
+                raise result[0], result[1], result[2]
     
     
     def _thread_call(self, *args):

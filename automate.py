@@ -72,5 +72,5 @@ for dl_source in dl_sources:
     thread.daemon = True
     thread.start()
 
-while True:
-    time.sleep(1 * 60 * 60)
+while dl_manager.is_alive():
+    time.sleep(1)
