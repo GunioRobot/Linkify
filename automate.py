@@ -748,8 +748,10 @@ class PeriodicTask (threading.Thread, Logger):
     
     
     def run(self):
+        self.logger.info('Start')
+        
         while True:
-            self.logger.debug('Start')
+            self.logger.debug('Resume')
             self.process()
             
             self.logger.debug('Pause')
@@ -863,8 +865,10 @@ class Windows (PeriodicTask):
 
 
 def query_source(dl_manager, dl_source):
+    dl_source.logger.info('Start')
+    
     while True:
-        dl_source.logger.debug('Start')
+        dl_source.logger.debug('Resume')
         
         for url in dl_source.list_urls():
             try:
