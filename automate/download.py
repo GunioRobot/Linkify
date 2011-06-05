@@ -409,10 +409,15 @@ class GameTrailersVideos (DownloadSource):
     
     def __init__(self, skip_indies = False):
         DownloadSource.__init__(self)
+        
         self._skip_indies = skip_indies
+        self._skipped_urls = set()
     
     
     def get_video_url(self, page_url):
+        if page_url in self._skipped_urls:
+            return
+        
         page_html = page_url.open().read()
         video_id = re.findall(r'mov_game_id\s*=\s*(\d+)', page_html)
         
@@ -428,6 +433,7 @@ class GameTrailersVideos (DownloadSource):
             
             if publisher.strip() == 'N/A':
                 self.logger.warning('Skip indie game: %s', page_url)
+                self._skipped_urls.add(page_url)
                 return
         
         video_url = automate.util.Url(page.xpath('//*[@class = "Downloads"]' \
