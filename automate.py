@@ -294,7 +294,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Logger):
         Logger.__init__(self)
         
         self._cached_downloads_stat = False
-        self._last_cache_completed = datetime.datetime.min
+        self._last_cache_reset = datetime.datetime.now()
         self._urls = set()
         self._urls_by_file_name = {}
     
@@ -343,17 +343,17 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Logger):
     
     
     def _list_urls(self):
+        elapsed = datetime.datetime.now() - self._last_cache_reset
+        urls = self._urls
+        
+        if elapsed >= self._CACHE_REFRESH_FREQUENCY:
+            self.logger.info('Reset downloads list cache')
+            self._cached_downloads_stat = False
+            self._urls = set()
+            self._urls_by_file_name = {}
+        
         if self._cached_downloads_stat:
-            elapsed = datetime.datetime.now() - self._last_cache_completed
-            urls = self._urls
-            
-            if elapsed >= self._CACHE_REFRESH_FREQUENCY:
-                self.logger.info('Reset downloads list cache')
-                self._cached_downloads_stat = False
-                self._urls = set()
-                self._urls_by_file_name = {}
-            
-            for url in urls:
+            for url in self._urls:
                 yield url
         else:
             downloads_stat = self.get_data_type('FDMDownloadsStat')
@@ -372,7 +372,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Logger):
                 yield url
             
             self._cached_downloads_stat = True
-            self._last_cache_completed = datetime.datetime.now()
+            self._last_cache_reset = datetime.datetime.now()
 
 
 class DownloadSource (Logger):
