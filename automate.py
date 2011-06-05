@@ -5,7 +5,7 @@
 # TODO: Create source TV shows with automatic backup.
 # TODO: Use command line options to choose the download manager, execute
 #       download finished events (both automatically and manually via command
-#       line), etc.
+#       line), download files (replace "fdm.wsf"), etc.
 # TODO: Cut the first few seconds of the IGN Daily Fix videos.
 # TODO: Create MS Win32 system service? Desktop gadget?
 # TODO: Web server with RSS feed for errors?
@@ -22,7 +22,7 @@ import threading, time, urllib2
 from defaults import *
 
 # Internal modules:
-import automate.download, automate.task, automate.util
+import automate.download, automate.task
 
 
 def query_source(dl_manager, dl_source):
