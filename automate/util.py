@@ -9,7 +9,7 @@ import codecs, locale, logging, os.path, sys, urllib, urllib2, urlparse
 from defaults import *
 
 
-externals('colorconsole.terminal', 'feedparser', 'unipath')
+externals('colorconsole.terminal', 'unipath')
 
 
 class Path (unipath.Path):
@@ -197,12 +197,3 @@ class MsWindowsTypeLibrary (object):
         
         raise Exception('Type "%s" not found in type library "%s".'
             % (name, self._path))
-
-
-class Feed (object):
-    def __init__(self, url):
-        self._url = url
-    
-    
-    def get_feed(self):
-        return feedparser.parse(self._url)

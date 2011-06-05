@@ -12,7 +12,7 @@ from defaults import *
 import automate.util
 
 
-externals('lxml.html', 'PIL.Image')
+externals('feedparser', 'lxml.html', 'PIL.Image')
 
 
 class DownloadManager (object):
@@ -199,18 +199,14 @@ class DownloadSource (automate.util.Logger):
         pass
 
 
-class IgnDailyFix (DownloadSource, automate.util.Feed):
+class IgnDailyFix (DownloadSource):
     _TITLE = 'IGN Daily Fix'
     
     
-    def __init__(self):
-        DownloadSource.__init__(self)
-        automate.util.Feed.__init__(self,
-            'http://feeds.ign.com/ignfeeds/podcasts/games/')
-    
-    
     def list_urls(self):
-        for entry in self.get_feed().entries:
+        feed = feedparser.parse('http://feeds.ign.com/ignfeeds/podcasts/games/')
+        
+        for entry in feed.entries:
             if entry.title.startswith(self._TITLE + ':'):
                 url = automate.util.Url(entry.enclosures[0].href)
                 url.comment = entry.link
@@ -223,7 +219,7 @@ class IgnDailyFix (DownloadSource, automate.util.Feed):
         return self._TITLE
 
 
-class HdTrailers (DownloadSource, automate.util.Feed):
+class HdTrailers (DownloadSource):
     @classmethod
     def _find_highest_resolution(cls, strings):
         strings.sort(
@@ -248,8 +244,6 @@ class HdTrailers (DownloadSource, automate.util.Feed):
     
     def __init__(self, skip_documentaries = True, skip_foreign = True):
         DownloadSource.__init__(self)
-        automate.util.Feed.__init__(self,
-            'http://feeds.hd-trailers.net/hd-trailers/blog')
         
         self._skip_documentaries = skip_documentaries
         self._skip_foreign = skip_foreign
@@ -258,8 +252,9 @@ class HdTrailers (DownloadSource, automate.util.Feed):
     
     def list_urls(self):
         keywords_re = r'\b(%s)\b' % '|'.join(['teaser', 'trailer'])
+        feed = feedparser.parse('http://feeds.hd-trailers.net/hd-trailers/blog')
         
-        for entry in self.get_feed().entries:
+        for entry in feed.entries:
             if not re.search(keywords_re, entry.title, re.IGNORECASE):
                 continue
             
@@ -338,14 +333,12 @@ class HdTrailers (DownloadSource, automate.util.Feed):
             return automate.util.Url(url)
 
 
-class InterfaceLift (DownloadSource, automate.util.Feed):
+class InterfaceLift (DownloadSource):
     _HOST_NAME = 'interfacelift.com'
     
     
     def __init__(self):
         DownloadSource.__init__(self)
-        automate.util.Feed.__init__(self,
-            'http://' + self._HOST_NAME + '/wallpaper/rss/index.xml')
         
         tk = Tkinter.Tk()
         self._screen_ratio = tk.winfo_screenwidth() / tk.winfo_screenheight()
@@ -364,7 +357,10 @@ class InterfaceLift (DownloadSource, automate.util.Feed):
             self.logger.error('%s: %s\'s session code', str(error), self.name)
             return
         
-        for entry in self.get_feed().entries:
+        feed = feedparser.parse('http://%s/wallpaper/rss/index.xml' \
+            % self._HOST_NAME)
+        
+        for entry in feed.entries:
             html = lxml.html.fromstring(entry.summary)
             url = automate.util.FileUrl(html.xpath('//img/@src')[0])
             (path, ext) = url.path.split_ext()
@@ -463,8 +459,10 @@ class ScrewAttack (GameTrailersVideos):
         return 'ScrewAttack'
 
 
-class GameTrailers (GameTrailersVideos, automate.util.Feed):
+class GameTrailers (GameTrailersVideos):
     def __init__(self):
+        GameTrailersVideos.__init__(self, skip_indies = True)
+        
         options = {
             'limit': 50,
             'orderby': 'newest',
@@ -474,18 +472,15 @@ class GameTrailers (GameTrailersVideos, automate.util.Feed):
         for system in ['pc', 'ps3', 'xb360']:
             options['favplats[%s]' % system] = system
         
-        url = automate.util.Url(self.BASE_URL + '/rssgenerate.php')
-        url.query = options
-        
-        GameTrailersVideos.__init__(self, skip_indies = True)
-        automate.util.Feed.__init__(self, unicode(url))
+        self._feed_url = automate.util.Url(self.BASE_URL + '/rssgenerate.php')
+        self._feed_url.query = options
     
     
     def list_urls(self):
         keywords_re = r'\b(%s)\b' % '|'.join(
             ['gameplay', 'preview', 'review', 'teaser', 'trailer'])
         
-        for entry in self.get_feed().entries:
+        for entry in feedparser.parse(self._feed_url).entries:
             if re.search(keywords_re, entry.title, re.IGNORECASE):
                 try:
                     url = self.get_video_url(automate.util.Url(entry.link))
