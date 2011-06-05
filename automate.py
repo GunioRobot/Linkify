@@ -867,7 +867,7 @@ def query_source(dl_manager, dl_source):
                 if not dl_manager.has_url(url):
                     dl_manager.download_url(url)
             except urllib2.URLError as error:
-                dl_source.logger.error('%s: %s\n', str(error), url)
+                dl_source.logger.error('%s: %s', str(error), url)
         
         dl_source.logger.info('Pause')
         time.sleep(10 * 60)
