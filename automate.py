@@ -8,7 +8,8 @@
 #       line), etc.
 # TODO: Refactor into separate modules.
 # TODO: Cut the first few seconds of the IGN Daily Fix videos.
-# TODO: Create MS Win32 system service?
+# TODO: Create MS Win32 system service? Desktop gadget?
+# TODO: Web server with RSS feed for errors?
 # TODO: Add documentation.
 # TODO: Profile time execution.
 
