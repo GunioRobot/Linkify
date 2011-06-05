@@ -1,0 +1,19 @@
+<?XML version="1.0"?>
+<job>
+  <script language="JScript">
+  <![CDATA[
+// Automatic silent download using Free Download Manager.
+
+if (WScript.Arguments.length != 1) {
+    WScript.Echo('Wrong number of arguments.');
+    WScript.Quit();
+}
+
+var Shell = new ActiveXObject('WScript.Shell');
+var FileSystem = new ActiveXObject('Scripting.FileSystemObject');
+
+Shell.CurrentDirectory = FileSystem.GetParentFolderName(WScript.ScriptFullName);
+Shell.Run('fdm -fs "' + WScript.Arguments(0) + '"');
+  ]]>
+  </script>
+</job>

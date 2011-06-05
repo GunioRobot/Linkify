@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>Opera Settings</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    var links = document.getElementsByTagName('a');
+    
+    for (var i = 0; i < links.length; ++i) {
+        var link = links.item(i);
+        
+        if (!link.hasAttribute('class')) {
+            link.setAttribute('target', '_blank');
+        }
+    }
+}, false);
+    </script>
+    <style type="text/css" media="screen">
+body {
+    font-size: smaller;
+    font-family: "Arial", sans-serif;
+}
+
+pre {
+    font-size: larger;
+}
+
+ul {
+    list-style-type: none;
+    padding-left: 1.5em;
+}
+
+ul + p {
+    margin-top: 2em;
+}
+
+ul.Buttons > li + li {
+    margin-top: 1.25em;
+}
+
+ul > li > a[class] {
+    color: inherit;
+    text-decoration: none;
+}
+
+ul > li > a[class]:before {
+    position: relative;
+    margin-right: 8px;
+    
+    background-color: ThreeDFace;
+    padding: 0 4px 0 4px;
+    
+    border-width: 1px;
+    border-style: solid;
+    
+    border-top-color: ThreeDLightShadow;
+    border-left-color: ThreeDLightShadow;
+    border-bottom-color: ThreeDShadow;
+    border-right-color: ThreeDShadow;
+}
+
+ul > li > a.Small:before {
+    top: 3px;
+    padding-top: 6px;
+}
+
+ul > li > a.Medium:before {
+    top: 6px;
+    padding-top: 12px;
+}
+
+ul > li > a.BypassLogin:before {
+    content: -o-skin("Mail Redirected");
+}
+
+ul > li > a.ClosePage:before {
+    content: -o-skin("Pagebar Close Button Skin");
+}
+
+ul > li > a.EmptyCache:before {
+    content: -o-skin("Show trash");
+}
+
+ul > li > a.FakeEmail:before {
+    content: -o-skin("Mail Accounts Online");
+}
+
+ul > li > a.Go:before {
+    content: -o-skin("Group");
+}
+
+ul > li > a.GoUp:before {
+    content: -o-skin("Parent Folder");
+}
+
+ul > li > a.MailAddress:before {
+    content: -o-skin("View Mail");
+}
+
+ul > li > a.ReadFeeds:before {
+    content: -o-skin("Mail Newsfeeds");
+}
+
+ul > li > a.ReadMail:before {
+    content: -o-skin("Read mail");
+}
+
+ul > li > a.TogglePlugins:before {
+    content: -o-skin("Mail Attachments");
+}
+
+ul > li > a.Translate:before {
+    content: -o-skin("Mail Thread");
+}
+    </style>
+  </head>
+  
+  <body>
+    <p>Buttons:</p>
+    <ul class="Buttons">
+      <li><a class="BypassLogin Small" href="opera:/button/Go to page,%22javascript:void(window.open('http://bugmenot.com/view/' + encodeURI(location)))%22,,Bypass login,Mail Redirected">Bypass login</a></li>
+      <li><a class="ClosePage Small" href="opera:/button/Close page,,,,Pagebar Close Button Skin">Close page</a></li>
+      <li><a class="EmptyCache Small" href="opera:/button/Clear disk cache,,,Empty cache,Show Trash">Empty cache</a></li>
+      <li><a class="FakeEmail Small" href="opera:/button/Go to page,%22javascript:(function() {var c = 'abcdefghijklmnopqrstuvwxyz', l = 14, u = ''; while (l-- >= 0) u += c[Math.floor(Math.random() * (c.length - 1))]; window.open('http://www.mailinator.com/maildir.jsp?email=' + u)})()%22,,Fake e-mail,Mail Accounts Online">Fake e-mail</a></li>
+      <li><a class="Go Small" href="opera:/button/Go,,,,Group">Go</a></li>
+      <li><a class="GoUp Small" href="opera:/button/Go to parent directory,,,Go up,Parent folder">Go up</a></li>
+      <li><a class="MailAddress Small" href="opera:/button/Send document address in mail,,,Mail address,View Mail">Mail address</a></li>
+      <li><a class="ReadFeeds Small" href="opera:/button/Read Mail,%22rss%22,,%22Read feeds%22, %22RSS%22">Read feeds</a></li>
+      <li><a class="TogglePlugins Small" href="opera:/button/Enable plugins,,,,Mail Attachments|Disable plugins,,,,">Toggle plug-ins</a></li>
+      <li><a class="Translate Small" href="opera:/button/Go to page,%22javascript:(function() {var s = window.getSelection().toString().replace(/^[\s]+\n/gm, ''); window.open('http://translate.google.com/' + (s.length == 0 ? 'translate?sl=auto&amp;tl=en&amp;u=' + encodeURIComponent(location) : '#auto|en|' + encodeURIComponent(s)))})()%22,,Translate,Mail Thread">Translate</a></li>
+      <li><a class="ReadMail Medium" href="opera:/button/Read Mail &amp; Get mail + Show popup menu, %22Internal Access Points%22, Mail">Read mail</a></li>
+    </ul>
+    
+    <p>Preferences:</p>
+    <ul>
+      <li><a href="opera:config#UserPrefs|HotListFileVer2">Bookmarks</a></li>
+      <li><a href="opera:config#MailBox|AddressFile">Contacts</a></li>
+      <li><a href="opera:config#Network|URLFilterFile">Content blocking</a></li>
+      <li><a href="opera:config#MailBox|NotesFile">Notes</a></li>
+      <li><a href="opera:config#UserPrefs|EnableOnDemandPlugin">On-demand plug-in</a></li>
+      <li><a href="opera:config#Thumbnail Logo Score Banner">Speed Dial Thumbnail Banner</a> = 1000</li>
+      <li><a href="opera:config#Thumbnail Logo Score Threshold">Speed Dial Thumbnail Threshold</a> = 1000</li>
+    </ul>
+    
+    <p>Menu setup:</p>
+    <pre>
+[Link Selection Popup Menu]
+[Hotclick Popup Menu]
+MI_IDM_DOCCOPY
+MI_IDM_SELSEARCH
+    </pre>
+  </body>
+</html>
