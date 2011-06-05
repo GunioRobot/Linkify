@@ -25,7 +25,7 @@ from __future__ import division, print_function, unicode_literals
 import codecs, difflib, errno, getpass, httplib, inspect, locale, os, re, \
     StringIO, struct, subprocess, sys, time, urllib2
 
-# Internal modules:
+# External modules:
 from defaults import *
 
 
