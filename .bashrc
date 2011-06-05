@@ -125,7 +125,7 @@ if _have git; then
     git config --global alias.pub '!bash -c '"'"'\
         COMMAND="git push origin HEAD:refs/heads/$0 ${@:1}" \
         && echo $COMMAND \
-        && $COMMAND\
+        && $COMMAND \
     '"'"
     
     git config --global color.ui auto
