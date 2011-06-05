@@ -749,10 +749,10 @@ class PeriodicTask (threading.Thread, Logger):
     
     def run(self):
         while True:
-            self.logger.info('Start')
+            self.logger.debug('Start')
             self.process()
             
-            self.logger.info('Pause')
+            self.logger.debug('Pause')
             time.sleep(10 * 60)
 
 
@@ -864,7 +864,7 @@ class Windows (PeriodicTask):
 
 def query_source(dl_manager, dl_source):
     while True:
-        dl_source.logger.info('Start')
+        dl_source.logger.debug('Start')
         
         for url in dl_source.list_urls():
             try:
@@ -873,7 +873,7 @@ def query_source(dl_manager, dl_source):
             except urllib2.URLError as error:
                 dl_source.logger.error('%s: %s', str(error), url)
         
-        dl_source.logger.info('Pause')
+        dl_source.logger.debug('Pause')
         time.sleep(10 * 60)
 
 
