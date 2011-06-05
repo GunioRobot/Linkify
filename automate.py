@@ -10,6 +10,7 @@
 # TODO: Cut the first few seconds of the IGN Daily Fix videos.
 # TODO: Create MS Win32 system service? Desktop gadget?
 # TODO: Web server with RSS feed for errors?
+# TODO: Implement a graphical interface? System tray icon?
 # TODO: Add documentation.
 # TODO: Profile time execution.
 
