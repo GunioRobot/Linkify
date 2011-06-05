@@ -6,7 +6,6 @@
 # TODO: Use command line options to choose the download manager, execute
 #       download finished events (both automatically and manually via command
 #       line), etc.
-# TODO: Refactor into separate modules.
 # TODO: Cut the first few seconds of the IGN Daily Fix videos.
 # TODO: Create MS Win32 system service? Desktop gadget?
 # TODO: Web server with RSS feed for errors?
@@ -20,199 +19,15 @@ from __future__ import division, print_function, unicode_literals
 import codecs, datetime, locale, logging, os.path, Queue, re, sys, threading, \
     time, Tkinter, urllib, urllib2, urlparse
 
-# Internal modules:
+# External modules:
 from defaults import *
+
+# Internal modules:
+import automate.util
 
 
 externals('colorconsole.terminal', 'feedparser', 'lxml.html', 'PIL.Image',
     'unipath')
-
-
-class Path (unipath.Path):
-    @staticmethod
-    def documents():
-        from win32com.shell import shell, shellcon
-        return Path(shell.SHGetFolderPath(0, shellcon.CSIDL_PERSONAL, 0, 0))
-    
-    
-    @property
-    def components(self):
-        return super(Path, self).components()
-    
-    
-    def split_ext(self):
-        return os.path.splitext(self)
-
-
-class ColorStreamHandler (logging.StreamHandler):
-    (BLACK, BLUE, GREEN, CYAN, RED, PURPLE, BROWN, LGREY) = range(8)
-    (DGRAY, LBLUE, LGREEN, LCYAN, LRED, LPURPLE, YELLOW, WHITE) = range(8, 16)
-    
-    
-    def __init__(self):
-        logging.StreamHandler.__init__(self,
-            codecs.getwriter(locale.getpreferredencoding())(sys.stderr))
-        
-        self.setFormatter(logging.Formatter(
-            fmt = '[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s',
-            datefmt = '%Y-%m-%d %H:%M:%S'))
-        
-        if sys.stderr.isatty():
-            self._terminal = colorconsole.terminal.get_terminal()
-        else:
-            self._terminal = None
-    
-    
-    def emit(self, record):
-        if self._terminal is not None:
-            if record.levelno == logging.INFO:
-                self._terminal.set_color(self.BLUE)
-            elif record.levelno == logging.WARNING:
-                self._terminal.set_color(self.BROWN)
-            elif record.levelno == logging.ERROR:
-                self._terminal.set_color(self.RED)
-        
-        logging.StreamHandler.emit(self, record)
-        
-        if self._terminal is not None: 
-            self._terminal.reset()
-
-
-class Logger (object):
-    _HANDLER = ColorStreamHandler()
-    
-    
-    def __init__(self):
-        self._logger = logging.getLogger(self.__class__.__name__)
-        self._logger.addHandler(self._HANDLER)
-        self._logger.setLevel(logging.INFO)
-    
-    
-    @property
-    def logger(self):
-        return self._logger
-
-
-class Url (object):
-    def __init__(self, url):
-        if isinstance(url, Url):
-            self._components = url._components
-            
-            self.comment = url.comment
-            self.save_as = url.save_as
-        else:
-            self._components = urlparse.urlparse(url)
-            
-            self.comment = None
-            self.save_as = None
-    
-    
-    @property
-    def host_name(self):
-        return self._components.hostname
-    
-    
-    def open(self):
-        request = urllib2.Request(unicode(self))
-        
-        if self.host_name == 'trailers.apple.com':
-            request.add_header('User-Agent', 'QuickTime')
-        
-        return urllib2.build_opener().open(request)
-    
-    
-    @property
-    def path(self):
-        return Path(self._components.path)
-    
-    
-    @path.setter
-    def path(self, path):
-        components = self._components._asdict()
-        components['path'] = path
-        
-        self._components = urlparse.ParseResult(**components)
-    
-    
-    @property
-    def query(self):
-        return urlparse.parse_qs(self._components.query)
-    
-    
-    @query.setter
-    def query(self, query):
-        components = self._components._asdict()
-        components['query'] = urllib.unquote(urllib.urlencode(query))
-        
-        self._components = urlparse.ParseResult(**components)
-    
-    
-    def resolve(self):
-        connection = self.open()
-        url = type(self)(connection.geturl())
-        
-        connection.close()
-        return url
-    
-    
-    def __cmp__(self, url):
-        return cmp(unicode(self), unicode(url))
-    
-    
-    def __hash__(self):
-        return hash(unicode(self))
-    
-    
-    def __str__(self):
-        return unicode(self).encode('UTF-8')
-    
-    
-    def __unicode__(self):
-        return urlparse.urlunparse(self._components)
-
-
-class PathUrl (Url):
-    def __cmp__(self, url):
-        return cmp(self.path, url.path)
-    
-    
-    def __hash__(self):
-        return hash(self.path)
-
-
-class FileUrl (PathUrl):
-    def __cmp__(self, url):
-        return cmp(self.path.name, url.path.name)
-    
-    
-    def __hash__(self):
-        return hash(self.path.name)
-
-
-class MsWindowsTypeLibrary (object):
-    def __init__(self, path):
-        import pythoncom, win32com.client
-        global pythoncom, win32com
-        
-        self._iid_by_type_name = {}
-        self._lib = pythoncom.LoadTypeLib(path)
-        self._path = path
-    
-    
-    def get_data_type(self, type_name):
-        if type_name in self._iid_by_type_name:
-            return win32com.client.Dispatch(self._iid_by_type_name[type_name])
-        
-        for i in xrange(0, self._lib.GetTypeInfoCount()):
-            (name, doc, help_ctxt, help_file) = self._lib.GetDocumentation(i)
-            
-            if type_name == name:
-                iid = self._lib.GetTypeInfo(i).GetTypeAttr().iid
-                self._iid_by_type_name[type_name] = iid
-                return win32com.client.Dispatch(iid)
-        
-        raise Exception('Type "%s" not found in type library "%s".'
-            % (name, self._path))
 
 
 class DownloadManager (object):
@@ -285,15 +100,17 @@ class ThreadSafeDownloadManager (DownloadManager, threading.Thread):
         return result
 
 
-class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Logger):
+class FreeDownloadManager \
+        (DownloadManager, automate.util.MsWindowsTypeLibrary, automate.util.Logger):
+    
     _CACHE_REFRESH_FREQUENCY = datetime.timedelta(hours = 1)
     _FILE_NAME_DOWNLOAD_TEXT = 0
     
     
     def __init__(self):
         DownloadManager.__init__(self)
-        MsWindowsTypeLibrary.__init__(self, 'fdm.tlb')
-        Logger.__init__(self)
+        automate.util.MsWindowsTypeLibrary.__init__(self, 'fdm.tlb')
+        automate.util.Logger.__init__(self)
         
         self._cached_downloads_stat = False
         self._last_cache_reset = datetime.datetime.now()
@@ -367,7 +184,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Logger):
             for i in reversed(xrange(0, downloads_stat.DownloadCount)):
                 download = downloads_stat.Download(i)
                 file_name = download.DownloadText(self._FILE_NAME_DOWNLOAD_TEXT)
-                url = Url(download.Url)
+                url = automate.util.Url(download.Url)
                 
                 self._urls.add(url)
                 self._urls_by_file_name.setdefault(file_name, set())
@@ -379,7 +196,7 @@ class FreeDownloadManager (DownloadManager, MsWindowsTypeLibrary, Logger):
             self._last_cache_reset = datetime.datetime.now()
 
 
-class DownloadSource (Logger):
+class DownloadSource (automate.util.Logger):
     __metaclass__ = ABCMeta
     
     
@@ -397,28 +214,20 @@ class DownloadSource (Logger):
         pass
 
 
-class Feed (object):
-    def __init__(self, url):
-        self._url = url
-    
-    
-    def get_feed(self):
-        return feedparser.parse(self._url)
-
-
-class IgnDailyFix (DownloadSource, Feed):
+class IgnDailyFix (DownloadSource, automate.util.Feed):
     _TITLE = 'IGN Daily Fix'
     
     
     def __init__(self):
         DownloadSource.__init__(self)
-        Feed.__init__(self, 'http://feeds.ign.com/ignfeeds/podcasts/games/')
+        automate.util.Feed.__init__(self,
+            'http://feeds.ign.com/ignfeeds/podcasts/games/')
     
     
     def list_urls(self):
         for entry in self.get_feed().entries:
             if entry.title.startswith(self._TITLE + ':'):
-                url = Url(entry.enclosures[0].href)
+                url = automate.util.Url(entry.enclosures[0].href)
                 url.comment = entry.link
                 
                 yield url
@@ -429,7 +238,7 @@ class IgnDailyFix (DownloadSource, Feed):
         return self._TITLE
 
 
-class HdTrailers (DownloadSource, Feed):
+class HdTrailers (DownloadSource, automate.util.Feed):
     @classmethod
     def _find_highest_resolution(cls, strings):
         strings.sort(
@@ -454,7 +263,8 @@ class HdTrailers (DownloadSource, Feed):
     
     def __init__(self, skip_documentaries = True, skip_foreign = True):
         DownloadSource.__init__(self)
-        Feed.__init__(self, 'http://feeds.hd-trailers.net/hd-trailers/blog')
+        automate.util.Feed.__init__(self,
+            'http://feeds.hd-trailers.net/hd-trailers/blog')
         
         self._skip_documentaries = skip_documentaries
         self._skip_foreign = skip_foreign
@@ -485,13 +295,15 @@ class HdTrailers (DownloadSource, Feed):
                 continue
             
             if re.search(r'^\d+$', file.stem):
-                title = Url(entry.feedburner_origlink).path.components[-1]
+                title = automate.util.Url(entry.feedburner_origlink) \
+                    .path.components[-1]
+                
                 file = '%s (%s)%s' % (title, file.stem, file.ext)
                 self.logger.debug('File name rewrite: %s', file)
             else:
                 file = None
             
-            url = PathUrl(url)
+            url = automate.util.PathUrl(url)
             url.save_as = file
             
             yield url
@@ -518,7 +330,7 @@ class HdTrailers (DownloadSource, Feed):
                 return
         
         if hasattr(entry, 'enclosures'):
-            return Url(self._find_highest_resolution(
+            return automate.util.Url(self._find_highest_resolution(
                 [enclosure.href for enclosure in entry.enclosures]))
         else:
             # Parse HTML to find movie links.
@@ -532,16 +344,16 @@ class HdTrailers (DownloadSource, Feed):
                     url = link.attrib['href']
                     highest_resolution = resolution
             
-            return Url(url)
+            return automate.util.Url(url)
 
 
-class InterfaceLift (DownloadSource, Feed):
+class InterfaceLift (DownloadSource, automate.util.Feed):
     _HOST_NAME = 'interfacelift.com'
     
     
     def __init__(self):
         DownloadSource.__init__(self)
-        Feed.__init__(self,
+        automate.util.Feed.__init__(self,
             'http://' + self._HOST_NAME + '/wallpaper/rss/index.xml')
         
         tk = Tkinter.Tk()
@@ -563,7 +375,7 @@ class InterfaceLift (DownloadSource, Feed):
         
         for entry in self.get_feed().entries:
             html = lxml.html.fromstring(entry.summary)
-            url = FileUrl(html.xpath('//img/@src')[0])
+            url = automate.util.FileUrl(html.xpath('//img/@src')[0])
             (path, ext) = url.path.split_ext()
             
             url.comment = entry.link
@@ -594,7 +406,9 @@ class InterfaceLift (DownloadSource, Feed):
     
     @property
     def _session_code(self):
-        script = Url('http://' + self._HOST_NAME + '/inc_NEW/jscript.js')
+        script = automate.util.Url('http://%s/inc_NEW/jscript.js' \
+            % self._HOST_NAME)
+        
         return re.findall('"/wallpaper/([^/]+)/"', script.open().read())[0]
 
 
@@ -625,11 +439,12 @@ class GameTrailersVideos (DownloadSource):
                 self.logger.warning('Skip indie game: %s', page_url)
                 return
         
-        video_url = Url(page.xpath('//*[@class = "Downloads"]' \
+        video_url = automate.util.Url(page.xpath('//*[@class = "Downloads"]' \
             + '/a[starts-with(text(), "Quicktime")]/@href')[0])
         
-        url = Url('http://trailers-ak.gametrailers.com/gt_vault/%s/%s' \
-            % (video_id[0], video_url.path.components[-1]))
+        url = automate.util.Url(
+            'http://trailers-ak.gametrailers.com/gt_vault/%s/%s' \
+                % (video_id[0], video_url.path.components[-1]))
         url.comment = page_url
         
         return url
@@ -638,11 +453,11 @@ class GameTrailersVideos (DownloadSource):
 class ScrewAttack (GameTrailersVideos):
     def list_urls(self):
         main_html = lxml.html.fromstring(
-            Url(self.BASE_URL + '/screwattack').open().read())
+            automate.util.Url(self.BASE_URL + '/screwattack').open().read())
         videos = main_html.xpath(
             '//*[@id = "nerd"]//a[@class = "gamepage_content_row_title"]/@href')
         
-        for page_url in [Url(self.BASE_URL + path) for path in videos]:
+        for page_url in [automate.util.Url(self.BASE_URL + p) for p in videos]:
             yield self.get_video_url(page_url)
     
     
@@ -651,7 +466,7 @@ class ScrewAttack (GameTrailersVideos):
         return 'ScrewAttack'
 
 
-class GameTrailers (GameTrailersVideos, Feed):
+class GameTrailers (GameTrailersVideos, automate.util.Feed):
     def __init__(self):
         options = {
             'limit': 50,
@@ -662,11 +477,11 @@ class GameTrailers (GameTrailersVideos, Feed):
         for system in ['pc', 'ps3', 'xb360']:
             options['favplats[%s]' % system] = system
         
-        url = Url(self.BASE_URL + '/rssgenerate.php')
+        url = automate.util.Url(self.BASE_URL + '/rssgenerate.php')
         url.query = options
         
         GameTrailersVideos.__init__(self, skip_indies = True)
-        Feed.__init__(self, unicode(url))
+        automate.util.Feed.__init__(self, unicode(url))
     
     
     def list_urls(self):
@@ -676,7 +491,7 @@ class GameTrailers (GameTrailersVideos, Feed):
         for entry in self.get_feed().entries:
             if re.search(keywords_re, entry.title, re.IGNORECASE):
                 try:
-                    url = self.get_video_url(Url(entry.link))
+                    url = self.get_video_url(automate.util.Url(entry.link))
                 except urllib2.URLError as error:
                     self.logger.error('%s: %s', str(error), entry.link)
                     continue
@@ -698,14 +513,14 @@ class GameTrailersVideosNewest (GameTrailersVideos):
     
     
     def list_urls(self):
-        main_html = lxml.html.fromstring(
-            Url(self.BASE_URL + '/game/' + self._game).open().read())
+        main_url = automate.util.Url(self.BASE_URL + '/game/' + self._game)
+        main_html = lxml.html.fromstring(main_url.open().read())
         
         videos = main_html.xpath(
             '//*[@id = "GamepageMedialistFeatures"]' \
             + '//*[@class = "newestlist_movie_format_SDHD"]/a[1]/@href')
         
-        for page_url in [Url(self.BASE_URL + path) for path in videos]:
+        for page_url in [automate.util.Url(self.BASE_URL + p) for p in videos]:
             yield self.get_video_url(page_url)    
 
 
@@ -729,10 +544,10 @@ class GtCountdown (GameTrailersVideosNewest):
         return 'GT Countdown'
 
 
-class PeriodicTask (threading.Thread, Logger):
+class PeriodicTask (threading.Thread, automate.util.Logger):
     def __init__(self):
         threading.Thread.__init__(self)
-        Logger.__init__(self)
+        automate.util.Logger.__init__(self)
         
         self.daemon = True
     
@@ -773,9 +588,9 @@ class GnuCash (PeriodicTask):
         # http://wiki.gnucash.org/wiki/FAQ
         log_file = r'\.gnucash\.\d{14}\.log$'
         
-        for (root, dirs, files) in os.walk(Path.documents()):
+        for (root, dirs, files) in os.walk(automate.util.Path.documents()):
             for file in filter(lambda f: re.search(log_file, f), files):
-                path = Path(root, file)
+                path = automate.util.Path(root, file)
                 self.logger.warning('Remove backup data log: %s', path)
                 
                 try:
@@ -785,7 +600,7 @@ class GnuCash (PeriodicTask):
     
     
     def _clean_webkit_folder(self):
-        webkit = Path.documents().child('webkit')
+        webkit = automate.util.Path.documents().child('webkit')
         
         if webkit.exists():
             self.logger.warning('Remove folder: %s', webkit)
@@ -806,9 +621,9 @@ class Opera (PeriodicTask):
         bookmark_header = 'Opera Hotlist version 2.0\n'
         bookmarks = r'^opr[\dA-F]{3,4}\.tmp$'
         
-        for (root, dirs, files) in os.walk(Path.documents()):
+        for (root, dirs, files) in os.walk(automate.util.Path.documents()):
             for file in filter(lambda f: re.search(bookmarks, f), files):
-                path = Path(root, file)
+                path = automate.util.Path(root, file)
                 
                 with open(path) as bookmark:
                     if bookmark.readline() != bookmark_header:
@@ -829,7 +644,7 @@ class Dropbox (PeriodicTask):
     
     
     def process(self):
-        cache = Path.documents().child('.dropbox.cache')
+        cache = automate.util.Path.documents().child('.dropbox.cache')
         
         if cache.exists():
             self.logger.warning('Remove cache folder: %s', cache)
@@ -847,7 +662,7 @@ class Windows (PeriodicTask):
     
     
     def process(self):
-        config_file = Path.documents().child('desktop.ini')
+        config_file = automate.util.Path.documents().child('desktop.ini')
         
         if not config_file.exists():
             return
