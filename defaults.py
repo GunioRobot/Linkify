@@ -15,30 +15,31 @@ from abc import *
 
 __author__ = 'Marcio Faustino'
 __doc__ = 'Sets some defaults and implements important fixes.'
-__version__ = '2011-05-17'
+__version__ = '2011-06-05'
 
 
 def externals(*modules):
-    import __main__
+    import inspect, sys
+    
     missing = set()
+    importee = inspect.getmodule(sys._getframe(1).f_code)
     
     for module in modules:
         package = module.split('.', 1).pop(0)
         
         if package != module:
             try:
-                setattr(__main__, package, __import__(package))
+                setattr(importee, package, __import__(package))
             except ImportError:
                 missing.add(package)
                 continue
         
         try:
-            setattr(__main__, module, __import__(module))
+            setattr(importee, module, __import__(module))
         except ImportError:
             missing.add(module)
     
     if len(missing) > 0:
-        import sys
         sys.exit('Modules not found: ' + ', '.join(sorted(missing)))
 
 
