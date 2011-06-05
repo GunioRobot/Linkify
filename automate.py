@@ -39,7 +39,7 @@ def query_source(dl_manager, dl_source):
                 dl_source.logger.error('%s: %s', str(error), url)
         
         dl_source.logger.debug('Pause')
-        time.sleep(10 * 60)
+        time.sleep(15 * 60)
 
 
 map(lambda task: task.start(), [
