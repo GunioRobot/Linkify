@@ -1,0 +1,114 @@
+#!/usr/bin/env perl
+
+package Term::ReadLine::NoDuplicates;
+
+use English qw(-no_match_vars);
+use Moose;
+use MooseX::NonMoose;
+use Set::Object ();
+
+extends 'Term::ReadLine';
+
+has history_set =>
+    is => 'ro',
+    isa => Set::Object::,
+    lazy => 1,
+    default => sub {Set::Object->new(shift->GetHistory)};
+
+has last_read_line =>
+    is => 'rw',
+    isa => 'Maybe[Str]';
+
+sub new {
+    my $class = shift;
+    my $self = bless $class->SUPER::new(@ARG), $class;
+    
+    return $class->meta->new_object(__INSTANCE__ => $self);
+}
+
+# Seems like Term::ReadLine::Gnu uses this one instead.
+sub add_history {
+    my ($self, @lines) = @ARG;
+    my $new_lines = Set::Object->new(@lines) - $self->history_set;
+    
+    if ($new_lines->size > 0) {
+        $self->history_set->insert($new_lines->elements);
+        $self->SUPER::add_history($new_lines->elements);
+    }
+    
+    return;
+}
+
+around readline => sub {
+    my ($super, $self) = splice @ARG, 0, 2;
+    my $line = $self->$super(@ARG);
+    
+    $self->last_read_line($line);
+    return $line;
+};
+
+
+package Devel::REPL::Plugin::NoHistoryExpansion;
+
+use Devel::REPL::Plugin;
+use English qw(-no_match_vars);
+
+around history_call => sub {
+    return;
+};
+
+around read => sub {
+    my ($super, $self) = splice @ARG, 0, 2;
+    my $line = $self->$super(@ARG);
+    
+    if (defined($line) && ($line ne '')) {
+        my $index = substr $self->term->last_read_line, 1;
+        
+        if ($line eq "'Unable to find $index in history'") {
+            return $self->term->last_read_line;
+        }
+    }
+    
+    return $line;
+};
+
+
+# Current Devel::REPL package.
+package main;
+
+use English qw(-no_match_vars);
+
+$_REPL->term(Term::ReadLine::NoDuplicates->new($_REPL->term->{readline_name}));
+
+$_REPL->load_plugins(qw(
+    Colors
+    Completion
+    CompletionDriver::Globals
+    CompletionDriver::INC
+    CompletionDriver::Keywords
+    CompletionDriver::LexEnv
+    CompletionDriver::Methods
+    DumpHistory
+    FancyPrompt
+    Interrupt
+    NoHistoryExpansion
+    OutputCache
+    ReadLineHistory
+    Refresh
+));
+
+$_REPL->fancy_prompt(sub {
+    my ($self) = @ARG;
+    
+    return sprintf '%s%s> ',
+        $self->current_package,
+        $self->line_depth > 0 ? (':' . $self->line_depth) : '';
+});
+
+$_REPL->term->Attribs->{history_inhibit_expansion_function} = sub {
+    my ($line) = @ARG;
+    return $line !~ m/\t/;
+};
+
+$_REPL->fancy_continuation_prompt($_REPL->fancy_prompt);
+$_REPL->term->Attribs->{history_expansion_char} = 0;
