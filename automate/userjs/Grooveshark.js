@@ -3,7 +3,7 @@
 // ==/UserScript==
 
 
-document.addEventListener('DOMContentLoaded', function() {
+function removeAdvertisements() {
     var fullWidth = document.createElement('style');
     
     fullWidth.appendChild(document.createTextNode(
@@ -14,4 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     var ad = document.getElementById('capital');
     ad.parentNode.removeChild(ad);
-}, false);
+}
+
+
+document.addEventListener('DOMContentLoaded', removeAdvertisements, false);
