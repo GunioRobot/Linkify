@@ -253,6 +253,7 @@ class HdTrailers (DownloadSource, automate.util.Feed):
         
         self._skip_documentaries = skip_documentaries
         self._skip_foreign = skip_foreign
+        self._skipped_items = set()
     
     
     def list_urls(self):
@@ -300,11 +301,15 @@ class HdTrailers (DownloadSource, automate.util.Feed):
     
     
     def _find_best_url(self, entry):
+        if entry.title in self._skipped_items:
+            return
+        
         if self._skip_documentaries:
             genre = entry.tags[0].term
             
             if genre == 'Documentary':
                 self.logger.warning('Skip documentary: %s', entry.title)
+                self._skipped_items.add(entry.title)
                 return
         
         if self._skip_foreign:
@@ -312,6 +317,7 @@ class HdTrailers (DownloadSource, automate.util.Feed):
             
             if genre == 'Foreign':
                 self.logger.warning('Skip foreign movie: %s', entry.title)
+                self._skipped_items.add(entry.title)
                 return
         
         if hasattr(entry, 'enclosures'):
