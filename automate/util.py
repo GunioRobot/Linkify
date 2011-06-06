@@ -184,6 +184,8 @@ class MsWindowsTypeLibrary (object):
     
     
     def get_data_type(self, type_name):
+        pythoncom.CoInitialize()
+        
         if type_name in self._iid_by_type_name:
             return win32com.client.Dispatch(self._iid_by_type_name[type_name])
         

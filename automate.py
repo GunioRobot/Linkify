@@ -49,9 +49,7 @@ map(lambda task: task.start(), [
     automate.task.Windows(),
 ])
 
-dl_manager = automate.download.ThreadSafeDownloadManager(
-    automate.download.FreeDownloadManager)
-dl_manager.start()
+dl_manager = automate.download.FreeDownloadManager()
 
 dl_sources = [
     automate.download.GameTrailers(),
@@ -63,6 +61,8 @@ dl_sources = [
     automate.download.ScrewAttack(),
 ]
 
+dl_sources_threads = []
+
 for dl_source in dl_sources:
     thread = threading.Thread(
         args = (dl_manager, dl_source),
@@ -71,6 +71,7 @@ for dl_source in dl_sources:
     
     thread.daemon = True
     thread.start()
+    dl_sources_threads.append(thread)
 
-while dl_manager.is_alive():
-    time.sleep(1)
+while any([thread.is_alive() for thread in dl_sources_threads]):
+    time.sleep(15 * 60)

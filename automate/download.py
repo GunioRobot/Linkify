@@ -3,7 +3,7 @@
 
 # Standard library:
 from __future__ import division, print_function, unicode_literals
-import datetime, Queue, re, sys, threading, Tkinter, urllib2
+import datetime, re, sys, Tkinter, urllib2
 
 # External modules:
 from defaults import *
@@ -27,62 +27,6 @@ class DownloadManager (object):
     @abstractmethod
     def has_url(self, url):
         pass
-
-
-class ThreadSafeDownloadManager (DownloadManager, threading.Thread):
-    def __init__(self, create_instance):
-        DownloadManager.__init__(self)
-        threading.Thread.__init__(self, name = create_instance.__name__)
-        
-        self.daemon = True
-        self._call_error = None
-        self._call_input = Queue.Queue(maxsize = 1)
-        self._call_output = Queue.Queue(maxsize = 1)
-        self._in_call = threading.Lock()
-        self._create_instance = create_instance
-    
-    
-    def download_url(self, url):
-        self._thread_call(url)
-    
-    
-    def has_url(self, url):
-        return self._thread_call(url)
-    
-    
-    def run(self):
-        download_manager = self._create_instance()
-        
-        while True:
-            (method_name, args) = self._call_input.get()
-            method = getattr(download_manager, method_name)
-            
-            try:
-                result = method(*args)
-                self._call_error = False
-            except Exception as error:
-                result = sys.exc_info()
-                self._call_error = True
-            
-            self._call_output.put(result)
-    
-    
-    def _thread_call(self, *args):
-        if not self.is_alive():
-            raise RuntimeError('Thread safe download manager not running.')
-        
-        self._in_call.acquire()
-        self._call_input.put([sys._getframe(1).f_code.co_name, args])
-        
-        result = self._call_output.get()
-        error = self._call_error
-        self._in_call.release()
-        
-        if error:
-            # Keep proper traceback across threads.
-            raise result[0], result[1], result[2]
-        
-        return result
 
 
 class FreeDownloadManager \
