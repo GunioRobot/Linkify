@@ -32,7 +32,7 @@ class DownloadManager (object):
 class ThreadSafeDownloadManager (DownloadManager, threading.Thread):
     def __init__(self, create_instance):
         DownloadManager.__init__(self)
-        threading.Thread.__init__(self)
+        threading.Thread.__init__(self, name = create_instance.__name__)
         
         self.daemon = True
         self._call_error = None
@@ -59,16 +59,12 @@ class ThreadSafeDownloadManager (DownloadManager, threading.Thread):
             
             try:
                 result = method(*args)
-                call_error = self._call_error = False
+                self._call_error = False
             except Exception as error:
                 result = sys.exc_info()
-                call_error = self._call_error = True
+                self._call_error = True
             
             self._call_output.put(result)
-            
-            if call_error:
-                # Propagate exception.
-                raise result[0], result[1], result[2]
     
     
     def _thread_call(self, *args):
