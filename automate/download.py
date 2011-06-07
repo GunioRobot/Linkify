@@ -376,8 +376,15 @@ class GameTrailersVideos (DownloadSource):
                 self._skipped_urls.add(page_url)
                 return
         
-        video_url = automate.util.Url(page.xpath('//*[@class = "Downloads"]' \
-            + '/a[starts-with(text(), "Quicktime")]/@href')[0])
+        video_url = page.xpath('//*[@class = "Downloads"]' \
+            + '/a[starts-with(text(), "Quicktime")]/@href')
+        
+        if len(video_url) == 0:
+            self.logger.error('QuickTime video URL not found: %s', page_url)
+            self._skipped_urls.add(page_url)
+            return
+        
+        video_url = automate.util.Url(video_url[0])
         
         url = automate.util.Url(
             'http://trailers-ak.gametrailers.com/gt_vault/%s/%s' \
