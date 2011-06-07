@@ -393,11 +393,11 @@ class GameTrailersVideos (DownloadSource):
         self.logger.debug('QuickTime video URL not found: %s', page_url)
         
         # From <http://userscripts.org/scripts/show/46320>.
-        info_url = automate.util.Url('http://www.gametrailers.com/neo/')
-        info_url.query = {
-            'movieId': page_url.path.components[-1],
-            'page': 'xml.mediaplayer.Mediagen',
-        }
+        info_url = automate.util.Url('http://www.gametrailers.com/neo/',
+            query = {
+                'movieId': page_url.path.components[-1],
+                'page': 'xml.mediaplayer.Mediagen',
+            })
         
         return automate.util.Url(lxml.etree.parse(unicode(info_url)).xpath(
             '//rendition/src/text()')[0])
@@ -432,8 +432,8 @@ class GameTrailers (GameTrailersVideos):
         for system in ['pc', 'ps3', 'xb360']:
             options['favplats[%s]' % system] = system
         
-        self._feed_url = automate.util.Url(self.BASE_URL + '/rssgenerate.php')
-        self._feed_url.query = options
+        self._feed_url = automate.util.Url(self.BASE_URL + '/rssgenerate.php',
+            query = options)
     
     
     def list_urls(self):

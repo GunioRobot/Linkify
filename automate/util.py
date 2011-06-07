@@ -78,7 +78,7 @@ class Logger (object):
 
 
 class Url (object):
-    def __init__(self, url, comment = None, save_as = None):
+    def __init__(self, url, comment = None, query = None, save_as = None):
         if isinstance(url, Url):
             self._components = url._components
             
@@ -89,6 +89,9 @@ class Url (object):
             
             self.comment = comment
             self.save_as = save_as
+        
+        if query is not None:
+            self.query = query
     
     
     @property
