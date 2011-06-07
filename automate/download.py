@@ -424,7 +424,7 @@ class GameTrailers (GameTrailersVideos):
         keywords_re = r'\b(%s)\b' % '|'.join(
             ['gameplay', 'preview', 'review', 'teaser', 'trailer'])
         
-        for entry in feedparser.parse(self._feed_url).entries:
+        for entry in feedparser.parse(unicode(self._feed_url)).entries:
             if re.search(keywords_re, entry.title, re.IGNORECASE):
                 try:
                     url = self.get_video_url(automate.util.Url(entry.link))
