@@ -53,7 +53,7 @@ class GnuCash (PeriodicTask):
     
     
     def _clean_logs(self):
-        # http://wiki.gnucash.org/wiki/FAQ
+        # See <http://wiki.gnucash.org/wiki/FAQ> for details.
         log_file = r'\.gnucash\.\d{14}\.log$'
         
         for (root, dirs, files) in os.walk(automate.util.Path.documents()):
