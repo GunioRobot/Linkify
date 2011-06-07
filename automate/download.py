@@ -226,10 +226,7 @@ class HdTrailers (DownloadSource):
             else:
                 file = None
             
-            url = automate.util.PathUrl(url)
-            url.save_as = file
-            
-            yield url
+            yield automate.util.PathUrl(url, save_as = file)
     
     
     @property

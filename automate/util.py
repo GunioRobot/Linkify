@@ -78,17 +78,17 @@ class Logger (object):
 
 
 class Url (object):
-    def __init__(self, url, comment = None):
+    def __init__(self, url, comment = None, save_as = None):
         if isinstance(url, Url):
             self._components = url._components
             
             self.comment = comment or url.comment
-            self.save_as = url.save_as
+            self.save_as = save_as or url.save_as
         else:
             self._components = urlparse.urlparse(url)
             
             self.comment = comment
-            self.save_as = None
+            self.save_as = save_as
     
     
     @property
