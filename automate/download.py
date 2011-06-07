@@ -152,10 +152,8 @@ class IgnDailyFix (DownloadSource):
         
         for entry in feed.entries:
             if entry.title.startswith(self._TITLE + ':'):
-                url = automate.util.Url(entry.enclosures[0].href)
-                url.comment = entry.link
-                
-                yield url
+                yield automate.util.Url(entry.enclosures[0].href,
+                    comment = entry.link)
     
     
     @property
