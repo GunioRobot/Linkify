@@ -382,17 +382,7 @@ class GameTrailersVideos (DownloadSource):
             + '/a[starts-with(text(), "Quicktime")]/@href')
         
         if len(video_url) == 0:
-            self.logger.debug('QuickTime video URL not found: %s', page_url)
-            
-            # From <http://userscripts.org/scripts/show/46320>.
-            info_url = automate.util.Url('http://www.gametrailers.com/neo/')
-            info_url.query = {
-                'movieId': page_url.path.components[-1],
-                'page': 'xml.mediaplayer.Mediagen',
-            }
-            
-            url = automate.util.Url(lxml.etree.parse(unicode(info_url)).xpath(
-                '//rendition/src/text()')[0])
+            url = self._get_flv_video_url(page_url)
         else:
             video_url = automate.util.Url(video_url[0])
             
@@ -402,6 +392,20 @@ class GameTrailersVideos (DownloadSource):
         
         url.comment = page_url
         return url
+    
+    
+    def _get_flv_video_url(self, page_url):
+        self.logger.debug('QuickTime video URL not found: %s', page_url)
+        
+        # From <http://userscripts.org/scripts/show/46320>.
+        info_url = automate.util.Url('http://www.gametrailers.com/neo/')
+        info_url.query = {
+            'movieId': page_url.path.components[-1],
+            'page': 'xml.mediaplayer.Mediagen',
+        }
+        
+        return automate.util.Url(lxml.etree.parse(unicode(info_url)).xpath(
+            '//rendition/src/text()')[0])
 
 
 class ScrewAttack (GameTrailersVideos):
