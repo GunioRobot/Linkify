@@ -12,7 +12,7 @@ from defaults import *
 import automate.util
 
 
-externals('feedparser', 'lxml.html', 'PIL.Image')
+externals('feedparser', 'lxml.etree', 'lxml.html', 'PIL.Image')
 
 
 class DownloadManager (object):
@@ -359,12 +359,14 @@ class GameTrailersVideos (DownloadSource):
             return
         
         page_html = page_url.open().read()
-        video_id = re.findall(r'mov_game_id\s*=\s*(\d+)', page_html)
+        video_game_id = re.findall(r'mov_game_id\s*=\s*(\d+)', page_html)
         
-        if len(video_id) == 0:
+        if len(video_game_id) == 0:
             # Not all videos are available for download.
             self.logger.error('Movie ID not found: %s', page_url)
             return
+        else:
+            [video_game_id] = video_game_id
         
         page = lxml.html.fromstring(page_html)
         
@@ -380,17 +382,25 @@ class GameTrailersVideos (DownloadSource):
             + '/a[starts-with(text(), "Quicktime")]/@href')
         
         if len(video_url) == 0:
-            self.logger.error('QuickTime video URL not found: %s', page_url)
-            self._skipped_urls.add(page_url)
-            return
+            self.logger.debug('QuickTime video URL not found: %s', page_url)
+            
+            # From <http://userscripts.org/scripts/show/46320>.
+            info_url = automate.util.Url('http://www.gametrailers.com/neo/')
+            info_url.query = {
+                'movieId': page_url.path.components[-1],
+                'page': 'xml.mediaplayer.Mediagen',
+            }
+            
+            url = automate.util.Url(lxml.etree.parse(unicode(info_url)).xpath(
+                '//rendition/src/text()')[0])
+        else:
+            video_url = automate.util.Url(video_url[0])
+            
+            url = automate.util.Url(
+                'http://trailers-ak.gametrailers.com/gt_vault/%s/%s' \
+                    % (video_game_id, video_url.path.components[-1]))
         
-        video_url = automate.util.Url(video_url[0])
-        
-        url = automate.util.Url(
-            'http://trailers-ak.gametrailers.com/gt_vault/%s/%s' \
-                % (video_id[0], video_url.path.components[-1]))
         url.comment = page_url
-        
         return url
 
 
