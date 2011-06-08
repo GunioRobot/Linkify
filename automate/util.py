@@ -63,13 +63,14 @@ class ColorStreamHandler (logging.StreamHandler):
 
 
 class Logger (object):
+    DEFAULT_LEVEL = logging.INFO
     _HANDLER = ColorStreamHandler()
     
     
     def __init__(self):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.addHandler(self._HANDLER)
-        self._logger.setLevel(logging.INFO)
+        self._logger.setLevel(self.DEFAULT_LEVEL)
     
     
     @property

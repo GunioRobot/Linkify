@@ -15,7 +15,7 @@
 
 # Standard library:
 from __future__ import division, print_function, unicode_literals
-import httplib, threading, time, urllib2
+import httplib, logging, threading, time, urllib2
 
 # External modules:
 from defaults import *
@@ -41,6 +41,12 @@ class ArgumentsParser (argparse.ArgumentParser):
                 b'action': 'store',
                 b'type': automate.util.Url,
                 b'help': 'download an URL using the default manager',
+            }),
+            ('--log', {
+                b'action': 'store',
+                b'default': 'INFO',
+                b'type': lambda level: logging._levelNames[level],
+                b'help': 'logging level',
             }),
         ]
         
@@ -70,6 +76,7 @@ class Automate (ArgumentsParser):
     def execute(self):
         nothing_done = True
         arguments = self.parse_args()
+        automate.util.Logger.DEFAULT_LEVEL = arguments.log
         download_manager = automate.download.FreeDownloadManager()
         
         if arguments.download:
