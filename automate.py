@@ -5,7 +5,7 @@
 # TODO: Create source TV shows with automatic backup.
 # TODO: Use command line options to choose the download manager, execute
 #       download finished events (both automatically and manually via command
-#       line), download files (replace "fdm.wsf"), etc.
+#       line), etc.
 # TODO: Cut the first few seconds of the IGN Daily Fix videos.
 # TODO: Create MS Win32 system service? Desktop gadget?
 # TODO: Web server with RSS feed for errors?
@@ -22,7 +22,31 @@ import threading, time, urllib2
 from defaults import *
 
 # Internal modules:
-import automate.download, automate.task
+import automate.download, automate.task, automate.util
+
+
+externals('argparse')
+
+
+class ArgumentsParser (argparse.ArgumentParser):
+    def __init__(self):
+        argparse.ArgumentParser.__init__(self, description = 'Task automation.')
+        
+        arguments = [
+            ('--start', {
+                b'action': 'store_true',
+                b'default': False,
+                b'help': 'start task automation process',
+            }),
+            ('--download', {
+                b'action': 'store',
+                b'type': automate.util.Url,
+                b'help': 'download an URL using the default manager',
+            }),
+        ]
+        
+        for name, options in arguments:
+            self.add_argument(name, **options)
 
 
 def query_source(dl_manager, dl_source):
@@ -42,36 +66,49 @@ def query_source(dl_manager, dl_source):
         time.sleep(15 * 60)
 
 
-map(lambda task: task.start(), [
-    automate.task.Dropbox(),
-    automate.task.GnuCash(),
-    automate.task.Opera(),
-    automate.task.Windows(),
-])
-
+args_parser = ArgumentsParser()
+args = args_parser.parse_args()
 dl_manager = automate.download.FreeDownloadManager()
+nothing_done = True
 
-dl_sources = [
-    automate.download.GameTrailers(),
-    automate.download.GtCountdown(),
-    automate.download.HdTrailers(),
-    automate.download.IgnDailyFix(),
-    automate.download.InterfaceLift(),
-    automate.download.PopFiction(),
-    automate.download.ScrewAttack(),
-]
+if args.download:
+    nothing_done = False
+    dl_manager.download_url(args.download)
 
-dl_sources_threads = []
-
-for dl_source in dl_sources:
-    thread = threading.Thread(
-        args = (dl_manager, dl_source),
-        name = dl_source.name,
-        target = query_source)
+if args.start:
+    nothing_done = False
     
-    thread.daemon = True
-    thread.start()
-    dl_sources_threads.append(thread)
+    map(lambda task: task.start(), [
+        automate.task.Dropbox(),
+        automate.task.GnuCash(),
+        automate.task.Opera(),
+        automate.task.Windows(),
+    ])
+    
+    dl_sources = [
+        automate.download.GameTrailers(),
+        automate.download.GtCountdown(),
+        automate.download.HdTrailers(),
+        automate.download.IgnDailyFix(),
+        automate.download.InterfaceLift(),
+        automate.download.PopFiction(),
+        automate.download.ScrewAttack(),
+    ]
+    
+    dl_sources_threads = []
+    
+    for dl_source in dl_sources:
+        thread = threading.Thread(
+            args = (dl_manager, dl_source),
+            name = dl_source.name,
+            target = query_source)
+        
+        thread.daemon = True
+        thread.start()
+        dl_sources_threads.append(thread)
+    
+    while any([thread.is_alive() for thread in dl_sources_threads]):
+        time.sleep(15 * 60)
 
-while any([thread.is_alive() for thread in dl_sources_threads]):
-    time.sleep(15 * 60)
+if nothing_done:
+    args_parser.print_help()
