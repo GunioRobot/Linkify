@@ -342,9 +342,10 @@ class GameTrailersVideos (DownloadSource):
     BASE_URL = 'http://www.gametrailers.com'
     
     
-    def __init__(self, skip_indies = False):
+    def __init__(self, skip_cam = True, skip_indies = False):
         DownloadSource.__init__(self)
         
+        self._skip_cam = skip_cam
         self._skip_indies = skip_indies
         self._skipped_urls = set()
     
@@ -372,6 +373,11 @@ class GameTrailersVideos (DownloadSource):
             or self._get_flash_video_url(page_url)
         
         if url is not None:
+            if self._skip_cam and (url.path.stem.find('_cam_') > 0):
+                self.logger.warning('Skip cam video: %s', page_url)
+                self._skipped_urls.add(page_url)
+                return
+            
             url.comment = page_url
             url.save_as = re.sub(r'^t_', '', url.path.name)
             return url
