@@ -386,6 +386,7 @@ class GameTrailersVideos (DownloadSource):
                     % (video_game_id, video_url.path.components[-1]))
         
         url.comment = page_url
+        url.save_as = re.sub(r'^t_', '', url.path.name)
         return url
     
     
