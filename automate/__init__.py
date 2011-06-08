@@ -46,7 +46,7 @@ class ArgumentsParser (argparse.ArgumentParser):
                 b'action': 'store',
                 b'default': 'INFO',
                 b'type': lambda level: logging._levelNames[level],
-                b'help': 'logging level',
+                b'help': 'set the default logging level',
             }),
         ]
         
