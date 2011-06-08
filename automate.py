@@ -49,66 +49,79 @@ class ArgumentsParser (argparse.ArgumentParser):
             self.add_argument(name, **options)
 
 
-def query_source(dl_manager, dl_source):
-    dl_source.logger.info('Start')
-    
-    while True:
-        dl_source.logger.debug('Resume')
+class Automate (ArgumentsParser):
+    @staticmethod
+    def query_download_source(manager, source):
+        source.logger.info('Start')
         
-        for url in dl_source.list_urls():
-            try:
-                if not dl_manager.has_url(url):
-                    dl_manager.download_url(url)
-            except (httplib.HTTPException, urllib2.URLError) as error:
-                dl_source.logger.error('%s: %s', str(error), url)
+        while True:
+            source.logger.debug('Resume')
+            
+            for url in source.list_urls():
+                try:
+                    if not manager.has_url(url):
+                        manager.download_url(url)
+                except (httplib.HTTPException, urllib2.URLError) as error:
+                    source.logger.error('%s: %s', str(error), url)
+            
+            source.logger.debug('Pause')
+            time.sleep(15 * 60)
+    
+    
+    def execute(self):
+        nothing_done = True
+        arguments = self.parse_args()
+        download_manager = automate.download.FreeDownloadManager()
         
-        dl_source.logger.debug('Pause')
-        time.sleep(15 * 60)
-
-
-args_parser = ArgumentsParser()
-args = args_parser.parse_args()
-dl_manager = automate.download.FreeDownloadManager()
-nothing_done = True
-
-if args.download:
-    nothing_done = False
-    dl_manager.download_url(args.download)
-
-if args.start:
-    nothing_done = False
-    
-    map(lambda task: task.start(), [
-        automate.task.Dropbox(),
-        automate.task.GnuCash(),
-        automate.task.Opera(),
-        automate.task.Windows(),
-    ])
-    
-    dl_sources = [
-        automate.download.GameTrailers(),
-        automate.download.GtCountdown(),
-        automate.download.HdTrailers(),
-        automate.download.IgnDailyFix(),
-        automate.download.InterfaceLift(),
-        automate.download.PopFiction(),
-        automate.download.ScrewAttack(),
-    ]
-    
-    dl_sources_threads = []
-    
-    for dl_source in dl_sources:
-        thread = threading.Thread(
-            args = (dl_manager, dl_source),
-            name = dl_source.name,
-            target = query_source)
+        if arguments.download:
+            nothing_done = False
+            download_manager.download_url(arguments.download)
         
-        thread.daemon = True
-        thread.start()
-        dl_sources_threads.append(thread)
+        if arguments.start:
+            nothing_done = False
+            self._start_tasks()
+            threads = self._start_download_sources(download_manager)
+            
+            while any([thread.is_alive() for thread in threads]):
+                time.sleep(15 * 60)
+        
+        if nothing_done:
+            self.print_help()
     
-    while any([thread.is_alive() for thread in dl_sources_threads]):
-        time.sleep(15 * 60)
+    
+    def _start_download_sources(self, manager):
+        sources = [
+            automate.download.GameTrailers(),
+            automate.download.GtCountdown(),
+            automate.download.HdTrailers(),
+            automate.download.IgnDailyFix(),
+            automate.download.InterfaceLift(),
+            automate.download.PopFiction(),
+            automate.download.ScrewAttack(),
+        ]
+        
+        threads = []
+        
+        for source in sources:
+            thread = threading.Thread(
+                args = (manager, source),
+                name = source.name,
+                target = self.query_download_source)
+            
+            thread.daemon = True
+            thread.start()
+            threads.append(thread)
+        
+        return threads
+    
+    
+    def _start_tasks(self):
+        map(lambda task: task.start(), [
+            automate.task.Dropbox(),
+            automate.task.GnuCash(),
+            automate.task.Opera(),
+            automate.task.Windows(),
+        ])
 
-if nothing_done:
-    args_parser.print_help()
+
+Automate().execute()
