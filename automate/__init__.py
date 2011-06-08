@@ -15,7 +15,7 @@
 
 # Standard library:
 from __future__ import division, print_function, unicode_literals
-import threading, time, urllib2
+import httplib, threading, time, urllib2
 
 # External modules:
 from defaults import *
