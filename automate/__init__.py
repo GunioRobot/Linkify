@@ -55,22 +55,9 @@ class ArgumentsParser (argparse.ArgumentParser):
 
 
 class Automate (ArgumentsParser):
-    @staticmethod
-    def query_download_source(manager, source):
-        source.logger.info('Start')
-        
-        while True:
-            source.logger.debug('Resume')
-            
-            for url in source.list_urls():
-                try:
-                    if not manager.has_url(url):
-                        manager.download_url(url)
-                except (httplib.HTTPException, urllib2.URLError) as error:
-                    source.logger.error('%s: %s', str(error), url)
-            
-            source.logger.debug('Pause')
-            time.sleep(15 * 60)
+    def __init__(self):
+        ArgumentsParser.__init__(self)
+        self._running = True
     
     
     def execute(self):
@@ -89,10 +76,36 @@ class Automate (ArgumentsParser):
             threads = self._start_download_sources(download_manager)
             
             while any([thread.is_alive() for thread in threads]):
-                time.sleep(15 * 60)
+                try:
+                    time.sleep(1)
+                except KeyboardInterrupt:
+                    self._running = False
         
         if nothing_done:
             self.print_help()
+    
+    
+    def _query_download_source(self, manager, source):
+        source.logger.info('Start')
+        
+        while self._running:
+            source.logger.debug('Resume')
+            
+            for url in source.list_urls():
+                if not self._running:
+                    break
+                
+                try:
+                    if not manager.has_url(url):
+                        manager.download_url(url)
+                except (httplib.HTTPException, urllib2.URLError) as error:
+                    source.logger.error('%s: %s', str(error), url)
+            
+            if self._running:
+                source.logger.debug('Pause')
+                time.sleep(15 * 60)
+        
+        source.logger.info('Stop')
     
     
     def _start_download_sources(self, manager):
@@ -112,9 +125,8 @@ class Automate (ArgumentsParser):
             thread = threading.Thread(
                 args = (manager, source),
                 name = source.name,
-                target = self.query_download_source)
+                target = self._query_download_source)
             
-            thread.daemon = True
             thread.start()
             threads.append(thread)
         
