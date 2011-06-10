@@ -57,7 +57,7 @@ class ArgumentsParser (argparse.ArgumentParser):
 class Automate (ArgumentsParser):
     def __init__(self):
         ArgumentsParser.__init__(self)
-        self._running = True
+        self._exit = threading.Event()
     
     
     def execute(self):
@@ -79,7 +79,7 @@ class Automate (ArgumentsParser):
                 try:
                     time.sleep(1)
                 except KeyboardInterrupt:
-                    self._running = False
+                    self._exit.set()
                     break
         
         if nothing_done:
@@ -89,11 +89,11 @@ class Automate (ArgumentsParser):
     def _query_download_source(self, manager, source):
         source.logger.info('Start')
         
-        while self._running:
+        while not self._exit.is_set():
             source.logger.debug('Resume')
             
             for url in source.list_urls():
-                if not self._running:
+                if self._exit.is_set():
                     break
                 
                 try:
@@ -102,9 +102,8 @@ class Automate (ArgumentsParser):
                 except (httplib.HTTPException, urllib2.URLError) as error:
                     source.logger.error('%s: %s', str(error), url)
             
-            if self._running:
-                source.logger.debug('Pause')
-                time.sleep(15 * 60)
+            source.logger.debug('Pause')
+            self._exit.wait(15 * 60)
         
         source.logger.info('Stop')
     
