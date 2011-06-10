@@ -3,13 +3,13 @@
 
 # Standard library:
 from __future__ import division, print_function, unicode_literals
-import datetime, re, sys, Tkinter, urllib2
+import datetime, httplib, re, sys, Tkinter, urllib2
 
 # External modules:
 from defaults import *
 
 # Internal modules:
-import automate.util
+import automate.task, automate.util
 
 
 externals('feedparser', 'lxml.etree', 'lxml.html', 'PIL.Image')
@@ -29,8 +29,51 @@ class DownloadManager (object):
         pass
 
 
+class DownloadSource (automate.util.Logger):
+    __metaclass__ = ABCMeta
+    
+    
+    def download_finished(self, url, file_path):
+        pass
+    
+    
+    @abstractmethod
+    def list_urls(self):
+        pass
+    
+    
+    @abstractproperty
+    def name(self):
+        pass
+
+
+class Downloader (automate.task.PeriodicTask):
+    def __init__(self, manager, source):
+        self._manager = manager
+        self._source = source
+        
+        automate.task.PeriodicTask.__init__(self)
+    
+    
+    @property
+    def name(self):
+        return self._source.name
+    
+    
+    def process(self):
+        for url in self._source.list_urls():
+            if self.exit:
+                break
+            
+            try:
+                if not self._manager.has_url(url):
+                    self._manager.download_url(url)
+            except (httplib.HTTPException, urllib2.URLError) as error:
+                self._source.logger.error('%s: %s', str(error), url)
+
+
 class FreeDownloadManager \
-        (DownloadManager, automate.util.MsWindowsTypeLibrary, automate.util.Logger):
+    (DownloadManager, automate.util.MsWindowsTypeLibrary, automate.util.Logger):
     
     _CACHE_REFRESH_FREQUENCY = datetime.timedelta(hours = 1)
     _FILE_NAME_DOWNLOAD_TEXT = 0
@@ -123,24 +166,6 @@ class FreeDownloadManager \
             
             self._cached_downloads_stat = True
             self._last_cache_reset = datetime.datetime.now()
-
-
-class DownloadSource (automate.util.Logger):
-    __metaclass__ = ABCMeta
-    
-    
-    def download_finished(self, url, file_path):
-        pass
-    
-    
-    @abstractmethod
-    def list_urls(self):
-        pass
-    
-    
-    @abstractproperty
-    def name(self):
-        pass
 
 
 class IgnDailyFix (DownloadSource):

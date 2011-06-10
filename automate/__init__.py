@@ -15,7 +15,7 @@
 
 # Standard library:
 from __future__ import division, print_function, unicode_literals
-import httplib, logging, threading, time, urllib2
+import logging, time
 
 # External modules:
 from defaults import *
@@ -57,7 +57,6 @@ class ArgumentsParser (argparse.ArgumentParser):
 class Automate (ArgumentsParser):
     def __init__(self):
         ArgumentsParser.__init__(self)
-        self._exit = threading.Event()
     
     
     def execute(self):
@@ -72,43 +71,31 @@ class Automate (ArgumentsParser):
         
         if arguments.start:
             nothing_done = False
-            self._start_tasks()
-            threads = self._start_download_sources(download_manager)
+            tasks = self._start_tasks(download_manager)
             
-            while any([thread.is_alive() for thread in threads]):
+            while any([task.is_alive() for task in tasks]):
                 try:
                     time.sleep(1)
                 except KeyboardInterrupt:
-                    self._exit.set()
+                    for task in tasks:
+                        task.stop()
                     break
         
         if nothing_done:
             self.print_help()
     
     
-    def _query_download_source(self, manager, source):
-        source.logger.info('Start')
+    def _start_tasks(self, download_manager):
+        tasks = [
+            automate.task.Dropbox(),
+            automate.task.GnuCash(),
+            automate.task.Opera(),
+            automate.task.Windows(),
+        ]
         
-        while not self._exit.is_set():
-            source.logger.debug('Resume')
-            
-            for url in source.list_urls():
-                if self._exit.is_set():
-                    break
-                
-                try:
-                    if not manager.has_url(url):
-                        manager.download_url(url)
-                except (httplib.HTTPException, urllib2.URLError) as error:
-                    source.logger.error('%s: %s', str(error), url)
-            
-            source.logger.debug('Pause')
-            self._exit.wait(15 * 60)
+        for task in tasks:
+            task.start()
         
-        source.logger.info('Stop')
-    
-    
-    def _start_download_sources(self, manager):
         sources = [
             automate.download.GameTrailers(),
             automate.download.GtCountdown(),
@@ -119,24 +106,9 @@ class Automate (ArgumentsParser):
             automate.download.ScrewAttack(),
         ]
         
-        threads = []
-        
         for source in sources:
-            thread = threading.Thread(
-                args = (manager, source),
-                name = source.name,
-                target = self._query_download_source)
-            
-            thread.start()
-            threads.append(thread)
+            task = automate.download.Downloader(download_manager, source)
+            task.start()
+            tasks.append(task)
         
-        return threads
-    
-    
-    def _start_tasks(self):
-        map(lambda task: task.start(), [
-            automate.task.Dropbox(),
-            automate.task.GnuCash(),
-            automate.task.Opera(),
-            automate.task.Windows(),
-        ])
+        return tasks

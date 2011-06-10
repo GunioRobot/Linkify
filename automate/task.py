@@ -17,7 +17,7 @@ class PeriodicTask (threading.Thread, automate.util.Logger):
         threading.Thread.__init__(self, name = self.name)
         automate.util.Logger.__init__(self)
         
-        self.daemon = True
+        self._exit = threading.Event()
     
     
     @abstractproperty
@@ -30,15 +30,26 @@ class PeriodicTask (threading.Thread, automate.util.Logger):
         pass
     
     
+    @property
+    def exit(self):
+        return self._exit.is_set()
+    
+    
     def run(self):
         self.logger.info('Start')
         
-        while True:
+        while not self.exit:
             self.logger.debug('Resume')
             self.process()
             
             self.logger.debug('Pause')
-            time.sleep(10 * 60)
+            self._exit.wait(10 * 60)
+        
+        self.logger.info('Stop')
+    
+    
+    def stop(self):
+        self._exit.set()
 
 
 class GnuCash (PeriodicTask):
