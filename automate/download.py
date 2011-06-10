@@ -395,7 +395,7 @@ class GameTrailersVideos (DownloadSource):
         
         try:
             info_xml = lxml.etree.parse(unicode(info_url))
-        except IOError as error:
+        except (IOError, lxml.etree.XMLSyntaxError) as error:
             self.logger.error(error)
         else:
             return automate.util.Url(info_xml.xpath('//rendition/src/text()')[0])
