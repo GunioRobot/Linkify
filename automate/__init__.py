@@ -80,6 +80,7 @@ class Automate (ArgumentsParser):
                     time.sleep(1)
                 except KeyboardInterrupt:
                     self._running = False
+                    break
         
         if nothing_done:
             self.print_help()
