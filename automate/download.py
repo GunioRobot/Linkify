@@ -395,7 +395,7 @@ class GameTrailersVideos (DownloadSource):
             self._skipped_urls.add(page_url)
             return
         
-        url = self._get_quicktime_video_url(page, video_id) \
+        url = self._get_video_url(page, video_id) \
             or self._get_flash_video_url(page_url)
         
         if url is not None:
@@ -427,23 +427,24 @@ class GameTrailersVideos (DownloadSource):
             return automate.util.Url(info_xml.xpath('//rendition/src/text()')[0])
     
     
-    def _get_quicktime_video_url(self, page, video_id):
-        video_url = page.xpath('//*[@class = "Downloads"]' \
-            + '/a[starts-with(text(), "Quicktime")]/@href')
-        
-        if len(video_url) > 0:
-            video_url = automate.util.Url(video_url[0])
-            
-            return automate.util.Url(
-                'http://trailers-ak.gametrailers.com/gt_vault/%s/%s' \
-                    % (video_id, video_url.path.components[-1]))
-    
-    
     def _get_video_id(self, page_html):
         video_id = re.findall(r'mov_game_id\s*=\s*(\d+)', page_html)
         
         if len(video_id) > 0:
             return video_id[0] 
+    
+    
+    def _get_video_url(self, page, video_id):
+        for video_type in ['WMV', 'Quicktime']:
+            video_url = page.xpath('//*[@class = "Downloads"]' \
+                + '/a[starts-with(text(), "%s")]/@href' % video_type)
+            
+            if len(video_url) > 0:
+                video_url = automate.util.Url(video_url[0])
+                
+                return automate.util.Url(
+                    'http://trailers-ak.gametrailers.com/gt_vault/%s/%s' \
+                        % (video_id, video_url.path.components[-1]))
     
     
     def _has_video_publisher(self, page):
