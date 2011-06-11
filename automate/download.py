@@ -100,10 +100,10 @@ class FreeDownloadManager \
         wg_url_receiver.ForceSilentEx = True
         
         if url.save_as is not None:
-            wg_url_receiver.FileName = url.save_as
+            wg_url_receiver.FileName = unicode(url.save_as)
         
         if url.comment is not None:
-            wg_url_receiver.Comment = url.comment
+            wg_url_receiver.Comment = unicode(url.comment)
         
         wg_url_receiver.AddDownload()
         self._urls.add(url)
