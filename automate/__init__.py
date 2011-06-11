@@ -113,14 +113,13 @@ class Automate (ArgumentsParser):
             tasks = [task_class() for task_class in self._AVAILABLE_TASKS]
         else:
             for task in start_tasks:
-                task_class = next(
-                    (t for t in self._AVAILABLE_TASKS if task == t.__name__),
-                    None)
-                
-                if task_class is None:
+                try:
+                    task_class = next(t for t in self._AVAILABLE_TASKS \
+                        if task == t.__name__)
+                except StopIteration:
                     sys.exit('Unknown task: ' + task)
-                
-                tasks.append(task_class())
+                else:
+                    tasks.append(task_class())
         
         started_tasks = []
         
