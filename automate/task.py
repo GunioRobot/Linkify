@@ -20,6 +20,11 @@ class PeriodicTask (threading.Thread, automate.util.Logger):
         self._exit = threading.Event()
     
     
+    @property
+    def is_stopping(self):
+        return self._exit.is_set()
+    
+    
     @abstractproperty
     def name(self):
         pass
@@ -30,15 +35,10 @@ class PeriodicTask (threading.Thread, automate.util.Logger):
         pass
     
     
-    @property
-    def exit(self):
-        return self._exit.is_set()
-    
-    
     def run(self):
         self.logger.info('Start')
         
-        while not self.exit:
+        while not self.is_stopping:
             self.logger.debug('Resume')
             self.process()
             

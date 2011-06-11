@@ -62,7 +62,7 @@ class Downloader (automate.task.PeriodicTask):
     
     def process(self):
         for url in self._source.list_urls():
-            if self.exit:
+            if self.is_stopping:
                 break
             
             try:
