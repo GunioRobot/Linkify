@@ -33,8 +33,8 @@ class ArgumentsParser (argparse.ArgumentParser):
         
         arguments = [
             ('--start', {
-                b'action': 'store_true',
-                b'default': False,
+                b'action': 'append',
+                b'nargs': '?',
                 b'help': 'start task automation process',
             }),
             ('--download', {
@@ -70,45 +70,63 @@ class Automate (ArgumentsParser):
             download_manager.download_url(arguments.download)
         
         if arguments.start:
-            nothing_done = False
-            tasks = self._start_tasks(download_manager)
+            start_tasks = set(arguments.start)
             
-            while any([task.is_alive() for task in tasks]):
-                try:
-                    time.sleep(1)
-                except KeyboardInterrupt:
-                    for task in tasks:
-                        task.stop()
-                    break
+            if not ((None in start_tasks) and (len(start_tasks) > 1)):
+                nothing_done = False
+                
+                tasks = self._start_tasks(
+                    download_manager,
+                    None if None in start_tasks else start_tasks)
+                
+                while any([task.is_alive() for task in tasks]):
+                    try:
+                        time.sleep(1)
+                    except KeyboardInterrupt:
+                        for task in tasks:
+                            task.stop()
+                        break
         
         if nothing_done:
             self.print_help()
     
     
-    def _start_tasks(self, download_manager):
-        tasks = [
-            automate.task.Dropbox(),
-            automate.task.GnuCash(),
-            automate.task.Opera(),
-            automate.task.Windows(),
+    def _start_tasks(self, download_manager, start_tasks = None):
+        available_tasks = [
+            automate.download.GameTrailers,
+            automate.download.GtCountdown,
+            automate.download.HdTrailers,
+            automate.download.IgnDailyFix,
+            automate.download.InterfaceLift,
+            automate.download.PopFiction,
+            automate.download.ScrewAttack,
+            automate.task.Dropbox,
+            automate.task.GnuCash,
+            automate.task.Opera,
+            automate.task.Windows,
         ]
+        
+        tasks = []
+        
+        if start_tasks is None:
+            tasks = [task_class() for task_class in available_tasks]
+        else:
+            for task in start_tasks:
+                task_class = next(
+                    (t for t in available_tasks if task == t.__name__), None)
+                
+                if task_class is None:
+                    raise Exception('Unknown task: ' + task)
+                else:
+                    tasks.append(task_class())
+        
+        started_tasks = []
         
         for task in tasks:
+            if isinstance(task, automate.download.DownloadSource):
+                task = automate.download.Downloader(download_manager, task)
+            
             task.start()
+            started_tasks.append(task)
         
-        sources = [
-            automate.download.GameTrailers(),
-            automate.download.GtCountdown(),
-            automate.download.HdTrailers(),
-            automate.download.IgnDailyFix(),
-            automate.download.InterfaceLift(),
-            automate.download.PopFiction(),
-            automate.download.ScrewAttack(),
-        ]
-        
-        for source in sources:
-            task = automate.download.Downloader(download_manager, source)
-            task.start()
-            tasks.append(task)
-        
-        return tasks
+        return started_tasks
