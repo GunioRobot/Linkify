@@ -43,7 +43,7 @@ class PeriodicTask (threading.Thread, automate.util.Logger):
             self.process()
             
             self.logger.debug('Pause')
-            self._exit.wait(10 * 60)
+            self._exit.wait(15 * 60)
         
         self.logger.info('Stop')
     
