@@ -17,12 +17,12 @@ class PeriodicTask (threading.Thread, automate.util.Logger):
         threading.Thread.__init__(self, name = self.name)
         automate.util.Logger.__init__(self, self.name)
         
-        self._exit = threading.Event()
+        self._is_stopping = threading.Event()
     
     
     @property
     def is_stopping(self):
-        return self._exit.is_set()
+        return self._is_stopping.is_set()
     
     
     @abstractproperty
@@ -43,13 +43,13 @@ class PeriodicTask (threading.Thread, automate.util.Logger):
             self.process()
             
             self.logger.debug('Pause')
-            self._exit.wait(15 * 60)
+            self._is_stopping.wait(15 * 60)
         
         self.logger.info('Stop')
     
     
     def stop(self):
-        self._exit.set()
+        self._is_stopping.set()
 
 
 class GnuCash (PeriodicTask):
