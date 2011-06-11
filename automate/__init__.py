@@ -45,7 +45,7 @@ class ArgumentsParser (argparse.ArgumentParser):
             ('--log', {
                 b'action': 'store',
                 b'default': 'INFO',
-                b'type': lambda level: logging._levelNames[level],
+                b'type': lambda level: logging._levelNames[level.upper()],
                 b'help': 'set the default logging level',
             }),
         ]
