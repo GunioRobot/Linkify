@@ -15,7 +15,7 @@
 
 # Standard library:
 from __future__ import division, print_function, unicode_literals
-import logging, time
+import logging, sys, time
 
 # External modules:
 from defaults import *
@@ -55,6 +55,21 @@ class ArgumentsParser (argparse.ArgumentParser):
 
 
 class Automate (ArgumentsParser):
+    _AVAILABLE_TASKS = [
+        automate.download.GameTrailers,
+        automate.download.GtCountdown,
+        automate.download.HdTrailers,
+        automate.download.IgnDailyFix,
+        automate.download.InterfaceLift,
+        automate.download.PopFiction,
+        automate.download.ScrewAttack,
+        automate.task.Dropbox,
+        automate.task.GnuCash,
+        automate.task.Opera,
+        automate.task.Windows,
+    ]
+    
+    
     def __init__(self):
         ArgumentsParser.__init__(self)
     
@@ -92,33 +107,20 @@ class Automate (ArgumentsParser):
     
     
     def _start_tasks(self, download_manager, start_tasks = None):
-        available_tasks = [
-            automate.download.GameTrailers,
-            automate.download.GtCountdown,
-            automate.download.HdTrailers,
-            automate.download.IgnDailyFix,
-            automate.download.InterfaceLift,
-            automate.download.PopFiction,
-            automate.download.ScrewAttack,
-            automate.task.Dropbox,
-            automate.task.GnuCash,
-            automate.task.Opera,
-            automate.task.Windows,
-        ]
-        
         tasks = []
         
         if start_tasks is None:
-            tasks = [task_class() for task_class in available_tasks]
+            tasks = [task_class() for task_class in self._AVAILABLE_TASKS]
         else:
             for task in start_tasks:
                 task_class = next(
-                    (t for t in available_tasks if task == t.__name__), None)
+                    (t for t in self._AVAILABLE_TASKS if task == t.__name__),
+                    None)
                 
                 if task_class is None:
-                    raise Exception('Unknown task: ' + task)
-                else:
-                    tasks.append(task_class())
+                    sys.exit('Unknown task: ' + task)
+                
+                tasks.append(task_class())
         
         started_tasks = []
         
