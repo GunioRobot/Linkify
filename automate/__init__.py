@@ -2,9 +2,8 @@
 
 
 # TODO: Create source TV shows with automatic backup.
-# TODO: Use command line options to choose the download manager, execute
-#       download finished events (both automatically and manually via command
-#       line), etc.
+# TODO: Use command line options to execute download finished events (both
+#       automatically and manually).
 # TODO: Cut the first few seconds of the IGN Daily Fix videos.
 # TODO: Create MS Win32 system service? Desktop gadget?
 # TODO: Web server with RSS feed for errors?
