@@ -15,7 +15,7 @@ import automate.util
 class PeriodicTask (threading.Thread, automate.util.Logger):
     def __init__(self):
         threading.Thread.__init__(self, name = self.name)
-        automate.util.Logger.__init__(self)
+        automate.util.Logger.__init__(self, self.name)
         
         self._exit = threading.Event()
     

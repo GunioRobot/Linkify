@@ -67,8 +67,10 @@ class Logger (object):
     _HANDLER = ColorStreamHandler()
     
     
-    def __init__(self):
-        self._logger = logging.getLogger(self.__class__.__name__)
+    def __init__(self, name = None):
+        self._logger = logging.getLogger(
+            name if name is not None else self.__class__.__name__)
+        
         self._logger.addHandler(self._HANDLER)
         self._logger.setLevel(self.DEFAULT_LEVEL)
     
