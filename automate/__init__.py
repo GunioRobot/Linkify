@@ -85,14 +85,14 @@ class Automate (ArgumentsParser):
             download_manager.download_url(arguments.download)
         
         if arguments.start:
-            start_tasks = set(arguments.start)
+            task_names = set(arguments.start)
             
-            if not ((None in start_tasks) and (len(start_tasks) > 1)):
+            if not ((None in task_names) and (len(task_names) > 1)):
                 nothing_done = False
                 
                 tasks = self._start_tasks(
                     download_manager,
-                    None if None in start_tasks else start_tasks)
+                    None if None in task_names else task_names)
                 
                 while any([task.is_alive() for task in tasks]):
                     try:
@@ -106,28 +106,30 @@ class Automate (ArgumentsParser):
             self.print_help()
     
     
-    def _start_tasks(self, download_manager, start_tasks = None):
+    def _start_task(self, download_manager, task_class):
+        task = task_class()
+        
+        if isinstance(task, automate.download.DownloadSource):
+            task = automate.download.Downloader(download_manager, task)
+        
+        task.start()
+        return task
+    
+    
+    def _start_tasks(self, download_manager, task_names = None):
+        if task_names is None:
+            return [self._start_task(download_manager, t) \
+                for t in self._AVAILABLE_TASKS]
+        
         tasks = []
         
-        if start_tasks is None:
-            tasks = [task_class() for task_class in self._AVAILABLE_TASKS]
-        else:
-            for task in start_tasks:
-                try:
-                    task_class = next(t for t in self._AVAILABLE_TASKS \
-                        if task == t.__name__)
-                except StopIteration:
-                    sys.exit('Unknown task: ' + task)
-                else:
-                    tasks.append(task_class())
+        for task in task_names:
+            try:
+                task_class = next(t for t in self._AVAILABLE_TASKS \
+                    if task == t.__name__)
+            except StopIteration:
+                sys.exit('Unknown task: ' + task)
+            else:
+                tasks.append(self._start_task(download_manager, task_class))
         
-        started_tasks = []
-        
-        for task in tasks:
-            if isinstance(task, automate.download.DownloadSource):
-                task = automate.download.Downloader(download_manager, task)
-            
-            task.start()
-            started_tasks.append(task)
-        
-        return started_tasks
+        return tasks
