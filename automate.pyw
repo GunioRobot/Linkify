@@ -1,4 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-execfile('automate.py')
+
+# Internal modules:
+from automate import Automate
+
+
+Automate().execute()
