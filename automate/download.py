@@ -391,7 +391,7 @@ class GameTrailersVideos (DownloadSource):
         page = lxml.html.fromstring(page_html)
         
         if self._skip_indies and not self._has_video_publisher(page):
-            self.logger.warning('Skip indie game: %s', page_url)
+            self.logger.debug('Skip indie game: %s', page_url)
             self._skipped_urls.add(page_url)
             return
         
@@ -400,7 +400,7 @@ class GameTrailersVideos (DownloadSource):
         
         if url is not None:
             if self._skip_cam and (url.path.stem.find('_cam_') > 0):
-                self.logger.warning('Skip cam video: %s', page_url)
+                self.logger.debug('Skip cam video: %s', page_url)
                 self._skipped_urls.add(page_url)
                 return
             
