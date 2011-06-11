@@ -383,8 +383,9 @@ class GameTrailersVideos (DownloadSource):
         video_id = self._get_video_id(page_html)
         
         if video_id is None:
-            # Not all videos are available for download.
+            # Not all videos are available for download, e.g. Bonus Round.
             self.logger.error('Movie ID not found: %s', page_url)
+            self._skipped_urls.add(page_url)
             return
         
         page = lxml.html.fromstring(page_html)
