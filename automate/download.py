@@ -169,6 +169,10 @@ class FreeDownloadManager \
 
 
 class GameTrailersVideos (DownloadSource):
+    class VideoUrlUnavailable (Exception):
+        pass
+    
+    
     BASE_URL = 'http://www.gametrailers.com'
     
     
@@ -182,23 +186,19 @@ class GameTrailersVideos (DownloadSource):
     
     def get_video_url(self, page_url):
         if page_url in self._skipped_urls:
-            return
+            raise self.VideoUrlUnavailable()
         
         try:
             page_html = page_url.open().read()
         except (httplib.HTTPException, urllib2.URLError) as error:
             self.logger.error('%s: %s', error, page_url)
-            return
+            raise self.VideoUrlUnavailable()
         
         video_id = self._get_video_id(page_html, page_url)
-        
-        if video_id is None:
-            return
-        
         page = lxml.html.fromstring(page_html)
         
         if self._skip_indie_game(page, page_url):
-            return
+            raise self.VideoUrlUnavailable()
         
         url = self._get_video_url_from_html(page, video_id) \
             or self._get_flash_video_url(page_url)
@@ -207,6 +207,8 @@ class GameTrailersVideos (DownloadSource):
             url.comment = page_url
             url.save_as = re.sub(r'^t_', '', url.path.name)
             return url
+        
+        raise self.VideoUrlUnavailable()
     
     
     def _get_flash_video_url(self, page_url):
@@ -237,6 +239,7 @@ class GameTrailersVideos (DownloadSource):
         # Not all videos are available for download, e.g. Bonus Round.
         self.logger.error('Movie ID not found: %s', page_url)
         self._skipped_urls.add(page_url)
+        raise self.VideoUrlUnavailable()
     
     
     def _get_video_url_from_html(self, page, video_id):
@@ -290,10 +293,10 @@ class GameTrailersNewestVideos (GameTrailersVideos):
             + '//*[@class = "newestlist_movie_format_SDHD"]/a[1]/@href')
         
         for page_url in [automate.util.Url(self.BASE_URL + p) for p in videos]:
-            video_url = self.get_video_url(page_url)
-            
-            if video_url is not None:
-                yield video_url
+            try:
+                yield self.get_video_url(page_url)
+            except self.VideoUrlUnavailable:
+                pass
 
 
 class GameTrailers (GameTrailersVideos):
@@ -319,10 +322,10 @@ class GameTrailers (GameTrailersVideos):
         
         for entry in feedparser.parse(unicode(self._feed_url)).entries:
             if re.search(keywords_re, entry.title, re.IGNORECASE):
-                video_url = self.get_video_url(automate.util.Url(entry.link))
-                
-                if video_url is not None:
-                    yield video_url
+                try:
+                    yield self.get_video_url(automate.util.Url(entry.link))
+                except self.VideoUrlUnavailable:
+                    pass
     
     
     @property
@@ -553,10 +556,10 @@ class ScrewAttack (GameTrailersVideos):
             '//*[@id = "nerd"]//a[@class = "gamepage_content_row_title"]/@href')
         
         for page_url in [automate.util.Url(self.BASE_URL + p) for p in videos]:
-            video_url = self.get_video_url(page_url)
-            
-            if video_url is not None:
-                yield video_url
+            try:
+                yield self.get_video_url(page_url)
+            except self.VideoUrlUnavailable:
+                pass
     
     
     @property
