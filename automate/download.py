@@ -69,7 +69,7 @@ class Downloader (automate.task.PeriodicTask):
                 if not self._manager.has_url(url):
                     self._manager.download_url(url)
             except (httplib.HTTPException, urllib2.URLError) as error:
-                self._source.logger.error('%s: %s', str(error), url)
+                self._source.logger.error('%s: %s', error, url)
 
 
 class FreeDownloadManager \
@@ -184,7 +184,12 @@ class GameTrailersVideos (DownloadSource):
         if page_url in self._skipped_urls:
             return
         
-        page_html = page_url.open().read()
+        try:
+            page_html = page_url.open().read()
+        except (httplib.HTTPException, urllib2.URLError) as error:
+            self.logger.error('%s: %s', error, page_url)
+            return
+        
         video_id = self._get_video_id(page_html)
         
         if video_id is None:
@@ -272,7 +277,10 @@ class GameTrailersNewestVideos (GameTrailersVideos):
             + '//*[@class = "newestlist_movie_format_SDHD"]/a[1]/@href')
         
         for page_url in [automate.util.Url(self.BASE_URL + p) for p in videos]:
-            yield self.get_video_url(page_url)    
+            video_url = self.get_video_url(page_url)
+            
+            if video_url is not None:
+                yield video_url
 
 
 class GameTrailers (GameTrailersVideos):
@@ -298,15 +306,10 @@ class GameTrailers (GameTrailersVideos):
         
         for entry in feedparser.parse(unicode(self._feed_url)).entries:
             if re.search(keywords_re, entry.title, re.IGNORECASE):
-                try:
-                    url = self.get_video_url(automate.util.Url(entry.link))
-                except urllib2.URLError as error:
-                    self.logger.error('%s: %s', str(error), entry.link)
-                    continue
+                video_url = self.get_video_url(automate.util.Url(entry.link))
                 
-                if url is not None:
-                    url.comment = entry.link
-                    yield url
+                if video_url is not None:
+                    yield video_url
     
     
     @property
@@ -377,7 +380,7 @@ class HdTrailers (DownloadSource):
             try:
                 file = url.resolve().path.name
             except urllib2.URLError as error:
-                self.logger.error('%s: %s', str(error), url)
+                self.logger.error('%s: %s', error, url)
                 continue
             
             if re.search(r'^\d+$', file.stem):
@@ -474,7 +477,7 @@ class InterfaceLift (DownloadSource):
         try:
             session_code = self._session_code
         except urllib2.URLError as error:
-            self.logger.error('%s: %s\'s session code', str(error), self.name)
+            self.logger.error('%s: %s\'s session code', error, self.name)
             return
         
         feed = feedparser.parse('http://%s/wallpaper/rss/index.xml' \
@@ -537,7 +540,10 @@ class ScrewAttack (GameTrailersVideos):
             '//*[@id = "nerd"]//a[@class = "gamepage_content_row_title"]/@href')
         
         for page_url in [automate.util.Url(self.BASE_URL + p) for p in videos]:
-            yield self.get_video_url(page_url)
+            video_url = self.get_video_url(page_url)
+            
+            if video_url is not None:
+                yield video_url
     
     
     @property
