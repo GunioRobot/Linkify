@@ -69,7 +69,7 @@ class Downloader (automate.task.PeriodicTask):
                 if not self._manager.has_url(url):
                     self._manager.download_url(url)
             except (httplib.HTTPException, urllib2.URLError) as error:
-                self._source.logger.error('%s: %s', str(error), url)
+                self._source.logger.error('%s: %s', error, url)
 
 
 class FreeDownloadManager \
@@ -191,7 +191,7 @@ class GameTrailersVideos (DownloadSource):
         try:
             page_html = page_url.open().read()
         except (httplib.HTTPException, urllib2.URLError) as error:
-            self.logger.error('%s: %s', str(error), page_url)
+            self.logger.error('%s: %s', error, page_url)
             raise self.VideoUrlUnavailable()
         
         video_id = self._get_video_id(page_html, page_url)
@@ -396,7 +396,7 @@ class HdTrailers (DownloadSource):
             try:
                 file = url.resolve().path.name
             except urllib2.URLError as error:
-                self.logger.error('%s: %s', str(error), url)
+                self.logger.error('%s: %s', error, url)
                 continue
             
             if re.search(r'^\d+$', file.stem):
@@ -493,7 +493,7 @@ class InterfaceLift (DownloadSource):
         try:
             session_code = self._session_code
         except urllib2.URLError as error:
-            self.logger.error('%s: %s\'s session code', str(error), self.name)
+            self.logger.error('%s: %s\'s session code', error, self.name)
             return
         
         feed = feedparser.parse('http://%s/wallpaper/rss/index.xml' \
