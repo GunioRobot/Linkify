@@ -35,11 +35,11 @@ class ColorStreamHandler (logging.StreamHandler):
     def emit(self, record):
         if self._terminal is not None:
             if record.levelno == logging.INFO:
-                self._terminal.set_color(self.BLUE)
+                self._terminal.set_color(self._BLUE)
             elif record.levelno == logging.WARNING:
-                self._terminal.set_color(self.BROWN)
+                self._terminal.set_color(self._BROWN)
             elif record.levelno == logging.ERROR:
-                self._terminal.set_color(self.RED)
+                self._terminal.set_color(self._RED)
         
         logging.StreamHandler.emit(self, record)
         
