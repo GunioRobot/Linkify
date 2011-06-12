@@ -66,18 +66,11 @@ class ArgumentsParser (argparse.ArgumentParser):
         return task_names
     
     
-    def _list_available_task_classes(self):
-        tasks = self._list_concrete_classes(automate.task.PeriodicTask) \
-            + self._list_concrete_classes(automate.download.DownloadSource)
-        
-        return map(operator.itemgetter(1), tasks)
-    
-    
     def _list_concrete_classes(self, base_class):
         def is_concrete_class(object):
             return inspect.isclass(object) \
                 and not inspect.isabstract(object) \
-                and issubclass(object, base_class)                
+                and issubclass(object, base_class)
         
         return inspect.getmembers(
             inspect.getmodule(base_class), is_concrete_class)
@@ -117,6 +110,13 @@ class Automate (ArgumentsParser):
         
         if nothing_done:
             self.print_help()
+    
+    
+    def _list_available_task_classes(self):
+        tasks = self._list_concrete_classes(automate.task.PeriodicTask) \
+            + self._list_concrete_classes(automate.download.DownloadSource)
+        
+        return map(operator.itemgetter(1), tasks)
     
     
     def _start_task(self, download_manager, task_class):
