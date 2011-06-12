@@ -366,12 +366,10 @@ class HdTrailers (DownloadSource):
             if not re.search(keywords_re, entry.title, re.IGNORECASE):
                 continue
             
-            url = self._find_best_url(entry)
-            
-            if url is None:
+            try:
+                url = self._find_best_url(entry)
+            except VideoUrlUnavailable:
                 continue
-            
-            url.comment = entry.link
             
             if url.host_name != 'playlist.yahoo.com':
                 yield url
@@ -414,7 +412,7 @@ class HdTrailers (DownloadSource):
     
     def _find_best_url(self, entry):
         if entry.title in self._skipped_items:
-            return
+            raise VideoUrlUnavailable()
         
         if self._skip_documentary:
             genre = entry.tags[0].term
@@ -422,7 +420,7 @@ class HdTrailers (DownloadSource):
             if genre == 'Documentary':
                 self.logger.warning('Skip documentary: %s', entry.title)
                 self._skipped_items.add(entry.title)
-                return
+                raise VideoUrlUnavailable()
         
         if self._skip_foreign:
             genre = entry.tags[1].term
@@ -430,10 +428,10 @@ class HdTrailers (DownloadSource):
             if genre == 'Foreign':
                 self.logger.warning('Skip foreign movie: %s', entry.title)
                 self._skipped_items.add(entry.title)
-                return
+                raise VideoUrlUnavailable()
         
         if hasattr(entry, 'enclosures'):
-            return automate.util.Url(self._find_highest_resolution(
+            url = automate.util.Url(self._find_highest_resolution(
                 [enclosure.href for enclosure in entry.enclosures]))
         else:
             # Parse HTML to find movie links.
@@ -447,7 +445,10 @@ class HdTrailers (DownloadSource):
                     url = link.attrib['href']
                     highest_resolution = resolution
             
-            return automate.util.Url(url)
+            url = automate.util.Url(url)
+        
+        url.comment = entry.link
+        return url
     
     
     def _find_highest_resolution(self, strings):
