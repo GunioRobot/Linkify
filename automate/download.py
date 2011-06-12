@@ -15,6 +15,10 @@ import automate.task, automate.util
 externals('feedparser', 'lxml.etree', 'lxml.html', 'PIL.Image')
 
 
+class VideoUrlUnavailable (Exception):
+    pass
+
+
 class DownloadManager (object):
     __metaclass__ = ABCMeta
     
@@ -169,10 +173,6 @@ class FreeDownloadManager \
 
 
 class GameTrailersVideos (DownloadSource):
-    class VideoUrlUnavailable (Exception):
-        pass
-    
-    
     BASE_URL = 'http://www.gametrailers.com'
     
     
@@ -186,19 +186,19 @@ class GameTrailersVideos (DownloadSource):
     
     def get_video_url(self, page_url):
         if page_url in self._skipped_urls:
-            raise self.VideoUrlUnavailable()
+            raise VideoUrlUnavailable()
         
         try:
             page_html = page_url.open().read()
         except (httplib.HTTPException, urllib2.URLError) as error:
             self.logger.error('%s: %s', error, page_url)
-            raise self.VideoUrlUnavailable()
+            raise VideoUrlUnavailable()
         
         page = lxml.html.fromstring(page_html)
         video_id = self._get_video_id(page, page_html, page_url)
         
         if self._skip_indie_game(page, page_url):
-            raise self.VideoUrlUnavailable()
+            raise VideoUrlUnavailable()
         
         url = self._get_video_url_from_html(page, video_id) \
             or self._get_flash_video_url(page_url)
@@ -208,7 +208,7 @@ class GameTrailersVideos (DownloadSource):
             url.save_as = re.sub(r'^t_', '', url.path.name)
             return url
         
-        raise self.VideoUrlUnavailable()
+        raise VideoUrlUnavailable()
     
     
     def _get_flash_video_url(self, page_url):
@@ -245,7 +245,7 @@ class GameTrailersVideos (DownloadSource):
             self.logger.error(error_message)
         
         self._skipped_urls.add(page_url)
-        raise self.VideoUrlUnavailable()
+        raise VideoUrlUnavailable()
     
     
     def _get_video_url_from_html(self, page, video_id):
@@ -301,7 +301,7 @@ class GameTrailersNewestVideos (GameTrailersVideos):
         for page_url in [automate.util.Url(self.BASE_URL + p) for p in videos]:
             try:
                 yield self.get_video_url(page_url)
-            except self.VideoUrlUnavailable:
+            except VideoUrlUnavailable:
                 pass
 
 
@@ -330,7 +330,7 @@ class GameTrailers (GameTrailersVideos):
             if re.search(keywords_re, entry.title, re.IGNORECASE):
                 try:
                     yield self.get_video_url(automate.util.Url(entry.link))
-                except self.VideoUrlUnavailable:
+                except VideoUrlUnavailable:
                     pass
     
     
@@ -350,28 +350,6 @@ class GtCountdown (GameTrailersNewestVideos):
 
 
 class HdTrailers (DownloadSource):
-    @classmethod
-    def _find_highest_resolution(cls, strings):
-        strings.sort(
-            lambda x, y: cmp(cls._get_resolution(x), cls._get_resolution(y)),
-            reverse = True)
-        
-        return strings[0]
-    
-    
-    @classmethod
-    def _get_resolution(cls, text):
-        resolution = re.findall(r'(\d{3,4})p', text)
-        
-        if len(resolution) == 0:
-            resolution = re.findall(r'(480|720|1080)', text)
-            
-            if len(resolution) == 0:
-                return 0
-        
-        return int(resolution[0])
-    
-    
     def __init__(self, skip_documentary = True, skip_foreign = True):
         DownloadSource.__init__(self)
         
@@ -422,6 +400,18 @@ class HdTrailers (DownloadSource):
         return 'HD Trailers'
     
     
+    def _get_resolution(self, text):
+        resolution = re.findall(r'(\d{3,4})p', text)
+        
+        if len(resolution) == 0:
+            resolution = re.findall(r'(480|720|1080)', text)
+            
+            if len(resolution) == 0:
+                return 0
+        
+        return int(resolution[0])
+    
+    
     def _find_best_url(self, entry):
         if entry.title in self._skipped_items:
             return
@@ -458,6 +448,14 @@ class HdTrailers (DownloadSource):
                     highest_resolution = resolution
             
             return automate.util.Url(url)
+    
+    
+    def _find_highest_resolution(self, strings):
+        strings.sort(
+            lambda x, y: cmp(self._get_resolution(x), self._get_resolution(y)),
+            reverse = True)
+        
+        return strings[0]
 
 
 class IgnDailyFix (DownloadSource):
@@ -564,7 +562,7 @@ class ScrewAttack (GameTrailersVideos):
         for page_url in [automate.util.Url(self.BASE_URL + p) for p in videos]:
             try:
                 yield self.get_video_url(page_url)
-            except self.VideoUrlUnavailable:
+            except VideoUrlUnavailable:
                 pass
     
     
