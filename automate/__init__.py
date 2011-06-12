@@ -14,7 +14,7 @@
 
 # Standard library:
 from __future__ import division, print_function, unicode_literals
-import logging, sys, time
+import inspect, logging, operator, sys, time
 
 # External modules:
 from defaults import *
@@ -28,7 +28,10 @@ externals('argparse')
 
 class ArgumentsParser (argparse.ArgumentParser):
     def __init__(self):
-        argparse.ArgumentParser.__init__(self, description = 'Task automation.')
+        argparse.ArgumentParser.__init__(self,
+            description = 'Task automation.',
+            epilog = 'Available tasks: '
+                + ', '.join(self._list_available_task_names()))
         
         arguments = [
             ('--start', {
@@ -51,24 +54,36 @@ class ArgumentsParser (argparse.ArgumentParser):
         
         for name, options in arguments:
             self.add_argument(name, **options)
+    
+    
+    def _list_available_task_names(self):
+        tasks = self._list_concrete_classes(automate.task.PeriodicTask) \
+            + self._list_concrete_classes(automate.download.DownloadSource)
+        
+        task_names = map(operator.itemgetter(0), tasks)
+        task_names.sort()
+        
+        return task_names
+    
+    
+    def _list_available_task_classes(self):
+        tasks = self._list_concrete_classes(automate.task.PeriodicTask) \
+            + self._list_concrete_classes(automate.download.DownloadSource)
+        
+        return map(operator.itemgetter(1), tasks)
+    
+    
+    def _list_concrete_classes(self, base_class):
+        def is_concrete_class(object):
+            return inspect.isclass(object) \
+                and not inspect.isabstract(object) \
+                and issubclass(object, base_class)                
+        
+        return inspect.getmembers(
+            inspect.getmodule(base_class), is_concrete_class)
 
 
 class Automate (ArgumentsParser):
-    _AVAILABLE_TASKS = [
-        automate.download.GameTrailers,
-        automate.download.GtCountdown,
-        automate.download.HdTrailers,
-        automate.download.IgnDailyFix,
-        automate.download.InterfaceLift,
-        automate.download.PopFiction,
-        automate.download.ScrewAttack,
-        automate.task.Dropbox,
-        automate.task.GnuCash,
-        automate.task.Opera,
-        automate.task.Windows,
-    ]
-    
-    
     def __init__(self):
         ArgumentsParser.__init__(self)
     
@@ -115,15 +130,17 @@ class Automate (ArgumentsParser):
     
     
     def _start_tasks(self, download_manager, task_names = None):
+        available_tasks = self._list_available_task_classes()
+        
         if task_names is None:
             return [self._start_task(download_manager, t) \
-                for t in self._AVAILABLE_TASKS]
+                for t in available_tasks]
         
         tasks = []
         
         for task in task_names:
             try:
-                task_class = next(t for t in self._AVAILABLE_TASKS \
+                task_class = next(t for t in available_tasks \
                     if task == t.__name__)
             except StopIteration:
                 sys.exit('Unknown task: ' + task)
