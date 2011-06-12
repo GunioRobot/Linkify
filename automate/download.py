@@ -350,11 +350,11 @@ class GtCountdown (GameTrailersNewestVideos):
 
 
 class HdTrailers (DownloadSource):
-    def __init__(self, skip_documentary = True, skip_foreign = True):
+    def __init__(self, skip_documentaries = True, skip_foreign_movies = True):
         DownloadSource.__init__(self)
         
-        self._skip_documentary = skip_documentary
-        self._skip_foreign = skip_foreign
+        self._skip_documentaries = skip_documentaries
+        self._skip_foreign_movies = skip_foreign_movies
         self._skipped_items = set()
     
     
@@ -410,53 +410,66 @@ class HdTrailers (DownloadSource):
         if entry.title in self._skipped_items:
             raise VideoUrlUnavailable()
         
-        if self._skip_documentary:
-            genre = entry.tags[0].term
-            
-            if genre == 'Documentary':
-                self.logger.warning('Skip documentary: %s', entry.title)
-                self._skipped_items.add(entry.title)
-                raise VideoUrlUnavailable()
-        
-        if self._skip_foreign:
-            genre = entry.tags[1].term
-            
-            if genre == 'Foreign':
-                self.logger.warning('Skip foreign movie: %s', entry.title)
-                self._skipped_items.add(entry.title)
-                raise VideoUrlUnavailable()
+        if self._skip_documentary(entry) or self._skip_foreign_movie(entry):
+            raise VideoUrlUnavailable()
         
         if hasattr(entry, 'enclosures'):
-            url = automate.util.Url(self._find_highest_resolution(
-                [enclosure.href for enclosure in entry.enclosures]))
+            url = self._get_video_url_from_enclosures(entry)
         else:
-            # Parse HTML to find movie links.
-            html = lxml.html.fromstring(entry.content[0].value)
-            (url, highest_resolution) = (None, 0)
-            
-            for link in html.xpath('//a[text() != ""]'):
-                resolution = self._get_resolution(link.text)
-                
-                if resolution > highest_resolution:
-                    url = link.attrib['href']
-                    highest_resolution = resolution
-            
-            url = automate.util.Url(url)
+            url = self._get_video_url_from_html(entry)
         
         url.comment = entry.link
         
-        if url.host_name == 'playlist.yahoo.com':
-            return self._clean_yahoo_video_url(entry, url)
-        else:
+        if url.host_name != 'playlist.yahoo.com':
             return url
+        else:
+            return self._clean_yahoo_video_url(entry, url)
     
     
-    def _find_highest_resolution(self, strings):
-        strings.sort(
+    def _get_video_url_from_enclosures(self, entry):
+        urls = [enclosure.href for enclosure in entry.enclosures]
+        
+        urls.sort(
             lambda x, y: cmp(self._get_resolution(x), self._get_resolution(y)),
             reverse = True)
         
-        return strings[0]
+        return automate.util.Url(urls[0])
+    
+    
+    def _get_video_url_from_html(self, entry):
+        html = lxml.html.fromstring(entry.content[0].value)
+        (url, highest_resolution) = (None, 0)
+        
+        for link in html.xpath('//a[text() != ""]'):
+            resolution = self._get_resolution(link.text)
+            
+            if resolution > highest_resolution:
+                url = link.attrib['href']
+                highest_resolution = resolution
+        
+        return automate.util.Url(url)
+    
+    
+    def _skip_documentary(self, entry):
+        genre = entry.tags[0].term
+        
+        if self._skip_documentaries and (genre == 'Documentary'):
+            self.logger.warning('Skip documentary: %s', entry.title)
+            self._skipped_items.add(entry.title)
+            return True
+        else:
+            return False
+    
+    
+    def _skip_foreign_movie(self, entry):
+        type = entry.tags[1].term
+        
+        if self._skip_foreign_movies and (type == 'Foreign'):
+            self.logger.warning('Skip foreign movie: %s', entry.title)
+            self._skipped_items.add(entry.title)
+            return True
+        else:
+            return False
 
 
 class IgnDailyFix (DownloadSource):
