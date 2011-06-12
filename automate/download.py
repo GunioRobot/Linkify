@@ -172,11 +172,11 @@ class GameTrailersVideos (DownloadSource):
     BASE_URL = 'http://www.gametrailers.com'
     
     
-    def __init__(self, skip_cam = True, skip_indies = False):
+    def __init__(self, skip_cam_videos = True, skip_indie_games = False):
         DownloadSource.__init__(self)
         
-        self._skip_cam = skip_cam
-        self._skip_indies = skip_indies
+        self._skip_cam_videos = skip_cam_videos
+        self._skip_indie_games = skip_indie_games
         self._skipped_urls = set()
     
     
@@ -190,30 +190,20 @@ class GameTrailersVideos (DownloadSource):
             self.logger.error('%s: %s', error, page_url)
             return
         
-        video_id = self._get_video_id(page_html)
+        video_id = self._get_video_id(page_html, page_url)
         
         if video_id is None:
-            # Not all videos are available for download, e.g. Bonus Round.
-            self.logger.error('Movie ID not found: %s', page_url)
-            self._skipped_urls.add(page_url)
             return
         
         page = lxml.html.fromstring(page_html)
         
-        if self._skip_indies and not self._has_video_publisher(page):
-            self.logger.debug('Skip indie game: %s', page_url)
-            self._skipped_urls.add(page_url)
+        if self._skip_indie_game(page, page_url):
             return
         
-        url = self._get_video_url(page, video_id) \
+        url = self._get_video_url_from_html(page, video_id) \
             or self._get_flash_video_url(page_url)
         
-        if url is not None:
-            if self._skip_cam and (url.path.stem.find('_cam_') > 0):
-                self.logger.debug('Skip cam video: %s', page_url)
-                self._skipped_urls.add(page_url)
-                return
-            
+        if (url is not None) and (not self._skip_cam_video(url, page_url)):
             url.comment = page_url
             url.save_as = re.sub(r'^t_', '', url.path.name)
             return url
@@ -234,17 +224,22 @@ class GameTrailersVideos (DownloadSource):
         except (IOError, lxml.etree.XMLSyntaxError) as error:
             self.logger.error(error)
         else:
-            return automate.util.Url(info_xml.xpath('//rendition/src/text()')[0])
+            return automate.util.Url(
+                info_xml.xpath('//rendition/src/text()')[0])
     
     
-    def _get_video_id(self, page_html):
+    def _get_video_id(self, page_html, page_url):
         video_id = re.findall(r'mov_game_id\s*=\s*(\d+)', page_html)
         
         if len(video_id) > 0:
-            return video_id[0] 
+            return video_id[0]
+        
+        # Not all videos are available for download, e.g. Bonus Round.
+        self.logger.error('Movie ID not found: %s', page_url)
+        self._skipped_urls.add(page_url)
     
     
-    def _get_video_url(self, page, video_id):
+    def _get_video_url_from_html(self, page, video_id):
         for video_type in ['WMV', 'Quicktime']:
             video_url = page.xpath('//*[@class = "Downloads"]' \
                 + '/a[starts-with(text(), "%s")]/@href' % video_type)
@@ -257,9 +252,27 @@ class GameTrailersVideos (DownloadSource):
                         % (video_id, video_url.path.components[-1]))
     
     
-    def _has_video_publisher(self, page):
+    def _has_publisher(self, page):
         [publisher] = page.xpath('//*[@class = "publisher"]/text()')
         return publisher.strip() != 'N/A'
+    
+    
+    def _skip_cam_video(self, video_url, page_url):
+        if self._skip_cam_videos and (video_url.path.stem.find('_cam_') > 0):
+            self.logger.debug('Skip cam video: %s', page_url)
+            self._skipped_urls.add(page_url)
+            return True
+        else:
+            return False
+    
+    
+    def _skip_indie_game(self, page, page_url):
+        if self._skip_indie_games and not self._has_publisher(page):
+            self.logger.debug('Skip indie game: %s', page_url)
+            self._skipped_urls.add(page_url)
+            return True
+        else:
+            return False
 
 
 class GameTrailersNewestVideos (GameTrailersVideos):
@@ -285,7 +298,7 @@ class GameTrailersNewestVideos (GameTrailersVideos):
 
 class GameTrailers (GameTrailersVideos):
     def __init__(self):
-        GameTrailersVideos.__init__(self, skip_indies = True)
+        GameTrailersVideos.__init__(self, skip_indie_games = True)
         
         options = {
             'limit': 50,
