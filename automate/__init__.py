@@ -93,13 +93,12 @@ class Automate (ArgumentsParser):
                     download_manager,
                     None if None in task_names else task_names)
                 
-                while any([task.is_alive() for task in tasks]):
-                    try:
+                try:
+                    while any([task.is_alive() for task in tasks]):
                         time.sleep(1)
-                    except KeyboardInterrupt:
-                        for task in tasks:
-                            task.stop()
-                        break
+                except KeyboardInterrupt:
+                    for task in tasks:
+                        task.stop()
         
         if nothing_done:
             self.print_help()
