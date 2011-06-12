@@ -372,10 +372,10 @@ class HdTrailers (DownloadSource):
         return int(resolution[0])
     
     
-    def __init__(self, skip_documentaries = True, skip_foreign = True):
+    def __init__(self, skip_documentary = True, skip_foreign = True):
         DownloadSource.__init__(self)
         
-        self._skip_documentaries = skip_documentaries
+        self._skip_documentary = skip_documentary
         self._skip_foreign = skip_foreign
         self._skipped_items = set()
     
@@ -426,7 +426,7 @@ class HdTrailers (DownloadSource):
         if entry.title in self._skipped_items:
             return
         
-        if self._skip_documentaries:
+        if self._skip_documentary:
             genre = entry.tags[0].term
             
             if genre == 'Documentary':
