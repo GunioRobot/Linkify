@@ -66,8 +66,8 @@ class Dropbox (PeriodicTask):
             
             try:
                 cache.rmtree()
-            except OSError as (code, message):
-                self.logger.debug('%s: %s', message, cache)
+            except OSError as error:
+                self.logger.debug('%s: %s', error, cache)
 
 
 class GnuCash (PeriodicTask):
@@ -91,8 +91,8 @@ class GnuCash (PeriodicTask):
             
             try:
                 log_file.remove()
-            except OSError as (code, message):
-                self.logger.debug('%s: %s', message, log_file)
+            except OSError as error:
+                self.logger.debug('%s: %s', error, log_file)
     
     
     def _remove_webkit_folder(self):
@@ -103,8 +103,8 @@ class GnuCash (PeriodicTask):
             
             try:
                 webkit.rmtree()
-            except OSError as (code, message):
-                self.logger.debug('%s: %s', message, webkit)
+            except OSError as error:
+                self.logger.debug('%s: %s', error, webkit)
 
 
 class Opera (PeriodicTask):
@@ -127,8 +127,8 @@ class Opera (PeriodicTask):
             
             try:
                 bookmark_file.remove()
-            except OSError as (code, message):
-                self.logger.debug('%s: %s', message, bookmark_file)
+            except OSError as error:
+                self.logger.debug('%s: %s', error, bookmark_file)
 
 
 class Windows (PeriodicTask):
@@ -151,5 +151,5 @@ class Windows (PeriodicTask):
         
         try:
             config_file.remove()
-        except OSError as (code, message):
-            self.logger.debug('%s: %s', message, config_file)
+        except OSError as error:
+            self.logger.debug('%s: %s', error, config_file)
