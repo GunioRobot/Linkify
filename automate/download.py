@@ -257,6 +257,24 @@ class GameTrailersVideos (DownloadSource):
         return publisher.strip() != 'N/A'
 
 
+class GameTrailersNewestVideos (GameTrailersVideos):
+    def __init__(self, game):
+        GameTrailersVideos.__init__(self)
+        self._game = game
+    
+    
+    def list_urls(self):
+        main_url = automate.util.Url(self.BASE_URL + '/game/' + self._game)
+        main_html = lxml.html.fromstring(main_url.open().read())
+        
+        videos = main_html.xpath(
+            '//*[@id = "GamepageMedialistFeatures"]' \
+            + '//*[@class = "newestlist_movie_format_SDHD"]/a[1]/@href')
+        
+        for page_url in [automate.util.Url(self.BASE_URL + p) for p in videos]:
+            yield self.get_video_url(page_url)    
+
+
 class GameTrailers (GameTrailersVideos):
     def __init__(self):
         GameTrailersVideos.__init__(self, skip_indies = True)
@@ -294,24 +312,6 @@ class GameTrailers (GameTrailersVideos):
     @property
     def name(self):
         return 'GameTrailers'
-
-
-class GameTrailersNewestVideos (GameTrailersVideos):
-    def __init__(self, game):
-        GameTrailersVideos.__init__(self)
-        self._game = game
-    
-    
-    def list_urls(self):
-        main_url = automate.util.Url(self.BASE_URL + '/game/' + self._game)
-        main_html = lxml.html.fromstring(main_url.open().read())
-        
-        videos = main_html.xpath(
-            '//*[@id = "GamepageMedialistFeatures"]' \
-            + '//*[@class = "newestlist_movie_format_SDHD"]/a[1]/@href')
-        
-        for page_url in [automate.util.Url(self.BASE_URL + p) for p in videos]:
-            yield self.get_video_url(page_url)    
 
 
 class GtCountdown (GameTrailersNewestVideos):
