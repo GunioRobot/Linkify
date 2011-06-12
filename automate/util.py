@@ -12,22 +12,6 @@ from defaults import *
 externals('colorconsole.terminal', 'unipath')
 
 
-class Path (unipath.Path):
-    @staticmethod
-    def documents():
-        from win32com.shell import shell, shellcon
-        return Path(shell.SHGetFolderPath(0, shellcon.CSIDL_PERSONAL, 0, 0))
-    
-    
-    @property
-    def components(self):
-        return super(Path, self).components()
-    
-    
-    def split_ext(self):
-        return os.path.splitext(self)
-
-
 class ColorStreamHandler (logging.StreamHandler):
     (BLACK, BLUE, GREEN, CYAN, RED, PURPLE, BROWN, LGREY) = range(8)
     (DGRAY, LBLUE, LGREEN, LCYAN, LRED, LPURPLE, YELLOW, WHITE) = range(8, 16)
@@ -80,16 +64,58 @@ class Logger (object):
         return self._logger
 
 
+class MsWindowsTypeLibrary (object):
+    def __init__(self, path):
+        import pythoncom, win32com.client
+        global pythoncom, win32com
+        
+        self._iid_by_type_name = {}
+        self._lib = pythoncom.LoadTypeLib(path)
+        self._path = path
+    
+    
+    def get_data_type(self, type_name):
+        pythoncom.CoInitialize()
+        
+        if type_name in self._iid_by_type_name:
+            return win32com.client.Dispatch(self._iid_by_type_name[type_name])
+        
+        for i in xrange(0, self._lib.GetTypeInfoCount()):
+            (name, doc, help_ctxt, help_file) = self._lib.GetDocumentation(i)
+            
+            if type_name == name:
+                iid = self._lib.GetTypeInfo(i).GetTypeAttr().iid
+                self._iid_by_type_name[type_name] = iid
+                return win32com.client.Dispatch(iid)
+        
+        raise Exception('Type "%s" not found in type library "%s".'
+            % (name, self._path))
+
+
+class Path (unipath.Path):
+    @staticmethod
+    def documents():
+        from win32com.shell import shell, shellcon
+        return Path(shell.SHGetFolderPath(0, shellcon.CSIDL_PERSONAL, 0, 0))
+    
+    
+    @property
+    def components(self):
+        return super(Path, self).components()
+    
+    
+    def split_ext(self):
+        return os.path.splitext(self)
+
+
 class Url (object):
     def __init__(self, url, comment = None, query = None, save_as = None):
         if isinstance(url, Url):
             self._components = url._components
-            
             self.comment = comment or url.comment
             self.save_as = save_as or url.save_as
         else:
             self._components = urlparse.urlparse(url)
-            
             self.comment = comment
             self.save_as = save_as
         
@@ -177,31 +203,3 @@ class FileUrl (PathUrl):
     
     def __hash__(self):
         return hash(self.path.name)
-
-
-class MsWindowsTypeLibrary (object):
-    def __init__(self, path):
-        import pythoncom, win32com.client
-        global pythoncom, win32com
-        
-        self._iid_by_type_name = {}
-        self._lib = pythoncom.LoadTypeLib(path)
-        self._path = path
-    
-    
-    def get_data_type(self, type_name):
-        pythoncom.CoInitialize()
-        
-        if type_name in self._iid_by_type_name:
-            return win32com.client.Dispatch(self._iid_by_type_name[type_name])
-        
-        for i in xrange(0, self._lib.GetTypeInfoCount()):
-            (name, doc, help_ctxt, help_file) = self._lib.GetDocumentation(i)
-            
-            if type_name == name:
-                iid = self._lib.GetTypeInfo(i).GetTypeAttr().iid
-                self._iid_by_type_name[type_name] = iid
-                return win32com.client.Dispatch(iid)
-        
-        raise Exception('Type "%s" not found in type library "%s".'
-            % (name, self._path))
