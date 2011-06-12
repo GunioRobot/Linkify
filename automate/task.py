@@ -97,22 +97,20 @@ class Opera (PeriodicTask):
     
     def process(self):
         bookmark_header = 'Opera Hotlist version 2.0\n'
-        bookmarks = r'^opr[\dA-F]{3,4}\.tmp$'
+        bookmark_files = automate.util.Path.documents().walk(filter =
+            lambda path: re.search(r'^opr[\dA-F]{3,4}\.tmp$', path.name))
         
-        for (root, dirs, files) in os.walk(automate.util.Path.documents()):
-            for file in filter(lambda f: re.search(bookmarks, f), files):
-                path = automate.util.Path(root, file)
-                
-                with open(path) as bookmark:
-                    if bookmark.readline() != bookmark_header:
-                        continue
-                
-                self.logger.warning('Remove backup bookmark: %s', path)
-                
-                try:
-                    path.remove()
-                except OSError as (code, message):
-                    self.logger.debug('%s: %s', message, path)
+        for bookmark_file in bookmark_files:
+            with open(bookmark_file) as bookmark:
+                if bookmark.readline() != bookmark_header:
+                    continue
+            
+            self.logger.warning('Remove backup bookmark: %s', bookmark_file)
+            
+            try:
+                bookmark_file.remove()
+            except OSError as (code, message):
+                self.logger.debug('%s: %s', message, bookmark_file)
 
 
 class Dropbox (PeriodicTask):
