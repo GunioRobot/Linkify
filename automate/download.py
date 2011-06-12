@@ -194,8 +194,8 @@ class GameTrailersVideos (DownloadSource):
             self.logger.error('%s: %s', error, page_url)
             raise self.VideoUrlUnavailable()
         
-        video_id = self._get_video_id(page_html, page_url)
         page = lxml.html.fromstring(page_html)
+        video_id = self._get_video_id(page, page_html, page_url)
         
         if self._skip_indie_game(page, page_url):
             raise self.VideoUrlUnavailable()
@@ -230,14 +230,20 @@ class GameTrailersVideos (DownloadSource):
                 info_xml.xpath('//rendition/src/text()')[0])
     
     
-    def _get_video_id(self, page_html, page_url):
+    def _get_video_id(self, page, page_html, page_url):
         video_id = re.findall(r'mov_game_id\s*=\s*(\d+)', page_html)
         
         if len(video_id) > 0:
             return video_id[0]
         
-        # Not all videos are available for download, e.g. Bonus Round.
-        self.logger.error('Movie ID not found: %s', page_url)
+        [video_title] = page.xpath('/html/head/title/text()')
+        error_message = 'Movie ID not found: %s' % page_url
+        
+        if re.search('^Bonus Round: Episode \d+$', video_title):
+            self.logger.debug(error_message)
+        else:
+            self.logger.error(error_message)
+        
         self._skipped_urls.add(page_url)
         raise self.VideoUrlUnavailable()
     
