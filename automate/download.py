@@ -69,7 +69,7 @@ class Downloader (automate.task.PeriodicTask):
                 if not self._manager.has_url(url):
                     self._manager.download_url(url)
             except (httplib.HTTPException, urllib2.URLError) as error:
-                self._source.logger.error('%s: %s', error, url)
+                self.logger.error('%s: %s', error, url)
 
 
 class FreeDownloadManager \
