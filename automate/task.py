@@ -59,26 +59,25 @@ class GnuCash (PeriodicTask):
     
     
     def process(self):
-        self._clean_webkit_folder()
-        self._clean_logs()
+        self._remove_logs()
+        self._remove_webkit_folder()
     
     
-    def _clean_logs(self):
-        # See <http://wiki.gnucash.org/wiki/FAQ> for details.
-        log_file = r'\.gnucash\.\d{14}\.log$'
+    # See <http://wiki.gnucash.org/wiki/FAQ> for details.
+    def _remove_logs(self):
+        log_files = automate.util.Path.documents().walk(filter =
+            lambda path: re.search(r'\.gnucash\.\d{14}\.log$', path.name))
         
-        for (root, dirs, files) in os.walk(automate.util.Path.documents()):
-            for file in filter(lambda f: re.search(log_file, f), files):
-                path = automate.util.Path(root, file)
-                self.logger.warning('Remove backup data log: %s', path)
-                
-                try:
-                    path.remove()
-                except OSError as (code, message):
-                    self.logger.debug('%s: %s', message, path)
+        for log_file in log_files:
+            self.logger.warning('Remove backup data log: %s', log_file)
+            
+            try:
+                log_file.remove()
+            except OSError as (code, message):
+                self.logger.debug('%s: %s', message, log_file)
     
     
-    def _clean_webkit_folder(self):
+    def _remove_webkit_folder(self):
         webkit = automate.util.Path.documents().child('webkit')
         
         if webkit.exists():
