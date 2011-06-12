@@ -363,39 +363,35 @@ class HdTrailers (DownloadSource):
         feed = feedparser.parse('http://feeds.hd-trailers.net/hd-trailers/blog')
         
         for entry in feed.entries:
-            if not re.search(keywords_re, entry.title, re.IGNORECASE):
-                continue
-            
-            try:
-                url = self._find_best_url(entry)
-            except VideoUrlUnavailable:
-                continue
-            
-            if url.host_name != 'playlist.yahoo.com':
-                yield url
-                continue
-            
-            try:
-                file = url.resolve().path.name
-            except urllib2.URLError as error:
-                self.logger.error('%s: %s', error, url)
-                continue
-            
-            if re.search(r'^\d+$', file.stem):
-                title = automate.util.Url(entry.feedburner_origlink) \
-                    .path.components[-1]
-                
-                file = '%s (%s)%s' % (title, file.stem, file.ext)
-                self.logger.debug('File name rewrite: %s', file)
-            else:
-                file = None
-            
-            yield automate.util.PathUrl(url, save_as = file)
+            if re.search(keywords_re, entry.title, re.IGNORECASE):
+                try:
+                    yield self._get_video_url(entry)
+                except VideoUrlUnavailable:
+                    pass
     
     
     @property
     def name(self):
         return 'HD Trailers'
+    
+    
+    def _clean_yahoo_video_url(self, entry, url):
+        try:
+            file = url.resolve().path.name
+        except urllib2.URLError as error:
+            self.logger.error('%s: %s', error, url)
+            raise VideoUrlUnavailable()
+        
+        if re.search(r'^\d+$', file.stem):
+            title = automate.util.Url(entry.feedburner_origlink) \
+                .path.components[-1]
+            
+            file = '%s (%s)%s' % (title, file.stem, file.ext)
+            self.logger.debug('File name rewrite: %s', file)
+        else:
+            file = None
+        
+        return automate.util.PathUrl(url, save_as = file)
     
     
     def _get_resolution(self, text):
@@ -410,7 +406,7 @@ class HdTrailers (DownloadSource):
         return int(resolution[0])
     
     
-    def _find_best_url(self, entry):
+    def _get_video_url(self, entry):
         if entry.title in self._skipped_items:
             raise VideoUrlUnavailable()
         
@@ -448,7 +444,11 @@ class HdTrailers (DownloadSource):
             url = automate.util.Url(url)
         
         url.comment = entry.link
-        return url
+        
+        if url.host_name == 'playlist.yahoo.com':
+            return self._clean_yahoo_video_url(entry, url)
+        else:
+            return url
     
     
     def _find_highest_resolution(self, strings):
