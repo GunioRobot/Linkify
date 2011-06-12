@@ -138,7 +138,7 @@ class FreeDownloadManager \
         urls = self._urls
         
         if elapsed >= self._CACHE_REFRESH_FREQUENCY:
-            self.logger.info('Reset downloads list cache')
+            self.logger.debug('Reset downloads list cache')
             
             self._cached_downloads_stat = False
             self._last_cache_reset = datetime.datetime.now()
