@@ -168,22 +168,160 @@ class FreeDownloadManager \
             self._last_cache_reset = datetime.datetime.now()
 
 
-class IgnDailyFix (DownloadSource):
-    _TITLE = 'IGN Daily Fix'
+class GameTrailersVideos (DownloadSource):
+    BASE_URL = 'http://www.gametrailers.com'
+    
+    
+    def __init__(self, skip_cam = True, skip_indies = False):
+        DownloadSource.__init__(self)
+        
+        self._skip_cam = skip_cam
+        self._skip_indies = skip_indies
+        self._skipped_urls = set()
+    
+    
+    def get_video_url(self, page_url):
+        if page_url in self._skipped_urls:
+            return
+        
+        page_html = page_url.open().read()
+        video_id = self._get_video_id(page_html)
+        
+        if video_id is None:
+            # Not all videos are available for download, e.g. Bonus Round.
+            self.logger.error('Movie ID not found: %s', page_url)
+            self._skipped_urls.add(page_url)
+            return
+        
+        page = lxml.html.fromstring(page_html)
+        
+        if self._skip_indies and not self._has_video_publisher(page):
+            self.logger.debug('Skip indie game: %s', page_url)
+            self._skipped_urls.add(page_url)
+            return
+        
+        url = self._get_video_url(page, video_id) \
+            or self._get_flash_video_url(page_url)
+        
+        if url is not None:
+            if self._skip_cam and (url.path.stem.find('_cam_') > 0):
+                self.logger.debug('Skip cam video: %s', page_url)
+                self._skipped_urls.add(page_url)
+                return
+            
+            url.comment = page_url
+            url.save_as = re.sub(r'^t_', '', url.path.name)
+            return url
+    
+    
+    def _get_flash_video_url(self, page_url):
+        self.logger.debug('QuickTime video URL not found: %s', page_url)
+        
+        # From <http://userscripts.org/scripts/show/46320>.
+        info_url = automate.util.Url('http://www.gametrailers.com/neo/',
+            query = {
+                'movieId': page_url.path.components[-1],
+                'page': 'xml.mediaplayer.Mediagen',
+            })
+        
+        try:
+            info_xml = lxml.etree.parse(unicode(info_url))
+        except (IOError, lxml.etree.XMLSyntaxError) as error:
+            self.logger.error(error)
+        else:
+            return automate.util.Url(info_xml.xpath('//rendition/src/text()')[0])
+    
+    
+    def _get_video_id(self, page_html):
+        video_id = re.findall(r'mov_game_id\s*=\s*(\d+)', page_html)
+        
+        if len(video_id) > 0:
+            return video_id[0] 
+    
+    
+    def _get_video_url(self, page, video_id):
+        for video_type in ['WMV', 'Quicktime']:
+            video_url = page.xpath('//*[@class = "Downloads"]' \
+                + '/a[starts-with(text(), "%s")]/@href' % video_type)
+            
+            if len(video_url) > 0:
+                video_url = automate.util.Url(video_url[0])
+                
+                return automate.util.Url(
+                    'http://trailers-ak.gametrailers.com/gt_vault/%s/%s' \
+                        % (video_id, video_url.path.components[-1]))
+    
+    
+    def _has_video_publisher(self, page):
+        [publisher] = page.xpath('//*[@class = "publisher"]/text()')
+        return publisher.strip() != 'N/A'
+
+
+class GameTrailers (GameTrailersVideos):
+    def __init__(self):
+        GameTrailersVideos.__init__(self, skip_indies = True)
+        
+        options = {
+            'limit': 50,
+            'orderby': 'newest',
+            'quality[hd]': 'on',
+        }
+        
+        for system in ['pc', 'ps3', 'xb360']:
+            options['favplats[%s]' % system] = system
+        
+        self._feed_url = automate.util.Url(self.BASE_URL + '/rssgenerate.php',
+            query = options)
     
     
     def list_urls(self):
-        feed = feedparser.parse('http://feeds.ign.com/ignfeeds/podcasts/games/')
+        keywords_re = r'\b(%s)\b' % '|'.join(
+            ['gameplay', 'preview', 'review', 'teaser', 'trailer'])
         
-        for entry in feed.entries:
-            if entry.title.startswith(self._TITLE + ':'):
-                yield automate.util.Url(entry.enclosures[0].href,
-                    comment = entry.link)
+        for entry in feedparser.parse(unicode(self._feed_url)).entries:
+            if re.search(keywords_re, entry.title, re.IGNORECASE):
+                try:
+                    url = self.get_video_url(automate.util.Url(entry.link))
+                except urllib2.URLError as error:
+                    self.logger.error('%s: %s', str(error), entry.link)
+                    continue
+                
+                if url is not None:
+                    url.comment = entry.link
+                    yield url
     
     
     @property
     def name(self):
-        return self._TITLE
+        return 'GameTrailers'
+
+
+class GameTrailersNewestVideos (GameTrailersVideos):
+    def __init__(self, game):
+        GameTrailersVideos.__init__(self)
+        self._game = game
+    
+    
+    def list_urls(self):
+        main_url = automate.util.Url(self.BASE_URL + '/game/' + self._game)
+        main_html = lxml.html.fromstring(main_url.open().read())
+        
+        videos = main_html.xpath(
+            '//*[@id = "GamepageMedialistFeatures"]' \
+            + '//*[@class = "newestlist_movie_format_SDHD"]/a[1]/@href')
+        
+        for page_url in [automate.util.Url(self.BASE_URL + p) for p in videos]:
+            yield self.get_video_url(page_url)    
+
+
+class GtCountdown (GameTrailersNewestVideos):
+    def __init__(self):
+        GameTrailersNewestVideos.__init__(self, 'gt-countdown/2111')
+    
+    
+    @property
+    def name(self):
+        return 'GT Countdown'
 
 
 class HdTrailers (DownloadSource):
@@ -297,6 +435,24 @@ class HdTrailers (DownloadSource):
             return automate.util.Url(url)
 
 
+class IgnDailyFix (DownloadSource):
+    _TITLE = 'IGN Daily Fix'
+    
+    
+    def list_urls(self):
+        feed = feedparser.parse('http://feeds.ign.com/ignfeeds/podcasts/games/')
+        
+        for entry in feed.entries:
+            if entry.title.startswith(self._TITLE + ':'):
+                yield automate.util.Url(entry.enclosures[0].href,
+                    comment = entry.link)
+    
+    
+    @property
+    def name(self):
+        return self._TITLE
+
+
 class InterfaceLift (DownloadSource):
     _HOST_NAME = 'interfacelift.com'
     
@@ -363,93 +519,14 @@ class InterfaceLift (DownloadSource):
         return re.findall('"/wallpaper/([^/]+)/"', script.open().read())[0]
 
 
-class GameTrailersVideos (DownloadSource):
-    BASE_URL = 'http://www.gametrailers.com'
+class PopFiction (GameTrailersNewestVideos):
+    def __init__(self):
+        GameTrailersNewestVideos.__init__(self, 'pop-fiction/13123')
     
     
-    def __init__(self, skip_cam = True, skip_indies = False):
-        DownloadSource.__init__(self)
-        
-        self._skip_cam = skip_cam
-        self._skip_indies = skip_indies
-        self._skipped_urls = set()
-    
-    
-    def get_video_url(self, page_url):
-        if page_url in self._skipped_urls:
-            return
-        
-        page_html = page_url.open().read()
-        video_id = self._get_video_id(page_html)
-        
-        if video_id is None:
-            # Not all videos are available for download, e.g. Bonus Round.
-            self.logger.error('Movie ID not found: %s', page_url)
-            self._skipped_urls.add(page_url)
-            return
-        
-        page = lxml.html.fromstring(page_html)
-        
-        if self._skip_indies and not self._has_video_publisher(page):
-            self.logger.debug('Skip indie game: %s', page_url)
-            self._skipped_urls.add(page_url)
-            return
-        
-        url = self._get_video_url(page, video_id) \
-            or self._get_flash_video_url(page_url)
-        
-        if url is not None:
-            if self._skip_cam and (url.path.stem.find('_cam_') > 0):
-                self.logger.debug('Skip cam video: %s', page_url)
-                self._skipped_urls.add(page_url)
-                return
-            
-            url.comment = page_url
-            url.save_as = re.sub(r'^t_', '', url.path.name)
-            return url
-    
-    
-    def _get_flash_video_url(self, page_url):
-        self.logger.debug('QuickTime video URL not found: %s', page_url)
-        
-        # From <http://userscripts.org/scripts/show/46320>.
-        info_url = automate.util.Url('http://www.gametrailers.com/neo/',
-            query = {
-                'movieId': page_url.path.components[-1],
-                'page': 'xml.mediaplayer.Mediagen',
-            })
-        
-        try:
-            info_xml = lxml.etree.parse(unicode(info_url))
-        except (IOError, lxml.etree.XMLSyntaxError) as error:
-            self.logger.error(error)
-        else:
-            return automate.util.Url(info_xml.xpath('//rendition/src/text()')[0])
-    
-    
-    def _get_video_id(self, page_html):
-        video_id = re.findall(r'mov_game_id\s*=\s*(\d+)', page_html)
-        
-        if len(video_id) > 0:
-            return video_id[0] 
-    
-    
-    def _get_video_url(self, page, video_id):
-        for video_type in ['WMV', 'Quicktime']:
-            video_url = page.xpath('//*[@class = "Downloads"]' \
-                + '/a[starts-with(text(), "%s")]/@href' % video_type)
-            
-            if len(video_url) > 0:
-                video_url = automate.util.Url(video_url[0])
-                
-                return automate.util.Url(
-                    'http://trailers-ak.gametrailers.com/gt_vault/%s/%s' \
-                        % (video_id, video_url.path.components[-1]))
-    
-    
-    def _has_video_publisher(self, page):
-        [publisher] = page.xpath('//*[@class = "publisher"]/text()')
-        return publisher.strip() != 'N/A'
+    @property
+    def name(self):
+        return 'Pop-Fiction'
 
 
 class ScrewAttack (GameTrailersVideos):
@@ -466,80 +543,3 @@ class ScrewAttack (GameTrailersVideos):
     @property
     def name(self):
         return 'ScrewAttack'
-
-
-class GameTrailers (GameTrailersVideos):
-    def __init__(self):
-        GameTrailersVideos.__init__(self, skip_indies = True)
-        
-        options = {
-            'limit': 50,
-            'orderby': 'newest',
-            'quality[hd]': 'on',
-        }
-        
-        for system in ['pc', 'ps3', 'xb360']:
-            options['favplats[%s]' % system] = system
-        
-        self._feed_url = automate.util.Url(self.BASE_URL + '/rssgenerate.php',
-            query = options)
-    
-    
-    def list_urls(self):
-        keywords_re = r'\b(%s)\b' % '|'.join(
-            ['gameplay', 'preview', 'review', 'teaser', 'trailer'])
-        
-        for entry in feedparser.parse(unicode(self._feed_url)).entries:
-            if re.search(keywords_re, entry.title, re.IGNORECASE):
-                try:
-                    url = self.get_video_url(automate.util.Url(entry.link))
-                except urllib2.URLError as error:
-                    self.logger.error('%s: %s', str(error), entry.link)
-                    continue
-                
-                if url is not None:
-                    url.comment = entry.link
-                    yield url
-    
-    
-    @property
-    def name(self):
-        return 'GameTrailers'
-
-
-class GameTrailersVideosNewest (GameTrailersVideos):
-    def __init__(self, game):
-        GameTrailersVideos.__init__(self)
-        self._game = game
-    
-    
-    def list_urls(self):
-        main_url = automate.util.Url(self.BASE_URL + '/game/' + self._game)
-        main_html = lxml.html.fromstring(main_url.open().read())
-        
-        videos = main_html.xpath(
-            '//*[@id = "GamepageMedialistFeatures"]' \
-            + '//*[@class = "newestlist_movie_format_SDHD"]/a[1]/@href')
-        
-        for page_url in [automate.util.Url(self.BASE_URL + p) for p in videos]:
-            yield self.get_video_url(page_url)    
-
-
-class PopFiction (GameTrailersVideosNewest):
-    def __init__(self):
-        GameTrailersVideosNewest.__init__(self, 'pop-fiction/13123')
-    
-    
-    @property
-    def name(self):
-        return 'Pop-Fiction'
-
-
-class GtCountdown (GameTrailersVideosNewest):
-    def __init__(self):
-        GameTrailersVideosNewest.__init__(self, 'gt-countdown/2111')
-    
-    
-    @property
-    def name(self):
-        return 'GT Countdown'
