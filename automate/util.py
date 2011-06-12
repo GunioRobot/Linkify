@@ -13,8 +13,8 @@ externals('colorconsole.terminal', 'unipath')
 
 
 class ColorStreamHandler (logging.StreamHandler):
-    (BLACK, BLUE, GREEN, CYAN, RED, PURPLE, BROWN, LGREY) = range(8)
-    (DGRAY, LBLUE, LGREEN, LCYAN, LRED, LPURPLE, YELLOW, WHITE) = range(8, 16)
+    (BLACK, BLUE, GREEN, CYAN, RED, PURPLE, BROWN, LGREY,
+     DGRAY, LBLUE, LGREEN, LCYAN, LRED, LPURPLE, YELLOW, WHITE) = range(16)
     
     
     def __init__(self):
