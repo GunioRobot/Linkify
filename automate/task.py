@@ -52,6 +52,24 @@ class PeriodicTask (threading.Thread, automate.util.Logger):
         self._is_stopping.set()
 
 
+class Dropbox (PeriodicTask):
+    @property
+    def name(self):
+        return 'Dropbox'
+    
+    
+    def process(self):
+        cache = automate.util.Path.documents().child('.dropbox.cache')
+        
+        if cache.exists():
+            self.logger.warning('Remove cache folder: %s', cache)
+            
+            try:
+                cache.rmtree()
+            except OSError as (code, message):
+                self.logger.debug('%s: %s', message, cache)
+
+
 class GnuCash (PeriodicTask):
     @property
     def name(self):
@@ -111,24 +129,6 @@ class Opera (PeriodicTask):
                 bookmark_file.remove()
             except OSError as (code, message):
                 self.logger.debug('%s: %s', message, bookmark_file)
-
-
-class Dropbox (PeriodicTask):
-    @property
-    def name(self):
-        return 'Dropbox'
-    
-    
-    def process(self):
-        cache = automate.util.Path.documents().child('.dropbox.cache')
-        
-        if cache.exists():
-            self.logger.warning('Remove cache folder: %s', cache)
-            
-            try:
-                cache.rmtree()
-            except OSError as (code, message):
-                self.logger.debug('%s: %s', message, cache)
 
 
 class Windows (PeriodicTask):
