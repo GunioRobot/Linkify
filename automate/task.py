@@ -77,12 +77,19 @@ class GnuCash (PeriodicTask):
     
     
     def process(self):
-        self._remove_logs()
-        self._remove_webkit_folder()
+        try:
+            self._remove_log_files()
+        except OSError as error:
+            self.logger.error(error)
+        
+        try:
+            self._remove_webkit_folder()
+        except OSError as error:
+            self.logger.error(error)
     
     
     # See <http://wiki.gnucash.org/wiki/FAQ> for details.
-    def _remove_logs(self):
+    def _remove_log_files(self):
         log_files = automate.util.Path.documents().walk(filter =
             lambda path: re.search(r'\.gnucash\.\d{14}\.log$', path.name))
         
@@ -114,6 +121,13 @@ class Opera (PeriodicTask):
     
     
     def process(self):
+        try:
+            self._remove_bookmark_files()
+        except OSError as error:
+            self.logger.error(error)
+    
+    
+    def _remove_bookmark_files(self):
         bookmark_header = 'Opera Hotlist version 2.0\n'
         bookmark_files = automate.util.Path.documents().walk(filter =
             lambda path: re.search(r'^opr[\dA-F]{3,4}\.tmp$', path.name))
