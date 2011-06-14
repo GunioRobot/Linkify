@@ -249,9 +249,9 @@ class GameTrailersVideos (DownloadSource):
     
     
     def _get_video_url_from_html(self, page, video_id):
-        for video_type in ['WMV', 'Quicktime']:
+        for video_type in ['MP4', 'WMV', 'Quicktime']:
             video_url = page.xpath('//*[@class = "Downloads"]' \
-                + '/a[starts-with(text(), "%s")]/@href' % video_type)
+                + '/a[starts-with(text(), "%s ")]/@href' % video_type)
             
             if len(video_url) > 0:
                 video_url = automate.util.Url(video_url[0])
