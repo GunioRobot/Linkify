@@ -292,7 +292,12 @@ class GameTrailersNewestVideos (GameTrailersVideos):
     
     def list_urls(self):
         main_url = automate.util.Url(self.BASE_URL + '/game/' + self._game)
-        main_html = lxml.html.fromstring(main_url.open().read())
+        
+        try:
+            main_html = lxml.html.fromstring(main_url.open().read())
+        except urllib2.URLError as error:
+            self.logger.error('%s: %s', error, main_url)
+            return
         
         videos = main_html.xpath(
             '//*[@id = "GamepageMedialistFeatures"]' \
