@@ -516,7 +516,7 @@ class InterfaceLift (DownloadSource):
         try:
             session_code = self._session_code
         except urllib2.URLError as error:
-            self.logger.error('%s: %s\'s session code', error, self.name)
+            self.logger.error('Unable to get the session code: %s', error)
             return
         
         feed = feedparser.parse('http://%s/wallpaper/rss/index.xml' \
