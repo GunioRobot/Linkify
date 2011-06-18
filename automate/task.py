@@ -62,7 +62,7 @@ class Dropbox (PeriodicTask):
         cache = automate.util.Path.documents().child('.dropbox.cache')
         
         if cache.exists():
-            self.logger.warning('Remove cache folder: %s', cache)
+            self.logger.debug('Remove cache folder: %s', cache)
             
             try:
                 cache.rmtree()
@@ -94,7 +94,7 @@ class GnuCash (PeriodicTask):
             lambda path: re.search(r'\.gnucash\.\d{14}\.log$', path.name))
         
         for log_file in log_files:
-            self.logger.warning('Remove backup data log: %s', log_file)
+            self.logger.debug('Remove backup data log: %s', log_file)
             
             try:
                 log_file.remove()
@@ -106,7 +106,7 @@ class GnuCash (PeriodicTask):
         webkit = automate.util.Path.documents().child('webkit')
         
         if webkit.exists():
-            self.logger.warning('Remove folder: %s', webkit)
+            self.logger.debug('Remove folder: %s', webkit)
             
             try:
                 webkit.rmtree()
@@ -137,7 +137,7 @@ class Opera (PeriodicTask):
                 if bookmark.readline() != bookmark_header:
                     continue
             
-            self.logger.warning('Remove backup bookmark: %s', bookmark_file)
+            self.logger.debug('Remove backup bookmark: %s', bookmark_file)
             
             try:
                 bookmark_file.remove()
@@ -161,7 +161,7 @@ class Windows (PeriodicTask):
             if config.readline() != '[.ShellClassInfo]\n':
                 return
         
-        self.logger.warning('Remove configuration file: %s', config_file)
+        self.logger.debug('Remove configuration file: %s', config_file)
         
         try:
             config_file.remove()
