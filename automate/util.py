@@ -3,13 +3,38 @@
 
 # Standard library:
 from __future__ import division, print_function, unicode_literals
-import codecs, locale, logging, os.path, sys, urllib, urllib2, urlparse
+import codecs, locale, logging, os.path, sys, threading, urllib, urllib2, \
+    urlparse
 
 # Internal modules:
 from defaults import *
 
 
 externals('colorconsole.terminal', 'unipath')
+
+
+class CachedSet (set):
+    def __init__(self, generator):
+        set.__init__(self)
+        
+        self._generator = generator
+        self._iteration_lock = threading.Lock()
+        self._last_position = None
+    
+    
+    def __contains__(self, search_item):
+        with self._iteration_lock:
+            if set.__contains__(self, search_item):
+                return True
+            
+            for (position, item) in self._generator(self._last_position):
+                self.add(item)
+                self._last_position = position
+                
+                if search_item == item:
+                    return True
+            
+            return False
 
 
 class ColorStreamHandler (logging.StreamHandler):
@@ -110,6 +135,32 @@ class Path (unipath.Path):
 
 
 class Url (object):
+    _class_by_host_name = {}
+    _class_by_host_name_re = {}
+    
+    
+    @classmethod
+    def from_host_name(cls, url):
+        url_class = cls._class_by_host_name.get(url.host_name)
+        
+        if url_class is None:
+            for (host_name, url_class) in cls._class_by_host_name_re.items():
+                if host_name.search(url.host_name):
+                    return url_class(url)
+            
+            return url
+        else:
+            return url_class(url)
+    
+    
+    @classmethod
+    def register_host_name(cls, host_name):
+        if isinstance(host_name, basestring):
+            cls._class_by_host_name[host_name] = cls
+        else:
+            cls._class_by_host_name_re[host_name] = cls
+    
+    
     def __init__(self, url, comment = None, query = None, save_as = None):
         if isinstance(url, Url):
             self._components = url._components
@@ -204,3 +255,19 @@ class FileUrl (PathUrl):
     
     def __hash__(self):
         return hash(self.path.name)
+
+
+class NoQueryUrl (Url):
+    def __init__(self, *args, **kargs):
+        Url.__init__(self, *args, **kargs)
+        Url.query.fset(self, {})
+    
+    
+    @property
+    def query(self):
+        return {}
+    
+    
+    @query.setter
+    def query(self, query):
+        raise NotImplementedError()

@@ -76,30 +76,6 @@ class Downloader (automate.task.PeriodicTask):
                 self.logger.error('%s: %s', error, url)
 
 
-class CachedSet (set, automate.util.Logger):
-    def __init__(self, generator):
-        set.__init__(self)
-        automate.util.Logger.__init__(self)
-        
-        self._generator = generator
-    
-    
-    def __contains__(self, search_item):
-        if set.__contains__(self, search_item):
-            return True
-        
-        self.logger.debug('Cache miss: %s', search_item)
-        
-        for item in self._generator():
-            self.add(item)
-            
-            if search_item == item:
-                self.logger.debug('Cache hit: %s', search_item)
-                return True
-        
-        return False
-
-
 class FreeDownloadManager \
     (DownloadManager, automate.util.MsWindowsTypeLibrary, automate.util.Logger):
     
@@ -109,7 +85,7 @@ class FreeDownloadManager \
         automate.util.MsWindowsTypeLibrary.__init__(self, 'fdm.tlb')
         automate.util.Logger.__init__(self)
         
-        self._urls = CachedSet(self._list_urls)
+        self._urls = automate.util.CachedSet(self._list_urls)
     
     
     def download_url(self, url):
@@ -148,13 +124,17 @@ class FreeDownloadManager \
         return False
     
     
-    def _list_urls(self):
+    def _list_urls(self, start_position = None):
         downloads_stat = self.get_data_type('FDMDownloadsStat')
         downloads_stat.BuildListOfDownloads(True, True)
         
+        if start_position is None:
+            start_position = downloads_stat.DownloadCount
+        
         # Start at the newest URL to find newer downloads faster.
-        for i in reversed(xrange(0, downloads_stat.DownloadCount)):
-            yield automate.util.Url(downloads_stat.Download(i).Url)
+        for i in reversed(xrange(0, start_position)):
+            url = automate.util.Url(downloads_stat.Download(i).Url)
+            yield (i, automate.util.Url.from_host_name(url))
 
 
 class GameTrailersVideos (DownloadSource):
@@ -340,8 +320,15 @@ class GtCountdown (GameTrailersNewestVideos):
 
 
 class HdTrailers (DownloadSource):
+    class NoQueryPathUrl (automate.util.NoQueryUrl, automate.util.PathUrl):
+        pass
+    
+    
     def __init__(self, skip_documentaries = True, skip_foreign_movies = True):
         DownloadSource.__init__(self)
+        
+        self.NoQueryPathUrl.register_host_name(
+            re.compile(r'^\w+\.bcst\.cdn\.\w+\.yimg.com$'))
         
         self._skip_documentaries = skip_documentaries
         self._skip_foreign_movies = skip_foreign_movies
@@ -486,6 +473,7 @@ class InterfaceLift (DownloadSource):
     
     def __init__(self):
         DownloadSource.__init__(self)
+        automate.util.FileUrl.register_host_name(self._HOST_NAME)
         
         tk = Tkinter.Tk()
         self._screen_ratio = tk.winfo_screenwidth() / tk.winfo_screenheight()
