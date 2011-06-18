@@ -51,6 +51,25 @@ class DownloadSource (automate.util.Logger):
         pass
 
 
+class VideoDownloadSource (DownloadSource):
+    def clean_video_url(self, feed_entry, url, filter = None, url_class = None):
+        try:
+            file = url.resolve().path.name
+        except urllib2.URLError as error:
+            self.logger.error('%s: %s', error, url)
+            raise VideoUrlUnavailable()
+        
+        if (filter is None) or re.search(filter, file.stem):
+            link = automate.util.Url(feed_entry.feedburner_origlink)
+            title = next(part for part in reversed(link.path.components)
+                if part != '')
+            
+            url.save_as = title + file.ext
+            self.logger.debug('File name rewrite: %s', url.save_as)
+        
+        return url if url_class is None else url_class(url)
+
+
 class Downloader (automate.task.PeriodicTask):
     def __init__(self, manager, source):
         self._manager = manager
@@ -329,13 +348,13 @@ class GtCountdown (GameTrailersNewestVideos):
         return 'GT Countdown'
 
 
-class HdTrailers (DownloadSource):
+class HdTrailers (VideoDownloadSource):
     class NoQueryPathUrl (automate.util.NoQueryUrl, automate.util.PathUrl):
         pass
     
     
     def __init__(self, skip_documentaries = True, skip_foreign_movies = True):
-        DownloadSource.__init__(self)
+        VideoDownloadSource.__init__(self)
         
         self.NoQueryPathUrl.register_host_name(
             re.compile(r'^\w+\.bcst\.cdn\.\w+\.yimg.com$'))
@@ -360,23 +379,6 @@ class HdTrailers (DownloadSource):
     @property
     def name(self):
         return 'HD Trailers'
-    
-    
-    def _clean_video_url(self, filter, entry, url, url_class = None):
-        try:
-            file = url.resolve().path.name
-        except urllib2.URLError as error:
-            self.logger.error('%s: %s', error, url)
-            raise VideoUrlUnavailable()
-        
-        if re.search(filter, file.stem):
-            title = automate.util.Url(entry.feedburner_origlink) \
-                .path.parent.name
-            
-            url.save_as = title + file.ext
-            self.logger.debug('File name rewrite: %s', url.save_as)
-        
-        return url if url_class is None else url_class(url)
     
     
     def _get_resolution(self, text):
@@ -406,10 +408,10 @@ class HdTrailers (DownloadSource):
         url.comment = entry.link
         
         if url.host_name == 'playlist.yahoo.com':
-            return self._clean_video_url(r'^\d+$', entry, url,
+            return self.clean_video_url(entry, url, r'^\d+$',
                 automate.util.PathUrl)
         elif url.host_name == 'assets.ign.com':
-            return self._clean_video_url(r'^\d{6}', entry, url)
+            return self.clean_video_url(entry, url, r'^\d{6}')
         else:
             return url
     
@@ -460,7 +462,7 @@ class HdTrailers (DownloadSource):
             return False
 
 
-class IgnDailyFix (DownloadSource):
+class IgnDailyFix (VideoDownloadSource):
     _TITLE = 'IGN Daily Fix'
     
     
@@ -479,7 +481,7 @@ class IgnDailyFix (DownloadSource):
                     path[-2] = '720'
                     url.path = path
                 
-                yield url
+                yield self.clean_video_url(entry, url)
     
     
     @property
