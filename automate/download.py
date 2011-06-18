@@ -192,7 +192,7 @@ class GameTrailersVideos (DownloadSource):
         # From <http://userscripts.org/scripts/show/46320>.
         info_url = automate.util.Url('http://www.gametrailers.com/neo/',
             query = {
-                'movieId': page_url.path.components[-1],
+                'movieId': page_url.path.parent.name,
                 'page': 'xml.mediaplayer.Mediagen',
             })
         
@@ -233,7 +233,7 @@ class GameTrailersVideos (DownloadSource):
                 
                 return automate.util.Url(
                     'http://trailers-ak.gametrailers.com/gt_vault/%s/%s' \
-                        % (video_id, video_url.path.components[-1]))
+                        % (video_id, video_url.path.parent.name))
     
     
     def _has_publisher(self, page):
@@ -362,23 +362,21 @@ class HdTrailers (DownloadSource):
         return 'HD Trailers'
     
     
-    def _clean_yahoo_video_url(self, entry, url):
+    def _clean_video_url(self, filter, entry, url, url_class = None):
         try:
             file = url.resolve().path.name
         except urllib2.URLError as error:
             self.logger.error('%s: %s', error, url)
             raise VideoUrlUnavailable()
         
-        if re.search(r'^\d+$', file.stem):
+        if re.search(filter, file.stem):
             title = automate.util.Url(entry.feedburner_origlink) \
-                .path.components[-1]
+                .path.parent.name
             
-            file = '%s (%s)%s' % (title, file.stem, file.ext)
-            self.logger.debug('File name rewrite: %s', file)
-        else:
-            file = None
+            url.save_as = title + file.ext
+            self.logger.debug('File name rewrite: %s', url.save_as)
         
-        return automate.util.PathUrl(url, save_as = file)
+        return url if url_class is None else url_class(url)
     
     
     def _get_resolution(self, text):
@@ -407,10 +405,13 @@ class HdTrailers (DownloadSource):
         
         url.comment = entry.link
         
-        if url.host_name != 'playlist.yahoo.com':
-            return url
+        if url.host_name == 'playlist.yahoo.com':
+            return self._clean_video_url(r'^\d+$', entry, url,
+                automate.util.PathUrl)
+        elif url.host_name == 'assets.ign.com':
+            return self._clean_video_url(r'^\d{6}', entry, url)
         else:
-            return self._clean_yahoo_video_url(entry, url)
+            return url
     
     
     def _get_video_url_from_enclosures(self, entry):
