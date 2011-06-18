@@ -469,8 +469,17 @@ class IgnDailyFix (DownloadSource):
         
         for entry in feed.entries:
             if entry.title.startswith(self._TITLE + ':'):
-                yield automate.util.Url(entry.enclosures[0].href,
-                    comment = entry.link)
+                url = automate.util.Url(entry.enclosures[0].href,
+                    comment = entry.link).resolve()
+                
+                if url.path.parent.name == '362':
+                    self.logger.debug('Increase video resolution: %s', url)
+                    
+                    path = url.path.components
+                    path[-2] = '720'
+                    url.path = path
+                
+                yield url
     
     
     @property

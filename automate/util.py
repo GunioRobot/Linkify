@@ -3,7 +3,7 @@
 
 # Standard library:
 from __future__ import division, print_function, unicode_literals
-import codecs, locale, logging, os.path, sys, threading, urllib, urllib2, \
+import codecs, locale, logging, os.path, re, sys, threading, urllib, urllib2, \
     urlparse
 
 # Internal modules:
@@ -201,6 +201,9 @@ class Url (object):
     
     @path.setter
     def path(self, path):
+        if isinstance(path, list):
+            path = re.sub(r'^/+', '/', '/'.join(path))
+        
         components = self._components._asdict()
         components['path'] = path
         
