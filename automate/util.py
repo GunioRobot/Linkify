@@ -225,7 +225,9 @@ class Url (object):
     
     def resolve(self):
         connection = self.open()
+        
         url = type(self)(connection.geturl())
+        url.comment = self.comment
         
         connection.close()
         return url
