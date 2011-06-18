@@ -76,11 +76,32 @@ class Downloader (automate.task.PeriodicTask):
                 self.logger.error('%s: %s', error, url)
 
 
+class CachedSet (set, automate.util.Logger):
+    def __init__(self, generator):
+        set.__init__(self)
+        automate.util.Logger.__init__(self)
+        
+        self._generator = generator
+    
+    
+    def __contains__(self, search_item):
+        if set.__contains__(self, search_item):
+            return True
+        
+        self.logger.debug('Cache miss: %s', search_item)
+        
+        for item in self._generator():
+            self.add(item)
+            
+            if search_item == item:
+                self.logger.debug('Cache hit: %s', search_item)
+                return True
+        
+        return False
+
+
 class FreeDownloadManager \
     (DownloadManager, automate.util.MsWindowsTypeLibrary, automate.util.Logger):
-    
-    _CACHE_REFRESH_FREQUENCY = datetime.timedelta(hours = 1)
-    _FILE_NAME_DOWNLOAD_TEXT = 0
     
     
     def __init__(self):
@@ -88,10 +109,7 @@ class FreeDownloadManager \
         automate.util.MsWindowsTypeLibrary.__init__(self, 'fdm.tlb')
         automate.util.Logger.__init__(self)
         
-        self._cached_downloads_stat = False
-        self._last_cache_reset = datetime.datetime.now()
-        self._urls = set()
-        self._urls_by_file_name = {}
+        self._urls = CachedSet(self._list_urls)
     
     
     def download_url(self, url):
@@ -120,7 +138,7 @@ class FreeDownloadManager \
         resolved_url = url.resolve()
         self.logger.debug('Check for download: %s', url)
         
-        if resolved_url in self._list_urls():
+        if resolved_url in self._urls:
             return True
         
         if resolved_url != url:
@@ -130,46 +148,13 @@ class FreeDownloadManager \
         return False
     
     
-    def get_urls_by_file_name(self, name):
-        # Cache URL's.
-        list(self._list_urls())
-        
-        return self._urls_by_file_name.get(name, [])
-    
-    
     def _list_urls(self):
-        elapsed = datetime.datetime.now() - self._last_cache_reset
-        urls = self._urls
+        downloads_stat = self.get_data_type('FDMDownloadsStat')
+        downloads_stat.BuildListOfDownloads(True, True)
         
-        if elapsed >= self._CACHE_REFRESH_FREQUENCY:
-            self.logger.debug('Reset downloads list cache')
-            
-            self._cached_downloads_stat = False
-            self._last_cache_reset = datetime.datetime.now()
-            self._urls = set()
-            self._urls_by_file_name = {}
-        
-        if self._cached_downloads_stat:
-            for url in self._urls:
-                yield url
-        else:
-            downloads_stat = self.get_data_type('FDMDownloadsStat')
-            downloads_stat.BuildListOfDownloads(True, True)
-            
-            # Don't start at the oldest URL to find newer downloads faster.
-            for i in reversed(xrange(0, downloads_stat.DownloadCount)):
-                download = downloads_stat.Download(i)
-                file_name = download.DownloadText(self._FILE_NAME_DOWNLOAD_TEXT)
-                url = automate.util.Url(download.Url)
-                
-                self._urls.add(url)
-                self._urls_by_file_name.setdefault(file_name, set())
-                self._urls_by_file_name[file_name].add(url)
-                
-                yield url
-            
-            self._cached_downloads_stat = True
-            self._last_cache_reset = datetime.datetime.now()
+        # Start at the newest URL to find newer downloads faster.
+        for i in reversed(xrange(0, downloads_stat.DownloadCount)):
+            yield automate.util.Url(downloads_stat.Download(i).Url)
 
 
 class GameTrailersVideos (DownloadSource):
