@@ -192,7 +192,7 @@ class GameTrailersVideos (DownloadSource):
         # From <http://userscripts.org/scripts/show/46320>.
         info_url = automate.util.Url('http://www.gametrailers.com/neo/',
             query = {
-                'movieId': page_url.path.parent.name,
+                'movieId': page_url.path.name,
                 'page': 'xml.mediaplayer.Mediagen',
             })
         
@@ -233,7 +233,7 @@ class GameTrailersVideos (DownloadSource):
                 
                 return automate.util.Url(
                     'http://trailers-ak.gametrailers.com/gt_vault/%s/%s' \
-                        % (video_id, video_url.path.parent.name))
+                        % (video_id, video_url.path.name))
     
     
     def _has_publisher(self, page):
