@@ -481,7 +481,7 @@ class IgnDailyFix (VideoDownloadSource):
                     path[-2] = '720'
                     url.path = path
                 
-                yield self.clean_video_url(entry, url)
+                yield self.clean_video_url(entry, url, r'^\d{6}')
     
     
     @property
