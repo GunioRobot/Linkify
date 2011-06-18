@@ -79,6 +79,8 @@ class Downloader (automate.task.PeriodicTask):
 class FreeDownloadManager \
     (DownloadManager, automate.util.MsWindowsTypeLibrary, automate.util.Logger):
     
+    _CACHE_RESET_FREQUENCY = datetime.timedelta(hours = 1)
+    
     
     def __init__(self):
         DownloadManager.__init__(self)
@@ -86,6 +88,7 @@ class FreeDownloadManager \
         automate.util.Logger.__init__(self)
         
         self._urls = automate.util.CachedSet(self._list_urls)
+        self._last_cache_reset = datetime.datetime.now()
     
     
     def download_url(self, url):
@@ -121,6 +124,13 @@ class FreeDownloadManager \
             self.logger.debug('Redirect: %s', resolved_url)
         
         self.logger.debug('Download not found: %s', url)
+        elapsed = datetime.datetime.now() - self._last_cache_reset
+        
+        if elapsed >= self._CACHE_RESET_FREQUENCY:
+            self.logger.debug('Reset downloads list cache')
+            self._last_cache_reset = datetime.datetime.now()
+            self._urls.clear()
+        
         return False
     
     

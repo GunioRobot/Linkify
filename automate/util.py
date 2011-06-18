@@ -35,6 +35,11 @@ class CachedSet (set):
                     return True
             
             return False
+    
+    
+    def clear(self):
+        set.clear(self)
+        self._last_position = None
 
 
 class ColorStreamHandler (logging.StreamHandler):
