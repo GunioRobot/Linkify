@@ -4,6 +4,10 @@
 # TODO: Use command line options to execute download finished events.
 # TODO: Create task for TV shows (backup, etc).
 #       TV Rage API: http://services.tvrage.com/info.php?page=main
+# TODO: Settings backup with built-in support for Winamp, MPC, Opera, etc.
+# TODO: Clean up JavaScript package.
+# TODO: Create UserJS to show content sensitive buttons on text selection:
+#       search, translate, IMDb movie link/ratings, etc.
 # TODO: Web server with RSS feed for errors?
 # TODO: Implement a GUI? System tray icon? Desktop gadget? System service?
 # TODO: Cut the first few seconds of the IGN Daily Fix videos.
