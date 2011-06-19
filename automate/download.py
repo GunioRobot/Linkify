@@ -73,6 +73,7 @@ class VideoDownloadSource (DownloadSource):
 class Downloader (automate.task.PeriodicTask):
     def __init__(self, manager, source):
         self._manager = manager
+        self._urls_by_error = {}
         self._source = source
         
         automate.task.PeriodicTask.__init__(self)
@@ -92,7 +93,12 @@ class Downloader (automate.task.PeriodicTask):
                 if not self._manager.has_url(url):
                     self._manager.download_url(url)
             except (httplib.HTTPException, urllib2.URLError) as error:
-                self.logger.error('%s: %s', error, url)
+                self._urls_by_error.setdefault(error, set())
+                urls = self._urls_by_error[error]
+                
+                if url not in urls:
+                    self.logger.error('%s: %s', error, url)
+                    urls.add(url)
 
 
 class FreeDownloadManager \
