@@ -93,8 +93,8 @@ class Downloader (automate.task.PeriodicTask):
                 if not self._manager.has_url(url):
                     self._manager.download_url(url)
             except (httplib.HTTPException, urllib2.URLError) as error:
-                self._urls_by_error.setdefault(error, set())
-                urls = self._urls_by_error[error]
+                self._urls_by_error.setdefault(str(error), set())
+                urls = self._urls_by_error[str(error)]
                 
                 if url not in urls:
                     self.logger.error('%s: %s', error, url)
