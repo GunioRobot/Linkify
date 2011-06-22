@@ -477,8 +477,12 @@ class IgnDailyFix (VideoDownloadSource):
         
         for entry in feed.entries:
             if entry.title.startswith(self._TITLE + ':'):
-                url = automate.util.Url(entry.enclosures[0].href,
-                    comment = entry.link).resolve()
+                try:
+                    url = automate.util.Url(entry.enclosures[0].href,
+                        comment = entry.link).resolve()
+                except urllib2.URLError as error:
+                    self.logger.error('%s: %s', error, entry.title)
+                    continue
                 
                 if url.path.parent.name == '362':
                     self.logger.debug('Increase video resolution: %s', url)
