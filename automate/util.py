@@ -126,8 +126,20 @@ class MsWindowsTypeLibrary (object):
 class Path (unipath.Path):
     @staticmethod
     def documents():
-        from win32com.shell import shell, shellcon
-        return Path(shell.SHGetFolderPath(0, shellcon.CSIDL_PERSONAL, 0, 0))
+        from win32com.shell import shellcon
+        return Path._windows_path(shellcon.CSIDL_PERSONAL)
+    
+    
+    @staticmethod
+    def settings():
+        from win32com.shell import shellcon
+        return Path._windows_path(shellcon.CSIDL_APPDATA)
+    
+    
+    @staticmethod
+    def _windows_path(folder_id):
+        from win32com.shell import shell
+        return Path(shell.SHGetFolderPath(0, folder_id, 0, 0))
     
     
     @property
