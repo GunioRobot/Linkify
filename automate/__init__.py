@@ -22,7 +22,7 @@ import inspect, logging, operator, sys, time
 from defaults import *
 
 # Internal modules:
-import automate.backup, automate.download, automate.task, automate.util
+import automate.backup, automate.cleanup, automate.download, automate.util
 
 
 externals('argparse')
@@ -61,7 +61,8 @@ class ArgumentsParser (argparse.ArgumentParser):
     def _list_available_tasks(self):
         return self._list_concrete_classes(automate.backup.BackupTask) \
             + self._list_concrete_classes(automate.download.DownloadSource) \
-            + self._list_concrete_classes(automate.task.PeriodicTask)
+            + self._list_concrete_classes(automate.util.PeriodicTask,
+                automate.cleanup)
     
     
     def _list_available_task_classes(self):
@@ -75,14 +76,14 @@ class ArgumentsParser (argparse.ArgumentParser):
         return names
     
     
-    def _list_concrete_classes(self, base_class):
+    def _list_concrete_classes(self, base_class, module = None):
         def is_concrete_class(object):
             return inspect.isclass(object) \
                 and not inspect.isabstract(object) \
                 and issubclass(object, base_class)
         
         return inspect.getmembers(
-            inspect.getmodule(base_class), is_concrete_class)
+            module or inspect.getmodule(base_class), is_concrete_class)
 
 
 class Automate (ArgumentsParser):

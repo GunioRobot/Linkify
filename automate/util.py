@@ -123,6 +123,49 @@ class MsWindowsTypeLibrary (object):
             % (name, self._path))
 
 
+class PeriodicTask (threading.Thread, Logger):
+    __metaclass__ = ABCMeta
+    
+    
+    def __init__(self):
+        threading.Thread.__init__(self, name = self.name)
+        Logger.__init__(self, self.name)
+        
+        self._is_stopping = threading.Event()
+    
+    
+    @property
+    def is_stopping(self):
+        return self._is_stopping.is_set()
+    
+    
+    @abstractproperty
+    def name(self):
+        pass
+    
+    
+    @abstractmethod
+    def process(self):
+        pass
+    
+    
+    def run(self):
+        self.logger.info('Start')
+        
+        while not self.is_stopping:
+            self.logger.debug('Resume')
+            self.process()
+            
+            self.logger.debug('Pause')
+            self._is_stopping.wait(15 * 60)
+        
+        self.logger.info('Stop')
+    
+    
+    def stop(self):
+        self._is_stopping.set()
+
+
 class Path (unipath.Path):
     @staticmethod
     def documents():

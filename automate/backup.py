@@ -9,7 +9,7 @@ import bz2, tarfile
 from defaults import *
 
 # Internal modules:
-import automate.task, automate.util
+import automate.util
 
 
 class BackupFile (tarfile.TarFile):
@@ -34,7 +34,7 @@ class BackupFile (tarfile.TarFile):
             self.add(folder.child(file), file)
 
 
-class BackupTask (automate.task.PeriodicTask):
+class BackupTask (automate.util.PeriodicTask):
     __metaclass__ = ABCMeta
     
     

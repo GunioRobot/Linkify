@@ -3,7 +3,7 @@
 
 # Standard library:
 from __future__ import division, print_function, unicode_literals
-import os, re, threading, time
+import re
 
 # External modules:
 from defaults import *
@@ -12,50 +12,7 @@ from defaults import *
 import automate.util
 
 
-class PeriodicTask (threading.Thread, automate.util.Logger):
-    __metaclass__ = ABCMeta
-    
-    
-    def __init__(self):
-        threading.Thread.__init__(self, name = self.name)
-        automate.util.Logger.__init__(self, self.name)
-        
-        self._is_stopping = threading.Event()
-    
-    
-    @property
-    def is_stopping(self):
-        return self._is_stopping.is_set()
-    
-    
-    @abstractproperty
-    def name(self):
-        pass
-    
-    
-    @abstractmethod
-    def process(self):
-        pass
-    
-    
-    def run(self):
-        self.logger.info('Start')
-        
-        while not self.is_stopping:
-            self.logger.debug('Resume')
-            self.process()
-            
-            self.logger.debug('Pause')
-            self._is_stopping.wait(15 * 60)
-        
-        self.logger.info('Stop')
-    
-    
-    def stop(self):
-        self._is_stopping.set()
-
-
-class Dropbox (PeriodicTask):
+class Dropbox (automate.util.PeriodicTask):
     @property
     def name(self):
         return 'Dropbox'
@@ -73,7 +30,7 @@ class Dropbox (PeriodicTask):
                 self.logger.debug('%s: %s', error, cache)
 
 
-class GnuCash (PeriodicTask):
+class GnuCash (automate.util.PeriodicTask):
     @property
     def name(self):
         return 'GnuCash'
@@ -117,7 +74,7 @@ class GnuCash (PeriodicTask):
                 self.logger.debug('%s: %s', error, webkit)
 
 
-class Opera (PeriodicTask):
+class Opera (automate.util.PeriodicTask):
     @property
     def name(self):
         return 'Opera'
@@ -148,7 +105,7 @@ class Opera (PeriodicTask):
                 self.logger.debug('%s: %s', error, bookmark_file)
 
 
-class Windows (PeriodicTask):
+class Windows (automate.util.PeriodicTask):
     @property
     def name(self):
         return 'Windows'

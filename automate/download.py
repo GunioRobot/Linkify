@@ -9,7 +9,7 @@ import datetime, httplib, re, sys, Tkinter, urllib2
 from defaults import *
 
 # Internal modules:
-import automate.task, automate.util
+import automate.util
 
 
 externals('feedparser', 'lxml.etree', 'lxml.html', 'PIL.Image')
@@ -70,13 +70,13 @@ class VideoDownloadSource (DownloadSource):
         return url if url_class is None else url_class(url)
 
 
-class Downloader (automate.task.PeriodicTask):
+class Downloader (automate.util.PeriodicTask):
     def __init__(self, manager, source):
         self._manager = manager
         self._urls_by_error = {}
         self._source = source
         
-        automate.task.PeriodicTask.__init__(self)
+        automate.util.PeriodicTask.__init__(self)
     
     
     @property
