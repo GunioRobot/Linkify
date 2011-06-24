@@ -22,7 +22,7 @@ import inspect, logging, operator, sys, time
 from defaults import *
 
 # Internal modules:
-import automate.download, automate.task, automate.util
+import automate.backup, automate.download, automate.task, automate.util
 
 
 externals('argparse')
@@ -58,14 +58,21 @@ class ArgumentsParser (argparse.ArgumentParser):
             self.add_argument(name, **options)
     
     
+    def _list_available_tasks(self):
+        return self._list_concrete_classes(automate.backup.BackupTask) \
+            + self._list_concrete_classes(automate.download.DownloadSource) \
+            + self._list_concrete_classes(automate.task.PeriodicTask)
+    
+    
+    def _list_available_task_classes(self):
+        return map(operator.itemgetter(1), self._list_available_tasks())
+    
+    
     def _list_available_task_names(self):
-        tasks = self._list_concrete_classes(automate.task.PeriodicTask) \
-            + self._list_concrete_classes(automate.download.DownloadSource)
+        names = map(operator.itemgetter(0), self._list_available_tasks())
+        names.sort()
         
-        task_names = map(operator.itemgetter(0), tasks)
-        task_names.sort()
-        
-        return task_names
+        return names
     
     
     def _list_concrete_classes(self, base_class):
@@ -112,13 +119,6 @@ class Automate (ArgumentsParser):
         
         if nothing_done:
             self.print_help()
-    
-    
-    def _list_available_task_classes(self):
-        tasks = self._list_concrete_classes(automate.task.PeriodicTask) \
-            + self._list_concrete_classes(automate.download.DownloadSource)
-        
-        return map(operator.itemgetter(1), tasks)
     
     
     def _start_task(self, download_manager, task_class):
