@@ -38,19 +38,22 @@ class ArgumentsParser (argparse.ArgumentParser):
         arguments = [
             ('--start', {
                 b'action': 'append',
-                b'nargs': '?',
+                b'dest': 'task',
                 b'help': 'start task automation process',
+                b'nargs': '?',
             }),
             ('--download', {
                 b'action': 'store',
-                b'type': automate.util.Url,
+                b'dest': 'url',
                 b'help': 'download an URL using the default manager',
+                b'type': automate.util.Url,
             }),
             ('--log', {
                 b'action': 'store',
                 b'default': 'INFO',
-                b'type': lambda level: logging._levelNames[level.upper()],
+                b'dest': 'level',
                 b'help': 'set the default logging level',
+                b'type': lambda level: logging._levelNames[level.upper()],
             }),
         ]
         
@@ -94,15 +97,15 @@ class Automate (ArgumentsParser):
     def execute(self):
         nothing_done = True
         arguments = self.parse_args()
-        automate.util.Logger.DEFAULT_LEVEL = arguments.log
+        automate.util.Logger.DEFAULT_LEVEL = arguments.level
         download_manager = automate.download.FreeDownloadManager()
         
-        if arguments.download:
+        if arguments.url:
             nothing_done = False
-            download_manager.download_url(arguments.download)
+            download_manager.download_url(arguments.url)
         
-        if arguments.start:
-            task_names = set(arguments.start)
+        if arguments.task:
+            task_names = set(arguments.task)
             
             if not ((None in task_names) and (len(task_names) > 1)):
                 nothing_done = False
