@@ -90,10 +90,6 @@ class ArgumentsParser (argparse.ArgumentParser):
 
 
 class Automate (ArgumentsParser):
-    def __init__(self):
-        ArgumentsParser.__init__(self)
-    
-    
     def execute(self):
         nothing_done = True
         arguments = self.parse_args()
