@@ -28,12 +28,57 @@ import automate.backup, automate.cleanup, automate.download, automate.util
 externals('argparse')
 
 
+class TaskArgumentType (object):
+    @classmethod
+    def _list_concrete_classes(cls, base_class, module = None):
+        def is_concrete_class(object):
+            return inspect.isclass(object) \
+                and not inspect.isabstract(object) \
+                and issubclass(object, base_class)
+        
+        return inspect.getmembers(
+            object = module or inspect.getmodule(base_class),
+            predicate= is_concrete_class)
+    
+    
+    def __init__(self):
+        self._tasks = dict(
+            self._list_concrete_classes(automate.backup.BackupTask) \
+            + self._list_concrete_classes(automate.download.DownloadSource) \
+            + self._list_concrete_classes(automate.util.PeriodicTask,
+                automate.cleanup))
+    
+    
+    def __call__(self, task_name):
+        task_class = self._tasks.get(task_name)
+        
+        if task_class is None:
+            raise argparse.ArgumentTypeError('Unknown task: ' + task_name)
+        
+        return task_class
+    
+    
+    @property
+    def task_classes(self):
+        return self._tasks.values()
+    
+    
+    @property
+    def task_names(self):
+        names = self._tasks.keys()
+        names.sort()
+        
+        return names
+
+
 class ArgumentsParser (argparse.ArgumentParser):
     def __init__(self):
+        self._task_argument_type = TaskArgumentType()
+        
         argparse.ArgumentParser.__init__(self,
             description = 'Task automation.',
             epilog = 'Available tasks: '
-                + ', '.join(self._list_available_task_names()))
+                + ', '.join(self._task_argument_type.task_names))
         
         arguments = [
             ('--start', {
@@ -41,6 +86,7 @@ class ArgumentsParser (argparse.ArgumentParser):
                 b'dest': 'task',
                 b'help': 'start task automation process',
                 b'nargs': '?',
+                b'type': self._task_argument_type,
             }),
             ('--download', {
                 b'action': 'store',
@@ -59,34 +105,6 @@ class ArgumentsParser (argparse.ArgumentParser):
         
         for name, options in arguments:
             self.add_argument(name, **options)
-    
-    
-    def _list_available_tasks(self):
-        return self._list_concrete_classes(automate.backup.BackupTask) \
-            + self._list_concrete_classes(automate.download.DownloadSource) \
-            + self._list_concrete_classes(automate.util.PeriodicTask,
-                automate.cleanup)
-    
-    
-    def _list_available_task_classes(self):
-        return map(operator.itemgetter(1), self._list_available_tasks())
-    
-    
-    def _list_available_task_names(self):
-        names = map(operator.itemgetter(0), self._list_available_tasks())
-        names.sort()
-        
-        return names
-    
-    
-    def _list_concrete_classes(self, base_class, module = None):
-        def is_concrete_class(object):
-            return inspect.isclass(object) \
-                and not inspect.isabstract(object) \
-                and issubclass(object, base_class)
-        
-        return inspect.getmembers(
-            module or inspect.getmodule(base_class), is_concrete_class)
 
 
 class Automate (ArgumentsParser):
@@ -101,14 +119,16 @@ class Automate (ArgumentsParser):
             download_manager.download_url(arguments.url)
         
         if arguments.task:
-            task_names = set(arguments.task)
+            task_classes = set(arguments.task)
             
-            if not ((None in task_names) and (len(task_names) > 1)):
+            if None in task_classes:
+                task_classes = self._task_argument_type.task_classes
+            
+            if len(task_classes) > 0:
                 nothing_done = False
-                
-                tasks = self._start_tasks(
-                    download_manager,
-                    None if None in task_names else task_names)
+                tasks = [
+                    self._start_task(download_manager, c) for c in task_classes
+                ]
                 
                 try:
                     while any([task.is_alive() for task in tasks]):
@@ -129,24 +149,3 @@ class Automate (ArgumentsParser):
         
         task.start()
         return task
-    
-    
-    def _start_tasks(self, download_manager, task_names = None):
-        available_tasks = self._list_available_task_classes()
-        
-        if task_names is None:
-            return [self._start_task(download_manager, t) \
-                for t in available_tasks]
-        
-        tasks = []
-        
-        for task in task_names:
-            try:
-                task_class = next(t for t in available_tasks \
-                    if task == t.__name__)
-            except StopIteration:
-                sys.exit('Unknown task: ' + task)
-            else:
-                tasks.append(self._start_task(download_manager, task_class))
-        
-        return tasks
