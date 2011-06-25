@@ -126,26 +126,27 @@ class Automate (ArgumentsParser):
             
             if len(task_classes) > 0:
                 nothing_done = False
-                tasks = [
-                    self._start_task(download_manager, c) for c in task_classes
-                ]
-                
-                try:
-                    while any([task.is_alive() for task in tasks]):
-                        time.sleep(1)
-                except KeyboardInterrupt:
-                    for task in tasks:
-                        task.stop()
+                self._start_tasks(download_manager, task_classes)
         
         if nothing_done:
             self.print_help()
     
     
-    def _start_task(self, download_manager, task_class):
-        task = task_class()
+    def _start_tasks(self, download_manager, task_classes):
+        tasks = []
         
-        if isinstance(task, automate.download.DownloadSource):
-            task = automate.download.Downloader(download_manager, task)
+        for task_class in task_classes:
+            task = task_class()
+            
+            if isinstance(task, automate.download.DownloadSource):
+                task = automate.download.Downloader(download_manager, task)
+            
+            task.start()
+            tasks.append(task)
         
-        task.start()
-        return task
+        try:
+            while any([task.is_alive() for task in tasks]):
+                time.sleep(1)
+        except KeyboardInterrupt:
+            for task in tasks:
+                task.stop()
