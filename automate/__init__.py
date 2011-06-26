@@ -28,7 +28,7 @@ import automate.backup, automate.cleanup, automate.download, automate.util
 externals('argparse')
 
 
-class TaskArgumentType (object):
+class TaskClassType (object):
     @classmethod
     def _list_concrete_classes(cls, base_class, module = None):
         def is_concrete_class(object):
@@ -73,12 +73,12 @@ class TaskArgumentType (object):
 
 class ArgumentsParser (argparse.ArgumentParser):
     def __init__(self):
-        self._task_argument_type = TaskArgumentType()
+        self._task_class_type = TaskClassType()
         
         argparse.ArgumentParser.__init__(self,
             description = 'Task automation.',
             epilog = 'Available tasks: '
-                + ', '.join(self._task_argument_type.task_names))
+                + ', '.join(self._task_class_type.task_names))
         
         arguments = [
             ('--start', {
@@ -86,7 +86,7 @@ class ArgumentsParser (argparse.ArgumentParser):
                 b'dest': 'task',
                 b'help': 'start task automation process',
                 b'nargs': '?',
-                b'type': self._task_argument_type,
+                b'type': self._task_class_type,
             }),
             ('--download', {
                 b'action': 'store',
@@ -122,7 +122,7 @@ class Automate (ArgumentsParser):
             task_classes = set(arguments.task)
             
             if None in task_classes:
-                task_classes = self._task_argument_type.task_classes
+                task_classes = self._task_class_type.task_classes
             
             if len(task_classes) > 0:
                 nothing_done = False
