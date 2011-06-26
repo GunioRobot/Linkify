@@ -295,6 +295,11 @@ class GameTrailersVideos (DownloadSource):
         return publisher.strip() != 'N/A'
     
     
+    def _is_downloadable_game(self, page):
+        platforms = set(page.xpath('//*[@class = "platforms"]/a/text()'))
+        return len(platforms & self._DOWNLOADABLE_GAMES_PLATFORMS) > 0
+    
+    
     def _skip_cam_video(self, video_url, page_url):
         if self._skip_cam_videos and (video_url.path.stem.find('_cam_') > 0):
             self.logger.warning('Skip cam video: %s <%s>',
@@ -307,9 +312,7 @@ class GameTrailersVideos (DownloadSource):
     
     
     def _skip_downloadable_game(self, page, page_url):
-        platforms = set(page.xpath('//*[@class = "platforms"]/a/text()'))
-        
-        if len(platforms & self._DOWNLOADABLE_GAMES_PLATFORMS) > 0:
+        if self._skip_downloadable_games and self._is_downloadable_game(page):
             self.logger.warning('Skip downloadable game: %s <%s>',
                 self._get_game_title(page), page_url)
             
