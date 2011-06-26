@@ -174,13 +174,21 @@ class FreeDownloadManager \
 
 class GameTrailersVideos (DownloadSource):
     BASE_URL = 'http://www.gametrailers.com'
+    _DOWNLOADABLE_GAMES_PLATFORMS = set(
+        ['PlayStation Network', 'Xbox Live Arcade'])
     
     
-    def __init__(self, skip_cam_videos = True, skip_indie_games = False):
+    def __init__(self,
+            skip_cam_videos = True,
+            skip_downloadable_games = True,
+            skip_indie_games = False):
+        
         DownloadSource.__init__(self)
         
         self._skip_cam_videos = skip_cam_videos
+        self._skip_downloadable_games = skip_downloadable_games
         self._skip_indie_games = skip_indie_games
+        
         self._skipped_urls = set()
     
     
@@ -195,11 +203,12 @@ class GameTrailersVideos (DownloadSource):
             raise VideoUrlUnavailable()
         
         page = lxml.html.fromstring(page_html)
-        video_id = self._get_video_id(page, page_html, page_url)
         
-        if self._skip_indie_game(page, page_url):
+        if self._skip_indie_game(page, page_url) \
+                or self._skip_downloadable_game(page, page_url):
             raise VideoUrlUnavailable()
         
+        video_id = self._get_video_id(page, page_html, page_url)
         url = self._get_video_url_from_html(page, video_id) \
             or self._get_flash_video_url(page_url)
         
@@ -230,6 +239,11 @@ class GameTrailersVideos (DownloadSource):
                 info_xml.xpath('//rendition/src/text()')[0])
     
     
+    def _get_game_title(self, page):
+        [game_title] = page.xpath('//*[@class = "GameTitle"]/text()')
+        return game_title
+    
+    
     def _get_video_id(self, page, page_html, page_url):
         video_id = re.findall(r'mov_game_id\s*=\s*(\d+)', page_html)
         
@@ -237,12 +251,12 @@ class GameTrailersVideos (DownloadSource):
             return video_id[0]
         
         [video_title] = page.xpath('/html/head/title/text()')
-        error_message = 'Movie ID not found: %s' % page_url
+        error_message = 'Movie ID not found: %s'
         
         if re.search('^Bonus Round: Episode \d+$', video_title):
-            self.logger.debug(error_message)
+            self.logger.debug(error_message, page_url)
         else:
-            self.logger.error(error_message)
+            self.logger.error(error_message, page_url)
         
         self._skipped_urls.add(page_url)
         raise VideoUrlUnavailable()
@@ -268,7 +282,22 @@ class GameTrailersVideos (DownloadSource):
     
     def _skip_cam_video(self, video_url, page_url):
         if self._skip_cam_videos and (video_url.path.stem.find('_cam_') > 0):
-            self.logger.debug('Skip cam video: %s', page_url)
+            self.logger.warning('Skip cam video: %s <%s>',
+                self._get_game_title(page), page_url)
+            
+            self._skipped_urls.add(page_url)
+            return True
+        else:
+            return False
+    
+    
+    def _skip_downloadable_game(self, page, page_url):
+        platforms = set(page.xpath('//*[@class = "platforms"]/a/text()'))
+        
+        if len(platforms & self._DOWNLOADABLE_GAMES_PLATFORMS) > 0:
+            self.logger.warning('Skip downloadable game: %s <%s>',
+                self._get_game_title(page), page_url)
+            
             self._skipped_urls.add(page_url)
             return True
         else:
@@ -277,7 +306,9 @@ class GameTrailersVideos (DownloadSource):
     
     def _skip_indie_game(self, page, page_url):
         if self._skip_indie_games and not self._has_publisher(page):
-            self.logger.debug('Skip indie game: %s', page_url)
+            self.logger.warning('Skip indie game: %s <%s>',
+                self._get_game_title(page), page_url)
+            
             self._skipped_urls.add(page_url)
             return True
         else:
