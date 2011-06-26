@@ -214,7 +214,7 @@ class GameTrailersVideos (DownloadSource):
         
         if (url is not None) and (not self._skip_cam_video(url, page_url)):
             url.comment = page_url
-            url.save_as = re.sub(r'^t_', '', url.path.name)
+            url.save_as = self._get_readable_file_name(page, url)
             return url
         
         raise VideoUrlUnavailable()
@@ -242,6 +242,21 @@ class GameTrailersVideos (DownloadSource):
     def _get_game_title(self, page):
         [game_title] = page.xpath('//*[@class = "GameTitle"]/text()')
         return game_title
+    
+    
+    def _get_readable_file_name(self, page, video_url):
+        [video_title] = page.xpath('//*[@class = "movieTitle"]/text()')
+        
+        file_name = '%s (%s)%s' % (
+            self._get_game_title(page),
+            re.sub(r'\s+HD$', '', video_title),
+            video_url.path.ext)
+        
+        if sys.platform == 'win32':
+            file_name = re.sub(r'\s*:\s*', ' - ', file_name)
+        
+        self.logger.debug('File name rewrite: %s', file_name)
+        return file_name
     
     
     def _get_video_id(self, page, page_html, page_url):
