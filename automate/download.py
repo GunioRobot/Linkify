@@ -55,7 +55,7 @@ class VideoDownloadSource (DownloadSource):
     def clean_video_url(self, feed_entry, url, filter = None, url_class = None):
         try:
             file = url.resolve().path.name
-        except urllib2.URLError as error:
+        except (httplib.HTTPException, urllib2.URLError) as error:
             self.logger.error('%s: %s', error, url)
             raise VideoUrlUnavailable()
         
@@ -344,7 +344,7 @@ class GameTrailersNewestVideos (GameTrailersVideos):
         
         try:
             main_html = lxml.html.fromstring(main_url.open().read())
-        except urllib2.URLError as error:
+        except (httplib.HTTPException, urllib2.URLError) as error:
             self.logger.error('%s: %s', error, main_url)
             return
         
@@ -529,7 +529,7 @@ class IgnDailyFix (VideoDownloadSource):
                 try:
                     url = automate.util.Url(entry.enclosures[0].href,
                         comment = entry.link).resolve()
-                except urllib2.URLError as error:
+                except (httplib.HTTPException, urllib2.URLError) as error:
                     self.logger.error('%s: %s', error, entry.title)
                     continue
                 
@@ -569,7 +569,7 @@ class InterfaceLift (DownloadSource):
     def list_urls(self):
         try:
             session_code = self._session_code
-        except urllib2.URLError as error:
+        except (httplib.HTTPException, urllib2.URLError) as error:
             self.logger.error('Unable to get the session code: %s', error)
             return
         
@@ -631,7 +631,7 @@ class ScrewAttack (GameTrailersVideos):
         
         try:
             main_html = lxml.html.fromstring(main_url.open().read())
-        except urllib2.URLError as error:
+        except (httplib.HTTPException, urllib2.URLError) as error:
             self.logger.error('%s: %s', error, main_url)
             return
         
