@@ -4,4 +4,5 @@
   <name>Linkify</name>
   <description>Creates HTML links from plain text URL's.</description>
   <author>Márcio Faustino</author>
+  <icon src="icon.png"/><!-- http://www.fatcow.com/free-icons -->
 </widget>
