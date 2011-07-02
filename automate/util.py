@@ -280,6 +280,9 @@ class Url (object):
         encoded_query = {}
         
         for key, value in query.items():
+            if not isinstance(value, basestring):
+                value = unicode(value)
+            
             encoded_query[key] = value.encode('UTF-8')
         
         components = self._components._asdict()
