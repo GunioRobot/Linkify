@@ -1,0 +1,22 @@
+<!doctype html>
+
+<html>
+  <head>
+    <script>
+opera.extension.addEventListener('connect', function(event) {
+    var widgetCopy = {};
+    
+    for (var property in widget) {
+        var value = widget[property];
+        
+        if (typeof value != 'object') {
+            widgetCopy[property] = value;
+        }
+    }
+    
+    event.source.postMessage(widgetCopy);
+}, false);
+    </script>
+  </head>
+  <body/>
+</html>
