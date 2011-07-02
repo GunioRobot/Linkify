@@ -3,8 +3,8 @@
 
 # Standard library:
 from __future__ import division, print_function, unicode_literals
-import codecs, locale, logging, os.path, re, sys, threading, urllib, urllib2, \
-    urlparse
+import codecs, json, locale, logging, os.path, re, sys, threading, urllib, \
+    urllib2, urlparse
 
 # Internal modules:
 from defaults import *
@@ -267,13 +267,23 @@ class Url (object):
     
     @property
     def query(self):
-        return urlparse.parse_qs(self._components.query)
+        query = urlparse.parse_qs(self._components.query)
+        
+        for key, values in query.items():
+            query[key] = [value.decode('UTF-8') for value in values]
+        
+        return query
     
     
     @query.setter
     def query(self, query):
+        encoded_query = {}
+        
+        for key, value in query.items():
+            encoded_query[key] = value.encode('UTF-8')
+        
         components = self._components._asdict()
-        components['query'] = urllib.unquote(urllib.urlencode(query))
+        components['query'] = urllib.urlencode(encoded_query)
         
         self._components = urlparse.ParseResult(**components)
     
@@ -336,3 +346,27 @@ class NoQueryUrl (Url):
     @query.setter
     def query(self, query):
         raise NotImplementedError()
+
+
+class ImdbApi (Logger):
+    def __init__(self):
+        Logger.__init__(self)
+        self._info_by_query = {}
+    
+    
+    def query(self, term):
+        info = self._info_by_query.get(term)
+        
+        if info is not None:
+            return info
+        
+        url = Url('http://www.deanclatworthy.com/imdb/', query = {'q': term})
+        self.logger.debug('Query: %s', url)
+        info = json.loads(url.open().read())
+        
+        if 'error' in info:
+            self.logger.debug('%s: %s', info['error'], url)
+            return None
+        else:
+            self._info_by_query[term] = info
+            return info

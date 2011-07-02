@@ -414,6 +414,7 @@ class HdTrailers (VideoDownloadSource):
         self.NoQueryPathUrl.register_host_name(
             re.compile(r'^\w+\.bcst\.cdn\.\w+\.yimg.com$'))
         
+        self._imdb_api = automate.util.ImdbApi()
         self._skip_documentaries = skip_documentaries
         self._skip_foreign_movies = skip_foreign_movies
         self._skipped_items = set()
@@ -507,14 +508,21 @@ class HdTrailers (VideoDownloadSource):
     
     
     def _skip_foreign_movie(self, entry):
+        if not self._skip_foreign_movies:
+            return False
+        
         type = entry.tags[1].term
         
-        if self._skip_foreign_movies and (type == 'Foreign'):
-            self.logger.warning('Skip foreign movie: %s', entry.title)
-            self._skipped_items.add(entry.title)
-            return True
-        else:
-            return False
+        if type != 'Foreign':
+            title = re.sub(r'\s*\([^\)]+\)$', '', entry.title)
+            info = self._imdb_api.query(title) or {'languages': 'English'}
+            
+            if re.search(r'\benglish\b', info['languages'], re.IGNORECASE):
+                return False
+        
+        self.logger.warning('Skip foreign movie: %s', entry.title)
+        self._skipped_items.add(entry.title)
+        return True
 
 
 class IgnDailyFix (VideoDownloadSource):
