@@ -3,8 +3,8 @@
 
 # Standard library:
 from __future__ import division, print_function, unicode_literals
-import codecs, json, locale, logging, os.path, re, sys, threading, urllib, \
-    urllib2, urlparse
+import codecs, httplib, json, locale, logging, os.path, re, sys, threading, \
+    urllib, urllib2, urlparse
 
 # Internal modules:
 from defaults import *
@@ -365,7 +365,11 @@ class ImdbApi (Logger):
         
         url = Url('http://www.deanclatworthy.com/imdb/', query = {'q': term})
         self.logger.debug('Query: %s', url)
-        info = json.loads(url.open().read())
+        
+        try:
+            info = json.loads(url.open().read())
+        except (httplib.HTTPException, urllib2.URLError) as error:
+            info = {'error': error}
         
         if 'error' in info:
             self.logger.debug('%s: %s', info['error'], url)
