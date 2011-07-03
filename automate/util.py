@@ -10,7 +10,7 @@ import codecs, httplib, json, locale, logging, os.path, re, sys, threading, \
 from defaults import *
 
 
-externals('colorconsole.terminal', 'unipath')
+externals('colorconsole.terminal', 'lxml.html', 'unipath')
 
 
 class CachedSet (set):
@@ -354,26 +354,59 @@ class NoQueryUrl (Url):
 class ImdbApi (Logger):
     def __init__(self):
         Logger.__init__(self)
-        self._info_by_query = {}
+        
+        self._info_by_query_dean_imdb_api = {}
+        self._info_by_query_the_imdb_api = {}
     
     
-    def query(self, term):
-        info = self._info_by_query.get(term)
+    def get_languages(self, title):
+        info = self._query_dean_imdb_api(title)
+        
+        if info is not None:
+            return set([re.sub(r'\s*\(\w+\)\s*$', '', language)
+                for language in re.split(r'\s*,\s*', info['languages'])])
+        
+        info = self._query_the_imdb_api(title)
+        imdb_url = Url('http://www.imdb.com/title/' + info['ID'])
+        page = lxml.html.fromstring(imdb_url.open().read())
+        
+        return set(page.xpath('//a[starts-with(@href, "/language/")]/text()'))
+    
+    
+    def _query_dean_imdb_api(self, title):
+        info = self._info_by_query_dean_imdb_api.get(title)
         
         if info is not None:
             return info
         
-        url = Url('http://www.deanclatworthy.com/imdb/', query = {'q': term})
-        self.logger.debug('Query: %s', url)
-        
-        try:
-            info = json.loads(url.open().read())
-        except (httplib.HTTPException, urllib2.URLError) as error:
-            info = {'error': error}
+        url = Url('http://www.deanclatworthy.com/imdb/', query = {'q': title})
+        info = json.loads(url.open().read())
         
         if 'error' in info:
-            self.logger.debug('%s: %s', info['error'], url)
+            error = info['error']
+            
+            if error != 'Exceeded API usage limit':
+                self.logger.error("Dean's IMDB API: %s: %s", error, title)
+            
             return None
         else:
-            self._info_by_query[term] = info
+            self._info_by_query_dean_imdb_api[title] = info
+            return info
+    
+    
+    def _query_the_imdb_api(self, title):
+        info = self._info_by_query_the_imdb_api.get(title)
+        
+        if info is not None:
+            return info
+        
+        url = Url('http://www.imdbapi.com/', query = {'t': title})
+        info = json.loads(url.open().read())
+        result = info['Response']
+        
+        if result != 'True':
+            self.logger.error('The IMDb API: %s: %s', result, title)
+            return None
+        else:
+            self._info_by_query_the_imdb_api[title] = info
             return info
