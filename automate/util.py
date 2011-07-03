@@ -383,11 +383,7 @@ class ImdbApi (Logger):
         info = json.loads(url.open().read())
         
         if 'error' in info:
-            error = info['error']
-            
-            if error != 'Exceeded API usage limit':
-                self.logger.error("Dean's IMDB API: %s: %s", error, title)
-            
+            self.logger.debug("Dean's IMDB API: %s: %s", info['error'], title)
             return None
         else:
             self._info_by_query_dean_imdb_api[title] = info
