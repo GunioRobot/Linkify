@@ -260,7 +260,8 @@ class GameTrailersVideos (DownloadSource):
     
     
     def _get_video_id(self, page, page_html, page_url):
-        video_id = re.findall(r'mov_game_id\s*=\s*(\d+)', page_html)
+        video_id = re.findall(r'mov_game_id \s* = \s* (\d+)', page_html,
+            re.VERBOSE)
         
         if len(video_id) > 0:
             return video_id[0]
@@ -412,7 +413,7 @@ class HdTrailers (VideoDownloadSource):
         VideoDownloadSource.__init__(self)
         
         self.NoQueryPathUrl.register_host_name(
-            re.compile(r'^\w+\.bcst\.cdn\.\w+\.yimg.com$'))
+            re.compile(r'^ \w+ \.bcst\.cdn\. \w+ \.yimg\.com $', re.VERBOSE))
         
         self._imdb_api = automate.util.ImdbApi()
         self._skip_documentaries = skip_documentaries
@@ -517,7 +518,7 @@ class HdTrailers (VideoDownloadSource):
             title = re.sub(r'\s*\([^\)]+\)$', '', entry.title)
             info = self._imdb_api.query(title) or {'languages': 'English'}
             
-            if re.search(r'\benglish\b', info['languages'], re.IGNORECASE):
+            if re.search(r'\b english \b', info['languages'], re.I | re.X):
                 return False
         
         self.logger.warning('Skip foreign movie: %s', entry.title)
@@ -604,8 +605,9 @@ class InterfaceLift (DownloadSource):
     
     
     def _find_best_resolution(self, entry_html):
-        resolutions = re.findall(r'\d+x\d+',
-            entry_html.xpath('//p[b/text() = "Resolutions:"]/text()')[0])
+        resolutions = re.findall(r'\d+ x \d+',
+            entry_html.xpath('//p[b/text() = "Resolutions:"]/text()')[0],
+            re.VERBOSE)
         
         # Should be already sorted in descending order.
         for resolution in resolutions:
@@ -620,7 +622,8 @@ class InterfaceLift (DownloadSource):
         script = automate.util.Url('http://%s/inc_NEW/jscript.js' \
             % self._HOST_NAME)
         
-        return re.findall('"/wallpaper/([^/]+)/"', script.open().read())[0]
+        return re.findall('"/wallpaper/ ([^/]+) /"',
+            script.open().read(), re.VERBOSE)[0]
 
 
 class PopFiction (GameTrailersNewestVideos):

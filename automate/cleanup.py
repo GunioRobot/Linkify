@@ -51,7 +51,8 @@ class GnuCash (automate.util.PeriodicTask):
     # See <http://wiki.gnucash.org/wiki/FAQ> for details.
     def _remove_log_files(self):
         log_files = automate.util.Path.documents().walk(filter =
-            lambda path: re.search(r'\.gnucash\.\d{14}\.log$', path.name))
+            lambda path:
+                re.search(r'\.gnucash\. \d{14} \.log $', path.name, re.VERBOSE))
         
         for log_file in log_files:
             self.logger.debug('Remove backup data log: %s', log_file)
@@ -89,8 +90,10 @@ class Opera (automate.util.PeriodicTask):
     
     def _remove_bookmark_files(self):
         bookmark_header = 'Opera Hotlist version 2.0\n'
+        
         bookmark_files = automate.util.Path.documents().walk(filter =
-            lambda path: re.search(r'^opr[\dA-F]{3,4}\.tmp$', path.name))
+            lambda path:
+                re.search(r'^ opr [A-F\d]{3,4} \.tmp $', path.name, re.VERBOSE))
         
         for bookmark_file in bookmark_files:
             with open(bookmark_file) as bookmark:
