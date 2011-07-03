@@ -175,7 +175,7 @@ class FreeDownloadManager \
 class GameTrailersVideos (DownloadSource):
     BASE_URL = 'http://www.gametrailers.com'
     _DOWNLOADABLE_GAMES_PLATFORMS = set(
-        ['PlayStation Network', 'Xbox Live Arcade'])
+        ['PlayStation Network', 'WiiWare', 'Xbox Live Arcade'])
     
     
     def __init__(self,
