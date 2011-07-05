@@ -5,13 +5,11 @@ function addLinks() {
     ];
     
     loadScripts(libraries, function () {
-        window.jQuery('body').linkify({
-            handleLinks: function (links) {
-                links.css({
-                    color: '#0082E0',
-                    textDecoration: 'underline'
-                });
-            }
+        window.jQuery('body').linkify(function (links) {
+            links.css({
+                color: '#0082E0',
+                textDecoration: 'underline'
+            });
         });
     });
 }
