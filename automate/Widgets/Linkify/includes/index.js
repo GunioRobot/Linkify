@@ -1,17 +1,32 @@
+Array.from = function(object) {
+    return Array.prototype.map.call(object, function (element) {
+        return element;
+    });
+};
+
+
 function addLinks() {
+    log('Begin');
+    
     var libraries = [
         'http://code.jquery.com/jquery.js',
         'https://raw.github.com/maranomynet/linkify/master/1.0/jquery.linkify-1.0.js',
     ];
     
     loadScripts(libraries, function () {
+        log('Loaded');
+        
         window.jQuery('body').linkify(function (links) {
             links.css({
                 color: '#0082E0',
                 textDecoration: 'underline'
             });
         });
+        
+        log('Done');
     });
+    
+    log('End');
 }
 
 
@@ -34,4 +49,9 @@ function loadScripts(urls, onLoad) {
 }
 
 
-document.addEventListener('DOMContentLoaded', addLinks, false);
+function log(/* ... */) {
+    opera.postError(Array.from(arguments).join(' '));
+}
+
+
+document.addEventListener('readystatechange', addLinks, false);
