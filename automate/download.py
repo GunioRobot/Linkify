@@ -517,7 +517,11 @@ class HdTrailers (VideoDownloadSource):
         if type != 'Foreign':
             title = re.sub(r'\s*\([^\)]+\)$', '', entry.title)
             
-            if 'English' in self._imdb_api.get_languages(title):
+            try:
+                if 'English' in self._imdb_api.get_languages(title):
+                    return False
+            except (httplib.HTTPException, urllib2.URLError) as error:
+                self.logger.error('%s: %s', error, entry.title)
                 return False
         
         self.logger.warning('Skip foreign movie: %s', entry.title)
