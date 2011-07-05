@@ -13,7 +13,7 @@ function addLinks() {
         'https://raw.github.com/maranomynet/linkify/master/1.0/jquery.linkify-1.0.js',
     ];
     
-    loadScripts(libraries, function () {
+    loadScripts(libraries, function() {
         log('Loaded');
         
         window.jQuery('body').linkify(function (links) {
@@ -43,7 +43,7 @@ function loadScript(url, onLoad) {
 function loadScripts(urls, onLoad) {
     var url = urls.shift();
     
-    loadScript(url, (urls.length == 0) ? onLoad : function () {
+    loadScript(url, (urls.length == 0) ? onLoad : function() {
         loadScripts(urls, onLoad);
     });
 }
