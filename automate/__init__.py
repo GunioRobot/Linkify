@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
+# TODO: Clean up (remove busy wait for task, etc).
+# TODO: Add option to skip multiplayer videos from GameTrailers?
 # TODO: Use command line options to execute download finished events.
 # TODO: Create task for TV shows (backup, etc).
 #       TV Rage API: http://services.tvrage.com/info.php?page=main
