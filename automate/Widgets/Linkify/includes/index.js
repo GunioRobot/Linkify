@@ -6,15 +6,18 @@ Array.from = function(object) {
 
 
 function addLinks() {
-    log('Begin');
+    log('Load');
     
     var libraries = [
-        'http://code.jquery.com/jquery.js',
         'https://raw.github.com/maranomynet/linkify/master/1.0/jquery.linkify-1.0.js',
     ];
     
+    if (window.jQuery == undefined) {
+        libraries.unshift('http://code.jquery.com/jquery.js');
+    }
+    
     loadScripts(libraries, function() {
-        log('Loaded');
+        log('Begin');
         
         window.jQuery('body').linkify(function (links) {
             links.css({
@@ -23,10 +26,8 @@ function addLinks() {
             });
         });
         
-        log('Done');
+        log('End');
     });
-    
-    log('End');
 }
 
 
