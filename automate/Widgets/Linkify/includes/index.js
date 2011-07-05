@@ -6,27 +6,41 @@ Array.from = function(object) {
 
 
 function addLinks() {
-    log('Load');
-    
+    var optimize = true;
     var libraries = [
-        'https://raw.github.com/maranomynet/linkify/master/1.0/jquery.linkify-1.0.js',
+        'https://raw.github.com/maranomynet/linkify/master/1.0/jquery.linkify-1.0'
+            + (optimize ? '-min' : '') + '.js',
     ];
     
     if (window.jQuery == undefined) {
-        libraries.unshift('http://code.jquery.com/jquery.js');
+        libraries.unshift(
+            'http://code.jquery.com/jquery' + (optimize ? '.min' : '') + '.js');
     }
     
     loadScripts(libraries, function() {
-        log('Begin');
+        addLinksToElement(document.body);
         
-        window.jQuery('body').linkify(function (links) {
-            links.css({
-                color: '#0082E0',
-                textDecoration: 'underline'
-            });
+        document.addEventListener('DOMNodeInserted', function (event) {
+            var element = event.target;
+            
+            if ((element.nodeType == window.Node.ELEMENT_NODE)
+                && !(element instanceof window.HTMLAnchorElement))
+            {
+                addLinksToElement(event.target);
+            }
+        }, false);
+    });
+}
+
+
+function addLinksToElement(element) {
+    log('Linkify:', element);
+    
+    window.jQuery(element).linkify(function (links) {
+        links.css({
+            color: '#0082E0',
+            textDecoration: 'underline'
         });
-        
-        log('End');
     });
 }
 
@@ -34,9 +48,10 @@ function addLinks() {
 function loadScript(url, onLoad) {
     var script = document.createElement('script');
     
-    script.src = url;
     script.onload = onLoad;
+    script.src = url;
     
+    log('Load:', url);
     document.body.appendChild(script);
 }
 
