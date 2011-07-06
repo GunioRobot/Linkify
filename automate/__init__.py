@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
+# TODO: When the GameTrailers feed lists two items for the same game video,
+#       download the HD version only, excluding the SD version.
 # TODO: Clean up (remove busy wait for task, etc).
 # TODO: Add option to skip multiplayer videos from GameTrailers?
 # TODO: Use command line options to execute download finished events.
