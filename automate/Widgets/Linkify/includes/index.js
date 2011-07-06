@@ -1,3 +1,29 @@
+var httpHandler = {
+    pattern: /http:\/\/\w+\.\w+\.\w+/,
+    replacement: function (url) {
+        var anchor = document.createElement('a');
+        
+        anchor.href = url;
+        anchor.textContent = url;
+        
+        return anchor;
+    }
+};
+
+
+var mailtoHandler = {
+    pattern: /mailto:\s*\w+/,
+    replacement: function (url) {
+        var anchor = document.createElement('a');
+        
+        anchor.href = url;
+        anchor.textContent = url;
+        
+        return anchor;
+    }
+};
+
+
 Array.from = function(object) {
     return Array.prototype.map.call(object, function (element) {
         return element;
@@ -5,63 +31,71 @@ Array.from = function(object) {
 };
 
 
-function addLinks() {
-    var optimize = true;
-    var libraries = [
-        'https://raw.github.com/maranomynet/linkify/master/1.0/jquery.linkify-1.0'
-            + (optimize ? '-min' : '') + '.js',
-    ];
-    
-    if (window.jQuery == undefined) {
-        libraries.unshift(
-            'http://code.jquery.com/jquery' + (optimize ? '.min' : '') + '.js');
+// TODO: Refactor.
+function addLinksToElement(element, handlers) {
+    if (element instanceof window.HTMLAnchorElement) {
+        return;
     }
     
-    loadScripts(libraries, function() {
-        addLinksToElement(document.body);
+    log('Update:', element);
+    var nodes = element.childNodes;
+    
+    for (var i = 0; i < nodes.length; ++i) {
+        var node = nodes.item(i);
         
-        document.addEventListener('DOMNodeInserted', function (event) {
-            var element = event.target;
+        if (node instanceof window.Element) {
+            addLinksToElement(node, handlers);
+        }
+        else if (node instanceof window.Text) {
+            var subNodes = [node];
             
-            if ((element.nodeType == window.Node.ELEMENT_NODE)
-                && !(element instanceof window.HTMLAnchorElement))
-            {
-                addLinksToElement(event.target);
+            for (var j = 0; j < handlers.length; ++j) {
+                var handler = handlers[j];
+                var pattern = handler.pattern.source;
+                
+                log('Handler:', pattern);
+                
+                for (var k = 0; k < subNodes.length; ++k) {
+                    var subNode = subNodes[k];
+                    
+                    if (subNode instanceof window.Text) {
+                        var newNodes = [];
+                        var textParts = subNode.nodeValue.split(
+                            RegExp('(' + pattern + ')'));
+                        
+                        for (var l = 0; l < textParts.length; ++l) {
+                            var text = textParts[l];
+                            
+                            if (text.length > 0) {
+                                if ((l % 2) == 0) {
+                                    newNodes.push(document.createTextNode(
+                                        text));
+                                }
+                                else {
+                                    newNodes.push(handler.replacement.call(
+                                        handler, text));
+                                }
+                            }
+                        }
+                        
+                        if (newNodes.length > 0) {
+                            subNodes.splice.apply(subNodes,
+                                [k, 1].concat(newNodes));
+                            
+                            k += newNodes.length;
+                        }
+                    }
+                }
             }
-        }, false);
-    });
-}
-
-
-function addLinksToElement(element) {
-    log('Linkify:', element);
-    
-    window.jQuery(element).linkify(function (links) {
-        links.css({
-            color: '#0082E0',
-            textDecoration: 'underline'
-        });
-    });
-}
-
-
-function loadScript(url, onLoad) {
-    var script = document.createElement('script');
-    
-    script.onload = onLoad;
-    script.src = url;
-    
-    log('Load:', url);
-    document.body.appendChild(script);
-}
-
-
-function loadScripts(urls, onLoad) {
-    var url = urls.shift();
-    
-    loadScript(url, (urls.length == 0) ? onLoad : function() {
-        loadScripts(urls, onLoad);
-    });
+            
+            for (var j = 0; j < subNodes.length; ++j) {
+                element.insertBefore(subNodes[j], node);
+            }
+            
+            element.removeChild(node);
+            i += subNodes.length;
+        }
+    }
 }
 
 
@@ -70,4 +104,11 @@ function log(/* ... */) {
 }
 
 
-document.addEventListener('readystatechange', addLinks, false);
+document.addEventListener('readystatechange', function() {
+    var handlers = [httpHandler, mailtoHandler];
+    addLinksToElement(document.body, handlers);
+    
+    document.addEventListener('DOMNodeInserted', function (event) {
+        addLinksToElement(event.target, handlers);
+    }, false);
+}, false);
