@@ -31,7 +31,6 @@ Array.from = function(object) {
 };
 
 
-// TODO: Refactor.
 function addLinksToElement(element, handlers) {
     if (element instanceof window.HTMLAnchorElement) {
         return;
