@@ -1,40 +1,36 @@
-var httpHandler = {
-    pattern: /http:\/\/\w+\.\w+\.\w+/,
-    replacement: function (url) {
-        var anchor = document.createElement('a');
-        
-        anchor.href = url;
-        anchor.textContent = url;
-        
-        return anchor;
-    }
-};
-
-
-var mailtoHandler = {
-    pattern: /mailto:\s*\w+/,
-    replacement: function (url) {
-        var anchor = document.createElement('a');
-        
-        anchor.href = url;
-        anchor.textContent = url;
-        
-        return anchor;
-    }
-};
-
-
-var options = {
-    excludedTags: /^(a|applet|area|button|embed|frame|frameset|iframe|img|map|object|option|param|script|select|style|textarea)$/i,
-    handlers: [httpHandler, mailtoHandler]
-};
-
-
 Array.from = function(object) {
     return Array.prototype.map.call(object, function (element) {
         return element;
     });
 };
+
+
+function Handler() {
+    this.pattern = null;
+    
+    this.replacement = function (url) {
+        var anchor = document.createElement('a');
+        
+        anchor.href = url;
+        anchor.textContent = url;
+        
+        return anchor;
+    };
+}
+
+
+function HttpHandler() {
+    this.pattern = /http:\/\/\w+\.\w+\.\w+/;
+};
+
+HttpHandler.prototype = new Handler();
+
+
+function MailtoHandler() {
+    this.pattern = /mailto:\s*\w+/;
+};
+
+MailtoHandler.prototype = new Handler();
 
 
 function addLinksToElement(element, options) {
@@ -112,7 +108,7 @@ function splitTextNodeByHandler(textNode, handler) {
                 nodes.push(document.createTextNode(text));
             }
             else {
-                nodes.push(handler.replacement.call(handler, text));
+                nodes.push(handler.replacement(text));
             }
         }
     }
@@ -127,6 +123,11 @@ function log(/* ... */) {
 
 
 document.addEventListener('readystatechange', function() {
+    var options = {
+        excludedTags: /^(a|applet|area|button|embed|frame|frameset|iframe|img|map|object|option|param|script|select|style|textarea)$/i,
+        handlers: [new HttpHandler(), new MailtoHandler()]
+    };
+    
     log('Update:', document.body);
     addLinksToElement(document.body, options);
     
