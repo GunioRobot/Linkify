@@ -125,8 +125,8 @@ document.addEventListener('readystatechange', function() {
     log('Update:', document.body);
     addLinksToElement(document.body, options);
     
-//    document.addEventListener('DOMNodeInserted', function (event) {
-//        log('Update:', event.target);
-//        addLinksToElement(event.target, options);
-//    }, false);
+    document.addEventListener('DOMNodeInserted', function (event) {
+        log('Update:', event.target);
+        addLinksToElement(event.target, options);
+    }, false);
 }, false);
