@@ -5,5 +5,5 @@
   <description>Creates HTML links from plain text URL's.</description>
   <author>Márcio Faustino</author>
   <icon src="icon.png"/><!-- http://www.fatcow.com/free-icons -->
-  <license href="http://www.gnu.org/licenses/gpl.html">GNU General Public License</license>
+  <license href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache License, Version 2.0</license>
 </widget>
