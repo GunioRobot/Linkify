@@ -24,6 +24,12 @@ var mailtoHandler = {
 };
 
 
+var options = {
+    excludedTags: /^(a|applet|area|button|embed|frame|frameset|iframe|img|map|object|option|param|script|select|style|textarea)$/i,
+    handlers: [httpHandler, mailtoHandler]
+};
+
+
 Array.from = function(object) {
     return Array.prototype.map.call(object, function (element) {
         return element;
@@ -31,28 +37,25 @@ Array.from = function(object) {
 };
 
 
-function addLinksToElement(element, handlers) {
-    if (element instanceof window.HTMLAnchorElement) {
+function addLinksToElement(element, options) {
+    if (options.excludedTags.test(element.tagName)) {
         return;
     }
     
-    log('Update:', element);
     var nodes = element.childNodes;
     
     for (var i = 0; i < nodes.length; ++i) {
         var node = nodes.item(i);
         
         if (node instanceof window.Element) {
-            addLinksToElement(node, handlers);
+            addLinksToElement(node, options);
         }
         else if (node instanceof window.Text) {
             var subNodes = [node];
             
-            for (var j = 0; j < handlers.length; ++j) {
-                var handler = handlers[j];
+            for (var j = 0; j < options.handlers.length; ++j) {
+                var handler = options.handlers[j];
                 var pattern = handler.pattern.source;
-                
-                log('Handler:', pattern);
                 
                 for (var k = 0; k < subNodes.length; ++k) {
                     var subNode = subNodes[k];
@@ -61,6 +64,12 @@ function addLinksToElement(element, handlers) {
                         var newNodes = [];
                         var textParts = subNode.nodeValue.split(
                             RegExp('(' + pattern + ')'));
+                        
+                        if ((textParts.length == 1)
+                            && (textParts[0] == subNode.nodeValue))
+                        {
+                            continue
+                        }
                         
                         for (var l = 0; l < textParts.length; ++l) {
                             var text = textParts[l];
@@ -87,12 +96,14 @@ function addLinksToElement(element, handlers) {
                 }
             }
             
-            for (var j = 0; j < subNodes.length; ++j) {
-                element.insertBefore(subNodes[j], node);
+            if (subNodes.length > 1) {
+                for (var j = 0; j < subNodes.length; ++j) {
+                    element.insertBefore(subNodes[j], node);
+                }
+                
+                element.removeChild(node);
+                i += subNodes.length;
             }
-            
-            element.removeChild(node);
-            i += subNodes.length;
         }
     }
 }
@@ -104,10 +115,11 @@ function log(/* ... */) {
 
 
 document.addEventListener('readystatechange', function() {
-    var handlers = [httpHandler, mailtoHandler];
-    addLinksToElement(document.body, handlers);
+    log('Update:', document.body);
+    addLinksToElement(document.body, options);
     
-    document.addEventListener('DOMNodeInserted', function (event) {
-        addLinksToElement(event.target, handlers);
-    }, false);
+//    document.addEventListener('DOMNodeInserted', function (event) {
+//        log('Update:', event.target);
+//        addLinksToElement(event.target, options);
+//    }, false);
 }, false);
