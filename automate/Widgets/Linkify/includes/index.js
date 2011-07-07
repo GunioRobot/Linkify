@@ -118,7 +118,7 @@ function log(/* ... */) {
 
 document.addEventListener('readystatechange', function() {
     var options = {
-        excludedTags: /^(a|applet|area|button|embed|frame|frameset|iframe|img|map|object|option|param|script|select|style|textarea)$/i,
+        excludedTags: /^(a|applet|area|button|embed|frame|frameset|iframe|img|input|map|object|option|param|script|select|style|textarea)$/i,
         handlers: [new UrlHandler()]
     };
     
