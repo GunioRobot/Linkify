@@ -51,52 +51,9 @@ function addLinksToElement(element, options) {
             addLinksToElement(node, options);
         }
         else if (node instanceof window.Text) {
-            var subNodes = [node];
+            var subNodes = splitTextNode(node, options);
             
-            for (var j = 0; j < options.handlers.length; ++j) {
-                var handler = options.handlers[j];
-                var pattern = handler.pattern.source;
-                
-                for (var k = 0; k < subNodes.length; ++k) {
-                    var subNode = subNodes[k];
-                    
-                    if (subNode instanceof window.Text) {
-                        var newNodes = [];
-                        var textParts = subNode.nodeValue.split(
-                            RegExp('(' + pattern + ')'));
-                        
-                        if ((textParts.length == 1)
-                            && (textParts[0] == subNode.nodeValue))
-                        {
-                            continue
-                        }
-                        
-                        for (var l = 0; l < textParts.length; ++l) {
-                            var text = textParts[l];
-                            
-                            if (text.length > 0) {
-                                if ((l % 2) == 0) {
-                                    newNodes.push(document.createTextNode(
-                                        text));
-                                }
-                                else {
-                                    newNodes.push(handler.replacement.call(
-                                        handler, text));
-                                }
-                            }
-                        }
-                        
-                        if (newNodes.length > 0) {
-                            subNodes.splice.apply(subNodes,
-                                [k, 1].concat(newNodes));
-                            
-                            k += newNodes.length;
-                        }
-                    }
-                }
-            }
-            
-            if (subNodes.length > 1) {
+            if (subNodes.length > 0) {
                 for (var j = 0; j < subNodes.length; ++j) {
                     element.insertBefore(subNodes[j], node);
                 }
@@ -105,6 +62,61 @@ function addLinksToElement(element, options) {
                 i += subNodes.length;
             }
         }
+    }
+}
+
+
+function splitTextNode(textNode, options) {
+    var nodes = [textNode];
+    
+    for (var i = 0; i < options.handlers.length; ++i) {
+        var handler = options.handlers[i];
+        var pattern = handler.pattern.source;
+        
+        for (var j = 0; j < nodes.length; ++j) {
+            var node = nodes[j];
+            
+            if (node instanceof window.Text) {
+                var newNodes = [];
+                var textParts = node.nodeValue.split(
+                    RegExp('(' + pattern + ')'));
+                
+                if ((textParts.length == 1)
+                    && (textParts[0] == node.nodeValue))
+                {
+                    continue
+                }
+                
+                for (var l = 0; l < textParts.length; ++l) {
+                    var text = textParts[l];
+                    
+                    if (text.length > 0) {
+                        if ((l % 2) == 0) {
+                            newNodes.push(document.createTextNode(
+                                text));
+                        }
+                        else {
+                            newNodes.push(handler.replacement.call(
+                                handler, text));
+                        }
+                    }
+                }
+                
+                if (newNodes.length > 0) {
+                    nodes.splice.apply(nodes,
+                        [j, 1].concat(newNodes));
+                    
+                    j += newNodes.length;
+                }
+            }
+        }
+    }
+    
+    if ((nodes.length == 1) && (nodes[0] === textNode)) {
+        return [];
+    }
+    else {
+        return nodes;
     }
 }
 
