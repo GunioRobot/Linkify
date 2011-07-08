@@ -90,7 +90,7 @@ function splitTextNodeByHandler(textNode, handler) {
     var textParts = textNode.nodeValue.split(
         RegExp('(' + handler.pattern.source + ')'));
     
-    if ((textParts.length == 1) && (textParts[0] == textNode.nodeValue)) {
+    if ((textParts.length == 1) && (textParts[0] === textNode.nodeValue)) {
         return nodes;
     }
     
