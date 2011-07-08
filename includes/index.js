@@ -124,12 +124,8 @@ function splitTextNodeByHandler(textNode, handler) {
 
 
 function log(/* ... */) {
-    if (!arguments.callee.silent) {
-        opera.postError(Array.from(arguments).join(' '));
-    }
+    opera.postError(Array.from(arguments).join(' '));
 }
-
-log.silent = false;
 
 
 opera.extension.addEventListener('message', function(event) {
@@ -140,14 +136,10 @@ opera.extension.addEventListener('message', function(event) {
     };
     
     document.addEventListener('readystatechange', function() {
-        var root = document.documentElement;
-        log(widget.name + ':', root.nodeName, root);
-        addLinksToElement(root, options);
+        addLinksToElement(document.documentElement, options);
         
         document.addEventListener('DOMNodeInserted', function (event) {
-            var element = event.target;
-            log(widget.name + ':', element.nodeName, element);
-            addLinksToElement(element, options);
+            addLinksToElement(event.target, options);
         }, false);
     }, false);
 }, false);
