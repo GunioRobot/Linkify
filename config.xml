@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<widget xmlns="http://www.w3.org/ns/widgets" version="2011-07-07">
+<widget xmlns="http://www.w3.org/ns/widgets" version="2011-07-08">
   <name>Linkify</name>
   <description>Creates HTML links from plain text URL's.</description>
   <author>Márcio Faustino</author>
