@@ -119,17 +119,19 @@ function log(/* ... */) {
 opera.extension.addEventListener('message', function(event) {
     var widget = event.data;
     var options = {
-        excludedTags: /^(?:a|applet|area|button|embed|frame|frameset|iframe|img|input|map|object|option|param|script|select|style|textarea)$/i,
+        excludedTags: /^(?:a|applet|area|button|embed|frame|frameset|head|iframe|img|input|link|map|meta|object|option|param|script|select|style|textarea|title)$/i,
         handlers: [new UrlHandler()]
     };
     
     document.addEventListener('readystatechange', function() {
-        log(widget.name + ':', document.body.nodeName, document.body);
-        addLinksToElement(document.body, options);
+        var root = document.documentElement;
+        log(widget.name + ':', root.nodeName, root);
+        addLinksToElement(root, options);
         
         document.addEventListener('DOMNodeInserted', function (event) {
-            log(widget.name + ':', event.target.nodeName, event.target);
-            addLinksToElement(event.target, options);
+            var element = event.target;
+            log(widget.name + ':', element.nodeName, element);
+            addLinksToElement(element, options);
         }, false);
     }, false);
 }, false);
