@@ -119,7 +119,7 @@ function log(/* ... */) {
 opera.extension.addEventListener('message', function(event) {
     var widget = event.data;
     var options = {
-        excludedTags: /^(a|applet|area|button|embed|frame|frameset|iframe|img|input|map|object|option|param|script|select|style|textarea)$/i,
+        excludedTags: /^(?:a|applet|area|button|embed|frame|frameset|iframe|img|input|map|object|option|param|script|select|style|textarea)$/i,
         handlers: [new UrlHandler()]
     };
     
