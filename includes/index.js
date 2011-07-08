@@ -7,24 +7,36 @@ Array.from = function(object) {
 
 function Handler() {
     this.pattern = null;
-    
-    this.replacement = function (url) {
-        var anchor = document.createElement('a');
-        
-        anchor.href = url;
-        anchor.textContent = url;
-        
-        return anchor;
-    };
 }
+
+Handler.prototype.replacement = function (url, caption) {
+    var anchor = document.createElement('a');
+    
+    anchor.href = url;
+    anchor.textContent = (caption == undefined) ? url : caption;
+    
+    return anchor;
+};
 
 
 function UrlHandler() {
+    this.absoluteUrls = true;
+    
     /** @see http://daringfireball.net/2010/07/improved_regex_for_matching_urls */
     this.pattern = /\b(?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\))+(?:\(?:(?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’])/i;
 };
 
 UrlHandler.prototype = new Handler();
+
+UrlHandler.prototype.replacement = function (url) {
+    var caption = url;
+    
+    if (this.absoluteUrls && /^www\./i.test(url)) {
+        url = 'http://' + url;
+    }
+    
+    return Handler.prototype.replacement.call(this, url, caption);
+};
 
 
 function addLinksToElement(element, options) {
@@ -112,8 +124,12 @@ function splitTextNodeByHandler(textNode, handler) {
 
 
 function log(/* ... */) {
-    opera.postError(Array.from(arguments).join(' '));
+    if (!arguments.callee.silent) {
+        opera.postError(Array.from(arguments).join(' '));
+    }
 }
+
+log.silent = false;
 
 
 opera.extension.addEventListener('message', function(event) {
