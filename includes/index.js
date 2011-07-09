@@ -43,17 +43,31 @@ Handler.prototype.replacement = function (url, caption) {
 
 
 function UrlHandler() {
-    this.absoluteUrls = true;
+    this.forceAbsoluteUrls = true;
     
-    /** @see http://daringfireball.net/2010/07/improved_regex_for_matching_urls */
-    this.pattern = /\b(?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\))+(?:\(?:(?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’])/i;
+    this.protocolPattern = /[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])/i;
+    this.domainPattern = /(?:www\d{0,3}\.)|(?:[a-z0-9.\-]+\.[a-z]{2,4}\/)/i;
+    
+    /**
+     * @see http://daringfireball.net/2010/07/improved_regex_for_matching_urls
+     */
+    this.pattern = RegExp(
+        '\\b(?:'
+            + this.protocolPattern.source
+            + '|'
+            + this.domainPattern.source
+            + ')(?:[^\\s()<>]+|\\((?:[^\\s()<>]+|(?:\\([^\\s()<>]+\\)))*\\))+(?:\\(?:(?:[^\\s()<>]+|(?:\\([^\\s()<>]+\\)))*\\)|[^\\s`!()\\[\\]{};:\'".,<>?«»“”‘’])',
+        'i');
 };
 
 UrlHandler.subClass(Handler, {
     replacement: function (url) {
         var caption = url;
         
-        if (this.absoluteUrls && /^www\./i.test(url)) {
+        if (this.forceAbsoluteUrls
+            && !this.protocolPattern.test(url)
+            && this.domainPattern.test(url))
+        {
             url = 'http://' + url;
         }
         
