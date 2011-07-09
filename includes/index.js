@@ -5,6 +5,27 @@ Array.from = function(object) {
 };
 
 
+Function.prototype.subClass = function(BaseClass, methods) {
+    // Unless an intermediate class is used, the prototype of the sub class
+    // would also be the same of the base class. If so, any changes in the
+    // prototype of the sub class would also be reflected in the base class.
+    function InheritanceLink() {}
+    
+    InheritanceLink.prototype = BaseClass.prototype;
+    this.prototype = new InheritanceLink();
+    this.prototype.constructor = this;
+    
+    if (methods != undefined) {
+        for (method in methods) {
+            this.prototype[method] = methods[method];
+        }
+    }
+    
+    return this;
+};
+
+
+
 function Handler() {
     this.pattern = null;
 }
@@ -26,17 +47,17 @@ function UrlHandler() {
     this.pattern = /\b(?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\))+(?:\(?:(?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’])/i;
 };
 
-UrlHandler.prototype = new Handler();
-
-UrlHandler.prototype.replacement = function (url) {
-    var caption = url;
-    
-    if (this.absoluteUrls && /^www\./i.test(url)) {
-        url = 'http://' + url;
+UrlHandler.subClass(Handler, {
+    replacement: function (url) {
+        var caption = url;
+        
+        if (this.absoluteUrls && /^www\./i.test(url)) {
+            url = 'http://' + url;
+        }
+        
+        return Handler.prototype.replacement.call(this, url, caption);
     }
-    
-    return Handler.prototype.replacement.call(this, url, caption);
-};
+});
 
 
 function addLinksToElement(element, options) {
