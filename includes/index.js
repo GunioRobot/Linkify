@@ -27,7 +27,6 @@ Function.prototype.subClass = function(BaseClass, methods) {
 };
 
 
-
 function Handler() {
     this.pattern = null;
 }
