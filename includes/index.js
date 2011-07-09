@@ -165,18 +165,15 @@ function log(/* ... */) {
 }
 
 
-opera.extension.addEventListener('message', function(event) {
-    var widget = event.data;
+document.addEventListener('readystatechange', function() {
     var options = {
         excludedTags: /^(?:a|applet|area|button|embed|frame|frameset|head|iframe|img|input|link|map|meta|object|option|param|script|select|style|textarea|title)$/i,
         handlers: [new UrlHandler()]
     };
     
-    document.addEventListener('readystatechange', function() {
-        addLinksToElement(document.documentElement, options);
-        
-        document.addEventListener('DOMNodeInserted', function (event) {
-            addLinksToElement(event.target, options);
-        }, false);
+    addLinksToElement(document.documentElement, options);
+    
+    document.addEventListener('DOMNodeInserted', function (event) {
+        addLinksToElement(event.target, options);
     }, false);
 }, false);
