@@ -3,7 +3,7 @@
 <widget xmlns="http://www.w3.org/ns/widgets" version="2011-07-09"
         id="https://github.com/marciof/Linkify">
   <name>Linkify</name>
-  <description>Creates HTML links from plain text URL's.</description>
+  <description>Creates HTML links from plain text URL's and e-mail addresses.</description>
   <author>Márcio Faustino</author>
   <license href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache License, Version 2.0</license>
   <!-- http://www.fatcow.com/free-icons -->
