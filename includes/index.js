@@ -31,11 +31,11 @@ function Handler() {
     this.pattern = null;
 }
 
-Handler.prototype.replacement = function (url, caption) {
+Handler.prototype.replacement = function (href, caption) {
     var anchor = document.createElement('a');
     
-    anchor.href = url;
-    anchor.textContent = (caption == undefined) ? url : caption;
+    anchor.href = href;
+    anchor.textContent = (caption == undefined) ? href : caption;
     
     return anchor;
 };
@@ -71,6 +71,20 @@ UrlHandler.subClass(Handler, {
         }
         
         return this.baseClass.replacement.call(this, url, caption);
+    }
+});
+
+
+function EmailAddressHandler() {
+    /**
+     * @see http://docs.jquery.com/Plugins/Validation/Methods/email
+     */
+    this.pattern = /\b(?:(?:(?:[a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(?:\.(?:[a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|(?:(?:\x22)(?:(?:(?:(?:\x20|\x09)*(?:\x0d\x0a))?(?:\x20|\x09)+)?(?:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(?:\\(?:[\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(?:(?:(?:\x20|\x09)*(?:\x0d\x0a))?(?:\x20|\x09)+)?(?:\x22)))@(?:(?:(?:[a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(?:(?:[a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])(?:[a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*(?:[a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(?:(?:[a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(?:(?:[a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])(?:[a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*(?:[a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))+/i;
+};
+
+EmailAddressHandler.subClass(Handler, {
+    replacement: function (email) {
+        return this.baseClass.replacement.call(this, 'mailto:' + email, email);
     }
 });
 
@@ -167,7 +181,7 @@ function log(/* ... */) {
 document.addEventListener('readystatechange', function() {
     var options = {
         excludedTags: /^(?:a|applet|area|button|embed|frame|frameset|head|iframe|img|input|link|map|meta|object|option|param|script|select|style|textarea|title)$/i,
-        handlers: [new UrlHandler()]
+        handlers: [new UrlHandler(), new EmailAddressHandler()]
     };
     
     addLinksToElement(document.documentElement, options);
