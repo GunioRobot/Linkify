@@ -44,7 +44,7 @@ Handler.prototype.replacement = function (href, caption) {
 function UrlHandler() {
     this.forceAbsoluteUrls = true;
     
-    this.protocolPattern = /[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])/i;
+    this.protocolPattern = /[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%](?!\w*="))/i;
     this.domainPattern = /(?:www\d{0,3}\.)|(?:[a-z0-9.\-]+\.[a-z]{2,4}\/)/i;
     
     /**
