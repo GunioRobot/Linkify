@@ -9,10 +9,12 @@ Function.prototype.subClass = function(BaseClass, methods) {
     // Unless an intermediate class is used, the prototype of the sub class
     // would also be the same of the base class. If so, any changes in the
     // prototype of the sub class would also be reflected in the base class.
-    function InheritanceLink() {}
+    function InheritanceLink() {
+    }
     
     InheritanceLink.prototype = BaseClass.prototype;
     this.prototype = new InheritanceLink();
+    this.prototype.baseClass = InheritanceLink.prototype;
     this.prototype.constructor = this;
     
     if (methods != undefined) {
@@ -55,7 +57,7 @@ UrlHandler.subClass(Handler, {
             url = 'http://' + url;
         }
         
-        return Handler.prototype.replacement.call(this, url, caption);
+        return this.baseClass.replacement.call(this, url, caption);
     }
 });
 
