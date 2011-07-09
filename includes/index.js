@@ -167,7 +167,7 @@ function splitTextNodeByHandler(textNode, handler) {
         return nodes;
     }
     
-    while (matches.length > 0) {
+    while (textParts.length > 0) {
         var text = textParts.shift();
         var match = matches.shift();
         
@@ -178,7 +178,7 @@ function splitTextNodeByHandler(textNode, handler) {
         if (match instanceof Array) {
             nodes.push.apply(nodes, match);
         }
-        else {
+        else if (match != undefined) {
             nodes.push(match);
         }
     }
