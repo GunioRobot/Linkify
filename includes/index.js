@@ -169,12 +169,18 @@ function splitTextNodeByHandler(textNode, handler) {
     
     while (matches.length > 0) {
         var text = textParts.shift();
+        var match = matches.shift();
         
         if (text.length > 0) {
             nodes.push(document.createTextNode(text));
         }
         
-        nodes.push(matches.shift());
+        if (match instanceof Array) {
+            nodes.push.apply(nodes, match);
+        }
+        else {
+            nodes.push(match);
+        }
     }
     
     return nodes;
