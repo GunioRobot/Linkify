@@ -44,8 +44,14 @@ Handler.prototype.replacement = function (href, caption) {
 function UrlHandler() {
     this.forceAbsoluteUrls = true;
     
+    this.ip4Address = /(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}\.){3}(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})/;
+    
+    this.domainPattern = RegExp(
+        '(?:www\\d{0,3}\\.)|(?:[a-z0-9.\\-]+\\.[a-z]{2,4}/)|'
+            + this.ip4Address.source,
+        'i');
+    
     this.protocolPattern = /[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%](?![\w-]*\s*=\s*"))/i;
-    this.domainPattern = /(?:www\d{0,3}\.)|(?:[a-z0-9.\-]+\.[a-z]{2,4}\/)/i;
     
     /**
      * @see http://daringfireball.net/2010/07/improved_regex_for_matching_urls
