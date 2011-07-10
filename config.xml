@@ -6,7 +6,5 @@
   <description>Creates HTML links from plain text URL's and e-mail addresses.</description>
   <author>Márcio Faustino</author>
   <license href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache License, Version 2.0</license>
-  <!-- http://www.fatcow.com/free-icons -->
-  <icon src="icon.png"/>
-  <icon src="icon.svg" width="64" height="64"/>
+  <icon src="icon.png"/><!-- http://www.fatcow.com/free-icons -->
 </widget>
