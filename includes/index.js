@@ -276,8 +276,11 @@ function log(/* ... */) {
 
 
 document.addEventListener('readystatechange', function() {
+    /**
+     * @see https://addons.opera.com/addons/extensions/details/popup-statusbar/
+     */
     var options = {
-        excludedTags: /^(?:a|applet|area|button|embed|frame|frameset|head|iframe|img|input|link|map|meta|object|option|param|script|select|style|textarea|title)$/i,
+        excludedTags: /^(?:a|applet|area|button|embed|frame|frameset|head|iframe|img|input|link|map|meta|object|option|param|script|select|statusbar|style|textarea|title)$/i,
         handlers: [new UrlHandler(), new EmailAddressHandler()]
     };
     
