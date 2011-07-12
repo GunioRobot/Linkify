@@ -82,15 +82,10 @@ function UrlHandler() {
      */
     this.forceAbsoluteUrls = true;
     
-    /**
-     * @see http://search.cpan.org/perldoc?Regexp::Common::net
-     */
-    this.ipv4AddressPattern = /(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}\.){3}(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})/;
-    
     this.protocolPattern = /[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%](?![\w-]*\s*=\s*"))/i;
     this.domainPattern = RegExp(
         /(?:www\d{0,3}\.)|(?:[a-z0-9.\-]+\.[a-z]{2,4}\/)|/.source
-            + this.ipv4AddressPattern.source,
+            + this.constructor.ipv4AddressPattern.source,
         'i');
     
     /**
@@ -108,6 +103,12 @@ function UrlHandler() {
             + /(?:[^\s()<>"]+|\((?:[^\s()<>"]+|(?:\([^\s()<>"]+\)))*\))+(?:\((?:[^\s()<>"]+|(?:\([^\s()<>"]+\)))*\)|[^\s()<>"\[\]{};:'`.,!?«»“”‘’])/.source,
         'gi');
 };
+
+
+/**
+ * @see http://search.cpan.org/perldoc?Regexp::Common::net
+ */
+UrlHandler.ipv4AddressPattern = /(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}\.){3}(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})/;
 
 
 /**
@@ -137,7 +138,7 @@ UrlHandler.subClass(Handler, {
 
 /**
  * @class E-mail address text handler.
- * @augments Handler
+ * @augments UrlHandler
  */
 function EmailAddressHandler() {
     /**
@@ -146,14 +147,21 @@ function EmailAddressHandler() {
      * @type RegExp
      * @see http://docs.jquery.com/Plugins/Validation/Methods/email
      */
-    this.pattern = /\b(?:(?:(?:[a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(?:\.(?:[a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|(?:(?:\x22)(?:(?:(?:(?:\x20|\x09)*(?:\x0d\x0a))?(?:\x20|\x09)+)?(?:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(?:\\(?:[\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(?:(?:(?:\x20|\x09)*(?:\x0d\x0a))?(?:\x20|\x09)+)?(?:\x22)))@(?:(?:(?:[a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(?:(?:[a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])(?:[a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*(?:[a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(?:(?:[a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(?:(?:[a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])(?:[a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*(?:[a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))+/gi;
+    this.pattern = RegExp(
+        /\b(?:(?:(?:[a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(?:\.(?:[a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|(?:(?:\x22)(?:(?:(?:(?:\x20|\x09)*(?:\x0d\x0a))?(?:\x20|\x09)+)?(?:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(?:\\(?:[\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(?:(?:(?:\x20|\x09)*(?:\x0d\x0a))?(?:\x20|\x09)+)?(?:\x22)))/.source
+            + '@(?:'
+            + /(?:(?:(?:(?:[a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(?:(?:[a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])(?:[a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*(?:[a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(?:(?:[a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(?:(?:[a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])(?:[a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*(?:[a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))+)/.source
+            + '|(?:'
+            + UrlHandler.ipv4AddressPattern.source
+            + '))',
+        'gi');
 };
 
 
 /**
  * @lends EmailAddressHandler#
  */
-EmailAddressHandler.subClass(Handler, {
+EmailAddressHandler.subClass(UrlHandler, {
     /**
      * Creates an HTML anchor element for an e-mail address.
      * 
@@ -161,7 +169,7 @@ EmailAddressHandler.subClass(Handler, {
      * @returns {HTMLAnchorElement}
      */
     replacement: function (email) {
-        return EmailAddressHandler.baseClass.replacement.call(this,
+        return UrlHandler.baseClass.replacement.call(this,
             'mailto:' + email, email);
     }
 });
