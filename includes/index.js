@@ -82,7 +82,11 @@ function UrlHandler() {
      */
     this.forceAbsoluteUrls = true;
     
+    /**
+     * @see http://search.cpan.org/perldoc?Regexp::Common::net
+     */
     this.ipv4AddressPattern = /(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}\.){3}(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})/;
+    
     this.protocolPattern = /[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%](?![\w-]*\s*=\s*"))/i;
     this.domainPattern = RegExp(
         '(?:www\\d{0,3}\\.)|(?:[a-z0-9.\\-]+\\.[a-z]{2,4}/)|'
