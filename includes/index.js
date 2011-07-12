@@ -24,8 +24,8 @@ Function.prototype.subClass = function(BaseClass, methods) {
     }
     
     InheritanceLink.prototype = BaseClass.prototype;
+    this.baseClass = InheritanceLink.prototype;
     this.prototype = new InheritanceLink();
-    this.prototype.baseClass = InheritanceLink.prototype;
     this.prototype.constructor = this;
     
     if (methods != undefined) {
@@ -130,7 +130,7 @@ UrlHandler.subClass(Handler, {
             url = 'http://' + url;
         }
         
-        return this.baseClass.replacement.call(this, url, caption);
+        return UrlHandler.baseClass.replacement.call(this, url, caption);
     }
 });
 
@@ -161,7 +161,8 @@ EmailAddressHandler.subClass(Handler, {
      * @returns {HTMLAnchorElement}
      */
     replacement: function (email) {
-        return this.baseClass.replacement.call(this, 'mailto:' + email, email);
+        return EmailAddressHandler.baseClass.replacement.call(this,
+            'mailto:' + email, email);
     }
 });
 
