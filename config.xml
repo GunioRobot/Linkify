@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<widget xmlns="http://www.w3.org/ns/widgets" version="2011-07-12"
+<widget xmlns="http://www.w3.org/ns/widgets" version="2011-08-02"
         id="https://github.com/marciof/Linkify">
   <name>Linkify</name>
   <description>Creates HTML links from plain text URL's and e-mail addresses.</description>
