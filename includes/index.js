@@ -85,7 +85,7 @@ function UrlHandler() {
     this.protocolPattern = /[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%](?![\w-]*\s*=\s*"))/i;
     this.domainPattern = RegExp(
         /(?:www\d{0,3}\.)|(?:[a-z0-9.\-]+\.[a-z]{2,4}\/)|/.source
-            + this.constructor.ipv4AddressPattern.source,
+            + this.constructor.ipv4AddressPattern.source + /(?::\d+)?\//.source,
         'i');
     
     /**
