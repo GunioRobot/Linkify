@@ -22,18 +22,18 @@ Function.prototype.subClass = function(BaseClass, methods) {
     // prototype of the sub class would also be reflected in the base class.
     function InheritanceLink() {
     }
-    
+
     InheritanceLink.prototype = BaseClass.prototype;
     this.baseClass = InheritanceLink.prototype;
     this.prototype = new InheritanceLink();
     this.prototype.constructor = this;
-    
+
     if (methods != undefined) {
         for (method in methods) {
             this.prototype[method] = methods[method];
         }
     }
-    
+
     return this;
 };
 
@@ -44,7 +44,7 @@ Function.prototype.subClass = function(BaseClass, methods) {
 function Handler() {
     /**
      * Search pattern.
-     * 
+     *
      * @type RegExp
      * @default null
      */
@@ -54,17 +54,17 @@ function Handler() {
 
 /**
  * Creates an HTML anchor element as the replacement node.
- * 
+ *
  * @param {String} href link
  * @param {String} [caption=href] caption text
  * @returns {HTMLAnchorElement}
  */
 Handler.prototype.replacement = function (href, caption) {
     var anchor = document.createElement('a');
-    
+
     anchor.href = href;
     anchor.textContent = (caption == undefined) ? href : caption;
-    
+
     return anchor;
 };
 
@@ -76,21 +76,21 @@ Handler.prototype.replacement = function (href, caption) {
 function UrlHandler() {
     /**
      * Whether or not URL's without a protocol should be modified to use HTTP.
-     * 
+     *
      * @default true
      * @type Boolean
      */
     this.forceAbsoluteUrls = true;
-    
+
     this.protocolPattern = /[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%](?![\w-]*\s*=\s*"))/i;
     this.domainPattern = RegExp(
         /(?:www\d{0,3}\.)|(?:[a-z0-9.\-]+\.[a-z]{2,4}\/)|/.source
             + this.constructor.ipv4AddressPattern.source + /(?::\d+)?\//.source,
         'i');
-    
+
     /**
      * URL search pattern.
-     * 
+     *
      * @type RegExp
      * @see http://daringfireball.net/2010/07/improved_regex_for_matching_urls
      */
@@ -117,20 +117,20 @@ UrlHandler.ipv4AddressPattern = /(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}\.){3}(?
 UrlHandler.subClass(Handler, {
     /**
      * Creates an HTML anchor element for an URL.
-     * 
+     *
      * @param {String} url URL found
      * @returns {HTMLAnchorElement}
      */
     replacement: function (url) {
         var caption = url;
-        
+
         if (this.forceAbsoluteUrls
             && !this.protocolPattern.test(url)
             && this.domainPattern.test(url))
         {
             url = 'http://' + url;
         }
-        
+
         return UrlHandler.baseClass.replacement.call(this, url, caption);
     }
 });
@@ -143,7 +143,7 @@ UrlHandler.subClass(Handler, {
 function EmailAddressHandler() {
     /**
      * E-mail address search pattern.
-     * 
+     *
      * @type RegExp
      * @see http://docs.jquery.com/Plugins/Validation/Methods/email
      */
@@ -164,7 +164,7 @@ function EmailAddressHandler() {
 EmailAddressHandler.subClass(UrlHandler, {
     /**
      * Creates an HTML anchor element for an e-mail address.
-     * 
+     *
      * @param {String} email e-mail address found
      * @returns {HTMLAnchorElement}
      */
@@ -176,34 +176,34 @@ EmailAddressHandler.subClass(UrlHandler, {
 
 
 /**
- * Recursively applies handlers to text nodes. 
- * 
+ * Recursively applies handlers to text nodes.
+ *
  * @param {Element} element root element where to start the conversion
  * @param {Object} options
  * @param {RegExp} options.excludedTags HTML elements to be excluded
- * @param {Handler[]} options.handlers handlers to be applied 
+ * @param {Handler[]} options.handlers handlers to be applied
  */
 function addLinksToElement(element, options) {
     if (options.excludedTags.test(element.tagName)) {
         return;
     }
-    
+
     var nodes = element.childNodes;
-    
+
     for (var i = 0; i < nodes.length; ++i) {
         var node = nodes.item(i);
-        
+
         if (node instanceof window.Element) {
             addLinksToElement(node, options);
         }
         else if (node instanceof window.Text) {
             var subNodes = splitTextNode(node, options);
-            
+
             if (subNodes.length > 0) {
                 for (var j = 0; j < subNodes.length; ++j) {
                     element.insertBefore(subNodes[j], node);
                 }
-                
+
                 element.removeChild(node);
                 i += subNodes.length;
             }
@@ -217,16 +217,16 @@ function addLinksToElement(element, options) {
  */
 function splitTextNode(textNode, options) {
     var nodes = [textNode];
-    
+
     for (var i = 0; i < options.handlers.length; ++i) {
         var handler = options.handlers[i];
-        
+
         for (var j = 0; j < nodes.length; ++j) {
             var node = nodes[j];
-            
+
             if (node instanceof window.Text) {
                 var splitNodes = splitTextNodeByHandler(node, handler);
-                
+
                 if (splitNodes.length > 0) {
                     nodes.splice.apply(nodes, [j, 1].concat(splitNodes));
                     j += splitNodes.length;
@@ -234,7 +234,7 @@ function splitTextNode(textNode, options) {
             }
         }
     }
-    
+
     if ((nodes.length == 1) && (nodes[0] === textNode)) {
         return [];
     }
@@ -251,24 +251,24 @@ function splitTextNodeByHandler(textNode, handler) {
     var separator = '\0';
     var matches = [];
     var nodes = [];
-    
+
     var textParts = textNode.nodeValue.replace(handler.pattern, function () {
         matches.push(handler.replacement.apply(handler, arguments));
         return separator;
     }).split(separator);
-    
+
     if (matches.length == 0) {
         return nodes;
     }
-    
+
     while (textParts.length > 0) {
         var text = textParts.shift();
         var match = matches.shift();
-        
+
         if (text.length > 0) {
             nodes.push(document.createTextNode(text));
         }
-        
+
         if (match instanceof Array) {
             nodes.push.apply(nodes, match);
         }
@@ -276,7 +276,7 @@ function splitTextNodeByHandler(textNode, handler) {
             nodes.push(match);
         }
     }
-    
+
     return nodes;
 }
 
@@ -297,9 +297,9 @@ document.addEventListener('readystatechange', function() {
         excludedTags: /^(?:a|applet|area|button|embed|frame|frameset|head|iframe|img|input|link|map|meta|object|option|param|script|select|statusbar|style|textarea|title)$/i,
         handlers: [new UrlHandler(), new EmailAddressHandler()]
     };
-    
+
     addLinksToElement(document.documentElement, options);
-    
+
     document.addEventListener('DOMNodeInserted', function (event) {
         addLinksToElement(event.target, options);
     }, false);
